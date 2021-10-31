@@ -1,0 +1,73 @@
+@extends('layouts.app')
+
+@push('style')
+
+@endpush
+
+@section('content')
+    <div class="page-content">
+        <div class="container-fluid">
+            <!-- Page-Title -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="page-title-box">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="page-title">{{ trans('cruds.productTag.title') }}</h4>
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ trans('global.home') }}</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('product-tags.index') }}">
+                                            {{ trans('cruds.productTag.title') }}</a>
+                                    </li>
+                                    <li class="breadcrumb-item active">{{ trans('global.edit') }} {{ trans('cruds.productTag.title_singular') }} </li>
+                                </ol>
+                            </div>
+                            <div class="col-auto align-self-center">
+
+                                @can('product_tag_create')
+                                    <a href="{{ URL::previous() }}" class="btn btn-sm btn-outline-primary">
+                                        <i data-feather="arrow-left-circle" class="align-self-center icon-xs"></i>
+                                        {{ trans('global.back_to_list') }}
+                                    </a>
+                                @endcan
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">{{ trans('global.edit') }} {{ trans('cruds.productTag.title_singular') }}</h4>
+
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ route("product-tags.update", [$productTag->id]) }}" enctype="multipart/form-data">
+                                @method('PUT')
+                                @csrf
+                                <div class="form-group">
+                                    <label class="required" for="name">{{ trans('cruds.productTag.fields.name') }}</label>
+                                    <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $productTag->name) }}" required>
+                                    @if($errors->has('name'))
+                                        <div class="invalid-feedback">
+                                            {{ $errors->first('name') }}
+                                        </div>
+                                    @endif
+                                    <span class="help-block">{{ trans('cruds.productTag.fields.name_helper') }}</span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-danger" type="submit">
+                                        {{ trans('global.save') }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+@endsection

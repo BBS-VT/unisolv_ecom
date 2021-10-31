@@ -1,0 +1,12 @@
+.form-group.required .control-label:after {
+    content:"*";
+    color:darkred;
+}
+.top-buffer {
+    margin-top: 40px;
+}
+div.dt-buttons {
+    float: left;
+    margin-left: 10px;
+}
+

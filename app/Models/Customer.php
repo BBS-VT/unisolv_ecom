@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Orders;
+use App\Models\User;
+use App\Models\BuyingGroup;
+use App\Models\CustomerCategory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use DB;
+
+class Customer extends Model
+{
+    use SoftDeletes;
+
+    public $table = 'customers';
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    protected $fillable = [
+        'acc_main',
+        'acc_sub',
+        'CustomerName',
+        'BillToCustomerID',
+        'CustomerCategoryID',
+        'BuyingGroupID',
+        'PrimaryContactPersonID',
+        'AlternateContactPersonID',
+        'StoreEAN',
+        'VatNr',
+        'CreditLimit',
+        'AccountOpenedDate',
+        'StandardDiscountPercentage',
+        'IsStatementSent',
+        'IsOnCreditHold',
+        'PaymentDays',
+        'PhoneNumber',
+        'FaxNumber',
+        'DeliveryRoute',
+        'DeliveryRoutePosition',
+        'WebsiteURL',
+        'GeneralEmailAddress',
+        'DeliveryAddressLine1',
+        'DeliveryAddressLine2',
+        'DeliveryCity',
+        'DeliveryPostalCode',
+        'PostalAddressLine1',
+        'PostalAddressLine2',
+        'PostalCity',
+        'PostalPostalCode',
+        'CustomerStatus',
+        'CountryID',
+        'SalesRepID',
+        'LastEditedBy',
+    ];
+
+    public static function getNextCustomerNumber()
+    {
+        // Get the last created order
+        $lastCustomer = Customer::latest('acc_main')->first();
+
+        if (!$lastCustomer) {
+            // if there is no existing customers set last acc code to 0,
+            // which will result in 1 being created
+            $number = 0;
+        } else {
+            $number = $lastCustomer->acc_main;
+        }
+
+        return sprintf('%06d', intval($number) + 1);
+    }
+
+    public function billingCustomer()
+    {
+        return $this->hasOne(Customer::class, 'BillToCustomerID', 'id');
+    }
+
+    public function customerCategory()
+    {
+        return $this->belongsTo(CustomerCategory::class);
+    }
+
+    public function buyingGroup()
+    {
+        return $this->belongsTo(BuyingGroup::class);
+    }
+
+    public function primaryContact()
+    {
+        return $this->hasOne('User', 'PrimaryContactPersonID');
+    }
+
+    public function alternateContact()
+    {
+        return $this->hasOne('User', 'AlternateContactPersonID');
+    }
+
+    public function country()
+    {
+        return $this->hasOne('Country', 'CountryID');
+    }
+
+    public function salesrep()
+    {
+        return $this->belongsTo(User::class, 'SalesRepID', 'RepCode');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Orders::class,);
+    }
+
+    public function lastedited()
+    {
+        return $this->hasOne(User::class, 'id','LastEditedBy');
+    }
+
+    public function specialdeal()
+    {
+        return $this->hasMany(SpecialDeals::class, 'id', 'CustomerID');
+    }
+
+    public function customerBalance()
+    {
+        return $this->hasOne(CustomerBalance::class, 'AccMain', 'acc_main');
+    }
+}
