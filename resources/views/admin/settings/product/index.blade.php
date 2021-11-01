@@ -44,9 +44,52 @@
                                             </small>
                                         </div>
                                     </div>
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="tax_per_item">{{ __('global.tax_per_item') }}</label><br>
+                                            <div class="custom-control custom-checkbox-toggle custom-control-inline mr-1">
+                                                <input type="checkbox" name="tax_per_item" id="tax_per_item" {{ $currentCompany->getSetting('tax_per_item') ? 'checked' : '' }} class="custom-control-input">
+                                                <label class="custom-control-label" for="tax_per_item">{{ __('global.yes') }}</label>
+                                            </div>
+                                            <label for="tax_per_item" class="mb-0">{{ __('global.yes') }}</label>
+                                            <small class="form-text text-muted">
+                                                {{ __('messages.tax_per_item') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group text-right mt-2">
+                                    <button type="submit" class="btn btn-danger">{{ __('global.update') }}</button>
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="card-title">{{ __('global.product_units') }}</h4>
+                        </div>
+                        <div class="col-auto align-self-center float-right">
+                            @can('settings_create')
+                                <a href="{{ route('admin.packagetype.create') }}" class="btn btn-sm btn-outline-primary">
+                                    <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
+                                    {{ __('global.add') }} {{ __('cruds.packageType.title') }}
+                                </a>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row no-gutters">
+                    <div class="col card-body bg-white">
+
+                        @include('admin.settings.product.unit._table')
+
                     </div>
                 </div>
             </div>

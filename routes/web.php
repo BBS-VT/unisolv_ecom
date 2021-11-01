@@ -106,6 +106,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
 
     // Order Status
     Route::resource('orderstatus', 'OrderStatusController');
+
+    // Package Types
+    Route::resource('packagetype', 'PackageTypeController');
+
 });
 
 Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin\Settings','middleware' => ['auth']], function () {

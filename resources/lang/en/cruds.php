@@ -564,4 +564,12 @@ return [
             'updated_at_helper'     => '',
         ],
     ],
+    'packageType'   => [
+        'title'          => 'Package Types',
+        'title_singular' => 'Package Type',
+        'fields'         => [
+            'pack_name'         =>   'Pack Name',
+            'pack_name_helper'  =>   '',
+        ],
+    ],
 ];
