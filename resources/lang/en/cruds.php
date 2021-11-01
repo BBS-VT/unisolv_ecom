@@ -468,6 +468,15 @@ return [
             'allProjects' => 'All projects',
         ],
     ],
+    'taxType'             => [
+        'title'           => 'Taxes',
+        'title_singular'  => 'Tax',
+        'reports'         => [
+            'name'        => 'Name',
+            'percent'     => 'Percentage',
+            'description' => 'Description',
+        ],
+    ],
     'order'          => [
         'title'          => 'Orders',
         'title_singular' => 'Order',

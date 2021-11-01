@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\Company\Update;
 use App\Models\CompanySetting;
+use Gate;
+use Symfony\Component\HttpFoundation\Response;
 
 class CompanyController extends Controller
 {
@@ -15,6 +17,8 @@ class CompanyController extends Controller
      */
     public function index()
     {
+        abort_if(Gate::denies('settings_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return view('admin.settings.company.index');
     }
 
@@ -27,6 +31,8 @@ class CompanyController extends Controller
      */
     public function update(Update $request)
     {
+        abort_if(Gate::denies('settings_update'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 

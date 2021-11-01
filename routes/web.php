@@ -113,4 +113,12 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     // Settings>Company Settings
     Route::get('/company', 'CompanyController@index')->name('settings.company');
     Route::post('/company', 'CompanyController@update')->name('settings.company.update');
+
+    // Settings>Tax Types
+    Route::get('/tax-types', 'TaxTypeController@index')->name('settings.tax_types');
+    Route::get('/tax-types/create', 'TaxTypeController@create')->name('settings.tax_types.create');
+    Route::post('/tax-types/create', 'TaxTypeController@store')->name('settings.tax_types.store');
+    Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('settings.tax_types.edit');
+    Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('settings.tax_types.update');
+    Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('settings.tax_types.delete');
 });
