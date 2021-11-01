@@ -35,7 +35,7 @@ class CompanyController extends Controller
      */
     public function update(Update $request)
     {
-        abort_if(Gate::denies('settings_update'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('settings_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user = $request->user();
         $currentCompany = $user->currentCompany();

@@ -77,6 +77,39 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="billing[city]">{{ __('global.city') }}</label>
+                                        <input name="billing[city]" type="text" class="form-control" value="{{ $currentCompany->billing->city }}" placeholder="{{ __('global.city') }}">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="billing[zip]">{{ __('global.postal_code') }}</label>
+                                        <input name="billing[zip]" type="text" class="form-control" value="{{ $currentCompany->billing->zip }}" placeholder="{{ __('global.postal_code') }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
+                                <label for="billing[address_1]">{{ __('global.address') }}</label>
+                                <textarea name="billing[address_1]" class="form-control" rows="2" placeholder="{{ __('global.address') }}" required>{{ $currentCompany->billing->address_1 }}</textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="vat_number">{{ __('global.vat_number') }}</label>
+                                        <input name="vat_number" type="text" class="form-control" placeholder="{{ __('global.vat_number') }}" value="{{ $currentCompany->vat_number }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group text-right mt-4">
+                                <button type="submit" class="btn btn-danger">{{ __('global.update') }}</button>
+                            </div>
                         </form>
                     </div>
                 </div>
