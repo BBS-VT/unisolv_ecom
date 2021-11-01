@@ -107,3 +107,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     // Order Status
     Route::resource('orderstatus', 'OrderStatusController');
 });
+
+Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin/Settings','middleware' => ['auth']], function () {
+
+    // Settings>Company Settings
+    Route::get('/company', 'CompanyController@index')->name('settings.company');
+    Route::post('/company', 'CompanyController@update')->name('settings.company.update');
+});
