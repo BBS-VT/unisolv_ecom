@@ -15,12 +15,14 @@ class CreatePackageTypesTable extends Migration
     {
         Schema::create('package_types', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
             $table->string('PackageTypeName', 50)->unique();
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
 
             $table->index(['PackageTypeName']);
             $table->foreign('LastEditedBy')->references('id')->on('users');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 

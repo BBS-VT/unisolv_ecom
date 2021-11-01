@@ -11,4 +11,10 @@
             <span class="sidebar-menu-text">{{ __('global.tax_types') }}</span>
         </a>
     </li>
+    <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.product') }}" class="sidebar-menu-button {{ $tab == 'product' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="shopping-bag" ></i>
+            <span class="sidebar-menu-text">{{ __('global.product_settings') }}</span>
+        </a>
+    </li>
 </ul>

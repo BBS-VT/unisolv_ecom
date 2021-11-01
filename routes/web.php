@@ -110,9 +110,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
 
 Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin\Settings','middleware' => ['auth']], function () {
 
+    // Settings>Account Settings
+    Route::get('/account', 'AccountController@index')->name('account');
+    Route::post('/account', 'AccountController@update')->name('account.update');
+
     // Settings>Company Settings
     Route::get('/company', 'CompanyController@index')->name('company');
     Route::post('/company', 'CompanyController@update')->name('company.update');
+
+    // Settings>Preferences
+    Route::get('/preferences', 'PreferenceController@index')->name('preferences');
+    Route::post('/preferences', 'PreferenceController@update')->name('preferences.update');
+
+    // Settings>Product Settings
+    Route::get('/product', 'ProductController@index')->name('product');
+    Route::post('/product', 'ProductController@update')->name('product.update');
 
     // Settings>Tax Types
     Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');

@@ -17,7 +17,7 @@
         </div>
         <div class="col-xl-10 col-sm-9">
             <div class="card">
-                <div class="row no-gutters">
+                <div class="row">
                     <div class="col card-body bg-white">
                         <form action="{{ route('settings.company.update') }}" method="POST" enctype="multipart/form-data">
                             @include('layouts._form_errors')
