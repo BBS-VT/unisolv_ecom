@@ -277,6 +277,7 @@ return [
     'tax_type_updated'                     => 'Tax type successfully updated',
     'tax_type_is_in_use'                   => 'Tax type is in use',
     'tax_type_deleted'                     => 'Tax type deleted',
+    'no_tax_types_yet'                     => 'No existing tax types',
     'team-management'                      => 'Teams',
     'team-management-singular'             => 'Team',
     'text'                                 => 'Text',

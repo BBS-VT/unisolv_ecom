@@ -108,17 +108,17 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::resource('orderstatus', 'OrderStatusController');
 });
 
-Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin/Settings','middleware' => ['auth']], function () {
+Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin\Settings','middleware' => ['auth']], function () {
 
     // Settings>Company Settings
-    Route::get('/company', 'CompanyController@index')->name('settings.company');
-    Route::post('/company', 'CompanyController@update')->name('settings.company.update');
+    Route::get('/company', 'CompanyController@index')->name('company');
+    Route::post('/company', 'CompanyController@update')->name('company.update');
 
     // Settings>Tax Types
-    Route::get('/tax-types', 'TaxTypeController@index')->name('settings.tax_types');
-    Route::get('/tax-types/create', 'TaxTypeController@create')->name('settings.tax_types.create');
-    Route::post('/tax-types/create', 'TaxTypeController@store')->name('settings.tax_types.store');
-    Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('settings.tax_types.edit');
-    Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('settings.tax_types.update');
-    Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('settings.tax_types.delete');
+    Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');
+    Route::get('/tax-types/create', 'TaxTypeController@create')->name('tax_types.create');
+    Route::post('/tax-types/create', 'TaxTypeController@store')->name('tax_types.store');
+    Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('tax_types.edit');
+    Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('tax_types.update');
+    Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('tax_types.delete');
 });

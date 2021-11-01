@@ -60,3 +60,49 @@ $(document).ready(function() {
         })
     });
 });
+
+(document).ready(function(){
+
+    // Sweet alert delete confirmation
+    $('.delete-confirm').on('click', function (event) {
+        event.preventDefault();
+        var url = $(this).attr('href');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This record and it`s details will be permanantly deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Delete!',
+            focusConfirm: false,
+            focusCancel: false,
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = url;
+            }
+        })
+    });
+
+    // Sweet alert delete confirmation
+    $('.alert-confirm').on('click', function (event) {
+        event.preventDefault();
+        var url = $(this).attr('href');
+        Swal.fire({
+            title: $(this).data('alert-title'),
+            text: $(this).data('alert-text'),
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#308AF3',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Okay!',
+            focusConfirm: false,
+            focusCancel: false,
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = url;
+            }
+        })
+    });
+
+});

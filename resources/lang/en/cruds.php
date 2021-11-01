@@ -471,7 +471,7 @@ return [
     'taxType'             => [
         'title'           => 'Taxes',
         'title_singular'  => 'Tax',
-        'reports'         => [
+        'fields'         => [
             'name'        => 'Name',
             'percent'     => 'Percentage',
             'description' => 'Description',
