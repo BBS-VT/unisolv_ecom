@@ -22,7 +22,7 @@ class ProductController extends Controller
         $currentCompany = $user->currentCompany();
 
         // Get Product Units by Company
-        $product_units = PackageType::findByCompany($currentCompany->id)->paginate(15);
+        $product_units = PackageType::findByCompany($currentCompany->id)->paginate(5);
 
         return view('admin.settings.product.index', compact('product_units', 'currentCompany'));
     }

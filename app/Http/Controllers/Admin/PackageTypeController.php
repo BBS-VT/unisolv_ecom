@@ -30,7 +30,7 @@ class PackageTypeController extends Controller
             $product_unit->fill($request->old());
         }
 
-        return view('admin.settings.product.unit.create');
+        return view('admin.settings.product.unit.create', compact('product_unit'));
     }
 
     /**
@@ -43,12 +43,13 @@ class PackageTypeController extends Controller
     public function store(Store $request)
     {
         $user = $request->user();
-        $currentCompany = $user->currentCompany();
+        $currentCompany = auth()->user()->currentCompany();
 
         // Create Product Unit and Store in Database
         PackageType::create([
-            'name'       => $request->name,
-            'company_id' => $currentCompany->id,
+            'PackageTypeName' => $request->name,
+            'company_id'      => $currentCompany->id,
+            'LastEditedBy'    => auth()->user()->id,
         ]);
 
         session()->flash('alert-success', __('global.package_type_added'));
@@ -84,7 +85,7 @@ class PackageTypeController extends Controller
 
         // Update Package Type in the Database
         $product_unit->update([
-            'name' => $request->name
+            'PackageTypeName' => $request->name
         ]);
 
         session()->flash('alert-success', __('global.product_unit_updated'));
@@ -98,7 +99,7 @@ class PackageTypeController extends Controller
      *
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         abort_if(Gate::denies('settings_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 

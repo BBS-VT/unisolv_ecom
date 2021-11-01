@@ -15,6 +15,7 @@ class PackageType extends Model
 
     protected $fillable = [
         'PackageTypeName',
+        'company_id',
         'LastEditedBy'
     ];
 

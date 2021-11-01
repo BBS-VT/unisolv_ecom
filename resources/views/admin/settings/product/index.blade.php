@@ -59,7 +59,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group text-right mt-2">
+                                <div class="form-group text-right">
                                     <button type="submit" class="btn btn-danger">{{ __('global.update') }}</button>
                                 </div>
                             </form>

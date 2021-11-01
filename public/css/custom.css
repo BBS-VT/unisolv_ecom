@@ -37,3 +37,7 @@ div.dt-buttons {
     -webkit-border-radius: 0;
 }
 
+ul.sidebar-menu li.sidebar-menu-item {
+    list-style-type: none;
+}
+

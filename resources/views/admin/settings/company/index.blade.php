@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-xl-2 col-sm-3">
-            @include('admin.settings._aside', ['tab' => 'tax_types'])
+            @include('admin.settings._aside', ['tab' => 'company'])
         </div>
         <div class="col-xl-10 col-sm-9">
             <div class="card">
