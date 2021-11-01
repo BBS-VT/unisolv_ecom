@@ -13,6 +13,8 @@
         "barryvdh/laravel-ide-helper": "^2.10",
         "binarytorch/larecipe": "^2.4",
         "cknow/laravel-money": "^6.1",
+        "coderello/laravel-shared-data": "^3.2",
+        "cviebrock/eloquent-sluggable": "^8.0",
         "darkaonline/l5-swagger": "^8.0",
         "doctrine/dbal": "^2.11",
         "fideloper/proxy": "^4.4",
@@ -26,6 +28,7 @@
         "mpociot/vat-calculator": "^2.4",
         "mtownsend/collection-xml": "^1.4",
         "mtownsend/response-xml": "^2.0",
+        "spatie/laravel-activitylog": "3.17.0",
         "spatie/laravel-medialibrary": "^9.0.0",
         "yajra/laravel-datatables-oracle": "^9.6"
     },
