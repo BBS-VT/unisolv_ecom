@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\Company\Update;
 use App\Models\CompanySetting;
 use Gate;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CompanyController extends Controller
@@ -19,7 +20,10 @@ class CompanyController extends Controller
     {
         abort_if(Gate::denies('settings_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.settings.company.index');
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
+        return view('admin.settings.company.index', compact('currentCompany'));
     }
 
     /**
