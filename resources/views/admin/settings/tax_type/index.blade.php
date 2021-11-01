@@ -17,20 +17,26 @@
         </div>
         <div class="col-xl-10 col-sm-9">
             <div class="card">
-                <div class="row no-gutters">
-                    <div class="col card-body bg-white">
-                        <div class="form-row align-items-center mb-4">
-                            <div class="col">
-                                <p class="h4 mb-0">
-                                    <strong class="headings-color">{{ __('cruds.taxType.title') }}</strong>
-                                </p>
-                            </div>
-                            <div class="col-auto">
-                                <a href="{{ route('settings.tax_types.create') }}" class="btn btn-xs btn-primary text-white">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="card-title">{{ __('cruds.taxType.title') }}</h4>
+                        </div>
+
+                        <div class="col-auto align-self-center float-right">
+                            @can('settings_create')
+                                <a href="{{ route("settings.tax_types.create") }}" class="btn btn-sm btn-outline-primary">
+                                    <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ __('global.add') }} {{ __('cruds.taxType.title') }}
                                 </a>
-                            </div>
+                            @endcan
                         </div>
+                    </div>
+
+                </div>
+                <div class="row no-gutters">
+                    <div class="col card-body bg-white">
+
 
                         @if($tax_types->count() > 0)
                             <div class="table-responsive" data-toggle="lists">
@@ -57,11 +63,11 @@
                                                 </td>
                                                 <td class="h6">
                                                     <a href="{{ route('settings.tax_types.edit', $tax_type->id) }}" class="btn text-primary">
-                                                        <i class="feather-edit"></i>
+                                                        <i data-feather="edit" class="align-self-center icon-xs"></i>
                                                         {{ __('global.edit') }}
                                                     </a>
                                                     <a href="{{ route('settings.tax_types.delete', $tax_type->id) }}" class="btn text-danger delete-confirm">
-                                                        <i class="feather-delete"></i>
+                                                        <i data-feather="trash" class="align-self-center icon-xs"></i>
                                                         {{ __('global.delete') }}
                                                     </a>
                                                 </td>

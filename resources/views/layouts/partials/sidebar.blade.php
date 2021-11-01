@@ -27,7 +27,7 @@
                         <ul class="nav-second-level" aria-expanded="false">
                             {{--<li><a href="apps-email-inbox.html">Quote</a></li> --}}
                             <li><a href="{{ route('orders.create.step.one') }}">Order</a></li>
-                            {{-- <li><a href="{{ route('orders.create') }}">Order</a></li>--}} 
+                            {{-- <li><a href="{{ route('orders.create') }}">Order</a></li>--}}
                             {{-- <li><a href="apps-email-inbox.html">Invoice</a></li> --}}
                             <li><a href="{{ route('customers.create') }}">Customer</a></li>
                         </ul>
@@ -119,6 +119,7 @@
                     <li>
                         <a href="javascript: void(0);"><i class="ti-control-record"></i>General Settings <span class="menu-arrow left-has-menu"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('settings.company') }}">Company Settings</a></li>
                             <li><a href="{{ route('admin.buying-group.index') }}">Buying Groups</a></li>
                             <li><a href="{{ route('admin.customer-category.index') }}">Customer Categories</a></li>
                             <li><a href="{{ route('admin.orderstatus.index') }}">Order Statuses</a></li>
