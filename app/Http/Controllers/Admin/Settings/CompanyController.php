@@ -44,9 +44,9 @@ class CompanyController extends Controller
         $currentCompany->update($request->validated());
 
         // Update Company Address
-        // $address = $request->input('billing');
-        // $address['name'] = $currentCompany->name;
-        // $currentCompany->updateAddress('billing', $address);
+        $address = $request->input('billing');
+        $address['name'] = $currentCompany->name;
+        $currentCompany->updateAddress('billing', $address);
 
         // Update Company Logo
         if ($request->avatar) {

@@ -55,6 +55,28 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group required">
+                                        <label for="billing[country_id]">{{ __('global.country') }}</label>
+                                        <select id="billing[country_id]" name="billing[country_id]" data-toggle="select" class="form-control select2-hidden-accessible"
+                                                data-select2-id="billing[country_id]" required>
+                                            <option disabled selected>{{ __('global.select_country') }}</option>
+                                            @foreach(get_countries_select2_array() as $option)
+                                                <option value="{{ $option['id'] }}" {{ $currentCompany->billing->country_id == $option['id'] ? 'selected=""' : '' }}>
+                                                    {{ $option['text'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="billing[state]">{{ __('global.state') }}</label>
+                                        <input for="billing[state]" type="text" class="form-control" value="{{ $currentCompany->billing->state }}" placeholder="{{ __('global.state') }}">
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
