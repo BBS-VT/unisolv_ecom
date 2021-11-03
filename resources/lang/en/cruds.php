@@ -468,6 +468,15 @@ return [
             'allProjects' => 'All projects',
         ],
     ],
+    'taxType'             => [
+        'title'           => 'Taxes',
+        'title_singular'  => 'Tax',
+        'fields'         => [
+            'name'        => 'Name',
+            'percent'     => 'Percentage',
+            'description' => 'Description',
+        ],
+    ],
     'order'          => [
         'title'          => 'Orders',
         'title_singular' => 'Order',
@@ -553,6 +562,14 @@ return [
             'created_at_helper'     => '',
             'updated_at'            => 'Updated at',
             'updated_at_helper'     => '',
+        ],
+    ],
+    'packageType'   => [
+        'title'          => 'Package Types',
+        'title_singular' => 'Package Type',
+        'fields'         => [
+            'pack_name'         =>   'Pack Name',
+            'pack_name_helper'  =>   '',
         ],
     ],
 ];

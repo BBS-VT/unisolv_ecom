@@ -13,12 +13,11 @@ class CreateSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('settings', function (Blueprint $table) {
+        Schema::create('system_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key', 50);
-            $table->text('val')->nullable();
+            $table->string('option', 50);
+            $table->text('value');
 
-            $table->unique('key');
         });
     }
 
@@ -29,6 +28,6 @@ class CreateSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists('system_settings');
     }
 }

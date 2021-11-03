@@ -27,7 +27,7 @@
                         <ul class="nav-second-level" aria-expanded="false">
                             {{--<li><a href="apps-email-inbox.html">Quote</a></li> --}}
                             <li><a href="{{ route('orders.create.step.one') }}">Order</a></li>
-                            {{-- <li><a href="{{ route('orders.create') }}">Order</a></li>--}} 
+                            {{-- <li><a href="{{ route('orders.create') }}">Order</a></li>--}}
                             {{-- <li><a href="apps-email-inbox.html">Invoice</a></li> --}}
                             <li><a href="{{ route('customers.create') }}">Customer</a></li>
                         </ul>
@@ -119,6 +119,7 @@
                     <li>
                         <a href="javascript: void(0);"><i class="ti-control-record"></i>General Settings <span class="menu-arrow left-has-menu"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('settings.company') }}">Company Settings</a></li>
                             <li><a href="{{ route('admin.buying-group.index') }}">Buying Groups</a></li>
                             <li><a href="{{ route('admin.customer-category.index') }}">Customer Categories</a></li>
                             <li><a href="{{ route('admin.orderstatus.index') }}">Order Statuses</a></li>
@@ -139,20 +140,11 @@
                     <li class="nav-item"><a class="nav-link" href="pages-treeview.html"><i class="ti-control-record"></i>Treeview</a></li>--}}
                 </ul>
             </li>
-
-            <li>
-                <a href="javascript: void(0);"><i data-feather="file-plus" class="align-self-center menu-icon"></i><span>Documentation</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-                <ul class="nav-second-level" aria-expanded="false">
-                    <li class="nav-item"><a class="nav-link" href="pages-blogs.html"><i class="ti-control-record"></i>Blogs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-faqs.html"><i class="ti-control-record"></i>FAQs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-pricing.html"><i class="ti-control-record"></i>Pricing</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-profile.html"><i class="ti-control-record"></i>Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-starter.html"><i class="ti-control-record"></i>Starter Page</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-timeline.html"><i class="ti-control-record"></i>Timeline</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pages-treeview.html"><i class="ti-control-record"></i>Treeview</a></li>
-                </ul>
-            </li>
             @endcan
+            <li>
+                <a href="{{ url('/docs') }}"><i data-feather="book-open" class="align-self-center menu-icon"></i><span>Documentation</span>
+                    <span class="badge badge-soft-success menu-arrow">New</span></a>
+            </li>
         </ul>
     </div>
 </div>

@@ -10,3 +10,34 @@ div.dt-buttons {
     margin-left: 10px;
 }
 
+.fs-64px {
+    margin: 0;
+    padding: 0;
+    color: #0b0b0b;
+    width: 12px;
+    -webkit-box-shadow: inset 0 0 6px #3d4852;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+}
+
+.required:after {
+    content: " *";
+    color: red;
+}
+
+.headings-color {
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: black;
+    width: 12px;
+    -webkit-box-shadow: inset 0 0 6px wheat;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+}
+
+ul.sidebar-menu li.sidebar-menu-item {
+    list-style-type: none;
+}
+
