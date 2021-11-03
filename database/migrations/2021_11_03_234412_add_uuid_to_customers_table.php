@@ -14,7 +14,11 @@ class AddUuidToCustomersTable extends Migration
     public function up()
     {
         Schema::table('customers', function (Blueprint $table) {
-            //
+            $table->uuid('uid')->unique()->nullable()->after('id');
+            $table->unsignedBigInteger('company_id')->nullable()->after('uid');
+
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+
         });
     }
 
@@ -25,8 +29,16 @@ class AddUuidToCustomersTable extends Migration
      */
     public function down()
     {
-        Schema::table('customers', function (Blueprint $table) {
-            //
-        });
+        if (Schema::hasColumn('customers', 'uid'))
+        {
+            Schema::table('customers', function (Blueprint $table) {
+                Schema::disableForeignKeyConstraints();
+
+                $table->dropColumn('uid');
+                $table->dropColumn('company_id');
+
+                Schema::enableForeignKeyConstraints();
+            });
+        }
     }
 }

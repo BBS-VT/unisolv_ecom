@@ -6,13 +6,14 @@ use App\Models\Orders;
 use App\Models\User;
 use App\Models\BuyingGroup;
 use App\Models\CustomerCategory;
+use App\Traits\UUIDTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use DB;
 
 class Customer extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, UUIDTrait;
 
     public $table = 'customers';
 
@@ -25,6 +26,7 @@ class Customer extends Model
     protected $fillable = [
         'acc_main',
         'acc_sub',
+        'company_id',
         'CustomerName',
         'BillToCustomerID',
         'CustomerCategoryID',
@@ -128,5 +130,28 @@ class Customer extends Model
     public function customerBalance()
     {
         return $this->hasOne(CustomerBalance::class, 'AccMain', 'acc_main');
+    }
+
+    /**
+     * Define Relation with Company Model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Scope a query to only include Customers of a given company.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param int $company_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindByCompany($query, $company_id)
+    {
+        $query->where('company_id', $company_id);
     }
 }
