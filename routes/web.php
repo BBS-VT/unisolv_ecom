@@ -60,27 +60,29 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
 
     // Orders
-    Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders');
+    Route::get('orders/create', 'OrdersController@create')->name('orders.create');
+    Route::post('orders/create', 'OrdersController@store')->name('orders.store');
     Route::delete('orders/destroy', 'OrdersController@massDestroy')->name('orders.massDestroy');
     //Route::resource('orders', 'OrdersController');
-    Route::get('orders', 'OrdersController@index')->name('orders.index');
     Route::get('orders/download/{order}', 'OrdersController@downloadOrder')->name('orders.download');
-    Route::get('orders/create_step1', 'OrdersController@createStepOne')->name('orders.create.step.one');
-    Route::post('orders/create_step1', 'OrdersController@postCreateStepOne')->name('orders.create.step.one.post');
-    Route::get('orders/create_step2', 'OrdersController@createStepTwo')->name('orders.create.step.two');
-    Route::post('orders/create-step-two', 'OrdersController@postcreateStepTwo')->name('orders.create.step.two.post');
-    //Route::get('orders/create-step-three', 'OrdersController@createStepThree')->name('orders.create.step.three');
-    //Route::post('orders/create-step-three', 'OrdersController@createStepThree')->name('orders.create.step.three.post');
+    //Route::get('orders/create_step1', 'OrdersController@createStepOne')->name('orders.create.step.one');
+    //Route::post('orders/create_step1', 'OrdersController@postCreateStepOne')->name('orders.create.step.one.post');
+    //Route::get('orders/create_step2', 'OrdersController@createStepTwo')->name('orders.create.step.two');
+    //Route::post('orders/create-step-two', 'OrdersController@postcreateStepTwo')->name('orders.create.step.two.post');
     Route::get('orders/{order}', 'OrdersController@show')->name('orders.show');
     Route::delete('orders/{order}', 'OrdersController@destroy')->name('orders.destroy');
     Route::post('orders/getprice/{product_id}', 'OrdersController@getprice')->name('orders.getprice');
-    Route::get('orders/product_search', 'OrdersController@productSearch')->name('product.search');
+    Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');
 
     // Special Deals
     Route::delete('deals/destroy', 'SpecialDealsController@massDestroy')->name('deals.massDestroy');
     Route::resource('deals', 'SpecialDealsController');
     Route::get('exportExcel/{type}', 'SpecialDealsController@exportExcel')->name('exportSpecialDeals');
     Route::post('importExcel', 'SpecialDealsController@importExcel')->name('importSpecialDeals');
+
+    // Ajax requests
+    Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
+    Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {

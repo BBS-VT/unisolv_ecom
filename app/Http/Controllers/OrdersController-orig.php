@@ -4,8 +4,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MassDestroyOrderRequest;
-use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Requests\Store;
+use App\Http\Requests\Update;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrdersItem;
@@ -70,7 +70,7 @@ class OrdersController extends Controller
         return view('orders.create', compact('products', 'customers'));
     }
 
-    public function postCreateStepOne(StoreOrderRequest $request)
+    public function postCreateStepOne(Store $request)
     {
         $orderData = $request->order;
 
@@ -87,7 +87,7 @@ class OrdersController extends Controller
         return redirect()->route('orders.create.step.two');
     }
 
-    public function createStepTwo(StoreOrderRequest $request)
+    public function createStepTwo(Store $request)
     {
         $order = $request->session()->get('order');
 
@@ -140,7 +140,7 @@ class OrdersController extends Controller
 
     }
 
-    public function postCreateStepTwo(StoreOrderRequest $request)
+    public function postCreateStepTwo(Store $request)
     {
         $orderData = $request->session()->get('order');
 
@@ -174,7 +174,7 @@ class OrdersController extends Controller
         return redirect()->route('orders.index');
     }
 
-    public function store(StoreOrderRequest $request)
+    public function store(Store $request)
     {
         $order = Order::create($request->order);
 
@@ -209,7 +209,7 @@ class OrdersController extends Controller
         return view('orders.edit', compact('products', 'customers', 'order'));
     }
 
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(Update $request, Order $order)
     {
         $order->update($request->all());
 

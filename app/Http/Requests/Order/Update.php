@@ -8,7 +8,7 @@ use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpFoundation\Response;
 
-class UpdateOrderRequest extends FormRequest
+class Update extends FormRequest
 {
     public function authorize()
     {

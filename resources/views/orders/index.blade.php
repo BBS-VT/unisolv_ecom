@@ -27,20 +27,20 @@
                         </div>
                         <div class="col-auto align-self-center float-right">
                             <div class="btn-group" role="group" aria-label="Basic example">
-                                <a href="{{ route('orders') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'new' ? 'active' : '' }}">
+                                <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'new' ? 'active' : '' }}">
                                     {{ __('global.new_orders') }}
                                 </a>
-                                <a href="{{ route('orders', 'processed') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
+                                <a href="{{ route('orders.index', 'processed') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
                                     {{ __('global.processed_orders') }}
                                 </a>
-                                <a href="{{ route('orders', 'all') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}">
+                                <a href="{{ route('orders.index', 'all') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}">
                                     {{ __('global.all_orders') }}
                                 </a>
                             </div>
                             @can('order_create')
-                                <a href="{{ route("orders.create.step.one") }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route("orders.create") }}" class="btn btn-sm btn-outline-primary">
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
-                                    {{ trans('global.new_order') }}
+                                    {{ __('global.new_order') }}
                                 </a>
                             @endcan
                         </div>

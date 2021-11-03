@@ -4,8 +4,8 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Requests\Store;
+use App\Http\Requests\Update;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Gate;
@@ -21,7 +21,7 @@ class OrdersApiController extends Controller
         return new OrderResource(Order::with(['products'])->get());
     }
 
-    public function store(StoreOrderRequest $request)
+    public function store(Store $request)
     {
         $order = Order::create($request->all());
         $order->products()->sync($request->input('products', []));
@@ -38,7 +38,7 @@ class OrdersApiController extends Controller
         return new OrderResource($order->load(['products']));
     }
 
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(Update $request, Order $order)
     {
         $order->update($request->all());
         $order->products()->sync($request->input('products', []));
