@@ -69,7 +69,7 @@ class Order extends Model
      *
      * @var array
      */
-    protected $with = ['fields'];
+    // protected $with = ['fields'];
 
 
     public function items()
@@ -157,6 +157,140 @@ class Order extends Model
 
         return $total;
     }
+
+    /**
+     *  Get the Items Sub Total by base price
+     *
+     * @return array
+     */
+    public function getItemsSubTotalByBasePrice()
+    {
+        $sub_total = 0;
+        foreach ($this->items as $item) {
+            $sub_total += $item->price;
+        }
+
+        return $sub_total;
+    }
+
+    /**
+     * Get the Total Percentage of Invoice Items taxes with tax names
+     *
+     * @return array
+     */
+    public function getItemsTotalPercentageOfTaxesWithNames()
+    {
+        $total = [];
+        foreach ($this->items as $item) {
+            foreach ($item->taxes as $tax) {
+                if (isset($total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'])) {
+                    $total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'] += ($tax->tax_type->percent / 100) * $item->price;
+                } else {
+                    $total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'] = ($tax->tax_type->percent / 100) * $item->price;
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    /**
+     * Get the Total Percentage of Invoice Items Taxes with Tax Names
+     *
+     * @return array
+     */
+    public function getItemsTotalDiscount()
+    {
+        $discount_amount = 0;
+        foreach ($this->items as $item) {
+            $price = $item->price;
+            foreach ($item->taxes as $tax) {
+                $price += ($tax->tax_type->percent / 100) * $item->price;
+            }
+            $discount_amount += ($item->discount_val / 100) * $price;
+        }
+        return $discount_amount;
+    }
+
+    /**
+     * Customized strpos helper function for excluding prefix
+     * from estimate number
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @param int $number
+     *
+     * @return string
+     */
+    private function strposX($haystack, $needle, $number)
+    {
+        if ($number == '1') {
+            return strpos($haystack, $needle);
+        } elseif ($number > '1') {
+            return strpos(
+                $haystack,
+                $needle,
+                $this->strposX($haystack, $needle, $number - 1) + strlen($needle)
+            );
+        } else {
+            return error_log('Error: Value for parameter $number is out of range');
+        }
+    }
+
+    /**
+     * Scope a query to only include Orders of a given company.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param int $company_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindByCompany($query, $company_id)
+    {
+        $query->where('company_id', $company_id);
+    }
+
+    /**
+     * Scope a query to only include Orders of a given customer.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param int $customer_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindByCustomer($query, $customer_id)
+    {
+        $query->where('customer_id', $customer_id);
+    }
+
+    /**
+     * Scope a query to only return Orders which has OrderDate
+     * greater or equal then given date
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param Date $from
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFrom($query, $from)
+    {
+        $query->where('OrderDate', '>=', $from);
+    }
+
+    /**
+     * Scope a query to only return Orders which has OrderDate
+     * less or equal then given date
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param Date $to
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeTo($query, $to)
+    {
+        $query->where('OrderDate', '<=', $to);
+    }
+
 
     /*public function getSubTotalAmount()
     {
