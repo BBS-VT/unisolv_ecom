@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
 
     // Orders
+    Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders');
     Route::delete('orders/destroy', 'OrdersController@massDestroy')->name('orders.massDestroy');
     //Route::resource('orders', 'OrdersController');
     Route::get('orders', 'OrdersController@index')->name('orders.index');

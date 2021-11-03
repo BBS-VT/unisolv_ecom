@@ -264,6 +264,35 @@ class Order extends Model
     }
 
     /**
+     * Scope a query to only return new Orders
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNew($query)
+    {
+        $query->where('OrderStatusID', '1');
+    }
+
+    /**
+     * Scope a query to only return processed Orders
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        $active_stats = [
+            '2',
+            '3',
+            '4',
+        ];
+        $query->whereIn('OrderStatusID', $active_stats);
+    }
+
+    /**
      * Scope a query to only return Orders which has OrderDate
      * greater or equal then given date
      *
