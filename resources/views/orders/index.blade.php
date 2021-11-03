@@ -2,6 +2,13 @@
 
 @section('title', __('global.orders'))
 
+@push('style')
+    <link href="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/plugins/datatables/select.dataTables.min.css') }}" rel="stylesheet" type="text/css" />
+@endpush
+
 @section('content')
     <div class="row">
         <div class="col-sm-12">
@@ -23,7 +30,7 @@
                                 <a href="{{ route('orders') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'new' ? 'active' : '' }}">
                                     {{ __('global.new_orders') }}
                                 </a>
-                                <a href="{{ route('orders', 'due') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
+                                <a href="{{ route('orders', 'processed') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
                                     {{ __('global.processed_orders') }}
                                 </a>
                                 <a href="{{ route('orders', 'all') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}">
@@ -39,31 +46,30 @@
                         </div>
                     </div>
                 </div>
-                @include('orders._filters')
-                <div class="card">
-<!--                    <div class="card-header bg-white p-0">
-                        <div class="row no-gutters flex nav">
-                            <a href="{{ route('orders') }}" class="col-2 border-right dashboard-area-tabs__tab card-body text-center {{ $tab == 'new' ? 'active' : '' }}">
-                                <span class="card-header__title m-0">
-                                    {{ __('global.new_orders') }}
-                                </span>
-                            </a>
-                            <a href="{{ route('orders', 'due') }}" class="col-2 border-right dashboard-area-tabs__tab card-body text-center {{ $tab == 'processed' ? 'active' : '' }}">
-                                <span class="card-header__title m-0">
-                                    {{ __('global.processed_orders') }}
-                                </span>
-                            </a>
-                            <a href="{{ route('orders', 'all') }}" class="col-2 border-right dashboard-area-tabs__tab card-body text-center {{ $tab == 'all' ? 'active' : '' }}">
-                                <span class="card-header__title m-0">
-                                    {{ __('global.all_orders') }}
-                                </span>
-                            </a>
-                        </div>
-                    </div>-->
-
+{{--                @include('orders._filters')--}}
+                <div class="card-body pb-1">
                     @include('orders._table')
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('custom-scripts')
+    <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+    <script src="{{ asset('/plugins/datatables/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/jszip.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/buttons.colVis.min.js') }}"></script>
+
+    <script src="{{ asset('/plugins/datatables/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('/pages/jquery.datatable.init.js') }}"></script>
+
+@endpush

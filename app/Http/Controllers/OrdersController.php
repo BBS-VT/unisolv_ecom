@@ -39,10 +39,10 @@ class OrdersController extends Controller
 
         // Query Invoices by Company and Tab
         if($request->tab == 'all') {
-            $query = Order::findByCompany($currentCompany->id)->orderBy('OrderDate', 'desc');
+            $query = Order::findByCompany($currentCompany->id)->orderBy('created_at', 'desc');
             $tab = 'all';
-        } else if($request->tab == 'due') {
-            $query = Order::findByCompany($currentCompany->id)->active()->orderBy('OrderDate', 'desc');
+        } else if($request->tab == 'processed') {
+            $query = Order::findByCompany($currentCompany->id)->active()->orderBy('created_at', 'desc');
             $tab = 'processed';
         } else {
             $query = Order::findByCompany($currentCompany->id)->new()->orderBy('OrderNumber', 'desc');

@@ -35,7 +35,7 @@
                     <li>
                         <a href="javascript: void(0);"><i class="ti-control-record"></i>Maintain <span class="menu-arrow left-has-menu"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
-                            <li><a href="{{ route('orders.index') }}">Orders</a></li>
+                            <li><a href="{{ route('orders') }}">Orders</a></li>
                             <li><a href="{{ route('customers.index') }}">Customers</a></li>
                             @can('specialdeal_access')
                                 <li><a href="{{ route('deals.index') }}">Contract Discounts</a></li>

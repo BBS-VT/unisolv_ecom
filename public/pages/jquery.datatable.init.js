@@ -8,7 +8,7 @@ $(document).ready(function () {
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength'
         ],
-        columnDefs: [ {
+        /*columnDefs: [ {
             orderable: false,
             className: 'select-checkbox',
             targets:   0
@@ -16,7 +16,7 @@ $(document).ready(function () {
         select: {
             style:    'os',
             selector: 'td:first-child'
-        },
+        },*/
         order: [[ 1, "asc" ]],
         processing: true,
         language: {
@@ -32,7 +32,7 @@ $(document).ready(function () {
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength'
         ],
-        columnDefs: [ {
+        /*columnDefs: [ {
             orderable: false,
             className: 'select-checkbox',
             targets:   0
@@ -40,7 +40,7 @@ $(document).ready(function () {
         select: {
             style:    'os',
             selector: 'td:first-child'
-        },
+        },*/
         order: [[ 5, "desc" ]],
         processing: true,
         language: {

@@ -1,8 +1,9 @@
 @if($orders->count() > 0)
     <div class="table-responsive">
-        <table class="table table-xl mb-0 thead-dark table-striped">
+        <table id="datatable-orders" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>
+                    <td></td>
                     <th>{{ __('cruds.order.fields.number') }}</th>
                     <th>{{ __('cruds.order.fields.customer_name') }}</th>
                     <th>{{ __('cruds.order.fields.salesrep') }}</th>
@@ -15,6 +16,7 @@
             <tbody class="list" id="orders">
                 @foreach ($orders as $order)
                     <tr>
+                        <td class="align-bottom"></td>
                         <td class="h6">
                             <a href="{{ route('orders.show', $order->id) }}">
                                 {{ $order->OrderNumber }}
@@ -24,13 +26,13 @@
                             {{ $order->customer->CustomerName }}
                         </td>
                         <td class="h6">
-                            {{ $order->salesperson->FullName }}
+                            {{ $order->salesperson->PreferredName }}
                         </td>
                         <td class="h6">
                             {{ $order->CustomerPurchaseOrderNumber }}
                         </td>
                         <td class="h6">
-                            {{ $order->OrderDate }}
+                            {{ $order->OrderDate->format('Y-m-d') }}
                         </td>
                         <td>
                             <span class=" badge <?php if ( $order->OrderStatusID == 1 ) { echo "badge-danger"; }
@@ -46,7 +48,7 @@
                             @elseif($order->Authorisation == 2)
                                 <span class="badge badge-info">Released</span>
                             @endif--}}
-                        <td>
+                        </td>
                         <td>
                             @can('order_show')
                                 <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-toggle="tooltip"
@@ -79,9 +81,9 @@
             </tbody>
         </table>
     </div>
-    <div class="row card-body pagination justify-content-center text-center">
+    <!-- <div class="row card-body pagination justify-content-center text-center">
         {{ $orders->links() }}
-    </div>
+    </div>-->
 @else
     <div class="row justify-content-center card-body pb-0 pt-5">
         <p class="h4">{{ __('global.no_orders_yet') }}</p>
