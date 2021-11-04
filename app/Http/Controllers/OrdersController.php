@@ -100,7 +100,7 @@ class OrdersController extends Controller
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
 
-        return view('orders.create', compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item'));
+        return view('orders.create', compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item', 'currentCompany'));
     }
 
     /**

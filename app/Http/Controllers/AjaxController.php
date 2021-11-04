@@ -53,7 +53,7 @@ class AjaxController extends Controller
         $currentCompany = $user->currentCompany();
 
         $products = Product::findByCompany($currentCompany->id)
-            ->select('id', 'StockItemName AS text', 'SellingPrice')
+            ->select('id', 'StockItemName AS text', 'SellingPrice AS price', 'DiscountPercentage AS discount')
             ->where('status', '1')
             ->with('taxes')
             ->get();
