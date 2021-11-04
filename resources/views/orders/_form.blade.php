@@ -13,7 +13,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
-            <select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
+<!--            <select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->CustomerID)
                     <option value="{{ $order->customer_id }}"
@@ -21,6 +21,11 @@
                         {{ $order->customer->CustomerName }}
                     </option>
                 @endif
+            </select>-->
+            <select class="form-control mb-3 select2-canal {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}"  name="customer_id"  required>
+                @foreach($customers as $id => $customer)
+                    <option value="{{ $id }}" >{{ $customer }}</option>
+                @endforeach
             </select>
         </div>
     </div>

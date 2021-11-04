@@ -8,10 +8,12 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use \DateTimeInterface;
+use App\Traits\HasTax;
+use App\Traits\UUIDTrait;
 
 class Product extends Model implements HasMedia
 {
-    use SoftDeletes, InteractsWithMedia;
+    use SoftDeletes, InteractsWithMedia, UUIDTrait, HasTax;
 
     public $table = 'products';
 
@@ -26,6 +28,7 @@ class Product extends Model implements HasMedia
     ];
 
     protected $fillable = [
+        'company_id',
         'StockItemName',
         'StockCode',
         'SupplierID',
@@ -48,6 +51,16 @@ class Product extends Model implements HasMedia
         'created_at',
         'updated_at',
         'deleted_at',
+    ];
+
+    /**
+     * Automatically cast attributes to given types
+     *
+     * @var array
+     */
+    protected $casts = [
+        'CostPrice' => 'integer',
+        'SellingPrice' => 'integer'
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -82,7 +95,7 @@ class Product extends Model implements HasMedia
         return $file;
     }
 
-    public function orderItems()
+    public function order_items()
     {
         return $this->hasMany(OrdersItem::class,'StockItem', 'id');
     }
@@ -105,6 +118,29 @@ class Product extends Model implements HasMedia
     public function casepackageType()
     {
         return $this->hasOne(PackageType::class, 'id', 'OuterPackageID');
+    }
+
+    /**
+     * Define Relation with Company Model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Scope a query to only include Products of a given company.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @param int $company_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindByCompany($query, $company_id)
+    {
+        $query->where('company_id', $company_id);
     }
 }
 

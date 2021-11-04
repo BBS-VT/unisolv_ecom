@@ -20,11 +20,12 @@ class StockMasterImport implements ToModel, WithStartRow
     /**
      * @param array $row
      *
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return Product
      */
     public function model(array $row)
     {
         return new Product([
+            'company_id'    => '1',
             'StockItemName' => $row[1],
             'StockCode'     => $row[0],
             'SupplierID'    => $row[2],
