@@ -116,6 +116,144 @@
     function calculateRowPrice() {
         var subTotal = 0;
         var taxes = {};
+
+        $('tbody tr').each(function(index, element) {
+            var row = $(element);
+
+            // If the row is template just continue
+            if(row.attr('id') == 'product_row_template') return;
+
+            // quantity
+            var quantity = Number(row.find('[name="quantity[]"]').val());
+
+            // price
+            var price = Number(row.find('price_input').unmask()) / 100;
+
+            // amount
+            var amount = (quantity * price);
+
+            // Calculate taxes
+            var totalTaxAmount = Number(0);
+            var selected_taxes = row.find('[name=taxes[]"]').find(':selected');
+            selected_taxes.each(function (index, tax) {
+                var percent = $(tax).data('percent');
+                var taxAmount = calculatePercent(percent, amount);
+                console.log("taxAmount", taxAmount);
+                totalTaxAmount += Number(taxAmount);
+            });
+
+            // Add tax amount to Item Total
+            amount = Number(amount) + Number(totalTaxAmount);
+
+            // discount
+            var discount = Number(row.find('[name="discount[]"]').val());
+
+            // caclualte disocunt
+            if(!isNaN(discount) && discount != undefined && discount != 0) {
+                var discountAmount = calculatePercent(discount, amount);
+                amount = Number(amount) - Number(discountAmount);
+            }
+
+            // Add Item Total to Sub Total
+            subTotal += Number(amount);
+
+            var amountPrice = Number(amount);
+
+            // Set price input value
+            row.find('.amount_price').val(amountPrice.toFixed(2));
+            row.find('.amount_price').focusout();
+        });
+
+        calculateTotalPrice(subtotal, taxes);
+    }
+
+    function calculateTotalPrice(subTotal, taxes) {
+        // Total value
+        total = 0;
+        total += subTotal;
+
+        // Set subtotal value
+        subtotal = Number(subTotal);
+        $('#sub_total').val(subtotal.toFixed(2));
+
+        // total taxes
+        var total_taxes = $('#total_taxes').find(':selected');
+        total_taxes.each(function (index, tax) {
+            var taxName = $(tax).text();
+            var percent = $(tax).data('percent');
+            var taxAmount = calculatePercent(percent, subTotal);
+
+            // push tax to taxes array
+            if(taxes[taxName]) {
+                taxes[taxName] += Number(taxAmount);
+            } else {
+                taxes[taxName] = Number(taxAmount);
+            }
+        });
+
+        // Display total tax list
+        $('.total_tax_list').empty();
+        for (var [name, amount] of Object.entries(taxes)) {
+            var template = '<div class="dflex align-items-center mb-3">' +
+                '<div class="h6 mb-0 w-50">' +
+                '  <strong class="text-muted">' + name + '</strong>' +
+                '</div>' +
+                '<div class="ml-auto h6 mb-0">' +
+                '  <input type="text" class=price_input price-text w-100 fs-inherit" value="'+ Number(amount).toFixed(2) +'" disabled>' +
+                '</div>' +
+            '</div>';
+
+            $('.total_tax_list').append(template);
+
+            total = Number(total) + Number(amount);
+        }
+
+        // total discount
+        var total_discount = $('#total-discount').val();
+        if(total_discount != undefined && total_discount != 0) {
+            total_discount = parseFloat(total_discount);
+            var discountAmount = calculatePercent(total_discount, subTotal)
+            total = Number(total) - Number(discountAmount)
+        }
+
+        $('#grand_total').val(Number(total).toFixed(2));
+        setupPriceInput(window.sharedDate.company_currency);
+    }
+
+    function initializePriceListener() {
+        $("priceListener").change(function() {
+            calculateRowPrice()
+        });
+    }
+
+    function addProductRow() {
+        var productItems = $('#items');
+        var template = $('#product_row_template')
+            .clone()
+            .removeAttr('id')
+            .removeClass('d-none');
+        productItems.append(template);
+
+        var product_select = template.find('[name="product[]"]');
+        initializeProductSselect2(product_select);
+
+        var tax_select = template.find('[name="taxes[]"]');
+        initializeTaxSelect2(tax_select);
+
+        initializePriceListener();
+        calculateRowPrice();
+    }
+
+    function removeRow(elem) {
+        $(elem).closest('tr').remove();
+        calculateRowPrice();
+    }
+
+    function validateForm() {
+        $('tbody tr').each(function(index, element) {
+            var row = $(element);
+            var product = row.find('[name="product[]"]')
+        });
     }
 
 </script>

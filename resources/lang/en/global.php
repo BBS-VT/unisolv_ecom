@@ -273,6 +273,7 @@ return [
     'select_crud_placeholder'              => 'Please select one of your CRUDs',
     'select_dt_placeholder'                => 'Please select one of date/time fields',
     'select_users_placeholder'             => 'Please select one of your Users',
+    'select_taxes'                         => 'Select Tax',
     'send'                                 => 'Send',
     'serial_number'                        => 'Serial number',
     'simple_user'                          => 'Simple user',

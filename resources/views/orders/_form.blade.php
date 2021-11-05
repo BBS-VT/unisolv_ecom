@@ -47,34 +47,34 @@
     <div class="table-responsive" data-toggle="lists">
         <table class="table table-xl mb-0 thead-border-top-0 table-striped">
             <thead>
-            <tr>
-                @if($tax_per_item and $discount_per_item)
-                    <th class="w-30">{{ __('global.products') }}</th>
-                    <th class="w-20">{{ __('global.taxes') }}</th>
-                    <th class="w-10">{{ __('global.quantity') }}</th>
-                    <th class="w-15">{{ __('global.price') }}</th>
-                    <th class="w-15">{{ __('global.discount') }}</th>
-                    <th class="text-right w-10">{{ __('global.total') }}</th>
-                @elseif($tax_per_item and !$discount_per_item)
-                    <th class="w-40">{{ __('global.products') }}</th>
-                    <th class="w-25">{{ __('global.taxes') }}</th>
-                    <th class="w-10">{{ __('global.quantity') }}</th>
-                    <th class="w-15">{{ __('global.price') }}</th>
-                    <th class="text-right w-10">{{ __('global.total') }}</th>
-                @elseif(!$tax_per_item and $discount_per_item)
-                    <th class="w-40">{{ __('global.products') }}</th>
-                    <th class="w-10">{{ __('global.quantity') }}</th>
-                    <th class="w-20">{{ __('global.price') }}</th>
-                    <th class="w-20">{{ __('global.discount') }}</th>
-                    <th class="text-right w-10">{{ __('global.total') }}</th>
-                @elseif(!$tax_per_item and !$discount_per_item)
-                    <th class="w-60">{{ __('global.products') }}</th>
-                    <th class="w-10">{{ __('global.quantity') }}</th>
-                    <th class="w-20">{{ __('global.price') }}</th>
-                    <th class="text-right w-10">{{ __('global.total') }}</th>
-                @endif
-                <th></th>
-            </tr>
+                <tr>
+                    @if($tax_per_item and $discount_per_item)
+                        <th class="w-30">{{ __('global.products') }}</th>
+                        <th class="w-20">{{ __('global.taxes') }}</th>
+                        <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="w-15">{{ __('global.price') }}</th>
+                        <th class="w-15">{{ __('global.discount') }}</th>
+                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                    @elseif($tax_per_item and !$discount_per_item)
+                        <th class="w-40">{{ __('global.products') }}</th>
+                        <th class="w-25">{{ __('global.taxes') }}</th>
+                        <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="w-15">{{ __('global.price') }}</th>
+                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                    @elseif(!$tax_per_item and $discount_per_item)
+                        <th class="w-40">{{ __('global.products') }}</th>
+                        <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="w-20">{{ __('global.price') }}</th>
+                        <th class="w-20">{{ __('global.discount') }}</th>
+                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                    @elseif(!$tax_per_item and !$discount_per_item)
+                        <th class="w-60">{{ __('global.products') }}</th>
+                        <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="w-20">{{ __('global.price') }}</th>
+                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                    @endif
+                    <th></th>
+                </tr>
             </thead>
             <tbody class="list" id="items">
                 <tr id="product_row_template" class="d-none">
@@ -177,7 +177,7 @@
     </div>
     <div class="row card-body pagination justify-content-center text-center">
         <button id="add_product_row" type="button" class="btn btn-light">
-            <i data-feather="plus-circle" class="align-self-center icon-xs"></i>{{ __('global.add') }} {{ __('cruds.product.title_singular') }}
+            <i data-feather="plus-circle" class="align-self-center icon-xs"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
         </button>
     </div>
 
