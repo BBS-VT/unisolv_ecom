@@ -20,13 +20,26 @@ class AjaxController extends Controller
     {
         $user = $request->user();
         $currentCompany = $user->currentCompany();
+        $salesrep = auth()->user();
 
         $search = $request->search;
 
-        if($search == '') {
-            $customers = Customer::findByCompany($currentCompany->id)->limit(10)->get();
+        if ($salesrep->IsSalesperson == '1') {
+            if ($search == '') {
+                $customers = Customer::findByCompany($currentCompany->id)
+                    ->where('SalesRepID', auth()->user()->RepCode)->limit(10)->get();
+            } else {
+                $customers = Customer::findByCompany($currentCompany->id)
+                    ->where('SalesRepID', auth()->user()->RepCode)
+                    ->where('CustomerName', 'like', '%'.$search.'%')->limit(10)->get();
+            }
         } else {
-            $customers = Customer::findByCompany($currentCompany->id)->where('CustomerName', 'like', '%' .$search . '%')->limit(10)->get();
+            if ($search == '') {
+                $customers = Customer::findByCompany($currentCompany->id)->limit(10)->get();
+            } else {
+                $customers = Customer::findByCompany($currentCompany->id)->where('CustomerName', 'like',
+                    '%'.$search.'%')->limit(10)->get();
+            }
         }
 
         $response = collect();

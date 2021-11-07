@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Order;
 
 use App\Models\Order;
 use Gate;
@@ -21,7 +21,7 @@ class Store extends FormRequest
     {
         if (is_array($this->product)) {
             // Make sure the lenght of product array is the same with other attributes of arrays
-            $max_lenght = count($this->product);
+            /*$max_lenght = count($this->product);
             return [
                 'invoice_number' => 'required|unique:invoices,invoice_number',
                 'invoice_date' => 'required|date',
@@ -53,7 +53,7 @@ class Store extends FormRequest
 
                 'discount' => 'sometimes|required|array|max:'.$max_lenght,
                 'discount.*' => 'sometimes|required',
-            ];
+            ];*/
         }
 
         return [

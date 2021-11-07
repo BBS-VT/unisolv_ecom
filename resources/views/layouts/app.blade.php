@@ -55,12 +55,16 @@
 <script src="{{ URL::asset('js/simplebar.min.js') }}"></script>
 <script src="{{ URL::asset('js/moment.js') }}"></script>
 <script src="{{ URL::asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ URL::asset('js/dom-factory.js') }}"></script>
 
 @stack('custom-scripts')
 
 <!-- App js -->
 <script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/custom.js') }}"></script>
+<script src="{{ URL::asset('js/check-selected-row.js') }}"></script>
+<script src="{{ URL::asset('js/jquery.priceformat.min.js') }}"></script>
+
 @include('layouts._flash')
 
 </body>

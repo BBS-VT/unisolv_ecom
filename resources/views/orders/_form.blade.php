@@ -13,7 +13,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
-<!--            <select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
+        <!--<select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->CustomerID)
                     <option value="{{ $order->customer_id }}"
@@ -22,7 +22,7 @@
                     </option>
                 @endif
             </select>-->
-            <select class="form-control mb-3 select2-canal {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}"  name="customer_id"  required>
+            <select class="form-control mb-3 select2-canal {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}" data-select2-id="customer" name="customer_id"  required>
                 @foreach($customers as $id => $customer)
                     <option value="{{ $id }}" >{{ $customer }}</option>
                 @endforeach
@@ -31,14 +31,14 @@
     </div>
     <div class="col-md-2">
         <div class="form-group">
-            <label class="required" for="CustomerPurchaseOrderNumber">{{ __('cruds.order.fields.ponumber') }}</label>
-            <input type="text" name="CustomerPurchaseOrderNumber"  class="form-control" required />
+            <label class="required" for="reference_number">{{ __('cruds.order.fields.ponumber') }}</label>
+            <input type="text" name="reference_number"  class="form-control" required />
         </div>
     </div>
     <div class="col-md-2">
         <div class="form-group">
-            <label class="required" for="OrderDate">{{ __('cruds.order.fields.order_date') }}</label>
-            <input type="text" name="OrderDate"  class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
+            <label class="required" for="order_date">{{ __('cruds.order.fields.order_date') }}</label>
+            <input type="text" name="order_date"  class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
         </div>
     </div>
 </div>
@@ -78,13 +78,13 @@
             </thead>
             <tbody class="list" id="items">
                 <tr id="product_row_template" class="d-none">
-                    <td class="select2-container">
+                    <td class="select-container">
                         <select name="product[]" class="form-control priceListener" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
                     </td>
                     @if($tax_per_item)
-                        <td class="select2-container">
+                        <td class="select-container">
                             <select name="taxes[]" multiple class="form-control priceListener">
                                 @foreach(get_tax_types_select2_array($currentCompany->id) as $option )
                                     <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}">{{ $option['text'] }}</option>
@@ -93,15 +93,15 @@
                         </td>
                     @endif
                     <td>
-                        <input name="quantity[]" type="number" class="form-control priceListener" value="1" required>
+                        <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td>
-                        <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" required>
+                        <input name="price[]" type="text" class=" form-control price_input priceListener" autocomplete="off" value="0" required>
                     </td>
                     @if($discount_per_item)
                         <td>
                             <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" value="0">
+                                <input name="discount[]" type="number" class=" form-control form-control-prepended priceListener" value="0">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
@@ -110,7 +110,7 @@
                     @endif
                     <td class="text-right">
                         <p class="mb-1">
-                            <input type="text" name="total[]" class="price_input price-text amount_price" value="0" readonly>
+                            <input type="text" name="total[]" class=" price_input price-text amount_price" value="0" readonly>
                         </p>
                         <div class="tax_list"></div>
                     </td>

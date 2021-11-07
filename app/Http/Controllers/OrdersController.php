@@ -119,6 +119,8 @@ class OrdersController extends Controller
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
 
+        //dd($request);
+
         // Save Order to Database
         $order = Order::create([
             'OrderDate'         => $request->order_date,
@@ -127,7 +129,7 @@ class OrdersController extends Controller
             'CustomerID'        => $request->customer_id,
             'company_id'        => $currentCompany->id,
             'SalesPersonID'     => $request->salesperson_id,
-            'LastEditedBy'      => $user,
+            'LastEditedBy'      => $request->salesperson_id,
             'OrderStatusID'     => '1',
             'Authorisation'     => '0',
             'sub_total'         => $request->sub_total,

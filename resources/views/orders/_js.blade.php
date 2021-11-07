@@ -30,11 +30,11 @@
         var form = $(this).closest('form');
 
         // Remove price mask from values
-        var price_inputs = form.find('.price_input');
+        /*var price_inputs = form.find('.price_input');
         price_inputs.each(function (index, elem) {
             var price_input = $(elem);
             price_input.val(price_input.unmask());
-        })
+        })*/
 
         // remove template from form
         var itemTemplate = $('#product_row_template');
@@ -79,6 +79,7 @@
             tags: true,
             templateSelection: function (data, container) {
                 $(data.element).attr('data-taxes', JSON.stringify(data.taxes));
+                $(data.element).attr('data-discount', data.discount);
                 $(data.element).attr('data-price', data.price);
                 return data.text;
             }
@@ -125,14 +126,15 @@
 
             // quantity
             var quantity = Number(row.find('[name="quantity[]"]').val());
+            //console.log(quantity)
 
             // price
             var price = Number(row.find('price_input').unmask()) / 100;
 
             // amount
             var amount = (quantity * price);
-
-            // Calculate taxes
+            console.log(amount)
+            /*// Calculate taxes
             var totalTaxAmount = Number(0);
             var selected_taxes = row.find('[name=taxes[]"]').find(':selected');
             selected_taxes.each(function (index, tax) {
@@ -161,10 +163,10 @@
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));
-            row.find('.amount_price').focusout();
+            row.find('.amount_price').focusout();*/
         });
 
-        calculateTotalPrice(subtotal, taxes);
+        //calculateTotalPrice(subtotal, taxes);
     }
 
     function calculateTotalPrice(subTotal, taxes) {

@@ -37,18 +37,18 @@
 @endsection
 
 @push('custom-scripts')
-    <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
+    <script src="{{ asset('js/toggle-check-all.js') }}"></script>
+    <script src="{{ asset('js/check-selected-row.js') }}"></script>
+    <script src="{{ asset('js/dropdown.js') }}"></script>
+    <script src="{{ asset('plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.priceformat.min.js') }}"></script>
+    <script src="{{ asset('js/select2.js') }}"></script>
+    <script src="{{ asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
 
     @include('orders._js')
     <script>
         $(document).ready(function() {
-            $(".select2-canal").select2();
-
             addProductRow();
-
         });
     </script>
 @endpush

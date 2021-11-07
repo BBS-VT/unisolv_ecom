@@ -1,80 +1,80 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>{{ config('app.name', 'Unisolv CRM') }}</title>
+    <title>{{ config('app.name', 'Unisolv CRM') }}</title>
 
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-        <link href="{{ URL::asset('css/welcome.css') }}" rel="stylesheet" type="text/css" />
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    </head>
-    <body class="antialiased">
+    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="css/landing/bootstrap.min.css" rel="stylesheet">
+    <link href="css/landing/fontawesome-all.min.css" rel="stylesheet">
+    <link href="css/landing/styles.css" rel="stylesheet">
 
+    <!-- Favicon  -->
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}">
+</head>
+<body data-bs-spy="scroll" data-bs-target="#navbarExample">
 
-        <div class="site-wrapper">
-            <div class="site-wrapper-inner">
-                <div class="cover-container">
-                    <div class="masthead clearfix">
-                        <div class="inner">
-                            <h3 class="masthead-brand">Cover</h3>
+    <!-- Navigation -->
+    <nav id="navbarExample" class="navbar navbar-expand-lg fixed-top navbar-light" aria-label="Main navigation">
+        <div class="container">
 
-                            <ul class="nav masthead-nav">
-                                <li class="active">
-                                    <a href="http://bootsnipp.com/iframe/g6GWQ" target=
-                                    "_blank">View full screen</a>
-                                </li>
+            <!-- Image Logo -->
+            <!-- <a class="navbar-brand logo-image" href="index.html"><img src="images/logo.svg" alt="alternative"></a> -->
 
-                                <li>
-                                    <a href="#">Features</a>
-                                </li>
+            <!-- Text Logo - Use this if you don't have a graphic logo -->
+            <a class="navbar-brand logo-text" href="index.html">Unisolv CRM</a>
 
-                                <li>
-                                    <a href="#">Contact</a>
-                                </li>
-                            </ul>
-                        </div>
+            <button class="navbar-toggler p-0 border-0" type="button" id="navbarSideCollapse" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse offcanvas-collapse flaot-right" id="navbarsExampleDefault">
+                <ul class="navbar-nav ms-auto navbar-nav-scroll">
+
+                </ul>
+                <span class="nav-item">
+                    <a class="btn-outline-sm" href="{{ route('login') }}">Log in</a>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <header id="header" class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="text-container">
+                        <h1 class="h1-large"><span class="replace-me">Unisolv CRM</span></h1><br>
+                        <p class="p-large">a Stock-Aware CRM, perfect for growing Wholesale, Distributor & Manufacturing businesses</p><br>
+                        <a class="btn-solid-lg" href="{{ route('login') }}">Log in</a><br>
                     </div>
-
-                    <div class="inner cover">
-                        <h1 class="cover-heading">Full screen background cover page.</h1>
-
-                        <p class="lead">Cover is a one-page template for building simple and
-                            beautiful home pages. Download, edit the text, and add your own
-                            fullscreen background color and photo to make it your own.
-
-                            <small>    <br> <a href="http://bootsnipp.com/iframe/g6GWQ" target=
-                                "_blank">Best viewed on full screen</a></small>
-
-                        </p>
-
-                        <p class="lead"><a class="btn btn-lg btn-info" href="#">Learn
-                                more</a></p>
-                    </div>
-
-                    <div class="mastfoot">
-                        <div class="inner">
-                            <!-- Validation -->
-
-                            <p><a href=
-                                  "http://validator.w3.org/check?uri=http%3A%2F%2Fbootsnipp.com%2Fiframe%2Fg6GWQ"
-                                  target="_blank"><small>HTML</small><sup>5</sup></a></p>
-
-
-                            <p><a href=
-                                  "https://github.com/twbs/bootlint"
-                                  target="_blank"><small>Checked with Bootlint</small></a></p>
-
-
-
-                            <p>© 2014 Your Name ~ <a href=
-                                                     "http://getbootstrap.com/">Bootstrap</a></p>
-                        </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="image-container">
+                        <img class="img-fluid" src="{{ asset('images/header-illustration.svg') }}" alt="alternative">
                     </div>
                 </div>
             </div>
         </div>
-    </body>
+    </header>
+    <div class="copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <p class="p-small">Copyright © <a href="https://www.unisolv.co.za">Border Business Systems</a></p>
+                </div> <!-- end of col -->
+
+                <div class="col-lg-6">
+                    <p class="p-small"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/landing/bootstrap.min.js"></script>
+    <script src="js/landing/scripts.js"></script>
+</body>
 </html>
