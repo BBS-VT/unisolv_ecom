@@ -43,9 +43,9 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group required">
-                                        <label for="name">{{ __('global.company_name') }}</label>
+                                        <label for="name" required>{{ __('global.company_name') }}</label>
                                         <input name="name" type="text" class="form-control" placeholder="{{ __('global.company_name') }}"
-                                               value="{{ $currentCompany->name }}" required>
+                                               value="{{ $currentCompany->name }}" >
                                     </div>
                                 </div>
                                 <div class="col">

@@ -130,7 +130,7 @@ if (! function_exists('get_languages_select2_array')) {
     function get_languages_select2_array()
     {
         return [
-            ['id' => 'en', 'text' => __('messages.english')],
+            ['id' => 'en', 'text' => __('global.english')],
         ];
     }
 }
@@ -144,18 +144,18 @@ if (! function_exists('get_months_select2_array')) {
     function get_months_select2_array()
     {
         return [
-            ['id' => 1, 'text' => __('messages.january')],
-            ['id' => 2, 'text' => __('messages.february')],
-            ['id' => 3, 'text' => __('messages.march')],
-            ['id' => 4, 'text' => __('messages.april')],
-            ['id' => 5, 'text' => __('messages.may')],
-            ['id' => 6, 'text' => __('messages.june')],
-            ['id' => 7, 'text' => __('messages.july')],
-            ['id' => 8, 'text' => __('messages.august')],
-            ['id' => 9, 'text' => __('messages.september')],
-            ['id' => 10, 'text' => __('messages.november')],
-            ['id' => 11, 'text' => __('messages.october')],
-            ['id' => 12, 'text' => __('messages.december')],
+            ['id' => 1, 'text' => __('global.month.january')],
+            ['id' => 2, 'text' => __('global.month.february')],
+            ['id' => 3, 'text' => __('global.month.march')],
+            ['id' => 4, 'text' => __('global.month.april')],
+            ['id' => 5, 'text' => __('global.month.may')],
+            ['id' => 6, 'text' => __('global.month.june')],
+            ['id' => 7, 'text' => __('global.month.july')],
+            ['id' => 8, 'text' => __('global.month.august')],
+            ['id' => 9, 'text' => __('global.month.september')],
+            ['id' => 10, 'text' => __('global.month.november')],
+            ['id' => 11, 'text' => __('global.month.october')],
+            ['id' => 12, 'text' => __('global.month.december')],
         ];
     }
 }

@@ -6,6 +6,12 @@
         </a>
     </li>
     <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.preferences') }}" class="sidebar-menu-button {{ $tab == 'preferences' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="sliders" ></i>
+            <span class="sidebar-menu-text">{{ __('global.preferences') }}</span>
+        </a>
+    </li>
+    <li class="sidebar-menu-item pt-1">
         <a href="{{ route('settings.tax_types') }}" class="sidebar-menu-button {{ $tab == 'tax_types' ? 'text-primary' : 'text-secondary' }}">
             <i data-feather="command" ></i>
             <span class="sidebar-menu-text">{{ __('global.tax_types') }}</span>

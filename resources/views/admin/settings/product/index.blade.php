@@ -20,7 +20,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col">
-                            <h4 class="card-title headings-color">{{ __('global.product_settings') }}</h4>
+                            <h4 class="card-title">{{ __('global.product_settings') }}</h4>
                         </div>
                     </div>
                     <div class="row">
