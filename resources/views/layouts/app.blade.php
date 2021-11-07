@@ -16,6 +16,7 @@
     @stack('style')
 
     <!-- App css -->
+    <link href="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/metisMenu.min.css') }}" rel="stylesheet" type="text/css" />
@@ -51,19 +52,23 @@
 <script src="{{ URL::asset('js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ URL::asset('js/metisMenu.min.js') }}"></script>
 <script src="{{ URL::asset('js/waves.js') }}"></script>
-<script src="{{ URL::asset('js/feather.min.js') }}"></script>
 <script src="{{ URL::asset('js/simplebar.min.js') }}"></script>
-<script src="{{ URL::asset('js/moment.js') }}"></script>
-<script src="{{ URL::asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
 <script src="{{ URL::asset('js/dom-factory.js') }}"></script>
-
-@stack('custom-scripts')
+<script src="{{ URL::asset('js/feather.min.js') }}"></script>
+<script src="{{ URL::asset('js/toggle-check-all.js') }}"></script>
+<script src="{{ URL::asset('js/check-selected-row.js') }}"></script>
+<script src="{{ URL::asset('js/dropdown.js') }}"></script>
+<script src="{{ URL::asset('js/moment.js') }}"></script>
+<script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
+<script src="{{ URL::asset('js/select2.js') }}"></script>
+<script src="{{ URL::asset('js/jquery.priceformat.min.js') }}"></script>
+<script src="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 
 <!-- App js -->
 <script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/custom.js') }}"></script>
-<script src="{{ URL::asset('js/check-selected-row.js') }}"></script>
-<script src="{{ URL::asset('js/jquery.priceformat.min.js') }}"></script>
+
+@stack('custom-scripts')
 
 @include('layouts._flash')
 

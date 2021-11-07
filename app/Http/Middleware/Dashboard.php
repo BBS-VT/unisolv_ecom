@@ -20,6 +20,11 @@ class Dashboard
         $user = Auth::user();
         $currentCompany = $user->currentCompany();
 
+        // Company based preferences
+        share([
+            'company_currency' => $currentCompany->currency,
+        ]);
+
         // Share Current Company with all blade views
         view()->share('currentCompany', $currentCompany);
         view()->share('authUser', $user);

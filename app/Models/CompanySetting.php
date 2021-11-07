@@ -25,9 +25,9 @@ class CompanySetting extends Model
      */
     public static $defaultSettings = [
         'language' => 'en',
-        'date_format' => 'Y M d',
+        'date_format' => 'Y-m-d',
         'timezone' => 'Africa/Johannesburg',
-        'currency_id' => 1,
+        'currency_id' => 4,
         'financial_month_starts' => '3',
         'financial_month_ends' => '2',
         'invoice_prefix' => 'INV',

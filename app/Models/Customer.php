@@ -142,6 +142,16 @@ class Customer extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function getCurrencyCodeAttribute()
+    {
+        return $this->currency->code;
+    }
+
     /**
      * Scope a query to only include Customers of a given company.
      *

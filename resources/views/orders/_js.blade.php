@@ -134,7 +134,7 @@
             // amount
             var amount = (quantity * price);
             console.log(amount)
-            /*// Calculate taxes
+            // Calculate taxes
             var totalTaxAmount = Number(0);
             var selected_taxes = row.find('[name=taxes[]"]').find(':selected');
             selected_taxes.each(function (index, tax) {
@@ -150,7 +150,7 @@
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
 
-            // caclualte disocunt
+            // caclualte discount
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
                 amount = Number(amount) - Number(discountAmount);
@@ -163,7 +163,7 @@
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));
-            row.find('.amount_price').focusout();*/
+            row.find('.amount_price').focusout();
         });
 
         //calculateTotalPrice(subtotal, taxes);

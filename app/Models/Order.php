@@ -237,6 +237,16 @@ class Order extends Model
         }
     }
 
+    public function getCurrencyAttribute($value)
+    {
+        return $this->customer->currency;
+    }
+
+    public function getCurrencyCodeAttribute($value)
+    {
+        return $this->customer->currency->code;
+    }
+
     /**
      * Scope a query to only include Orders of a given company.
      *

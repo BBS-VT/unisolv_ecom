@@ -267,6 +267,7 @@ return [
     'preferences'                          => 'Preferences',
     'prefix'                               => 'Prefix',
     'price'                                => 'Price',
+    'private_notes'                        => 'Internal Notes',
     'processed_orders'                     => 'Processed Orders',
     'product_management'                   => 'Product management',
     'product_name'                         => 'Product name',

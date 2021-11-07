@@ -37,13 +37,6 @@
 @endsection
 
 @push('custom-scripts')
-    <script src="{{ asset('js/toggle-check-all.js') }}"></script>
-    <script src="{{ asset('js/check-selected-row.js') }}"></script>
-    <script src="{{ asset('js/dropdown.js') }}"></script>
-    <script src="{{ asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.priceformat.min.js') }}"></script>
-    <script src="{{ asset('js/select2.js') }}"></script>
-    <script src="{{ asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
 
     @include('orders._js')
     <script>

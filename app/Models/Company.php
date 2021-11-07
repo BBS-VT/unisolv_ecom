@@ -127,23 +127,23 @@ class Company extends Model
     }
 
     /**
-     * Define Relation with Invoice Model
+     * Define Relation with Order Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function invoices()
+    public function orders()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasMany(Order::class);
     }
 
     /**
-     * Define Relation with InvoiceItem Model
+     * Define Relation with OrderItem Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function invoice_items()
+    public function order_items()
     {
-        return $this->hasMany(InvoiceItem::class);
+        return $this->hasMany(OrdersItem::class);
     }
 
     /**
@@ -336,7 +336,7 @@ class Company extends Model
      */
     public function getDefaultAvatar()
     {
-        return asset('assets/images/avatar/company.png');
+        return asset('images/avatar/company.png');
     }
 
     /**
