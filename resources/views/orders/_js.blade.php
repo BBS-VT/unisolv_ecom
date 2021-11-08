@@ -225,7 +225,10 @@
     }
 
     function initializePriceListener() {
-        $("priceListener").change(function() {
+        /*$("priceListener").change(function() {
+            calculateRowPrice()
+        });*/
+        $("#priceListener").on("input", function () {
             calculateRowPrice()
         });
     }
