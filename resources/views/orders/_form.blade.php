@@ -93,10 +93,10 @@
                         </td>
                     @endif
                     <td>
-                        <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
+                        <input name="quantity[]" type="number" class="form-control priceListener" value="1" required>
                     </td>
                     <td>
-                        <input name="price[]" type="text" class=" form-control price_input priceListener" autocomplete="off" value="0" required>
+                        <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
                     </td>
                     @if($discount_per_item)
                         <td>
@@ -135,9 +135,6 @@
                                             <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $item->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="d-none select-footer">
-                                        <a href="{{ route('settings.tax_types.create') }}" target="_blank" class="font-weight-300">+ {{ __('messages.add_new_tax') }}</a>
-                                    </div>
                                 </td>
                             @endif
                             <td>
@@ -201,7 +198,7 @@
                     <strong class="text-muted">{{ __('global.sub_total') }}</strong>
                 </div>
                 <div class="ml-auto h6 mb-0">
-                    <input id="sub-total" name="sub-total" type="text" class="price_input price-text w-100 fs-inherit" value="{{ $order->sub_total?? 0 }}" readonly>
+                    <input id="sub_total" name="sub_total" type="text" class="price_input price-text w-100 fs-inherit" value="{{ $order->sub_total ?? 0 }}" readonly>
                 </div>
             </div>
 

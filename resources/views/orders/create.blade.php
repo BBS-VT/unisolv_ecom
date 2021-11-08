@@ -41,6 +41,8 @@
     @include('orders._js')
     <script>
         $(document).ready(function() {
+            $(".select2-canal").select2();
+
             addProductRow();
         });
     </script>

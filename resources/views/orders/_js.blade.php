@@ -30,11 +30,11 @@
         var form = $(this).closest('form');
 
         // Remove price mask from values
-        /*var price_inputs = form.find('.price_input');
+        var price_inputs = form.find('.price_input');
         price_inputs.each(function (index, elem) {
             var price_input = $(elem);
             price_input.val(price_input.unmask());
-        })*/
+        })
 
         // remove template from form
         var itemTemplate = $('#product_row_template');
@@ -129,14 +129,14 @@
             //console.log(quantity)
 
             // price
-            var price = Number(row.find('price_input').unmask()) / 100;
+            var price = Number(row.find('[name="price[]"]').val());
 
             // amount
             var amount = (quantity * price);
-            console.log(amount)
+
             // Calculate taxes
             var totalTaxAmount = Number(0);
-            var selected_taxes = row.find('[name=taxes[]"]').find(':selected');
+            var selected_taxes = row.find('[name="taxes[]"]').find(':selected');
             selected_taxes.each(function (index, tax) {
                 var percent = $(tax).data('percent');
                 var taxAmount = calculatePercent(percent, amount);
@@ -145,7 +145,8 @@
             });
 
             // Add tax amount to Item Total
-            amount = Number(amount) + Number(totalTaxAmount);
+            //amount = Number(amount) + Number(totalTaxAmount);
+            amount = Number(amount);
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
@@ -166,7 +167,7 @@
             row.find('.amount_price').focusout();
         });
 
-        //calculateTotalPrice(subtotal, taxes);
+        calculateTotalPrice(subTotal, taxes);
     }
 
     function calculateTotalPrice(subTotal, taxes) {
@@ -176,6 +177,7 @@
 
         // Set subtotal value
         subtotal = Number(subTotal);
+
         $('#sub_total').val(subtotal.toFixed(2));
 
         // total taxes
@@ -219,7 +221,7 @@
         }
 
         $('#grand_total').val(Number(total).toFixed(2));
-        setupPriceInput(window.sharedDate.company_currency);
+        setupPriceInput(window.sharedData.company_currency);
     }
 
     function initializePriceListener() {
