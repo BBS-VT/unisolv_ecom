@@ -90,6 +90,7 @@
             var selectedOption = element.find(':selected');
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
+            var discountInput = element.closest('tr').find('[name="discount[]"]');
 
             // Set selected taxes from product
             var taxIds = [];
@@ -99,6 +100,9 @@
             });
             taxesSelect.val(taxIds);
             taxesSelect.trigger('change');
+
+            // Set product discount if set
+            discountInput.val(selectedOption.data('discount'));
 
             // Set product price for price input
             priceInput.val(selectedOption.data('price'));
@@ -133,6 +137,7 @@
 
             // amount
             var amount = (quantity * price);
+            console.log("amount", amount);
 
             // Calculate taxes
             var totalTaxAmount = Number(0);
@@ -147,7 +152,7 @@
             // Add tax amount to Item Total
             //amount = Number(amount) + Number(totalTaxAmount);
             amount = Number(amount);
-
+            console.log("totalAmount", amount);
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
 
