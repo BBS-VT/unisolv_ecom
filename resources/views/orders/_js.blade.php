@@ -1,6 +1,6 @@
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    var company_currency = '4',
+    var company_currency = '4';
 
     $("#customer").select2({
         ajax: {
@@ -21,6 +21,14 @@
             },
             cache: true
         },
+        templateSelection: function (data, container) {
+            $(data.element).attr('data-currency', JSON.stringify(data.currency));
+            return data.text;
+        }
+    });
+
+    $("#customer").change(function() {
+        setupCustomer();
     });
 
     $("#add_product_row").click(function() {
@@ -55,6 +63,15 @@
     function calculatePercent(percent, amount) {
         var factor = Number(percent) / Number(100);
         return Number(amount) * Number(factor);
+    }
+
+    function setupCustomer() {
+        var customer_id = $("#customer").val();
+        var currency = $('#customer').find(':selected').data('currency');
+
+        // Setup currency
+        window.sharedData.company_currency = currency;
+        setupPriceInput(window.sharedData.company_currency);
     }
 
     function initializeProductSselect2(elem) {
@@ -127,18 +144,18 @@
             var row = $(element);
 
             // If the row is template just continue
-            if(row.attr('id') == 'product_row_template') return;
+            if(row.attr('id') === 'product_row_template') return;
 
             // quantity
             var quantity = Number(row.find('[name="quantity[]"]').val());
             //console.log(quantity)
 
             // price
-            var price = Number(row.find('[name="price[]"]').val());
+            var price = Number(row.find('.price_input').unmask()) / 1000;
 
             // amount
             var amount = (quantity * price);
-            console.log("amount", amount);
+
 
             // Calculate taxes
             var totalTaxAmount = Number(0);
@@ -146,14 +163,13 @@
             selected_taxes.each(function (index, tax) {
                 var percent = $(tax).data('percent');
                 var taxAmount = calculatePercent(percent, amount);
-                console.log("taxAmount", taxAmount);
+                //console.log("taxAmount", taxAmount);
                 totalTaxAmount += Number(taxAmount);
             });
 
             // Add tax amount to Item Total
-            //amount = Number(amount) + Number(totalTaxAmount);
-            amount = Number(amount);
-            console.log("totalAmount", amount);
+            amount = Number(amount) + Number(totalTaxAmount) - Number(totalTaxAmount);
+
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
 
@@ -167,6 +183,7 @@
             subTotal += Number(amount);
 
             var amountPrice = Number(amount);
+            console.log("subTotal", subTotal);
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));

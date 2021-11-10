@@ -47,6 +47,7 @@ class AjaxController extends Controller
             $response->push([
                 "id"    => $customer->acc_main,
                 "text"  => $customer->CustomerName,
+                "currency" => $customer->currency,
             ]);
         }
 
