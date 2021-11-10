@@ -61,7 +61,7 @@
                                 <a href="{{ route('orders.download', $order->id) }}"  onClick="history.go(0)"
                                    data-toggle="tooltip" title="{{ __('global.downloadFile') }} {{ __('cruds.order.title_singular') }}"
                                    data-placement="top"> <i class="las dripicons-download text-info font-18"></i>
-                                </a>
+                                </a> &nbsp;
                             @endcan
                             @can('order_delete')
                                 <a href="{{ route('orders.delete', $order->id) }}" class="delete-confirm"
