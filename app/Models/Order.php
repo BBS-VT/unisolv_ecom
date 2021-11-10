@@ -331,10 +331,10 @@ class Order extends Model
     }
 
 
-    /*public function getSubTotalAmount()
+    public function getSubTotalAmount()
     {
         $subtotal_amount = 0;
-        foreach ($this->orderItems as $item) {
+        foreach ($this->items as $item) {
             if(!$item->TaxRateID == "0") {
                 $subtotal_amount += $item->UnitPrice * $item->Quantity * (1 + ($item->TaxRate / 100));
             } else {
@@ -348,7 +348,7 @@ class Order extends Model
     public function getSubTotalAmountIncl()
     {
         $subtotal_amount = 0;
-        foreach ($this->orderItems as $item) {
+        foreach ($this->items as $item) {
             if(!$item->TaxRateID == "0") {
                 $subtotal_amount += $item->UnitPrice * $item->Quantity * (1 + ($item->TaxRate / 100));
             } else {
@@ -364,7 +364,7 @@ class Order extends Model
     {
         $total_vat = 0;
         $total_vatamount = 0;
-        foreach ($this->orderItems as $item) {
+        foreach ($this->items as $item) {
             $vat = $item->TaxRate;
             $total_vat += $item->UnitPrice * $item->Quantity;
             $total_vatamount = $total_vat * ($vat / 100);
@@ -377,7 +377,7 @@ class Order extends Model
     {
         $total_vat = 0;
         $total_vatamount = 0;
-        foreach ($this->orderItems as $item) {
+        foreach ($this->items as $item) {
             $vat = $item->TaxRate;
             $total_vat += $item->UnitPrice * $item->Quantity;
             $total_vatamount = $total_vat - ($total_vat / (1+($vat / 100)));
@@ -391,7 +391,7 @@ class Order extends Model
         $total_amount = $this->getSubTotalAmount() + $this->getTotalVATAmount();
 
         return $total_amount;
-    }*/
+    }
 
 
 }

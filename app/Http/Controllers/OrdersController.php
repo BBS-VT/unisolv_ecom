@@ -217,6 +217,19 @@ class OrdersController extends Controller
         return redirect()->route('orders.index');
     }
 
+    public function show(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $order->load('items');
+        $order->load('customer');
+
+        //$pdf = PDF::loadView('orders.show', compact('order'));
+        //return $pdf->stream('pdfview.pdf');
+
+        return view('orders.details', compact('order'));
+    }
+
     /**
      * Delete an Order
      *
