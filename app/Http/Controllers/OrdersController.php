@@ -151,7 +151,34 @@ class OrdersController extends Controller
         $discounts  = $request->discount;
 
         // Add products (order items)
-        for ($i=0; $i < count($products); $i++) {
+        for ($i=0; $i < count($request->product); $i++) {
+            if (isset($request->quantity[$i]) && isset($request->price[$i])){
+
+                //OrdersItem::create([
+                $item = $order->items()->create([
+                    'OrderID'       => $request->order_number,
+                    'company_id'    => $currentCompany->id,
+                    'StockItem'     => $request->product[$i],
+                    'discount_type' => 'percent',
+                    'discount_val'  => $request->discount[$i] ?? 0,
+                    'Quantity'      => $request->quantity[$i],
+                    'UnitPrice'     => $request->price[$i],
+                    //'TaxRate'      => $request->TaxRate[$i],
+                    'total'         => $request->total[$i],
+                    'LastEditedBy'  => $request->salesperson_id,
+                ]);
+
+                if ($taxes && array_key_exists($i, $taxes)) {
+                    foreach ($taxes[$i] as $tax) {
+                        $item->taxes()->create([
+                            'tax_type_id' => $tax
+                        ]);
+                    }
+                }
+            }
+        }
+
+        /*for ($i=0; $i < count($products); $i++) {
             $product = Product::first(
                 ['id' => $products[$i], 'company_id' => $currentCompany->id],
                 ['name' => $products[$i], 'price' => $prices[$i], 'status' => 1]
@@ -175,7 +202,7 @@ class OrdersController extends Controller
                     ]);
                 }
             }
-        }
+        }*/
 
         // If Order based taxes are given
         if ($request->has('total_taxes')) {
@@ -187,6 +214,25 @@ class OrdersController extends Controller
         }
 
         session()->flash('alert-success', __('global.order_added'));
-        return redirect()->route('orders');
+        return redirect()->route('orders.index');
+    }
+
+    /**
+     * Delete an Order
+     *
+     * @param Request $request
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
+    public function delete(Request $request)
+    {
+        abort_if(Gate::denies('order_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $order = Order::findOrFail($request->order);
+
+        // Delete order form Database
+        $order->delete();
+
+        session()->flash('alert-success', __('global.order_deleted'));
+        return redirect()->route('orders.index');
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrdersItem extends Model
 {
+    use HasTax;
+
     public $table = 'orders_items';
 
     protected $dates = [
@@ -16,14 +18,15 @@ class OrdersItem extends Model
 
     protected $fillable = [
         'OrderID',
+        'company_id',
         'StockItem',
         'PackageTypeID',
-        'company_id',
+        'discount_type',
         'Quantity',
+        'discount',
+        'discount_val',
         'UnitPrice',
         'TaxRate',
-        'discount_type',
-        'discount_val',
         'total',
         'PickedQuantity',
         'PickingCompletedWhen',

@@ -52,28 +52,22 @@
                         <td>
                             @can('order_show')
                                 <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-toggle="tooltip"
-                                   title="{{ trans('global.view') }} {{ trans('cruds.order.title_singular') }}"
+                                   title="{{ __('global.view') }} {{ __('cruds.order.title_singular') }}"
                                    data-placement="top">
                                     <i class="las dripicons-preview text-info font-18"></i>
-                                </a>
-                            @endcan
-                            @can('order_delete')
-                                <form action="{{ route('orders.destroy', $order->id) }}" method="POST"
-                                      onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                            data-toggle="tooltip" data-placement="top"
-                                            title="{{ trans('global.delete') }} {{ trans('cruds.order.title_singular') }}">
-                                        <i class="dripicons-trash"></i>
-                                    </button>
-                                </form>
+                                </a> &nbsp;
                             @endcan
                             @can('order_download')
                                 <a href="{{ route('orders.download', $order->id) }}"  onClick="history.go(0)"
-                                   data-toggle="tooltip" title="{{ trans('global.downloadFile') }} {{ trans('cruds.order.title_singular') }}"
+                                   data-toggle="tooltip" title="{{ __('global.downloadFile') }} {{ __('cruds.order.title_singular') }}"
                                    data-placement="top"> <i class="las dripicons-download text-info font-18"></i>
                                 </a>
+                            @endcan
+                            @can('order_delete')
+                                <a href="{{ route('orders.delete', $order->id) }}" class="delete-confirm"
+                                   data-toggle="tooltip" data-placement="top" title="{{ __('global.delete') }} {{ __('cruds.order.title_singular') }}">
+                                    <i class="dripicons-trash text-danger font-18"></i>
+                                </a> &nbsp;
                             @endcan
                         </td>
                     </tr>

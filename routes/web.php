@@ -63,7 +63,6 @@ Route::group(['middleware' => ['auth']], function () {
     // Orders
     Route::get('orders/create', 'OrdersController@create')->name('orders.create');
     Route::post('orders/create', 'OrdersController@store')->name('orders.store');
-    Route::delete('orders/destroy', 'OrdersController@massDestroy')->name('orders.massDestroy');
     //Route::resource('orders', 'OrdersController');
     Route::get('orders/download/{order}', 'OrdersController@downloadOrder')->name('orders.download');
     //Route::get('orders/create_step1', 'OrdersController@createStepOne')->name('orders.create.step.one');
@@ -71,8 +70,7 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::get('orders/create_step2', 'OrdersController@createStepTwo')->name('orders.create.step.two');
     //Route::post('orders/create-step-two', 'OrdersController@postcreateStepTwo')->name('orders.create.step.two.post');
     Route::get('orders/{order}', 'OrdersController@show')->name('orders.show');
-    Route::delete('orders/{order}', 'OrdersController@destroy')->name('orders.destroy');
-    Route::post('orders/getprice/{product_id}', 'OrdersController@getprice')->name('orders.getprice');
+    Route::get('/orders/{order}/delete', 'OrdersController@delete')->name('orders.delete');
     Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');
 
     // Special Deals
