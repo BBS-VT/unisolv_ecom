@@ -10,8 +10,8 @@ class Dashboard
     /**
      * Handle an incomming request
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure  $next
+     * @param Request $request
+     * @param Closure $next
      *
      * @return mixed
      */

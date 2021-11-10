@@ -1,5 +1,6 @@
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    var company_currency = '4',
 
     $("#customer").select2({
         ajax: {

@@ -27,11 +27,13 @@ class DashboardController extends Controller
     public function index(Request $request, User $user)
     {
 
-        return view('dashboard');
+        $user = $request->user();
+        $company = $user->currentCompany();
+
+        return view('dashboard', [
+            'currency_code' => $company->currency->code,
+        ]);
     }
 
-    public function sales(Request $request, User $user)
-    {
-        return view('dashboards.salesrep');
-    }
+
 }
