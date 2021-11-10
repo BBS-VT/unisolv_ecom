@@ -178,31 +178,6 @@ class OrdersController extends Controller
             }
         }
 
-        /*for ($i=0; $i < count($products); $i++) {
-            $product = Product::first(
-                ['id' => $products[$i], 'company_id' => $currentCompany->id],
-                ['name' => $products[$i], 'price' => $prices[$i], 'status' => 1]
-            );
-
-            $item = $order->items()->create([
-                'StockItem' => $product->id,
-                'company_id' => $currentCompany->id,
-                'Quantity'   => $quantities[$i],
-                'discount_type' => 'percent',
-                'discount_val'  => $discounts[$i] ?? 0,
-                'UnitPrice'     => $prices[$i],
-                'total'         => $totals[$i],
-            ]);
-
-            // Add taxes for Order Item if it is given
-            if ($taxes && array_key_exists($i, $taxes)) {
-                foreach ($taxes[$i] as $tax) {
-                    $item->taxes()->create([
-                        'tax_type_id' => $tax
-                    ]);
-                }
-            }
-        }*/
 
         // If Order based taxes are given
         if ($request->has('total_taxes')) {
@@ -247,5 +222,244 @@ class OrdersController extends Controller
 
         session()->flash('alert-success', __('global.order_deleted'));
         return redirect()->route('orders.index');
+    }
+
+    /**
+     * Download order to Unisolv
+     *
+     * @param  Order  $order
+     */
+
+    public function downloadOrder(Order $order)
+    {
+
+        Order::where('id', $order->id)
+            ->update(['LastEditedBy' => auth()->user()->id, 'OrderStatusID' => '2', 'updated_at' => Carbon::now()->toDateTimeString()]);
+
+        $document = new \DOMDocument("1.0", "UTF-8");
+        $document -> appendChild($document->createElement('OrderMessage'));
+
+        $rootTag = $document->documentElement;
+        $headerTag = $rootTag->appendChild(
+            $document->createElement("StandardBusinessDocumentHeader")
+        );
+        $senderTag = $headerTag->appendChild(
+            $document->createElement("Sender")
+        );
+        $senderTag
+            ->appendChild($document->createElement("Identifier"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+
+        $receiverTag = $headerTag->appendChild(
+            $document->createElement("Receiver")
+        );
+        $receiverTag
+            ->appendChild($document->createElement("Identifier"))
+            ->appendChild($document->createTextNode("0000000000000"));
+
+        $identificationTag = $headerTag->appendChild(
+            $document->createElement("DocumentIdentification")
+        );
+        $identificationTag
+            ->appendChild($document->createElement("Standard"))
+            ->appendChild($document->createTextNode("GS1"));
+        $identificationTag
+            ->appendChild($document->createElement("TypeVersion"))
+            ->appendChild($document->createTextNode("3.2"));
+        $identificationTag
+            ->appendChild($document->createElement("InstanceIdentifier"))
+            ->appendChild($document->createTextNode($order->OrderNumber));
+        $identificationTag
+            ->appendChild($document->createElement("Type"))
+            ->appendChild($document->createTextNode("Order"));
+        $identificationTag
+            ->appendChild($document->createElement("MultipleType"))
+            ->appendChild($document->createTextNode("true"));
+        $identificationTag
+            ->appendChild($document->createElement("CreationDateAndTime"))
+            ->appendChild($document->createTextNode(Carbon::now()->toDateTimeString()));
+
+        $manifestTag = $headerTag->appendChild(
+            $document->createElement("Manifest")
+        );
+        $manifestTag
+            ->appendChild($document->createElement("NumberOfItems"))
+            ->appendChild($document->createTextNode("1"));
+
+        $orderTag = $rootTag->appendChild(
+            $document->createElement("order")
+        );
+        $orderTag ->appendChild($document->createAttribute("xmlns"));
+        $orderTag
+            ->appendChild($document->createElement("creationDateTime"))
+            ->appendChild($document->createTextNode($order->created_at));
+        $orderTag
+            ->appendChild($document->createElement("documentStatusCode"))
+            ->appendChild($document->createTextNode("ORIGINAL"));
+        $orderTag
+            ->appendChild($document->createElement("documentActionCode"))
+            ->appendChild($document->createTextNode("ADD"));
+
+        $orderidentityTag = $orderTag->appendChild(
+            $document->createElement("orderIdentification")
+        );
+        $orderidentityTag
+            ->appendChild($document->createElement("entityIdentification"))
+            ->appendChild($document->createTextNode("$order->CustomerPurchaseOrderNumber"));
+        $orderTag
+            ->appendChild($document->createElement("orderTypeCode"))
+            ->appendChild($document->createTextNode("220"));
+
+        $orderTag
+            ->appendChild($document->createElement("additionalOrderInstruction"))
+            ->appendChild($document->createTextNode(""));
+        $orderbuyerTag = $orderTag->appendChild(
+            $document->createElement("buyer")
+        );
+        $orderbuyerTag
+            ->appendChild($document->createElement("gln"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+        $orderbuyerTag
+            ->appendChild($document->createElement("additionalPartyIdentification"))
+            ->appendChild($document->createTextNode($order->customer->acc_main));
+        $orderbuyerTag
+            ->appendChild($document->createElement("additionalPartyIdentification"))
+            ->appendChild($document->createTextNode($order->customer->CustomerName));
+        $ordersellerTag = $orderTag->appendChild(
+            $document->createElement("seller")
+        );
+        $ordersellerTag
+            ->appendChild($document->createElement("gln"))
+            ->appendChild($document->createTextNode("6004700000054"));
+        $ordersellerTag
+            ->appendChild($document->createElement("additionalPartyIdentification"))
+            ->appendChild($document->createTextNode("400197"));
+        $ordersellerTag
+            ->appendChild($document->createElement("additionalPartyIdentification"))
+            ->appendChild($document->createTextNode("Quenera Distribution"));
+        foreach ($order->items as $key) {
+            $orderlineitemTag = $orderTag->appendChild(
+                $document->createElement("orderLineItem")
+            );
+            $orderlineitemTag
+                ->appendChild($document->createElement("lineItemNumber"))
+                ->appendChild($document->createTextNode($key->id));
+            $orderlineitemTag
+                ->appendChild($document->createElement("requestedQuantity"))
+                ->appendChild($document->createTextNode($key->Quantity));
+            $orderlineitemTag
+                ->appendChild($document->createElement("additionalOrderLineInstruction"))
+                ->appendChild($document->createTextNode(" "));
+            $orderlineitemTag
+                ->appendChild($document->createElement("netAmount"))
+                ->appendChild($document->createTextNode( number_format($key->Quantity * (($key->UnitPrice / 1.15) / 1000), 2, ".", " ")));
+            $orderlineitemTag
+                ->appendChild($document->createElement("netPrice"))
+                ->appendChild($document->createTextNode( number_format($key->Quantity * ($key->UnitPrice / 1000), 2, ".", " " )));
+            $orderlineitemTag
+                ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
+                ->appendChild($document->createTextNode( number_format(($key->UnitPrice / 1.15 ) / 1000, 2, ".", " ")));
+            $orderlineitemTag
+                ->appendChild($document->createElement("monetaryAmountIncludingTaxes"))
+                ->appendChild($document->createTextNode( number_format( ($key->UnitPrice) / 1000, 2, ".", " ") ));
+
+            $ordertradeitemTag = $orderlineitemTag->appendChild(
+                $document->createElement("transactionalTradeItem")
+            );
+            /*$ordertradeitemTag
+                ->appendChild($document->createElement("gtin"))
+                ->appendChild($document->createTextNode($key->product->Barcode));*/
+            $ordertradeitemTag
+                ->appendChild($document->createElement("gtin"))
+                ->appendChild($document->createTextNode( empty($key->product->Barcode) ? $key->product->StockCode : $key->product->Barcode ));
+            $ordertradeitemTag
+                ->appendChild($document->createElement("additionalTradeItemIdentification"))
+                ->appendChild($document->createTextNode("" ));
+            $ordertradeitemTag
+                ->appendChild($document->createElement("additionalTradeItemIdentification"))
+                ->appendChild($document->createTextNode($key->product->StockCode ));
+            $ordertradeitemTag
+                ->appendChild($document->createElement("additionalTradeItemIdentification"))
+                ->appendChild($document->createTextNode($key->product->StockItemName ));
+            $ordertradeitemTag
+                ->appendChild($document->createElement("tradeItemDescription"))
+                ->appendChild($document->createTextNode($key->product->StockItemName));
+
+            $ordertradeitemColorTag = $ordertradeitemTag->appendChild(
+                $document->createElement("color")
+            );
+            $ordertradeitemColorTag
+                ->appendChild($document->createElement("colorDescription"))
+                ->appendChild($document->createTextNode($key->product->Packsize));
+
+            $ordertradeitemSizeTag = $ordertradeitemTag->appendChild(
+                $document->createElement("size")
+            );
+            $ordertradeitemSizeTag
+                ->appendChild($document->createElement("descriptiveSize"))
+                ->appendChild($document->createTextNode($key->product->Size));
+
+            $ordertradeitemPromotionTag = $orderlineitemTag->appendChild(
+                $document->createElement("promotionalDeal")
+            );
+            $ordertradeitemPromotionTag
+                ->appendChild($document->createElement("entityIdentification"))
+                ->appendChild($document->createTextNode("0000000000"));
+
+            $orderlineitemDetailTag = $orderlineitemTag->appendChild(
+                $document->createElement("orderLineItemDetail")
+            );
+            $orderlineitemDetailTag
+                ->appendChild($document->createElement("requestedQuantity"))
+                ->appendChild($document->createTextNode($key->Quantity));
+
+            $orderlogisicalinfoTag = $orderlineitemDetailTag->appendChild(
+                $document->createElement("orderLogisticalInformation")
+            );
+            $orderlogisicalshipTag = $orderlogisicalinfoTag->appendChild(
+                $document->createElement("shipTo")
+            );
+            $orderlogisicalshipTag
+                ->appendChild($document->createElement("gln"))
+                ->appendChild($document->createTextNode($order->customer->StoreEAN));
+            $orderlogisicalshipTag
+                ->appendChild($document->createElement("additionalPartyIdentification"))
+                ->appendChild($document->createTextNode($order->customer->acc_main));
+            $orderlogisicalshipTag
+                ->appendChild($document->createElement("additionalPartyIdentification"))
+                ->appendChild($document->createTextNode($order->customer->CustomerName));
+            $orderlogisicaldateTag = $orderlogisicalinfoTag->appendChild(
+                $document->createElement('orderLogisticalDateInformation')
+            );
+            $orderlogisicalreqdateTag = $orderlogisicaldateTag->appendChild(
+                $document->createElement('requestedDeliveryDateTime')
+            );
+            $orderlogisicalreqdateTag
+                ->appendChild($document->createElement('date'))
+                ->appendChild($document->createTextNode(Carbon::now()->toDateTimeString()));
+
+            $avpListTag = $orderlineitemDetailTag->appendChild(
+                $document->createElement('avpList')
+            );
+            $avpListTag
+                ->appendChild($document->createElement('eComStringAttributeValuePairList'))
+                ->appendChild($document->createTextNode($order->customer->StandardDiscountPercentage));
+
+            $avpListMainTag = $orderlineitemTag->appendChild(
+                $document->createElement('avpList')
+            );
+            $avpListMainTag
+                ->appendChild($document->createElement('eComStringAttributeValuePairList'))
+                ->appendChild($document->createTextNode($key->product->PackSize));
+            $avpListMainTag
+                ->appendChild($document->createElement('eComStringAttributeValuePairList'))
+                ->appendChild($document->createTextNode('EA'));
+        }
+
+        $document->formatOutput = TRUE;
+        header('Content-type: "application/force-download"; charset="utf8"');
+        header('Content-disposition: attachment; filename="Order'.$order->OrderNumber.'.SCO"');
+        echo $document->saveXML();
+
     }
 }
