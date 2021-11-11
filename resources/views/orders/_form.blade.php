@@ -24,11 +24,6 @@
                     </option>
                 @endif
             </select>
-        <!--<select class="form-control mb-3 select2-canal {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}" data-select2-id="customer" name="customer_id"  required>
-                @foreach($customers as $id => $customer)
-                    <option value="{{ $id }}" >{{ $customer }}</option>
-                @endforeach
-            </select>-->
         </div>
     </div>
     <div class="col-md-2">
@@ -126,13 +121,26 @@
                     @foreach($order->items as $item)
                         <tr>
                             <td class="select-container">
-                                <select name="product[]" class="form-control priceListener select-with-footer" required>
-                                    <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>
+                                <select name="product[]" class="select2 form-control mb-3 custom-select" style="width: 100%; height:36px;" >
+{{--                                    <option value="">-- choose product --</option>--}}
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}" selected="">
+                                            {{ intval( ltrim( $product->StockCode, '0')) }} &nbsp;
+                                            {{ $product->StockItemName }} -
+                                            (R {{ !floatval($product->DiscountPercentage) ?
+                                                                ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
+                                                                : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
+                                            [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
+                                        </option>
+                                    @endforeach
                                 </select>
+<!--                                <select name="product[]" class="form-control priceListener select-with-footer select2-hidden-accessible" required>
+                                    <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>
+                                </select>-->
                             </td>
                             @if($tax_per_item)
                                 <td class="select-container">
-                                    <select name="taxes[]" multiple class="form-control priceListener select-with-footer">
+                                    <select name="taxes[]" multiple class="form-control priceListener select-with-footer select2-hidden-accessible">
                                         @foreach(get_tax_types_select2_array($currentCompany->id) as $option)
                                             <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $item->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
                                         @endforeach
@@ -179,8 +187,10 @@
             <i data-feather="plus-circle" class="align-self-center icon-xs"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
         </button>
     </div>
+</div>
 
-    <div class="col-md-5 mt-5 pr-4">
+<div class="row">
+    <div class="col-md-5 mt-4 pr-4">
         <div class="form-group">
             <label for="notes">{{ __('global.notes') }}</label>
             <textarea name="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
@@ -254,7 +264,8 @@
             </div>
         </div>
         <div class="col-12 text-center float-right mt-3">
-            <button type="button" class="btn btn-primary save_form_button">{{ __('global.save') }}</button>
+            <button type="button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
+            <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>
     </div>
 </div>

@@ -17,7 +17,7 @@ class Dashboard
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
+        $user = $request->user();
         $currentCompany = $user->currentCompany();
 
         // Company based preferences
@@ -25,7 +25,7 @@ class Dashboard
             'company_currency' => $currentCompany->currency,
         ]);
 
-        // Share Current Company with all blade views
+        // Share Current Company with All Blade Views
         view()->share('currentCompany', $currentCompany);
         view()->share('authUser', $user);
 

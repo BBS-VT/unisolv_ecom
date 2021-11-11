@@ -3,7 +3,7 @@
 @section('title', __('global.create_order'))
 
 @push('style')
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css">
     <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
 @endpush
@@ -37,12 +37,12 @@
 @endsection
 
 @push('custom-scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     @include('orders._js')
+
     <script>
         $(document).ready(function() {
-            $(".select2-canal").select2();
-
             addProductRow();
         });
     </script>
