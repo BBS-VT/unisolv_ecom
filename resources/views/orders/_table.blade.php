@@ -58,7 +58,7 @@
                                 </a> &nbsp;
                             @endcan
                             @can('order_download')
-                                <a href="{{ route('orders.download', $order->id) }}"  onClick="history.go(0)"
+                                <a href="{{ route('orders.download', $order->id) }}"  onClick="window.history.go(0)"
                                    data-toggle="tooltip" title="{{ __('global.downloadFile') }} {{ __('cruds.order.title_singular') }}"
                                    data-placement="top"> <i class="las dripicons-download text-info font-18"></i>
                                 </a> &nbsp;

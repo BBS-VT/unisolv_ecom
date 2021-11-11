@@ -378,7 +378,8 @@ class Order extends Model
         $total_vat = 0;
         $total_vatamount = 0;
         foreach ($this->items as $item) {
-            $vat = $item->TaxRate;
+            //$vat = $item->TaxRate;
+            $vat = 15;
             $total_vat += $item->UnitPrice * $item->Quantity;
             $total_vatamount = $total_vat - ($total_vat / (1+($vat / 100)));
         }

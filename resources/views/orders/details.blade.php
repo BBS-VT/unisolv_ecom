@@ -110,8 +110,8 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format($key->UnitPrice / 1000, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format($key->UnitPrice - ($key->UnitPrice / (1+($key->TaxRate/100))), 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format(($key->UnitPrice / 1.15) / 1000, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format(($key->UnitPrice - ($key->UnitPrice / 1.15)) / 1000, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format($key->UnitPrice / 1000, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format(($key->Quantity * $key->UnitPrice) / 1000, 2, ".", " ") }}</td>
                                         </tr>
@@ -124,7 +124,7 @@
                                     </tr>
                                     <tr>
                                         <th colspan="5" class="border-0"></th>
-                                        <td class="border-0 font-14 text-dark text-right"><b>VAT @ {{ round($key->TaxRate) }}%</b></td>
+                                        <td class="border-0 font-14 text-dark text-right"><b>VAT @ 15%</b></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->getTotalVATInclAmount() / 1000, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr class="bg-black text-white">
