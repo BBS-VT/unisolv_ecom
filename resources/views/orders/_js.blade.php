@@ -69,12 +69,30 @@
         var customer_id = $("#customer").val();
         var currency = $('#customer').find(':selected').data('currency');
 
-        $_SESSION["customer_id"] = customer_id;
-        console.log("customer", customer_id);
-
         // Setup currency
         window.sharedData.company_currency = currency;
         setupPriceInput(window.sharedData.company_currency);
+        initializeContractDiscount();
+    }
+
+    function initializeContractDiscount() {
+        var customer_id = $("#customer").val();
+
+        $.ajax({
+            url: "{{ url('/orders/_deal.php') }}",
+            type: "POST",
+            data: {
+                customer_id: customer_id,
+                _token: CSRF_TOKEN,
+            },
+            success: function() {
+                console.log("True");
+            },
+            error: function(error) {
+                console.log(error);
+            },
+            cache: true
+        });
     }
 
     function initializeProductSselect2(elem) {
@@ -154,7 +172,8 @@
             //console.log(quantity)
 
             // price
-            var price = Number(row.find('.price_input').unmask()) / 1000;
+            var price = Number(row.find('.price_input').unmask());
+
 
             // amount
             var amount = (quantity * price);
