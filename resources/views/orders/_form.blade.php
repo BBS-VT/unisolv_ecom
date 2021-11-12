@@ -121,7 +121,7 @@
                     @foreach($order->items as $item)
                         <tr>
                             <td class="select-container">
-                                <select name="product[]" class="select2 form-control mb-3 custom-select" style="width: 100%; height:36px;" >
+                            <!--    <select name="product[]" class="select2 form-control mb-3 custom-select" style="width: 100%; height:36px;" >
 {{--                                    <option value="">-- choose product --</option>--}}
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id }}" selected="">
@@ -133,10 +133,10 @@
                                             [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
                                         </option>
                                     @endforeach
-                                </select>
-<!--                                <select name="product[]" class="form-control priceListener select-with-footer select2-hidden-accessible" required>
-                                    <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>
                                 </select>-->
+                                <select name="product[]" class="form-control priceListener select-with-footer select2-hidden-accessible" required>
+                                    <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>
+                                </select>
                             </td>
                             @if($tax_per_item)
                                 <td class="select-container">

@@ -21,12 +21,11 @@ class Store extends FormRequest
     {
         if (is_array($this->product)) {
             // Make sure the lenght of product array is the same with other attributes of arrays
-            /*$max_lenght = count($this->product);
+            $max_lenght = count($this->product);
             return [
-                'invoice_number' => 'required|unique:invoices,invoice_number',
-                'invoice_date' => 'required|date',
-                'due_date' => 'required|date',
-                'reference_number' => 'nullable|string',
+                'order_number' => 'required|unique:orders,OrderNumber',
+                'order_date' => 'required|date',
+                'reference_number' => 'required|string',
                 'customer_id' => 'required|exists:customers,id',
                 'sub_total' => 'required',
                 'grand_total' => 'required',
@@ -53,7 +52,7 @@ class Store extends FormRequest
 
                 'discount' => 'sometimes|required|array|max:'.$max_lenght,
                 'discount.*' => 'sometimes|required',
-            ];*/
+            ];
         }
 
         return [
@@ -69,7 +68,7 @@ class Store extends FormRequest
     public function messages()
     {
         return [
-            'invoice_number.unique' => __('messages.invoice_exists'),
+            'order_number.unique' => __('messages.order_exists'),
             'product.required' => __('messages.please_select_a_product'),
         ];
     }

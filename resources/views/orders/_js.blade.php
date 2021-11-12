@@ -69,6 +69,9 @@
         var customer_id = $("#customer").val();
         var currency = $('#customer').find(':selected').data('currency');
 
+        $_SESSION["customer_id"] = customer_id;
+        console.log("customer", customer_id);
+
         // Setup currency
         window.sharedData.company_currency = currency;
         setupPriceInput(window.sharedData.company_currency);
@@ -183,7 +186,7 @@
             subTotal += Number(amount);
 
             var amountPrice = Number(amount);
-            console.log("subTotal", subTotal);
+            //console.log("subTotal", subTotal);
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));

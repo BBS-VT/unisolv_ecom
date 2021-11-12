@@ -82,6 +82,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Ajax requests
     Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
     Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
+    Route::get('/ajax/contractdiscount', 'AjaxController@specialDeal')->name('ajax.contract');
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {
