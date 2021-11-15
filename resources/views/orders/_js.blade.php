@@ -79,14 +79,17 @@
         var customer_id = $("#customer").val();
 
         $.ajax({
-            url: "{{ url('/orders/_deal.php') }}",
-            type: "POST",
+            url: "{{ route('orders.deals') }}",
+            type: "GET",
+            dataType: "json",
             data: {
                 customer_id: customer_id,
                 _token: CSRF_TOKEN,
             },
-            success: function() {
-                console.log("True");
+            processResults: function (response) {
+                return {
+                    results: response
+                };
             },
             error: function(error) {
                 console.log(error);

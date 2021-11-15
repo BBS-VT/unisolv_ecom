@@ -67,7 +67,14 @@ class AjaxController extends Controller
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
-        /*
+        $matchCustomer = $request->customer_id;
+
+        echo $matchCustomer;
+        /*$specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
+            ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
+            ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
+            ->get('StockItemID')
+            ->pluck('StockItemID');
 
         if(count($specialDeal) > 0){
 
@@ -98,8 +105,10 @@ class AjaxController extends Controller
         return response()->json($products);
     }
 
-    public function specialDeal(Request $request)
+    /*public function specialDeal(Request $request)
     {
+        //$customer = $request->session()->get('customer_');
+
         $matchCustomer = $request->customer_id;
 
         $specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
@@ -108,7 +117,7 @@ class AjaxController extends Controller
             ->get('StockItemID')
             ->pluck('StockItemID');
 
-        /*$dealDate = Carbon::today()->toDateString();
+        $dealDate = Carbon::today()->toDateString();
 
         if(count($specialDeal) > 0){
 
@@ -118,8 +127,8 @@ class AjaxController extends Controller
             LEFT OUTER JOIN special_deals on products.StockCode = special_deals.StockItemID
             AND special_deals.CustomerID = '$matchCustomer'
             AND '$dealDate' BETWEEN special_deals.StartDate AND special_deals.EndDate
-            ORDER BY products.StockItemName"));*/
+            ORDER BY products.StockItemName"));
 
         return response()->json($specialDeal);
-    }
+    }*/
 }

@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::post('orders/create_step1', 'OrdersController@postCreateStepOne')->name('orders.create.step.one.post');
     //Route::get('orders/create_step2', 'OrdersController@createStepTwo')->name('orders.create.step.two');
     //Route::post('orders/create-step-two', 'OrdersController@postcreateStepTwo')->name('orders.create.step.two.post');
+    Route::post('/orders/deals', 'OrdersController@deals')->name('orders.deals');
     Route::get('/orders/{order}/details', 'OrdersController@show')->name('orders.show');
     Route::get('/orders/{order}/delete', 'OrdersController@delete')->name('orders.delete');
     Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');

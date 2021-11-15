@@ -206,6 +206,27 @@ class OrdersController extends Controller
     }
 
     /**
+     *
+     */
+    public function deals(Request $request)
+    {
+        if(!Request::ajax())
+        {
+            abort(404, 'Page not found.');
+        }
+        Session::put($request->customer_id);
+        $matchCustomer = $request->customer_id;
+
+        $specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
+            ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
+            ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
+            ->get('StockItemID')
+            ->pluck('StockItemID');
+
+        return Response::json($specialDeal);
+    }
+
+    /**
      * Delete an Order
      *
      * @param Request $request
