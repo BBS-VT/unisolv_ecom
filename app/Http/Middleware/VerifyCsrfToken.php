@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         "update-product-status",
         "update-category-status",
-        "*/orders/_deal.php",
+        "*/orders/deals",
+        "*/ajax/products",
     ];
 }

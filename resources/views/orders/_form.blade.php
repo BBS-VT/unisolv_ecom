@@ -122,7 +122,7 @@
                         <tr>
                             <td class="select-container">
                             <!--    <select name="product[]" class="select2 form-control mb-3 custom-select" style="width: 100%; height:36px;" >
-{{--                                    <option value="">-- choose product --</option>--}}
+{{--                                    <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
                                         <option value="{{ $product->id }}" selected="">
                                             {{ intval( ltrim( $product->StockCode, '0')) }} &nbsp;
@@ -132,7 +132,7 @@
                                                                 : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
                                             [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
                                         </option>
-                                    @endforeach
+                                    @endforeach--}}
                                 </select>-->
                                 <select name="product[]" class="form-control priceListener select-with-footer select2-hidden-accessible" required>
                                     <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>

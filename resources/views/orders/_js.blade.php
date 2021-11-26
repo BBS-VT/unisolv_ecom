@@ -1,6 +1,7 @@
 <script>
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     var company_currency = '4';
+    var globalCustomer = 0;
 
     $("#customer").select2({
         ajax: {
@@ -67,38 +68,16 @@
 
     function setupCustomer() {
         var customer_id = $("#customer").val();
+        globalCustomer = customer_id;
         var currency = $('#customer').find(':selected').data('currency');
 
         // Setup currency
         window.sharedData.company_currency = currency;
         setupPriceInput(window.sharedData.company_currency);
-        initializeContractDiscount();
-    }
-
-    function initializeContractDiscount() {
-        var customer_id = $("#customer").val();
-
-        $.ajax({
-            url: "{{ route('orders.deals') }}",
-            type: "GET",
-            dataType: "json",
-            data: {
-                customer_id: customer_id,
-                _token: CSRF_TOKEN,
-            },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            error: function(error) {
-                console.log(error);
-            },
-            cache: true
-        });
     }
 
     function initializeProductSselect2(elem) {
+        var customer_id = globalCustomer;
         elem.select2({
             ajax: {
                 url: "{{ route('ajax.products') }}",
@@ -108,6 +87,7 @@
                 data: function (params) {
                     return {
                         _token: CSRF_TOKEN,
+                        customer_id: globalCustomer,
                         search: params.term
                     };
                 },
