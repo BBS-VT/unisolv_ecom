@@ -155,7 +155,7 @@
             //console.log(quantity)
 
             // price
-            var price = Number(row.find('.price_input').unmask());
+            var price = Number(row.find('.price_input').unmask()) / 100;
 
 
             // amount
@@ -253,12 +253,12 @@
     }
 
     function initializePriceListener() {
-        /*$("priceListener").change(function() {
-            calculateRowPrice()
-        });*/
-        $("#priceListener").on("input", function () {
+        $("priceListener").change(function() {
             calculateRowPrice()
         });
+        /*$("#priceListener").on("input", function () {
+            calculateRowPrice()
+        });*/
     }
 
     function addProductRow() {
