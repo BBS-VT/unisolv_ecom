@@ -102,7 +102,12 @@
             templateSelection: function (data, container) {
                 $(data.element).attr('data-taxes', JSON.stringify(data.taxes));
                 $(data.element).attr('data-discount', data.discount);
-                $(data.element).attr('data-price', data.price);
+                if(data.UnitPrice !== null) {
+                    $(data.element).attr('data-price', data.UnitPrice);
+                }else {
+                    $(data.element).attr('data-price', data.price);
+                }
+
                 return data.text;
             }
         });
