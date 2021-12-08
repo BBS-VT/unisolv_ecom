@@ -79,7 +79,7 @@ class AjaxController extends Controller
             ->get('StockItemID')
             ->pluck('StockItemID');
 
-        $buyingGroup = Customer::where('CustomerID', "=", $matchCustomer)
+        $buyingGroup = Customer::where('id', "=", $matchCustomer)
             ->get('BuyingGroupID');
 
         $buyingGroupDeal = SpecialDeals::where('BuyingGroupID', '=', $buyingGroup)
@@ -152,14 +152,16 @@ class AjaxController extends Controller
                 ->get();
         } else {
             $products = Product::findByCompany($currentCompany->id)
-                ->select('id', 'StockItemName AS text', 'SellingPrice AS price', 'DiscountPercentage AS discount')
+                ->select('id', 'StockItemName AS text', 'SellingPrice AS price', 'DiscountPercentage AS discount', 'special_deals.UnitPrice')
+                ->distinct()
+                ->leftJoin('special_deals', 'special_deals.CustomerID', '=', DB::raw("'".$matchCustomer."'"))
                 ->where('status', '1')
                 ->orderBy("StockItemName")
                 ->with('taxes')
                 ->get();
-        }
+        }*/
 
-        $products = Product::findByCompany($currentCompany->id)
+        /*$products = Product::findByCompany($currentCompany->id)
             ->select('id', 'StockItemName AS text', 'SellingPrice AS price', 'DiscountPercentage AS discount', 'StockCode AS sku' )
             ->where('status', '1')
             ->orderBy("StockItemName")
