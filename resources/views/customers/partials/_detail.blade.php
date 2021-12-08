@@ -220,13 +220,17 @@
                             <td class="semi-bold">{{ $customer->CreditLimit ?? '' }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">{{ trans('cruds.customer.fields.delivery') }}</td>
+                            <td class="text-muted">{{ __('cruds.customer.fields.delivery') }}</td>
                             <td class="semi-bold">{{ $customer->DeliveryRoute  ?? '' }}</td>
 
                         </tr>
                         <tr>
-                            <td class="text-muted">{{ trans('cruds.customer.fields.salerep') }}</td>
+                            <td class="text-muted">{{ __('cruds.customer.fields.salerep') }}</td>
                             <td class="semi-bold">{{ $customer->salesrep->PreferredName ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{{ __('cruds.customer.fields.contract') }}</td>
+                            <td class="semi-bold">{{ $customer->BuyingGroupID ?? '' }}</td>
                         </tr>
                         </tbody>
                     </table>
