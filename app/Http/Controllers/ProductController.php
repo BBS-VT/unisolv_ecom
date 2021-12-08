@@ -13,6 +13,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductTag;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Session;
@@ -205,6 +206,7 @@ class ProductController extends Controller
         \Excel::import(new StockMasterImport,$request->import_file);
 
         DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
+
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
 
