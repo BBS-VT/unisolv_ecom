@@ -350,9 +350,9 @@ class Order extends Model
         $subtotal_amount = 0;
         foreach ($this->items as $item) {
             if(!$item->TaxRateID == "0") {
-                $subtotal_amount += $item->UnitPrice * $item->Quantity * (1 + ($item->TaxRate / 100));
+                $subtotal_amount += $item->total / $item->Quantity * (1 + ($item->TaxRate / 100));
             } else {
-                $subtotal_amount += $item->UnitPrice * $item->Quantity;
+                $subtotal_amount += $item->total / $item->Quantity;
             }
 
         }
@@ -366,7 +366,7 @@ class Order extends Model
         $total_vatamount = 0;
         foreach ($this->items as $item) {
             $vat = $item->TaxRate;
-            $total_vat += $item->UnitPrice * $item->Quantity;
+            $total_vat += $item->total / $item->Quantity;
             $total_vatamount = $total_vat * ($vat / 100);
         }
 
@@ -380,7 +380,7 @@ class Order extends Model
         foreach ($this->items as $item) {
             //$vat = $item->TaxRate;
             $vat = 15;
-            $total_vat += $item->UnitPrice * $item->Quantity;
+            $total_vat += $item->total / $item->Quantity;
             $total_vatamount = $total_vat - ($total_vat / (1+($vat / 100)));
         }
 

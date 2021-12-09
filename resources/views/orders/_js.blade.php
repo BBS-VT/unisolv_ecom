@@ -192,7 +192,7 @@
             // Add Item Total to Sub Total
             subTotal += Number(amount);
 
-            var amountPrice = Number(amount);
+            var amountPrice = Number(amount) ;
             //console.log("subTotal", subTotal);
 
             // Set price input value

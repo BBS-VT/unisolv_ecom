@@ -110,10 +110,10 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format(($key->UnitPrice / 1.15) / 100, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format(($key->UnitPrice - ($key->UnitPrice / 1.15)) / 100, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format($key->UnitPrice / 100, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format(($key->Quantity * $key->UnitPrice) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format(($key->total / $key->Quantity / 1.15) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format($key->total / 100, 2, ".", " ") }}</td>
                                         </tr>
                                     @endforeach
 
