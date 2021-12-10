@@ -81,20 +81,17 @@ class AjaxController extends Controller
             ->pluck('StockItemID');
 
         $buyingGroup = Customer::where('acc_main', "=", $matchCustomer)
-            ->get('BuyingGroupID');
-
+            ->value('BuyingGroupID');
 
         $buyingGroupDeal = SpecialDeals::where('BuyingGroupID', '=', $buyingGroup)
                 ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
                 ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
                 ->get('StockItemID')
                 ->pluck('StockItemID');
-        Log::debug($buyingGroupDeal);
-
 
             if (count($buyingGroupDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
-                    'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
+                    'products.DiscountPercentage AS discount', 'special_deals.BuyingGroupID', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($buyingGroup, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');

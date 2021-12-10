@@ -106,7 +106,7 @@
                 } else {
                     $(data.element).attr('data-discount', '0');
                 }
-                if(data.UnitPrice !== null) {
+                if(data.UnitPrice !== null && data.UnitPrice > 0) {
                     $(data.element).attr('data-price', data.UnitPrice);
                 } else {
                     $(data.element).attr('data-price', data.price);
