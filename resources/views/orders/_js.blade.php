@@ -101,14 +101,13 @@
             tags: true,
             templateSelection: function (data, container) {
                 $(data.element).attr('data-taxes', JSON.stringify(data.taxes));
-                $(data.element).attr('data-discount', data.discount);
+                if(data.DiscountPercentage !== null) {
+                    $(data.element).attr('data-discount', data.DiscountPercentage);
+                } else {
+                    $(data.element).attr('data-discount', '0');
+                }
                 if(data.UnitPrice !== null) {
                     $(data.element).attr('data-price', data.UnitPrice);
-                } else if(data.DiscountPercentage !== null) {
-                    var dealDiscp = (data.DiscountPercentage / 100).toFixed(2);
-                    var dealDisc = data.price * dealDiscp;
-                    var dealPrice = data.price - dealDisc;
-                    $(data.element).attr('data-price', dealPrice );
                 } else {
                     $(data.element).attr('data-price', data.price);
                 }
