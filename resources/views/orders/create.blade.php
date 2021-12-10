@@ -24,7 +24,7 @@
 
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('orders.store') }}" method="POST" >
+                    <form action="{{ route('orders.store') }}" method="POST" id="order_form">
                         @include('layouts._form_errors')
                         @csrf
 
