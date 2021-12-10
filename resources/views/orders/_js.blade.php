@@ -104,7 +104,12 @@
                 $(data.element).attr('data-discount', data.discount);
                 if(data.UnitPrice !== null) {
                     $(data.element).attr('data-price', data.UnitPrice);
-                }else {
+                } else if(data.DiscountPercentage !== null) {
+                    var dealDiscp = (data.DiscountPercentage / 100).toFixed(2);
+                    var dealDisc = data.price * dealDiscp;
+                    var dealPrice = data.price - dealDisc;
+                    $(data.element).attr('data-price', dealPrice );
+                } else {
                     $(data.element).attr('data-price', data.price);
                 }
 

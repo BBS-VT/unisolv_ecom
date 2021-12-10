@@ -120,17 +120,17 @@
                                     <tr >
                                         <td colspan="5" class="border-0"></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>Sub Total</b></td>
-                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->getSubTotalAmountIncl() / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->sub_total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr>
                                         <th colspan="5" class="border-0"></th>
                                         <td class="border-0 font-14 text-dark text-right"><b>VAT @ 15%</b></td>
-                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->getTotalVATInclAmount() / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format(($order->total * 0.15) / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr class="bg-black text-white">
                                         <th colspan="5" class="border-0"></th>
                                         <td class="border-0 font-14 text-right"><b>Total</b></td>
-                                        <td class="border-0 font-14 text-right"><b>{{ number_format($order->getSubTotalAmountIncl() / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-right"><b>{{ number_format($order->total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     </tbody>
                                 </table>

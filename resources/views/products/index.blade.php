@@ -95,7 +95,7 @@
                                 <td>{{ $product->StockItemName ?? '' }}</td>
                                 <td>{{ $product->Barcode ?? '' }}</td>
                                 <!-- <td>{{ $product->SellingPrice ?? '' }}</td> -->
-                                <td>{{ number_format(($product->SellingPrice) / 100, 2, ".", " ") ?? '' }}</td>
+                                <td>{{ number_format($product->SellingPrice, 2, ".", " ") ?? '' }}</td>
                                 <td>
                                     @foreach($product->categories as $key => $item)
                                         <span class="badge badge-info">{{ $item->StockGroupName }}</span>
