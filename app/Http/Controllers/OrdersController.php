@@ -371,18 +371,22 @@ class OrdersController extends Controller
             $orderlineitemTag
                 ->appendChild($document->createElement("additionalOrderLineInstruction"))
                 ->appendChild($document->createTextNode(" "));
+
             $orderlineitemTag
                 ->appendChild($document->createElement("netAmount"))
-                ->appendChild($document->createTextNode( number_format($key->Quantity * (($key->UnitPrice / 1.15) / 100), 2, ".", " ")));
+                ->appendChild($document->createTextNode( number_format(($key->total / 1.15) / 100, 2, ".", " ")));
+
             $orderlineitemTag
                 ->appendChild($document->createElement("netPrice"))
-                ->appendChild($document->createTextNode( number_format($key->Quantity * ($key->UnitPrice / 100), 2, ".", " " )));
+                ->appendChild($document->createTextNode( number_format($key->total / 100, 2, ".", " " )));
+
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
-                ->appendChild($document->createTextNode( number_format(($key->UnitPrice / 1.15 ) / 100, 2, ".", " ")));
+                ->appendChild($document->createTextNode( number_format((($key->total / $key->Quantity) / 1.15 ) / 100, 2, ".", " ")));
+
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountIncludingTaxes"))
-                ->appendChild($document->createTextNode( number_format( ($key->UnitPrice) / 100, 2, ".", " ") ));
+                ->appendChild($document->createTextNode( number_format( ($key->total / $key->Quantity) / 100, 2, ".", " ") ));
 
             $ordertradeitemTag = $orderlineitemTag->appendChild(
                 $document->createElement("transactionalTradeItem")
