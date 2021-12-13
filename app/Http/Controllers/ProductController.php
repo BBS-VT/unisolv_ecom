@@ -139,11 +139,12 @@ class ProductController extends Controller
 
         $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
         $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
-        /*$tags = ProductTag::all()->pluck('name', 'id');*/
+        $tags = ProductTag::all()->pluck('name', 'id');
 
         $product->load('categories', 'tags', 'packageType', 'stockHolding');
 
-        return view('products.show', compact('product', 'categories'));
+        //dd($product);
+        return view('products.show', compact('product', 'categories', 'tags', 'packagetypes'));
     }
 
     public function destroy(Product $product)

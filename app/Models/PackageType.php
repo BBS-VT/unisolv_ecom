@@ -21,7 +21,7 @@ class PackageType extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'StockCode', 'StockCode');
+        return $this->belongsTo(Product::class, 'UnitPackageID', 'id');
     }
 
     /**

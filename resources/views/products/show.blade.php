@@ -108,7 +108,7 @@
                                 <div class="form-group">
                                     <label for="salesunits">{{ trans('cruds.product.fields.units') }}</label>
                                     <input class="form-control " type="text" name="salesunits" id="salesunit"
-                                           value="{{ $product->packageType->PackageTypeName }}" readonly>
+                                           value="{{ $product->packageType->PackageTypeName ?? '' }}" readonly>
                                 </div>
                             </div>
                             <div class="col-sm-2">
@@ -147,7 +147,7 @@
                                         <div class="form-group">
                                             <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
                                             <input class="form-control text-center " type="number" name="CostPrice" id="CostPrice"
-                                                   value="{{ $product->CostPrice }}" readonly>
+                                                   value="{{ number_format((float)$product->CostPrice, 2, '.', '') }}" readonly>
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
@@ -171,7 +171,7 @@
                                         <div class="form-group">
                                             <label class="required" for="SellingPrice">{{ trans('cruds.product.fields.price') }}</label>
                                             <input class="form-control " type="number" name="SellingPrice" id="SellingPrice"
-                                                   value="{{ $product->SellingPrice }}" readonly>
+                                                   value="{{ number_format((float)$product->SellingPrice, 2, '.', '') }}" readonly>
 
                                         </div>
                                     </div>

@@ -226,7 +226,7 @@
                         </tr>
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.salerep') }}</td>
-                            <td class="semi-bold">{{ $customer->salesrep->PreferredName ?? '' }}</td>
+                            <td class="semi-bold">{{ $customer->salesrep->FullName ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.contract') }}</td>

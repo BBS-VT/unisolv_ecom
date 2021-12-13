@@ -218,7 +218,7 @@
                                         <div class="form-group">
                                             <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
                                             <input class="form-control text-center {{ $errors->has('CostPrice') ? 'is-invalid' : '' }}" type="number" name="CostPrice" id="CostPrice"
-                                                   value="{{ $product->CostPrice }}" step="0.01">
+                                                   value="{{ number_format((float)$product->CostPrice, 2, '.', '') }}" step="0.01">
                                             @if($errors->has('CostPrice'))
                                                 <div class="invalid-feedback">
                                                     {{ $errors->first('CostPrice') }}

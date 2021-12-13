@@ -59,8 +59,8 @@ class Product extends Model implements HasMedia
      * @var array
      */
     protected $casts = [
-        'CostPrice' => 'integer',
-        'SellingPrice' => 'integer'
+        'CostPrice' => 'float',
+        'SellingPrice' => 'float'
     ];
 
     protected function serializeDate(DateTimeInterface $date)
