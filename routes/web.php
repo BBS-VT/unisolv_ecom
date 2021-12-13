@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth']], function () {
 
    // Customers
    Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
+
    Route::resource('customers', 'CustomersController');
    Route::post('update-customer-status', 'CustomersController@updateCustomerStatus');
    Route::get('customer-lookup', 'CustomersController@lookup')->name('customers.lookup');

@@ -102,13 +102,16 @@ class CustomersController extends Controller
      */
     public function edit(Customer $customer)
     {
-        abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $statuses = CustomerStatus::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $customer->load('status');
+        $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');
 
-        return view('customers.edit', compact('statuses', 'customer'));
+        return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
     }
 
     /**
