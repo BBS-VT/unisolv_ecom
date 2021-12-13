@@ -14,7 +14,7 @@ class StockMasterImport implements ToModel, WithStartRow
      */
     public function startRow(): int
     {
-        return 4;
+        return 2;
     }
 
     /**
@@ -25,19 +25,20 @@ class StockMasterImport implements ToModel, WithStartRow
     public function model(array $row)
     {
         return new Product([
-            'company_id'    => '1',
-            'StockItemName' => $row[1],
-            'StockCode'     => $row[0],
-            'SupplierID'    => $row[2],
-            'TaxRateID'     => $row[7],
-            'Size'          => '1',
-            'PackSize'      => $row[4],
-            'Barcode'       => $row[11],
-            'CostPrice'     => $row[24],
-            'SellingPrice'  => $row[31],
-            'SearchDetails' => $row[30],
-            'status'        => '1',
-            'LastEditedBy'  => Auth::user()->id,
+            'company_id'         => '1',
+            'StockItemName'      => $row[1],
+            'StockCode'          => $row[0],
+            'SupplierID'         => $row[8],
+            'TaxRateID'          => $row[7],
+            'Size'               => '1',
+            'PackSize'           => $row[4],
+            'Barcode'            => $row[11],
+            'CostPrice'          => $row[24],
+            'SellingPrice'       => $row[31],
+            'SearchDetails'      => $row[30],
+            'DiscountPercentage' => $row[44],
+            'status'             => '1',
+            'LastEditedBy'       => Auth::user()->id,
         ]);
     }
 }

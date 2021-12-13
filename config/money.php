@@ -2,6 +2,10 @@
 
 return [
 
+    'locale' => config('app.locale', 'en-US'),
+    'defaultCurrency' => config('app.currency', 'ZAR'),
+    'defaultFormatter' => null,
+
     'AED' => [
         'name'                => 'UAE Dirham',
         'code'                => 784,

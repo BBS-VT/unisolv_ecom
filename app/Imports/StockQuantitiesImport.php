@@ -15,7 +15,7 @@ class StockQuantitiesImport implements ToModel, WithStartRow
      */
     public function startRow(): int
     {
-        return 4;
+        return 2;
     }
 
     /**
