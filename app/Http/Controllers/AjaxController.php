@@ -74,6 +74,8 @@ class AjaxController extends Controller
 
         $dealDate = Carbon::today()->toDateString();
 
+        $search = $request->search;
+
         $specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
             ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
             ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
@@ -89,6 +91,7 @@ class AjaxController extends Controller
                 ->get('StockItemID')
                 ->pluck('StockItemID');
 
+        if ($search == '') {
             if (count($buyingGroupDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.BuyingGroupID', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
@@ -102,9 +105,7 @@ class AjaxController extends Controller
                     ->orderBy('products.StockItemName')
                     ->with('taxes')
                     ->get();
-
             } elseif (count($specialDeal) > 0) {
-
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
                     ->distinct()
@@ -132,6 +133,52 @@ class AjaxController extends Controller
                     ->with('taxes')
                     ->get();
             }
+        } else {
+            if (count($buyingGroupDeal) > 0) {
+                $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
+                    'products.DiscountPercentage AS discount', 'special_deals.BuyingGroupID', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
+                    ->distinct()
+                    ->leftJoin('special_deals', function ($join) use ($buyingGroup, $dealDate) {
+                        $join->on('products.StockCode', '=', 'special_deals.StockItemID');
+                        $join->on('special_deals.BuyingGroupID', '=', DB::raw("'" . $buyingGroup . "'"));
+                        $join->on('special_deals.StartDate', '<=', DB::raw("'" . $dealDate . "'"));
+                        $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
+                    })
+                    ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orderBy('products.StockItemName')
+                    ->with('taxes')
+                    ->get();
+            } elseif (count($specialDeal) > 0) {
+                $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
+                    'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
+                    ->distinct()
+                    ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
+                        $join->on('products.StockCode', '=', 'special_deals.StockItemID');
+                        $join->on('special_deals.CustomerID', '=', DB::raw("'" . $matchCustomer . "'"));
+                        $join->on('special_deals.StartDate', '<=', DB::raw("'" . $dealDate . "'"));
+                        $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
+                    })
+                    ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orderBy('products.StockItemName')
+                    ->with('taxes')
+                    ->get();
+            } else {
+                $products = Product::findByCompany($currentCompany->id)
+                    ->select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
+                        'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage', 'special_deals.UnitPrice')
+                    ->distinct()
+                    ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
+                        $join->on('products.StockCode', '=', 'special_deals.StockItemID');
+                        $join->on('special_deals.CustomerID', '=', DB::raw("'" . $matchCustomer . "'"));
+                        $join->on('special_deals.StartDate', '<=', DB::raw("'" . $dealDate . "'"));
+                        $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
+                    })
+                    ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orderBy('products.StockItemName')
+                    ->with('taxes')
+                    ->get();
+            }
+        }
 
         return response()->json($products);
     }

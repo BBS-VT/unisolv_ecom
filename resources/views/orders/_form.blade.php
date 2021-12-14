@@ -76,7 +76,7 @@
             <tbody class="list" id="items">
                 <tr id="product_row_template" class="d-none">
                     <td class="select-container">
-                        <select name="product[]" class="form-control priceListener" required>
+                        <select name="product[]" class="select2 form-control priceListener select-with-footer" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
                     </td>
@@ -121,7 +121,7 @@
                     @foreach($order->items as $item)
                         <tr>
                             <td class="select-container">
-                                <select name="product[]" class="select2 form-control mb-3 priceListener select2-hidden-accessible" style="width: 100%; height:36px;" >
+                                <select name="product[]" class="form-control mb-3 priceListener select-with-footer" style="width: 100%; height:36px;" >
                                     <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
                                         <option value="{{ $item->product_id }}" selected="">
@@ -134,9 +134,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            <!--<select name="product[]" class="form-control priceListener select-with-footer select2-hidden-accessible" required>
-                                    <option value="{{ $item->product_id }}" selected="">{{ $item->product->name }}</option>
-                                </select>-->
+
                             </td>
                             @if($tax_per_item)
                                 <td class="select-container">
