@@ -56,13 +56,13 @@
                                             <i data-feather="upload" class="align-self-center icon-xs"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" data-toggle="modal" data-target="#importQuantities" href="#">
-                                                <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
-                                                {{ trans('global.import') }} {{ trans('cruds.product.fields.quantity') }}
-                                            </a>
                                             <a class="dropdown-item" data-toggle="modal" data-target="#importStockmaster" href="#">
                                                 <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                                 {{ trans('global.import') }} {{ trans('cruds.product.title') }}
+                                            </a>
+                                            <a class="dropdown-item" data-toggle="modal" data-target="#importQuantities" href="#">
+                                                <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
+                                                {{ trans('global.import') }} {{ trans('cruds.product.fields.quantity') }}
                                             </a>
                                         </div>
                                     </li>
