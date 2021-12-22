@@ -2,6 +2,7 @@
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     var company_currency = '4';
     var globalCustomer = 0;
+    var globalDiscount = 0;
 
     $("#customer").select2({
         ajax: {
@@ -111,6 +112,9 @@
                 } else {
                     $(data.element).attr('data-price', data.price);
                 }
+                if(data.discount !== null) {
+                    globalDiscount = data.discount;
+                }
 
                 return data.text;
             }
@@ -187,10 +191,19 @@
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
 
-            // caclualte discount
+            // calculate discount
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
-                amount = Number(amount) - Number(discountAmount);
+                if(globalDiscount > 0) {
+                    if(discount <= globalDiscount) {
+                        amount = Number(amount) - Number(discountAmount);
+                    } else {
+                        alert("Discount cannot exceed " + globalDiscount + "% for this item" )
+                    }
+                } else {
+                    amount = Number(amount) - Number(discountAmount);
+
+                }
             }
 
             // Add Item Total to Sub Total
