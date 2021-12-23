@@ -198,7 +198,11 @@
                     if(discount <= globalDiscount) {
                         amount = Number(amount) - Number(discountAmount);
                     } else {
-                        alert("Discount cannot exceed " + globalDiscount + "% for this item" )
+                        //alert("Discount cannot exceed " + globalDiscount + "% for this item" )
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Discount cannot exceed' + globalDiscount + '% for this item',
+                        })
                     }
                 } else {
                     amount = Number(amount) - Number(discountAmount);
