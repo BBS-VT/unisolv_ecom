@@ -25,7 +25,7 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
-   Route::get('/sales', 'DashboardController@sales')->name('salesHome');
+   Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
 
    // Customers
    Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
@@ -89,6 +89,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {
 
+    // landing page
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionController');
@@ -142,4 +144,11 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('tax_types.edit');
     Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('tax_types.update');
     Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('tax_types.delete');
+});
+
+Route::group(['prefix' => '/portal/{customer}', 'as' => 'customer_portal.', 'namespace' => 'CustomerPortal', 'middleware' => ['auth']], function () {
+   // Dashboard
+    Route::get('/', 'DashboardController@index');
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
 });

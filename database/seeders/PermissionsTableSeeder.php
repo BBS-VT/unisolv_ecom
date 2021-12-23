@@ -784,6 +784,42 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => '2019-09-15 06:10:05',
                 'updated_at' => '2019-09-15 06:10:05',
             ],
+            [
+                'id'         => '130',
+                'title'      => 'purchase_management_access',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '131',
+                'title'      => 'vendor_create',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '132',
+                'title'      => 'vendor_edit',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '133',
+                'title'      => 'vendor_show',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '134',
+                'title'      => 'vendor_delete',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '135',
+                'title'      => 'vendor_access',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
 
         ];
 

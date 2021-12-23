@@ -4,17 +4,28 @@
 namespace App\Http\Responses;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\Role;
+use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request)
     {
-        //$home = auth()->user()->roles('Sales Rep') ? '/sales' : '/dashboard';
-        $home = Auth::user()->roles('Admin') ? '/dashboard' : '/sales';
+        $redirect = config('fortify.home');
 
-        return redirect()->intended($home);
+        $authUser = auth()->user();
+
+        if($authUser->IsSalesperson == '1') {
+            $redirect = route('sales.dashboard');
+        } elseif($authUser->IsCustomer == '1') {
+            $redirect = route('customer.dashboard');
+        }
+
+        return redirect($redirect);
+
+        //return $request->wantsJson()
+        //    ? response()->json(['two_factor' => false])
+        //    : redirect()->intended(config('fortify.home'));
 
     }
 }

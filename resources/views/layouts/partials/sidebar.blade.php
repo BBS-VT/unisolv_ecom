@@ -50,7 +50,7 @@
 
                 </ul>
             </li>
-
+            @can('purchase_management_access')
             <li>
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Purchasing</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
@@ -104,7 +104,7 @@
 
                 </ul>
             </li>
-
+            @endcan
             {{-- <hr class="hr-dashed hr-menu">
            <li class="menu-label my-2">Components & Extra</li>--}}
 

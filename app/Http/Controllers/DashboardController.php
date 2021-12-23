@@ -65,5 +65,10 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function sales()
+    {
+        return view('dashboards.salesrep');
+    }
+
 
 }
