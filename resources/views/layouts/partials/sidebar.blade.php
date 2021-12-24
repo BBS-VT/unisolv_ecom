@@ -76,7 +76,8 @@
 
                 </ul>
             </li>
-
+            @endcan
+            @can('product_management_access')
             <li>
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Stock</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
