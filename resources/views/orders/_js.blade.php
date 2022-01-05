@@ -194,19 +194,25 @@
             // calculate discount
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
-                if(globalDiscount > 0) {
-                    if(discount <= globalDiscount) {
-                        amount = Number(amount) - Number(discountAmount);
-                    } else {
-                        //alert("Discount cannot exceed " + globalDiscount + "% for this item" )
-                        Swal.fire({
-                            icon: 'error',
-                            text: 'Discount cannot exceed' + globalDiscount + '% for this item',
-                        })
-                    }
+                if(globalDiscount > 0 ) {
+                    /*if (globalDiscount == 0.01) {
+
+                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+
+                    } else {*/
+                        if (discount <= globalDiscount) {
+
+                            amount = Number(amount) - Number(discountAmount);
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Discount cannot exceed ' + globalDiscount + ' % for this item',
+                            })
+                        }
+                    // }
                 } else {
                     amount = Number(amount) - Number(discountAmount);
-
                 }
             }
 

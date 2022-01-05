@@ -98,7 +98,7 @@
                     @if($discount_per_item)
                         <td>
                             <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class=" form-control form-control-prepended priceListener" value="0">
+                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" value="0">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
