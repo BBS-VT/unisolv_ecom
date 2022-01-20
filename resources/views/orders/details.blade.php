@@ -93,7 +93,8 @@
                                         <th>Stock Code</th>
                                         <th>Description</th>
                                         <th class="text-center">Qty</th>
-                                        <th class="text-right">U/Price(Ex)</th>
+                                        <th class="text-right">Price(Exc)</th>
+                                        <th class="text-right">Discount</th>
                                         <th class="text-right">Unit Tax</th>
                                         <th class="text-right">Net Price</th>
                                         <th class="text-right">Total(Incl)</th>
@@ -110,7 +111,8 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format(($key->total / $key->Quantity / 1.15) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format($key->product->SellingPrice, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format($key->discount_val, 2, ".", " ") }} %</td>
                                             <td class="text-right">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format($key->total / 100, 2, ".", " ") }}</td>
@@ -118,17 +120,17 @@
                                     @endforeach
 
                                     <tr >
-                                        <td colspan="5" class="border-0"></td>
+                                        <td colspan="6" class="border-0"></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>Sub Total</b></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->sub_total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr>
-                                        <th colspan="5" class="border-0"></th>
+                                        <th colspan="6" class="border-0"></th>
                                         <td class="border-0 font-14 text-dark text-right"><b>VAT @ 15%</b></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>{{ number_format(($order->total * 0.15) / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr class="bg-black text-white">
-                                        <th colspan="5" class="border-0"></th>
+                                        <th colspan="6" class="border-0"></th>
                                         <td class="border-0 font-14 text-right"><b>Total</b></td>
                                         <td class="border-0 font-14 text-right"><b>{{ number_format($order->total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
