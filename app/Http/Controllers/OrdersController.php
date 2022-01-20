@@ -206,27 +206,6 @@ class OrdersController extends Controller
     }
 
     /**
-     *
-     */
-    /*public function deals(Request $request)
-    {
-        /*if(!Request::ajax())
-        {
-            abort(404, 'Page not found.');
-        }*/
-        //Session::put($request->customer_id);
-        /*$matchCustomer = $request->customer_id;
-
-        $specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
-            ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
-            ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
-            ->get('StockItemID')
-            ->pluck('StockItemID');
-
-        return Response::json($specialDeal);
-    }*/
-
-    /**
      * Delete an Order
      *
      * @param Request $request
@@ -386,6 +365,9 @@ class OrdersController extends Controller
                 ->appendChild($document->createElement("netPrice"))
                 ->appendChild($document->createTextNode( number_format($key->product->SellingPrice , 2, ".", " " )));
 
+            $orderlineitemTag
+                ->appendChild($document->createElement("discountPercentage"))
+                ->appendChild($document->createTextNode( number_format($key->discount_val , 2, ".", " " )));
             /*$orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
                 ->appendChild($document->createTextNode( number_format((($key->total / $key->Quantity) / 1.15 ) / 100, 2, ".", " ")));*/
