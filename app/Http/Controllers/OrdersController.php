@@ -12,6 +12,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Customer;
 use App\Models\SpecialDeals;
+use App\Traits\HasContractDiscount;
 use DB;
 use Gate;
 use PDF;
@@ -23,6 +24,8 @@ use Session;
 
 class OrdersController extends Controller
 {
+    use HasContractDiscount;
+
     /**
      * Display Orders Page
      *
@@ -156,16 +159,16 @@ class OrdersController extends Controller
 
                 //OrdersItem::create([
                 $item = $order->items()->create([
-                    'OrderID'       => $request->order_number,
-                    'company_id'    => $currentCompany->id,
-                    'StockItem'     => $request->product[$i],
-                    'discount_type' => 'percent',
-                    'discount_val'  => $request->discount[$i] ?? 0,
-                    'Quantity'      => $request->quantity[$i],
-                    'UnitPrice'     => $request->price[$i],
-                    //'TaxRate'      => $request->TaxRate[$i],
-                    'total'         => $request->total[$i],
-                    'LastEditedBy'  => $request->salesperson_id,
+                    'OrderID'           => $request->order_number,
+                    'company_id'        => $currentCompany->id,
+                    'StockItem'         => $request->product[$i],
+                    'discount_type'     => 'percent',
+                    'discount_val'      => $request->discount[$i] ?? 0,
+                    'Quantity'          => $request->quantity[$i],
+                    'UnitPrice'         => $request->price[$i],
+                    'total'             => $request->total[$i],
+                    'LastEditedBy'      => $request->salesperson_id,
+                    'ContractDiscount'  => $this->hasContractDiscount() ?? 0,
                 ]);
 
                 if ($taxes && array_key_exists($i, $taxes)) {
@@ -175,6 +178,8 @@ class OrdersController extends Controller
                         ]);
                     }
                 }
+
+
             }
         }
 
