@@ -97,7 +97,7 @@ class Product extends Model implements HasMedia
 
     public function order_items()
     {
-        return $this->hasMany(OrdersItem::class,'StockItem', 'id');
+        return $this->hasMany(OrdersItem::class,'StockItem', 'id')->orderBy('StockItemName', 'desc');
     }
 
     public function specialdeals()

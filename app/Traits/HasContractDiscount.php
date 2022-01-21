@@ -11,7 +11,7 @@ trait HasContractDiscount
      *
      * @return boolean
      */
-    public function hasContractDiscount()
+    public function hasContractDiscount(Request $request)
     {
         $matchCustomer = $request->customer_id;
     }

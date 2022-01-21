@@ -111,7 +111,7 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format($key->product->SellingPrice, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format($key->product->SellingPrice / 1.15, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format($key->discount_val, 2, ".", " ") }} %</td>
                                             <td class="text-right">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>

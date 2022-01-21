@@ -168,7 +168,7 @@ class OrdersController extends Controller
                     'UnitPrice'         => $request->price[$i],
                     'total'             => $request->total[$i],
                     'LastEditedBy'      => $request->salesperson_id,
-                    'ContractDiscount'  => $this->hasContractDiscount() ?? 0,
+                    'ContractDiscount'  => '0',
                 ]);
 
                 if ($taxes && array_key_exists($i, $taxes)) {
@@ -203,6 +203,7 @@ class OrdersController extends Controller
 
         $order->load('items');
         $order->load('customer');
+
 
         //$pdf = PDF::loadView('orders.show', compact('order'));
         //return $pdf->stream('pdfview.pdf');
