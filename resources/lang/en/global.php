@@ -36,6 +36,7 @@ return [
     'login_password_confirmation'          => 'Password confirmation',
     'logout'                               => 'Logout',
     'month'                                => 'Month',
+    'new'                                  => 'New',
     'no'                                   => 'No',
     'next'                                 => 'Next',
     'pleaseSelect'                         => 'Please select',

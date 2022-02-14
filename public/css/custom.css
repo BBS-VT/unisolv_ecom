@@ -41,3 +41,23 @@ ul.sidebar-menu li.sidebar-menu-item {
     list-style-type: none;
 }
 
+.dropdown-mega {
+    position: static !important;
+}
+
+.dropdown-megamenu[style] {
+    padding: 20px;
+    left: 20px !important;
+    right: 20px !important;
+}
+
+
+
+   .dropdown-mega-menu-xl {
+       width: 40rem;
+   }
+
+.dropdown-mega-menu-lg {
+    width: 26rem;
+}
+
