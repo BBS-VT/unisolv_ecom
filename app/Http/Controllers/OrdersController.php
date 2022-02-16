@@ -11,8 +11,6 @@ use App\Models\Product;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Customer;
-use App\Models\SpecialDeals;
-use App\Traits\HasContractDiscount;
 use DB;
 use Gate;
 use PDF;
@@ -24,8 +22,6 @@ use Session;
 
 class OrdersController extends Controller
 {
-    use HasContractDiscount;
-
     /**
      * Display Orders Page
      *
@@ -373,7 +369,7 @@ class OrdersController extends Controller
 
             $orderlineitemTag
                 ->appendChild($document->createElement("discountPercentage"))
-                ->appendChild($document->createTextNode( number_format($key->discount_val , 2, ".", " " )));
+                ->appendChild($document->createTextNode( bcdiv($key->discount_val, 1, 2)));
             /*$orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
                 ->appendChild($document->createTextNode( number_format((($key->total / $key->Quantity) / 1.15 ) / 100, 2, ".", " ")));*/

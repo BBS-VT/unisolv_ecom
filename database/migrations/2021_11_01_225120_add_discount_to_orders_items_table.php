@@ -17,7 +17,7 @@ class AddDiscountToOrdersItemsTable extends Migration
             $table->unsignedBigInteger('company_id')->nullable()->after('OrderID');
             $table->string('discount_type')->after('PackageTypeID');
             $table->decimal('discount', 15, 2)->nullable()->after('Quantity');
-            $table->unsignedBigInteger('discount_val')->nullable()->after('discount');
+            $table->decimal('discount_val', 15, 2)->nullable()->after('discount');
             $table->unsignedBigInteger('total')->after('TaxRate');
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');

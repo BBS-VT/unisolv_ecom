@@ -42,7 +42,7 @@ class OrdersItem extends Model
         'UnitPrice'     => 'integer',
         'total'         => 'integer',
         'Quantity'      => 'float',
-        'discount_val'  => 'integer',
+        'discount_val'  => 'float',
     ];
 
     public function order()
