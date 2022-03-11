@@ -195,22 +195,28 @@
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
                 if(globalDiscount > 0 ) {
-                    /*if (globalDiscount == 0.01) {
+                    if(globalDiscount != 0.01) {
 
-                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
-
-                    } else {*/
                         if (discount <= globalDiscount) {
 
                             amount = Number(amount) - Number(discountAmount);
+                            $('#add_product_row').attr('disabled', false);
+                            $('#save_form_button').attr('disabled', false);
 
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 text: 'Discount cannot exceed ' + globalDiscount + ' % for this item',
                             })
+                            $('#add_product_row').attr('disabled', true);
+                            $('#save_form_button').attr('disabled', true);
                         }
-                    // }
+
+                    } else {
+                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+                     }
                 } else {
                     amount = Number(amount) - Number(discountAmount);
                 }

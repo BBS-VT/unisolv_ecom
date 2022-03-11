@@ -262,7 +262,7 @@
             </div>
         </div>
         <div class="col-12 text-center float-right mt-3">
-            <button type="button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
+            <button type="button" id="save_form_button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
             <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>
     </div>
