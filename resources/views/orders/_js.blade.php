@@ -190,6 +190,8 @@
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
+            //console.log("globalDiscount", globalDiscount);
+            //console.log("discount", discount);
 
             // calculate discount
             if(!isNaN(discount) && discount != undefined && discount != 0) {
@@ -220,6 +222,10 @@
                 //} else {
                 //    amount = Number(amount) - Number(discountAmount);
                 //}
+            } else if (discount == 0 && globalDiscount == 0.01) {
+                var discountAmount = calculatePercent(discount, amount);
+                amount = Number(amount) - Number(discountAmount);
+                Number(row.find('[name="discount[]"]').attr("readonly", "true"));
             }
 
             // Add Item Total to Sub Total
