@@ -3,6 +3,7 @@
     var company_currency = '4';
     var globalCustomer = 0;
     var globalDiscount = 0;
+    var contractDiscount = 0;
 
     $("#customer").select2({
         ajax: {
@@ -104,6 +105,7 @@
                 $(data.element).attr('data-taxes', JSON.stringify(data.taxes));
                 if(data.DiscountPercentage !== null) {
                     $(data.element).attr('data-discount', data.DiscountPercentage);
+                    contractDiscount = data.DiscountPercentage;
                 } else {
                     $(data.element).attr('data-discount', '0');
                 }
@@ -194,6 +196,30 @@
             //console.log("discount", discount);
 
             // calculate discount
+            /*if(!isNaN(discount) && discount != undefined && contractDiscount > globalDiscount && globalDiscount != 0.01) {
+                console.log("globalDiscount", globalDiscount);
+                console.log("contractDiscount", contractDiscount);
+                console.log("Discount", discount);
+                console.log("contract bigger than inhouse");
+            }
+            if (!isNaN(discount) && discount != undefined && discount != 0) {
+                if (globalDiscount !== '0.01'){
+                    console.log("globalDiscount", globalDiscount);
+                    console.log("contractDiscount", contractDiscount);
+                    console.log("Discount", discount);
+                    console.log("inhouse can override contract")
+                } else {
+                    console.log("globalDiscount", globalDiscount);
+                    console.log("contractDiscount", contractDiscount);
+                    console.log("Discount", discount);
+                    console.log("inhouse discount disabled, contract allowed");
+                }
+            } else if (discount == 0 && globalDiscount == 0.01) {
+                console.log("globalDiscount", globalDiscount);
+                console.log("contractDiscount", contractDiscount);
+                console.log("Discount", discount);
+                console.log("no discount allowed");
+            }*/
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
