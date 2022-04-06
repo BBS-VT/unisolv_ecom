@@ -194,36 +194,19 @@
             var discount = Number(row.find('[name="discount[]"]').val());
             //console.log("globalDiscount", globalDiscount);
             //console.log("discount", discount);
+            //console.log("contractDiscount", contractDiscount);
 
             // calculate discount
-            /*if(!isNaN(discount) && discount != undefined && contractDiscount > globalDiscount && globalDiscount != 0.01) {
-                console.log("globalDiscount", globalDiscount);
-                console.log("contractDiscount", contractDiscount);
-                console.log("Discount", discount);
-                console.log("contract bigger than inhouse");
-            }
-            if (!isNaN(discount) && discount != undefined && discount != 0) {
-                if (globalDiscount !== '0.01'){
-                    console.log("globalDiscount", globalDiscount);
-                    console.log("contractDiscount", contractDiscount);
-                    console.log("Discount", discount);
-                    console.log("inhouse can override contract")
-                } else {
-                    console.log("globalDiscount", globalDiscount);
-                    console.log("contractDiscount", contractDiscount);
-                    console.log("Discount", discount);
-                    console.log("inhouse discount disabled, contract allowed");
-                }
-            } else if (discount == 0 && globalDiscount == 0.01) {
-                console.log("globalDiscount", globalDiscount);
-                console.log("contractDiscount", contractDiscount);
-                console.log("Discount", discount);
-                console.log("no discount allowed");
-            }*/
+
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
-                    if(globalDiscount !== '0.01') {
+                    if (contractDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
+                        amount = Number(amount) - Number(discountAmount);
+                            $('#add_product_row').attr('disabled', false);
+                            $('#save_form_button').attr('disabled', false);
+
+                    } else if(globalDiscount !== '0.01') {
 
                         if (discount <= globalDiscount) {
 
