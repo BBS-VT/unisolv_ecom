@@ -22,7 +22,6 @@ class CreatePackageTypesTable extends Migration
 
             $table->index(['PackageTypeName']);
             $table->foreign('LastEditedBy')->references('id')->on('users');
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
     }
 
