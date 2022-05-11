@@ -182,7 +182,7 @@
     </div>
     <div class="row card-body pagination justify-content-center text-center">
         <button id="add_product_row" type="button" class="btn btn-light">
-            <i data-feather="plus-circle" class="align-self-center icon-xs"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
+            <i data-feather="plus-circle" class="align-self-center icon-xs"></i> {{ __('global.add') }} {{ __('global.line') }}
         </button>
     </div>
 </div>

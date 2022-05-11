@@ -207,6 +207,7 @@ return [
     'last_edit'                            => 'Last Edited By :',
     'last_name'                            => 'Last name',
     'last_paid'                            => 'Last Payment',
+    'line'                                 => 'Line',
     'location'                             => 'Location',
     'locations'                            => 'Locations',
     'main_currency'                        => 'Main currency',
