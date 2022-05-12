@@ -172,7 +172,6 @@
             // price
             var price = Number(row.find('.price_input').unmask()) / 100;
 
-
             // amount
             var amount = (quantity * price);
 
@@ -192,9 +191,9 @@
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
-            //console.log("globalDiscount", globalDiscount);
-            //console.log("discount", discount);
-            //console.log("contractDiscount", contractDiscount);
+            console.log("globalDiscount", globalDiscount);
+            console.log("discount", discount);
+            console.log("contractDiscount", contractDiscount);
 
             // calculate discount
 
@@ -202,9 +201,20 @@
                 var discountAmount = calculatePercent(discount, amount);
 
                     if (contractDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
-                        amount = Number(amount) - Number(discountAmount);
+
+                        if (discount === contractDiscount) {
+                            amount = Number(amount) - Number(discountAmount);
+
+                            Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+
                             $('#add_product_row').attr('disabled', false);
                             $('#save_form_button').attr('disabled', false);
+
+                        } else {
+                            amount = Number(amount) - Number(discountAmount);
+                            $('#add_product_row').attr('disabled', false);
+                            $('#save_form_button').attr('disabled', false);
+                        }
 
                     } else if(globalDiscount !== '0.01') {
 
@@ -232,7 +242,7 @@
                         $('#save_form_button').attr('disabled', false);
                     }
 
-            } else if (discount == 0 && globalDiscount == 0.01) {
+            } else if (discount == 0 && globalDiscount == 0.01)  {
                 var discountAmount = calculatePercent(discount, amount);
 
                 amount = Number(amount) - Number(discountAmount);
@@ -332,7 +342,7 @@
         initializeTaxSelect2(tax_select);
 
         initializePriceListener();
-        calculateRowPrice();
+        //calculateRowPrice();
     }
 
     function removeRow(elem) {

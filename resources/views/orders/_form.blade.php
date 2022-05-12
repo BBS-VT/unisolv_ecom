@@ -47,14 +47,14 @@
                 <tr>
                     @if($tax_per_item and $discount_per_item)
                         <th class="w-30">{{ __('global.products') }}</th>
-                        <th class="w-20">{{ __('global.taxes') }}</th>
+                        <th class="w-20 d-none d-lg-table-cell">{{ __('global.taxes') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
                         <th class="w-15">{{ __('global.price') }}</th>
                         <th class="w-15">{{ __('global.discount') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @elseif($tax_per_item and !$discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
-                        <th class="w-25">{{ __('global.taxes') }}</th>
+                        <th class="w-25 d-none d-lg-table-cell">{{ __('global.taxes') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
                         <th class="w-15">{{ __('global.price') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
@@ -81,7 +81,7 @@
                         </select>
                     </td>
                     @if($tax_per_item)
-                        <td class="select-container">
+                        <td class="select-container d-none d-lg-table-cell">
                             <select name="taxes[]" multiple class="form-control priceListener hidden">
                                 @foreach(get_tax_types_select2_array($currentCompany->id) as $option )
                                     <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}">{{ $option['text'] }}</option>
@@ -137,7 +137,7 @@
 
                             </td>
                             @if($tax_per_item)
-                                <td class="select-container">
+                                <td class="select-container d-none d-lg-table-cell">
                                     <select name="taxes[]" multiple class="form-control priceListener select-with-footer select2-hidden-accessible">
                                         @foreach(get_tax_types_select2_array($currentCompany->id) as $option)
                                             <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $item->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
