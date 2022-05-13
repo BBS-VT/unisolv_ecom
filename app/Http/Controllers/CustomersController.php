@@ -44,7 +44,7 @@ class CustomersController extends Controller
 
         $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         return view('customers.create', compact('salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
@@ -59,6 +59,11 @@ class CustomersController extends Controller
     public function store(StoreCustomerRequest $request)
     {
         $customer = Customer::create($request->all());
+
+        $customer->billingCustomer()->sync($request->input('customer[BillToCustomerID]', []));
+        $customer->customerCategory()->sync($request->input('CustomerCategoryID', []));
+        $customer->buyingGroup()->sync($request->input('BuyingGroupID', []));
+        $customer->salesrep()->sync($request->input('SalesRepID', []));
 
         return redirect()->route('customers.index');
     }
@@ -75,7 +80,7 @@ class CustomersController extends Controller
 
         $salesreps = User::where('IsSalesperson', 1)->pluck('FullName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
 
@@ -106,7 +111,7 @@ class CustomersController extends Controller
 
         $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');

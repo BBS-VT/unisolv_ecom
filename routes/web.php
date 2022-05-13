@@ -107,8 +107,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::delete('buying-group/destroy', 'BuyingGroupController@massDestroy')->name('buying-group.massDestroy');
     Route::resource('buying-group', 'BuyingGroupController');
 
-    // Customer Groups
-    Route::delete('customer-category/destroy', 'CustomerCategoryController@massDestroy')->name('customer-category.massDestroy');
+    // Customer Group
     Route::resource('customer-category', 'CustomerCategoryController');
 
     // Order Status
@@ -136,6 +135,10 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     // Settings>Product Settings
     Route::get('/product', 'ProductController@index')->name('product');
     Route::post('/product', 'ProductController@update')->name('product.update');
+
+    // Settings>Customer Settings
+    Route::get('/customer', 'CustomerController@index')->name('customer');
+    Route::post('/customer', 'CustomerController@update')->name('customer.update');
 
     // Settings>Tax Types
     Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');

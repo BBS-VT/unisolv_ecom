@@ -20,7 +20,7 @@ class CreateOrdersItemsTable extends Migration
             $table->unsignedBigInteger('PackageTypeID')->nullable();
             $table->unsignedBigInteger('Quantity');
             $table->decimal('UnitPrice', 18,3);
-            $table->boolean('ContractDiscount')->unsigned()->default('0');
+            $table->decimal('TaxRate', 18,3);
             $table->unsignedBigInteger('PickedQuantity')->nullable();
             $table->dateTime('PickingCompletedWhen')->nullable();
             $table->bigInteger('LastEditedBy')->unsigned();

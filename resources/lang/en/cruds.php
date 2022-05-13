@@ -534,6 +534,8 @@ return [
         'fields'        => [
             'id'                    => 'ID',
             'id_helper'             => '',
+            'account_type'          => 'Account Type',
+            'account_type_helper'   => '',
             'category_name'         => 'Customer Category Name',
             'category_name_helper'  => '',
             'valid_from'            => 'Valid From Date',
