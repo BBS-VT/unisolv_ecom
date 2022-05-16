@@ -122,7 +122,6 @@
                         <ul class="nav-second-level" aria-expanded="false">
                             <li><a href="{{ route('settings.company') }}">Company Settings</a></li>
                             <li><a href="{{ route('admin.buying-group.index') }}">Buying Groups</a></li>
-                            <li><a href="{{ route('admin.customer-category.index') }}">Customer Categories</a></li>
                             <li><a href="{{ route('admin.orderstatus.index') }}">Order Statuses</a></li>
                         </ul>
                     </li>

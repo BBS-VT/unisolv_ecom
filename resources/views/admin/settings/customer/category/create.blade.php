@@ -20,7 +20,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col">
-                        <h4 class="card-title">{{ __('global.add') }} {{ __('cruds.customerCategories.title') }}</h4>
+                        <h4 class="card-title">{{ __('global.add') }} {{ __('cruds.customerCategory.title') }}</h4>
                     </div>
                     <div class="col-auto align-self-center">
                         <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-primary">
