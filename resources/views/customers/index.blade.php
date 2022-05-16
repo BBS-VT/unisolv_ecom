@@ -47,14 +47,15 @@
                                         <i data-feather="upload" class="align-self-center icon-xs"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" data-toggle="modal" data-target="#importCustomermaster" href="#">
+                                            <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
+                                            {{ __('global.import') }} {{ __('cruds.customer.title') }}
+                                        </a>
                                         <a class="dropdown-item" data-toggle="modal" data-target="#importBalance" href="#">
                                             <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
-                                            {{ trans('global.import') }} {{ trans('cruds.customer.fields.balance') }}
+                                            {{ __('global.import') }} {{ __('cruds.customer.fields.balance') }}
                                         </a>
-<!--                                        <a class="dropdown-item" data-toggle="modal" data-target="#importStockmaster" href="#">
-                                            <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
-                                            {{ trans('global.import') }} {{ trans('cruds.product.title') }}
-                                        </a>-->
+
                                     </div>
                                 </li>
                             </ul>
@@ -152,6 +153,32 @@
                                 </button>
                             </div>
                             <form action="{{ route('importBalances') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                {{ csrf_field() }}
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-gradient-danger">Import File</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="importCustomermaster" tabindex="-1" role="dialog" aria-labelledby="importCustomerLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <h6 class="modal-title m-0 text-white" id="importCustomerLabel">{{ __('global.import') }}
+                                    {{ __('cruds.customer.title') }}
+                                </h6>
+                                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"><i class="la la-times text-white"></i></span>
+                                </button>
+                            </div>
+                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
                                 {{ csrf_field() }}
                                 <div class="modal-body">
                                     <div class="row">

@@ -18,6 +18,11 @@ class AddUuidToCustomerCategoriesTable extends Migration
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
+
+        Schema::table('customers', function (Blueprint $table) {
+
+            $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');
+        });
     }
 
     /**

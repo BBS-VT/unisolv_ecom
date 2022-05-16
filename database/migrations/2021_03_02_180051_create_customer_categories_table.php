@@ -15,7 +15,7 @@ class CreateCustomerCategoriesTable extends Migration
     {
         Schema::create('customer_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('AccountType', 5)->unique();
+            $table->string('AccountType')->unique();
             $table->string('CustomerCategoryName', 50);
             $table->dateTime('ValidFrom')->nullable();
             $table->dateTime('ValidTo')->nullable();

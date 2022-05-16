@@ -17,8 +17,8 @@ class CreateSpecialDealsTable extends Migration
             $table->id();
             $table->bigInteger('StockItemID')->unsigned()->nullable();
             $table->bigInteger('CustomerID')->unsigned()->nullable();
-            $table->bigInteger('BuyingGroupID')->unsigned()->nullable();
-            $table->bigInteger('CustomerCategoryID')->unsigned()->nullable();
+            $table->string('BuyingGroupID')->nullable();
+            $table->string('CustomerCategoryID');
             $table->bigInteger('StockGroupID')->unsigned()->nullable();
             $table->string('DealDescription', 30);
             $table->date('StartDate');
@@ -31,8 +31,8 @@ class CreateSpecialDealsTable extends Migration
 
             $table->foreign('StockItemID')->references('id')->on('products');
             $table->foreign('CustomerID')->references('id')->on('customers');
-            $table->foreign('BuyingGroupID')->references('id')->on('buying_groups');
-            $table->foreign('CustomerCategoryID')->references('id')->on('customer_categories');
+            $table->foreign('BuyingGroupID')->references('BuyingGroupName')->on('buying_groups');
+            $table->foreign('CustomerCategoryID')->references('AccountType')->on('customer_categories');
             $table->foreign('StockGroupID')->references('id')->on('product_categories');
         });
     }

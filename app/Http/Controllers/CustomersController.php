@@ -9,11 +9,13 @@ use App\Models\CustomerStatus;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Country;
+use App\Imports\CustomerMasterImport;
 use App\Http\Requests\MassDestroyCustomerRequest;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use Gate;
 use DateTime;
+use DB;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -200,5 +202,25 @@ class CustomersController extends Controller
         //return $code;
         return response()->json($code, 200);
 
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function importExcel(Request $request)
+    {
+        abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        Customer::truncate();
+
+        \Excel::import(new CustomerMasterImport,$request->import_file);
+
+        //DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        \Session::put('success', 'File imported successfully');
+
+        return back();
     }
 }

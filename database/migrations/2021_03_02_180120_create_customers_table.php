@@ -17,10 +17,10 @@ class CreateCustomersTable extends Migration
             $table->id();
             $table->string('acc_main', 11)->unique();
             $table->string('acc_sub', 3)->default('000');
-            $table->string('CustomerName', 100)->unique();
+            $table->string('CustomerName', 100);
             $table->bigInteger('BillToCustomerID')->unsigned()->nullable();
-            $table->bigInteger('CustomerCategoryID')->unsigned();
-            $table->bigInteger('BuyingGroupID')->unsigned()->nullable();
+            $table->string('CustomerCategoryID')->nullable();
+            $table->string('BuyingGroupID')->nullable();
             $table->bigInteger('PrimaryContactPersonID')->unsigned();
             $table->bigInteger('AlternateContactPersonID')->unsigned()->nullable();
             $table->string('StoreEAN', 16)->unique();
@@ -46,19 +46,23 @@ class CreateCustomersTable extends Migration
             $table->string('PostalCity', 45);
             $table->string('PostalPostalCode', 10);
             $table->boolean('CustomerStatus')->unsigned()->default('1');
-            $table->unsignedBigInteger('CountryID')->default('215');
+            $table->bigInteger('CountryID')->unsigned()->default('202');
             $table->bigInteger('SalesRepID')->unsigned()->nullable();
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
             $table->softDeletes();
+
             $table->index(['acc_main', 'StoreEAN']);
+
             $table->foreign('CountryID')->references('id')->on('countries');
             $table->foreign('SalesRepID')->references('id')->on('users');
             $table->foreign('BillToCustomerID')->references('id')->on('customers');
-            $table->foreign('BuyingGroupID')->references('id')->on('buying_groups');
-            $table->foreign('CustomerCategoryID')->references('id')->on('customer_categories');
+            $table->foreign('BuyingGroupID')->references('BuyingGroupName')->on('buying_groups');
+            $table->foreign('CustomerCategoryID')->references('AccountType')->on('customer_categories');
             $table->foreign('PrimaryContactPersonID')->references('id')->on('users');
             $table->foreign('AlternateContactPersonID')->references('id')->on('users');
+
+
 
         });
     }

@@ -35,6 +35,7 @@ Route::group(['middleware' => ['auth']], function () {
    Route::get('customer-lookup', 'CustomersController@lookup')->name('customers.lookup');
    Route::get('generateStoreEan', 'CustomersController@generateStoreEan')->name('customers.storeid');
    Route::post('importBalances', 'CustomerBalanceController@importExcel')->name('importBalances');
+    Route::post('importCustomermaster', 'CustomersController@importExcel')->name('importCustomermaster');
 
    // Product Categories
     Route::delete('product-categories/destroy', 'ProductCategoryController@massDestroy')->name('product-categories.massDestroy');
