@@ -231,6 +231,9 @@
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.contract') }}</td>
                             <td class="semi-bold">{{ $customer->BuyingGroupID ?? '' }}</td>
+                        </tr><tr>
+                            <td class="text-muted">{{ __('cruds.customer.fields.type') }}</td>
+                            <td class="semi-bold">{{ $customer->CustomerCategoryID ?? '' }}</td>
                         </tr>
                         </tbody>
                     </table>

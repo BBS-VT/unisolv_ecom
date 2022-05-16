@@ -80,10 +80,10 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('FullName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('FullName', 'id');
+        $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
+        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
 
         $balance_bf = ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
@@ -111,10 +111,10 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id');
+        $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
+        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
 
         $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');
 

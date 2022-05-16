@@ -221,6 +221,8 @@ return [
             'status_helper'     => '',
             'store_ean'         => 'Store ID',
             'store_ean_helper'  => '',
+            'type'              => 'Account Type',
+            'type_helper'       => '',
             'created_at'        => 'Created at',
             'created_at_helper' => '',
             'updated_at'        => 'Updated At',
