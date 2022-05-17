@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'about'                                => 'About',
     'actions'                              => 'Actions',
     'add'                                  => 'Add',
     'add_package_type'                     => 'Add Package Type',
@@ -59,6 +60,7 @@ return [
     'thankYouForUsingOurApplication'       => 'Thank you for using our website',
     'timeFrom'                             => 'From',
     'timeTo'                               => 'To',
+    'timeline'                             => 'Timeline',
     'toggleNavigation'                     => 'Toggle navigation',
     'trade_discount'                       => 'Trade Disc',
     'user_name'                            => 'Name',
@@ -124,6 +126,7 @@ return [
     'change_notifications_field_1_label'   => 'Send email notification to User',
     'change_notifications_field_2_label'   => 'When Entry on CRUD',
     'change_password'                      => 'Change password',
+    'change_photo'                         => 'Change Photo',
     'chart_type'                           => 'Chart type',
     'choose_logo'                          => 'Choose Logo',
     'close'                                => 'Close',
@@ -271,6 +274,7 @@ return [
     'preferences'                          => 'Preferences',
     'prefix'                               => 'Prefix',
     'price'                                => 'Price',
+    'profile'                              => 'Profile',
     'private_notes'                        => 'Internal Notes',
     'processed_orders'                     => 'Processed Orders',
     'product_management'                   => 'Product management',

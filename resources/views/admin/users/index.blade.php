@@ -41,7 +41,7 @@
                         <thead>
                         <tr>
                             <th width="5"></th>
-                            <th>{{ trans('cruds.user.fields.id') }}</th>
+{{--                            <th>{{ trans('cruds.user.fields.id') }}</th>--}}
                             <th>{{ trans('cruds.user.fields.fullname') }}</th>
                             <th>{{ trans('cruds.user.fields.email') }}</th>
                             <th>{{ trans('cruds.user.fields.repcode') }}</th>
@@ -54,8 +54,8 @@
                             @foreach($users as $key => $user)
                                 <tr data-entry-id="{{ $user->id }}">
                                     <td></td>
-                                    <td>{{ $user->id ?? '' }}</td>
-                                    <td>{{ $user->FullName ?? '' }}</td>
+                                    <td hidden>{{ $user->id ?? '' }}</td>
+                                    <td>{{ $user->PreferredName ?? '' }}</td>
                                     <td>{{ $user->email ?? '' }}</td>
                                     <td>{{ $user->RepCode ?? '' }}</td>
                                     <td>
