@@ -80,7 +80,7 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('FullName', 'id');
+        $salesreps = User::where('IsSalesperson', 1)->get();
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
         $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
@@ -97,6 +97,7 @@ class CustomersController extends Controller
 
         $customer->load('customerBalance', 'lastedited');
 
+        //echo "<pre>"; print_r($salesreps); die;
         return view('customers.show', compact('customer', 'customerOrders', 'salesreps',
             'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total'));
     }
@@ -118,6 +119,7 @@ class CustomersController extends Controller
 
         $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');
 
+        //echo "<pre>"; print_r($customer); die;
         return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
     }
 

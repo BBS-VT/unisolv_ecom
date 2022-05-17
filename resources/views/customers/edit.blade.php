@@ -108,9 +108,7 @@
                                     <label for="BillToCustomerID">{{ trans('cruds.customer.fields.billing') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
                                         @foreach($billingCustomers as $id => $billingCustomer)
-                                            <option value="{{ $id }}">
-                                                    {{ $billingCustomer ?? '' }}
-                                            </option>
+                                            <option value="{{ $id }}" {{ ($id == $billingCustomer) ? 'selected' : '' }}>{{ $billingCustomer }} </option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('BillToCustomerID'))
@@ -164,7 +162,7 @@
                                     <label class="required" for="SalesRepID">{{ trans('cruds.customer.fields.salerep') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
                                         @foreach($salesreps as $id => $salesrep)
-                                            <option value="{{ $id }}" {{ ($id == $salesrep) ? 'selected' : '' }}> {{ $salesrep }} </option>
+                                            <option value="{{ $id }}" @if(old($id, $customer->SalesRepID) === $id) 'selected' @endif> {{ $salesrep }} </option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('SalesRepID'))
@@ -433,12 +431,12 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group {{ $errors->has('DeiveryRoute') ? 'has-error' : '' }}">
-                                                    <label for="DeiveryRoute">{{ trans('cruds.customer.fields.delivery') }}</label>
-                                                    <input type="text" id="DeiveryRoute" name="DeiveryRoute" class="form-control" value="{{ old('DeiveryRoute', isset($customer) ? $customer->DeiveryRoute : '') }}">
-                                                    @if($errors->has('DeiveryRoute'))
+                                                <div class="form-group {{ $errors->has('DeliveryRoute') ? 'has-error' : '' }}">
+                                                    <label for="DeliveryRoute">{{ trans('cruds.customer.fields.delivery') }}</label>
+                                                    <input type="text" id="DeliveryRoute" name="DeliveryRoute" class="form-control" value="{{ old('DeliveryRoute', isset($customer) ? $customer->DeliveryRoute : '') }}">
+                                                    @if($errors->has('DeliveryRoute'))
                                                         <p class="help-block">
-                                                            {{ $errors->first('DeiveryRoute') }}
+                                                            {{ $errors->first('DeliveryRoute') }}
                                                         </p>
                                                     @endif
                                                     <p class="helper-block">

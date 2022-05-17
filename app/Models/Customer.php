@@ -84,7 +84,7 @@ class Customer extends Model
 
     public function customerCategory()
     {
-        return $this->belongsTo(CustomerCategory::class);
+        return $this->belongsTo(CustomerCategory::class, 'AccountType', 'CustomerCategoryID');
     }
 
     public function buyingGroup()

@@ -44,7 +44,7 @@ class CreateCustomersTable extends Migration
             $table->string('PostalAddressLine1', 60);
             $table->string('PostalAddressLine2', 60)->nullable();
             $table->string('PostalCity', 45);
-            $table->string('PostalPostalCode', 10);
+            $table->string('PostalPostalCode', 10)->default('0000');
             $table->boolean('CustomerStatus')->unsigned()->default('1');
             $table->bigInteger('CountryID')->unsigned()->default('202');
             $table->bigInteger('SalesRepID')->unsigned()->nullable();

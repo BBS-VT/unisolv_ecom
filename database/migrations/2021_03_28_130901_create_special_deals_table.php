@@ -15,8 +15,8 @@ class CreateSpecialDealsTable extends Migration
     {
         Schema::create('special_deals', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('StockItemID')->unsigned()->nullable();
-            $table->bigInteger('CustomerID')->unsigned()->nullable();
+            $table->string('StockItemID', 50)->nullable();
+            $table->string('CustomerID', 11)->nullable();
             $table->string('BuyingGroupID')->nullable();
             $table->string('CustomerCategoryID');
             $table->bigInteger('StockGroupID')->unsigned()->nullable();
@@ -29,8 +29,8 @@ class CreateSpecialDealsTable extends Migration
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
 
-            $table->foreign('StockItemID')->references('id')->on('products');
-            $table->foreign('CustomerID')->references('id')->on('customers');
+            $table->foreign('StockItemID')->references('StockCode')->on('products');
+            $table->foreign('CustomerID')->references('acc_main')->on('customers');
             $table->foreign('BuyingGroupID')->references('BuyingGroupName')->on('buying_groups');
             $table->foreign('CustomerCategoryID')->references('AccountType')->on('customer_categories');
             $table->foreign('StockGroupID')->references('id')->on('product_categories');
