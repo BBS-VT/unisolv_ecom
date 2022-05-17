@@ -36,8 +36,13 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::create($request->all());
+        $user = $request->all();
+        $user['IsSalesperson'] = $request->input('IsSalesperson');
+        User::create($user);
+        //$user = User::create($request->all());
+
         $user->roles()->sync($request->input('roles', []));
+        
 
         return redirect()->route('admin.users.index');
     }

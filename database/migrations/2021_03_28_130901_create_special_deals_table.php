@@ -18,7 +18,7 @@ class CreateSpecialDealsTable extends Migration
             $table->string('StockItemID', 50)->nullable();
             $table->string('CustomerID', 11)->nullable();
             $table->string('BuyingGroupID')->nullable();
-            $table->string('CustomerCategoryID');
+            $table->string('CustomerCategoryID')->nullable();
             $table->bigInteger('StockGroupID')->unsigned()->nullable();
             $table->string('DealDescription', 30);
             $table->date('StartDate');
