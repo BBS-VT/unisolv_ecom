@@ -30,4 +30,9 @@ class BuyingGroup extends Model
     {
         return $this->hasMany(SpecialDeals::class, 'BuyingGroupID');
     }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class, 'BuyingGroupName', 'BuyingGroupID');
+    }
 }

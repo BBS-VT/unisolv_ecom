@@ -30,7 +30,12 @@ class CustomerCategory extends Model
 
     public function specialdeals()
     {
-        return $this->hasMany(SpecialDeals::class, 'CustomerCategoryID');
+        return $this->hasMany(SpecialDeals::class, 'AccountType', 'CustomerCategoryID');
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class, 'AccountType', 'CustomerCategoryID');
     }
 
     /**

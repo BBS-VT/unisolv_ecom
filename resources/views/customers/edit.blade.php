@@ -35,6 +35,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('customers.update', [$customer->id]) }}"  enctype="multipart/form-data">
+                        @method('PUT')
                         @csrf
                         <div class="row">
                             <div class="col-md-1">
@@ -108,7 +109,7 @@
                                     <label for="BillToCustomerID">{{ trans('cruds.customer.fields.billing') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
                                         @foreach($billingCustomers as $id => $billingCustomer)
-                                            <option value="{{ $id }}" {{ ($id == $billingCustomer) ? 'selected' : '' }}>{{ $billingCustomer }} </option>
+{{--                                            <option value="{{ $id }}" {{ ($billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>--}}
                                         @endforeach
                                     </select>
                                     @if($errors->has('BillToCustomerID'))
@@ -123,10 +124,10 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group bootstrap-select-1">
-                                    <label class="required" for="CustomerCategoryID">{{ trans('cruds.customer.fields.category') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{$errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" name="CustomerCategoryID">
+                                    <label class="required" for="CustomerCategoryID">{{ __('cruds.customer.fields.category') }} </label>
+                                    <select class="select2 form-control mb-3 {{$errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" name="CustomerCategoryID">
                                         @foreach($customerCategories as $id => $customerCategory)
-                                            <option value="{{ $id }}" {{ ($id == $customerCategory) ? 'selected' : '' }}>{{ $customerCategory }}</option>
+                                            <option value="{{ $id }}" {{ ($customerCategory == $customer->customerCategory->AccountType) ? 'selected' : '' }}>{{ $customerCategory }}</option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('CustomerCategoryID'))
@@ -144,7 +145,7 @@
                                     <label for="BuyingGroupID">{{ trans('cruds.customer.fields.contract') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
                                         @foreach($buyingGroups as $id => $buyingGroup)
-                                            <option value="{{ $id }}" {{ ($id == $buyingGroup) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
+                                            <option value="{{ $id }}" {{ ($buyingGroup == $customer->buyingGroup->BuyingGroupName) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('BuyingGroupID'))
@@ -160,9 +161,9 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="required" for="SalesRepID">{{ trans('cruds.customer.fields.salerep') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
+                                    <select class="select2 form-control mb-3 {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
                                         @foreach($salesreps as $id => $salesrep)
-                                            <option value="{{ $id }}" @if(old($id, $customer->SalesRepID) === $id) 'selected' @endif> {{ $salesrep }} </option>
+                                            <option value="{{ $id }}" {{ ($id == $customer->salesrep->RepCode) ? 'selected' : '' }}> {{ $salesrep }} </option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('SalesRepID'))

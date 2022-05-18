@@ -112,7 +112,7 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'Repcode')->prepend(trans('global.pleaseSelect'), '');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
         $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
@@ -121,6 +121,7 @@ class CustomersController extends Controller
 
         //echo "<pre>"; print_r($customer); die;
         return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
+        //return response()->json($salesreps);
     }
 
     /**
