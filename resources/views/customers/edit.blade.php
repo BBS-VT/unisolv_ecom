@@ -107,10 +107,16 @@
                             <div class="col-md-3">
                                 <div class="form-group bootstrap-select-1">
                                     <label for="BillToCustomerID">{{ trans('cruds.customer.fields.billing') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
-                                        @foreach($billingCustomers as $id => $billingCustomer)
-{{--                                            <option value="{{ $id }}" {{ ($billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>--}}
-                                        @endforeach
+                                    <select class="select2 form-control mb-3 {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
+                                        @if( $billingCustomers !== null )
+                                            @foreach($billingCustomers as $id => $billingCustomer)
+{{--                                                <option value="{{ $id }}" {{ ($billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>--}}
+                                            @endforeach
+                                        @else
+                                            @foreach($billingCustomers as $id => $billingCustomer)
+                                                <option value="{{ $id }}" >{{ $billingCustomer }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @if($errors->has('BillToCustomerID'))
                                         <em class="invalid-feedback">

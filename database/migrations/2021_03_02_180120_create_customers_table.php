@@ -16,7 +16,7 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('acc_main', 11)->unique();
-            $table->string('acc_sub', 3)->default('000');
+            $table->string('acc_sub', 3)->default('000')->nullable();
             $table->string('CustomerName', 100);
             $table->bigInteger('BillToCustomerID')->unsigned()->nullable();
             $table->string('CustomerCategoryID')->nullable();

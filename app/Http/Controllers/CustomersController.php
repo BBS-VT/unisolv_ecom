@@ -112,7 +112,7 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'Repcode')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'Repcode');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
         $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
@@ -133,7 +133,12 @@ class CustomersController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
+        //echo "<pre>"; print_r($customer); die;
         $customer->update($request->all());
+        $customer->billingCustomer()->sync($request->input('billingCustomer', []));
+        $customer->customerCategory()->sync($request->input('customerCategory', []));
+        $customer->buyingGroups()->sync($request->input('buyingGroups', []));
+        $customer->salesrep()->sync($request->input('salesrep', []));
 
         return redirect()->route('customers.index');
     }
