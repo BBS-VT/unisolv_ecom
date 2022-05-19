@@ -120,7 +120,7 @@ class CustomersController extends Controller
         $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');
 
         //echo "<pre>"; print_r($customer); die;
-        return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
+        return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers','customerCategories', 'buyingGroups'));
         //return response()->json($salesreps);
     }
 
