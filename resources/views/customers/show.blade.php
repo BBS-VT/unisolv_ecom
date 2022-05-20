@@ -31,9 +31,9 @@
                                 &nbsp;&nbsp;
                                 <h4 class="card-title">{{ __('global.account') }} &nbsp; &#x3a; &nbsp;
                                     {{ $customer->acc_main }} {{ ($customer->acc_sub == 0) ? '' : $customer->acc_sub }}</h4>
-                                @if(isset($customer->BillToCustomerID))
+                                {{--@if(isset($customer->BillToCustomerID))
                                     <p class="text-muted mb-0">{{ __('global.accountMain') }} &nbsp; &#x3a; &nbsp;{{ $customer->billingCustomer->CustomerName }}</p>
-                                @endif
+                                @endif--}}
                             </div>
                         </div>
                         <div class="col-auto align-self-center">
