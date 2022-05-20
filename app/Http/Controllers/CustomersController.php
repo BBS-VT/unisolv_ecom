@@ -224,7 +224,9 @@ class CustomersController extends Controller
 
         \Excel::import(new CustomerMasterImport,$request->import_file);
 
-        //DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
+        DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
+        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
+        DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');

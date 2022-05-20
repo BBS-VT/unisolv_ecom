@@ -151,10 +151,10 @@
                                 <div class="form-group">
                                     <label for="BuyingGroupID">{{ trans('cruds.customer.fields.contract') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
-                                        @if( $customer->BuyingGroupID !== 9999 )
+                                        @if( $customer->BuyingGroupID == 9999 )
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
                                             @foreach($buyingGroups as $id => $buyingGroup)
-                                                <option value="{{ $customer->buyingGroup->BuyingGroupName }}" >{{ $buyingGroup }}</option>
+                                                <option value="{{ $buyingGroup }}" >{{ $buyingGroup }}</option>
                                             @endforeach
                                         @else
                                             @foreach($buyingGroups as $id => $buyingGroup)
