@@ -200,7 +200,7 @@
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
-                    if (contractDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
+                    if (globalDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
 
                         if (discount === contractDiscount) {
                             amount = Number(amount) - Number(discountAmount);
