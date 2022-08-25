@@ -145,6 +145,8 @@ class AjaxController extends Controller
                         $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
                     })
                     ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orWhere('Barcode', 'like', '%'.$search.'%')
+                    ->orWhere('AltBarcode', 'like', '%'.$search.'%')
                     ->orderBy('products.StockItemName')
                     ->with('taxes')
                     ->get();
@@ -159,6 +161,8 @@ class AjaxController extends Controller
                         $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
                     })
                     ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orWhere('Barcode', 'like', '%'.$search.'%')
+                    ->orWhere('AltBarcode', 'like', '%'.$search.'%')
                     ->orderBy('products.StockItemName')
                     ->with('taxes')
                     ->get();
@@ -174,6 +178,8 @@ class AjaxController extends Controller
                         $join->on('special_deals.EndDate', '>=', DB::raw("'" . $dealDate . "'"));
                     })
                     ->where('StockItemName', 'like', '%'.$search.'%')
+                    ->orWhere('Barcode', 'like', '%'.$search.'%')
+                    ->orWhere('AltBarcode', 'like', '%'.$search.'%')
                     ->orderBy('products.StockItemName')
                     ->with('taxes')
                     ->get();

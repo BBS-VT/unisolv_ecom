@@ -40,6 +40,7 @@ class Product extends Model implements HasMedia
         'LeadTimeDays',
         'Packsize',
         'Barcode',
+        'AltBarcode',
         'CostPrice',
         'SellingPrice',
         'DiscountPercentage',

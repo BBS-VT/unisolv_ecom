@@ -178,6 +178,19 @@
                                     <span class="help-block">{{ trans('cruds.product.fields.barcode_helper') }}</span>
                                 </div>
                             </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="AltBarcode">{{ trans('cruds.product.fields.altbarcode') }}</label>
+                                    <input class="form-control {{ $errors->has('AltBarcode') ? 'is-invalid' : '' }}" type="text" name="AltBarcode" id="AltBarcode"
+                                           value="{{ old('AltBarcode', '') }}" >
+                                    @if($errors->has('AltBarcode'))
+                                        <div class="invalid-feedback">
+                                            {{ $errors->first('AltBarcode') }}
+                                        </div>
+                                    @endif
+                                    <span class="help-block">{{ trans('cruds.product.fields.altbarcode_helper') }}</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">

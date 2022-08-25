@@ -317,6 +317,8 @@ return [
         'fields'         => [
             'id'                      => 'ID',
             'id_helper'               => '',
+            'altbarcode'              => 'Alternate Barcode',
+            'altbarcode_helper'       => '',
             'barcode'                 => 'Barcode',
             'barcode_helper'          => '',
             'bin'                     => 'Bin',

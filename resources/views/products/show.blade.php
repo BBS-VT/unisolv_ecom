@@ -97,7 +97,14 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label for="BinLocation">{{ trans('cruds.product.fields.bin') }}</label>
+                                    <input class="form-control" type="text" name="BinLocation" id="BinLocation"
+                                           value="{{ !empty($product->stockHolding->BinLocation) ? $product->stockHolding->BinLocation : '' }}" readonly>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
                                 <div class="form-group">
                                     <label for="Size">{{ trans('cruds.product.fields.size') }}</label>
                                     <input class="form-control " type="text" name="Size" id="Size"
@@ -125,11 +132,11 @@
                                            value="{{ $product->Barcode }}" readonly>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="BinLocation">{{ trans('cruds.product.fields.bin') }}</label>
-                                    <input class="form-control" type="text" name="BinLocation" id="BinLocation"
-                                           value="{{ !empty($product->stockHolding->BinLocation) ? $product->stockHolding->BinLocation : '' }}" readonly>
+                                    <label for="AltBarcode">{{ trans('cruds.product.fields.altbarcode') }}</label>
+                                    <input class="form-control " type="text" name="AltBarcode" id="AltBarcode"
+                                           value="{{ $product->AltBarcode ?? '' }}" readonly>
                                 </div>
                             </div>
                         </div>

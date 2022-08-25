@@ -129,7 +129,20 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-2">
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label for="BinLocation">{{ trans('cruds.product.fields.bin') }}</label>
+                                    <input class="form-control {{ $errors->has('BinLocation') ? 'is-invalid' : '' }}" type="text" name="BinLocation" id="BinLocation"
+                                           value="{{ $product->stockHolding->BinLocation ?? '' }}" >
+                                    @if($errors->has('BinLocation'))
+                                        <div class="invalid-feedback">
+                                            {{ $errors->first('BinLocation') }}
+                                        </div>
+                                    @endif
+                                    <span class="help-block">{{ trans('cruds.product.fields.bin_helper') }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
                                 <div class="form-group">
                                     <label for="Size">{{ trans('cruds.product.fields.size') }}</label>
                                     <input class="form-control {{ $errors->has('Size') ? 'is-invalid' : '' }}" type="text" name="Size" id="Size"
@@ -184,17 +197,17 @@
                                     <span class="help-block">{{ trans('cruds.product.fields.barcode_helper') }}</span>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-sm-2">
                                 <div class="form-group">
-                                    <label for="BinLocation">{{ trans('cruds.product.fields.bin') }}</label>
-                                    <input class="form-control {{ $errors->has('BinLocation') ? 'is-invalid' : '' }}" type="text" name="BinLocation" id="BinLocation"
-                                           value="{{ $product->stockHolding->BinLocation }}" >
-                                    @if($errors->has('BinLocation'))
+                                    <label for="AltBarcode">{{ trans('cruds.product.fields.altbarcode') }}</label>
+                                    <input class="form-control {{ $errors->has('AltBarcode') ? 'is-invalid' : '' }}" type="text" name="AltBarcode" id="AltBarcode"
+                                           value="{{ $product->AltBarcode ?? '' }}" >
+                                    @if($errors->has('AltBarcode'))
                                         <div class="invalid-feedback">
-                                            {{ $errors->first('BinLocation') }}
+                                            {{ $errors->first('AltBarcode') }}
                                         </div>
                                     @endif
-                                    <span class="help-block">{{ trans('cruds.product.fields.bin_helper') }}</span>
+                                    <span class="help-block">{{ trans('cruds.product.fields.altbarcode_helper') }}</span>
                                 </div>
                             </div>
                         </div>
