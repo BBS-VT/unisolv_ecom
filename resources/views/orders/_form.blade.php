@@ -28,8 +28,8 @@
     </div>
     <div class="col-md-2">
         <div class="form-group">
-            <label class="required" for="reference_number">{{ __('cruds.order.fields.ponumber') }}</label>
-            <input type="text" name="reference_number"  class="form-control" required />
+            <label for="reference_number">{{ __('cruds.order.fields.ponumber') }}</label>
+            <input type="text" name="reference_number"  class="form-control" />
         </div>
     </div>
     <div class="col-md-2">

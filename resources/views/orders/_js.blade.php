@@ -191,9 +191,9 @@
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
-            console.log("globalDiscount", globalDiscount);
-            console.log("discount", discount);
-            console.log("contractDiscount", contractDiscount);
+            //console.log("globalDiscount", globalDiscount);
+            //console.log("discount", discount);
+            //console.log("contractDiscount", contractDiscount);
 
             // calculate discount
 
@@ -257,7 +257,7 @@
             subTotal += Number(amount);
 
             var amountPrice = Number(amount) ;
-            //console.log("subTotal", subTotal);
+            console.log("subTotal", subTotal);
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));
