@@ -200,21 +200,14 @@
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
-                    if (globalDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
+                    if (contractDiscount != undefined && contractDiscount !== 0) {
 
-                        if (discount === contractDiscount) {
                             amount = Number(amount) - Number(discountAmount);
 
                             Number(row.find('[name="discount[]"]').attr("readonly", "true"));
 
                             $('#add_product_row').attr('disabled', false);
                             $('#save_form_button').attr('disabled', false);
-
-                        } else {
-                            amount = Number(amount) - Number(discountAmount);
-                            $('#add_product_row').attr('disabled', false);
-                            $('#save_form_button').attr('disabled', false);
-                        }
 
                     } else if(globalDiscount !== '0.01') {
 

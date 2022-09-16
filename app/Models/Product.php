@@ -103,7 +103,7 @@ class Product extends Model implements HasMedia
 
     public function specialdeals()
     {
-        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'id');
+        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'StockCode');
     }
 
     public function stockHolding()
