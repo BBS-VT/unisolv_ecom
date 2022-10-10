@@ -154,7 +154,7 @@
                                         @if( $customer->BuyingGroupID == 9999 )
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
                                             @foreach($buyingGroups as $id => $buyingGroup)
-                                                <option value="{{ $buyingGroup }}" >{{ $buyingGroup }}</option>
+                                                <option value="{{ $customer->buyingGroup->BuyingGroupName }}" >{{ $buyingGroup }}</option>
                                             @endforeach
                                         @else
                                             @foreach($buyingGroups as $id => $buyingGroup)
