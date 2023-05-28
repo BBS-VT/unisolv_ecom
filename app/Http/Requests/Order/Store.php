@@ -25,14 +25,12 @@ class Store extends FormRequest
             return [
                 'order_number' => 'required|unique:orders,OrderNumber',
                 'order_date' => 'required|date',
-                'reference_number' => 'required|string',
-                'customer_id' => 'required|exists:customers,id',
+                'customer_id' => 'required|exists:customers,acc_main',
                 'sub_total' => 'required',
                 'grand_total' => 'required',
                 'notes' => 'nullable|string',
                 'private_notes' => 'nullable|string',
 
-                'total_discount' => 'sometimes|integer|min:0',
                 'total_taxes' => 'sometimes|array|min:0',
 
                 'product' => 'required|array|max:'.$max_lenght,

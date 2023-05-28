@@ -79,7 +79,7 @@
                                 <strong class="font-14">Account:</strong>&nbsp; {{ $order->customer->acc_main }}<br>
                                 <strong class="font-14">Order Date :</strong> {{ $order->created_at->format('d/m/Y') }}<br>
                                 <strong class="font-14">Order Nr :</strong> {{ $order->OrderNumber }}<br>
-                                <strong class="font-14">Rep :</strong> {{ $order->customer->salesrep->RepCode }}<br>
+                                <strong class="font-14">Rep :</strong> @if(isset($order->customer->salesrep->RepCode)) {{ $order->customer->salesrep->RepCode }} @endif<br>
                             </div>
                         </div><!--end col-->
                     </div><!--end row-->

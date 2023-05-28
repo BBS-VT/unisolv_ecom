@@ -26,6 +26,7 @@ class CreateProductsTable extends Migration
             $table->bigInteger('LeadTimeDays')->unsigned()->nullable();
             $table->bigInteger('Packsize')->unsigned()->default('1');
             $table->string('Barcode', 50)->nullable();
+            $table->string('AltBarcode', 50)->nullable();
             $table->decimal('CostPrice', 18,3);
             $table->decimal('SellingPrice', 18,3);
             $table->decimal('WeightPerUnit', 18,3)->default('0.000');

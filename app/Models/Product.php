@@ -40,6 +40,7 @@ class Product extends Model implements HasMedia
         'LeadTimeDays',
         'Packsize',
         'Barcode',
+        'AltBarcode',
         'CostPrice',
         'SellingPrice',
         'DiscountPercentage',
@@ -102,7 +103,7 @@ class Product extends Model implements HasMedia
 
     public function specialdeals()
     {
-        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'id');
+        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'StockCode');
     }
 
     public function stockHolding()

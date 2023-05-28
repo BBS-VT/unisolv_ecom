@@ -93,7 +93,12 @@
                                 <td></td>
                                 <td>{{ $product->StockCode ?? '' }}</td>
                                 <td>{{ $product->StockItemName ?? '' }}</td>
-                                <td>{{ $product->Barcode ?? '' }}</td>
+                                <td>
+                                    {{ $product->Barcode ?? '' }}
+                                    @if(isset($product->AltBarcode))
+                                        &nbsp;|&nbsp; {{ $product->AltBarcode ?? '' }}
+                                    @endif
+                                </td>
 {{--                                <td>{{ $product->SellingPrice ?? '' }}</td>--}}
                                 <td>{{ number_format($product->SellingPrice, 2, '.', ' ') }}</td>
                                 <td>

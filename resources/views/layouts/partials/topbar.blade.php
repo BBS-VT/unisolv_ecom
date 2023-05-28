@@ -138,7 +138,6 @@
                     <a class=" btn btn-sm btn-soft-primary" href="#" role="button"><i class="fas fa-plus mr-2"></i>New Task</a>
                 </div>
             </li>
-
         </ul>
     </nav>
     <!-- end navbar-->

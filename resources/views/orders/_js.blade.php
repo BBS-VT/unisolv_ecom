@@ -191,30 +191,23 @@
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
-            console.log("globalDiscount", globalDiscount);
-            console.log("discount", discount);
-            console.log("contractDiscount", contractDiscount);
+            //console.log("globalDiscount", globalDiscount);
+            //console.log("discount", discount);
+            //console.log("contractDiscount", contractDiscount);
 
             // calculate discount
 
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
-                    if (globalDiscount !== 0.01 && contractDiscount != undefined && contractDiscount !== globalDiscount) {
+                    if (contractDiscount != undefined && contractDiscount !== 0) {
 
-                        if (discount === contractDiscount) {
                             amount = Number(amount) - Number(discountAmount);
 
                             Number(row.find('[name="discount[]"]').attr("readonly", "true"));
 
                             $('#add_product_row').attr('disabled', false);
                             $('#save_form_button').attr('disabled', false);
-
-                        } else {
-                            amount = Number(amount) - Number(discountAmount);
-                            $('#add_product_row').attr('disabled', false);
-                            $('#save_form_button').attr('disabled', false);
-                        }
 
                     } else if(globalDiscount !== '0.01') {
 
@@ -257,7 +250,7 @@
             subTotal += Number(amount);
 
             var amountPrice = Number(amount) ;
-            //console.log("subTotal", subTotal);
+            console.log("subTotal", subTotal);
 
             // Set price input value
             row.find('.amount_price').val(amountPrice.toFixed(2));

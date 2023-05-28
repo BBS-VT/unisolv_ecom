@@ -111,14 +111,15 @@ class OrdersController extends Controller
      */
     public function store(Store $request)
     {
+        //echo "<pre>";
+        //print_r($request->all());
+        //die;
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
         // Get company based settings
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
-
-        //dd($request);
 
         // Save Order to Database
         $order = Order::create([
@@ -178,7 +179,6 @@ class OrdersController extends Controller
 
             }
         }
-
 
         // If Order based taxes are given
         if ($request->has('total_taxes')) {
