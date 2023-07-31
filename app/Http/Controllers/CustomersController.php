@@ -97,9 +97,10 @@ class CustomersController extends Controller
 
         $customer->load('customerBalance', 'lastedited');
 
-        //echo "<pre>"; print_r($salesreps); die;
+        //echo "<pre>"; print_r($balance_total); die;
         return view('customers.show', compact('customer', 'customerOrders', 'salesreps',
             'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total'));
+        //return response()->json($customer->customerBalance());
     }
 
     /**
@@ -224,6 +225,7 @@ class CustomersController extends Controller
 
         \Excel::import(new CustomerMasterImport,$request->import_file);
 
+        DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
         DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
         DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
         DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
