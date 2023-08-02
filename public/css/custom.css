@@ -157,3 +157,6 @@ ul.sidebar-menu li.sidebar-menu-item {
     color: #0062cc;
 }
 
+.form-control .select2-hidden-accessible {
+    overflow: auto;
+}
