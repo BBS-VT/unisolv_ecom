@@ -68,11 +68,9 @@
                 <table id="datatable" class="table table-bordered dt-responsive" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead>
                         <tr>
-                            <th width="5"></th>
                             <th>{{ trans('cruds.customer.fields.account_code') }}</th>
                             <th>{{ trans('cruds.customer.fields.name') }}</th>
                             <th>{{ trans('cruds.customer.fields.main_contact') }}</th>
-                            <th>{{ trans('cruds.customer.fields.email') }}</th>
                             <th>{{ trans('cruds.customer.fields.phone') }}</th>
                             <th>{{ trans('cruds.customer.fields.vat_nr') }}</th>
 {{--                            <th>{{ trans('cruds.customer.fields.store_ean') }}</th>--}}
@@ -84,11 +82,36 @@
                     <tbody>
                     @foreach($customers as $key => $customer)
                         <tr data-entry-id="{{ $customer->id }}">
-                            <td></td>
                             <td>{{ $customer->acc_main ?? '' }} {{ $customer->acc_sub ?? '' }}</td>
-                            <td>{{ $customer->CustomerName ?? '' }}</td>
-                            <td>{{ $customer->PrimaryContactID ?? '' }}</td>
-                            <td>{{ $customer->GeneralEmailAddress ?? '' }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="dripicons-card mr-1"></i> <a href="{{ route('customers.show', $customer->id) }}">
+                                            &nbsp;{{ $customer->CustomerName ?? '' }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-1">
+                                    <small class="text-muted">
+                                        <i class="dripicons-location"></i>
+                                        {{ $customer->DeliveryAddressLine1 ?? '' }} {{ $customer->DeliveryCity ?? ''}}
+                                    </small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="dripicons-user mr-1 text-muted"></i>
+                                        <p class="text-muted mb-0">{{ $customer->PrimaryContactID ?? '' }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted">
+                                        <i class="dripicons-mail mr-1"></i>
+                                        {{ $customer->GeneralEmailAddress ?? '' }}
+                                    </small>
+                                </div>
+                            </td>
                             <td>{{ $customer->PhoneNumber ?? '' }}</td>
                             <td>{{ $customer->VatNr ?? '' }}</td>
 {{--                            <td>{{ $customer->StoreEAN ?? '' }}</td>--}}
@@ -204,38 +227,9 @@
         $(function () {
             let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
-            @can('client_delete')
-            let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-            let deleteButton = {
-                text: deleteButtonTrans,
-                url: "{{ route('customers.massDestroy') }}",
-                className: 'btn-danger',
-                action: function (e, dt, node, config) {
-                    var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-                        return $(entry).data('entry-id')
-                    });
-
-                    if (ids.length === 0) {
-                        alert('{{ trans('global.datatables.zero_selected') }}')
-
-                        return
-                    }
-
-                    if (confirm('{{ trans('global.areYouSure') }}')) {
-                        $.ajax({
-                            headers: {'x-csrf-token': _token},
-                            method: 'POST',
-                            url: config.url,
-                            data: { ids: ids, _method: 'DELETE' }})
-                            .done(function () { location.reload() })
-                    }
-                }
-            }
-            dtButtons.push(deleteButton)
-            @endcan
 
             $.extend(true, $.fn.dataTable.defaults,{
-                order: [[ 2, 'desc']],
+                order: [[ 1, 'desc']],
                 pageLength: 30,
             });
             $('.datatable-Customer:not(.ajaxTable)').DataTable({ buttons: dtButtons })

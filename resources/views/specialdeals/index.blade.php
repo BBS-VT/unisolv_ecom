@@ -87,11 +87,10 @@
                                 </td>
                                 <td>
                                     @can('specialdeal_show')
-                                        <a href="{{ route('deals.show', $deal->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
-                                           data-placement="top">
+                                        <a data-toggle="modal" data-id="'.$deal->id.'" data-target="#displayDeal" >
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
+
                                     @endcan
                                     &nbsp;
                                     @can('specialdeal_edit')
@@ -283,6 +282,9 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('specialdeals.partials._show')
+
                 </div>
             </div>
         </div>
@@ -308,5 +310,6 @@
 
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
+
 
 @endpush
