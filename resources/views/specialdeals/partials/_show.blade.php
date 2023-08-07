@@ -21,8 +21,7 @@
                         <div class="mb-3 row">
                             <label for="example-text-input" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">{{ trans('cruds.deal.fields.product') }}</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" value="{{ intval( ltrim($deal->products->StockCode ?? '', '0')) }} &nbsp; &ndash;
-                                    &nbsp; {{ $deal->products->StockItemName ?? '' }}">
+                                <input class="form-control" type="text" value="{{ intval( ltrim($deal->products->StockCode ?? '', '0')) }} &nbsp; &ndash; &nbsp; {{ $deal->products->StockItemName ?? '' }}">
                             </div>
                         </div>
                         <div class="row">
@@ -78,7 +77,7 @@
                             <div class="col-lg-4">
                                 <div class="form-group bootstrap-select-1">
                                     <label for="UnitPrice" >{{ trans('cruds.deal.fields.unitprice') }}</label>
-                                    <input class="form-control" type="text" value="{{ isset($deal) ? $deal->DiscountAmount : '') }}"
+                                    <input class="form-control" type="text" value="{{ isset($deal) ? $deal->DiscountAmount : '' }}"
                                            id="UnitPrice" name="UnitPrice">
                                 </div>
                             </div>
@@ -106,7 +105,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                <button type="button" id="submit" value="submit" class="btn btn-primary btn-sm">Save</button>
             </div>
         </div>
     </div>
