@@ -207,6 +207,10 @@ class ProductController extends Controller
         \Excel::import(new StockMasterImport,$request->import_file);
 
         DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
+        DB::statement('UPDATE products SET StockCode = TRIM(StockCode)');
+        DB::statement('UPDATE products SET SupplierID = TRIM(SupplierID)');
+        DB::statement('UPDATE products SET AltBarcode = TRIM(AltBarcode)');
+
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
