@@ -34,6 +34,7 @@ class CompanySetting extends Model
         'estimate_prefix' => 'QUO',
         'payment_prefix' => 'PAY',
         'tax_per_item' => false,
+        'display_subaccount' => true,
         'discount_per_item' => false,
         'invoice_color' => '#308AF3',
         'invoice_auto_archive' => false,

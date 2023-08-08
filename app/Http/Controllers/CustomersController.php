@@ -26,13 +26,16 @@ class CustomersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('customer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
         $customers = Customer::all();
+        $display_subaccount = (boolean) $currentCompany->getSetting('display_subaccount');
 
-        return view('customers.index', compact('customers'));
+        return view('customers.index', compact('customers', 'display_subaccount'));
     }
 
     /**

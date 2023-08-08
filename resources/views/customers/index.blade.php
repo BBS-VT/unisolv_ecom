@@ -82,7 +82,13 @@
                     <tbody>
                     @foreach($customers as $key => $customer)
                         <tr data-entry-id="{{ $customer->id }}">
-                            <td>{{ $customer->acc_main ?? '' }} {{ $customer->acc_sub ?? '' }}</td>
+                            <td>
+                                @if($display_subaccount)
+                                    {{ $customer->acc_main ?? '' }} {{ $customer->acc_sub ?? '' }}
+                                @else
+                                    {{ $customer->acc_main ?? '' }}
+                                @endif
+                            </td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="d-flex align-items-center">

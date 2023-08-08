@@ -23,11 +23,15 @@ class BuyingGroupController extends Controller
         return view('admin.buyingGroup.index', compact('buyingGroups'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         abort_if(Gate::denies('buying_group_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('buyingGroup.create');
+        $buyingGroup = new BuyingGroup();
+        if (!empty($request->old())) {
+            $buyingGroup->fill($request->old());
+        }
+        return view('admin.settings.customer.buyingGroup.create', compact('buyingGroup'));
     }
 
     public function store(StoreBuyingGroupRequest $request)

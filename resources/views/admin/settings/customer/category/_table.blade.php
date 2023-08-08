@@ -1,3 +1,14 @@
+<div class="card-header ">
+    <div class="col-auto align-self-center float-right">
+        @can('settings_create')
+            <a href="{{ route('admin.customer-category.create') }}" class="btn btn-sm btn-gradient-primary">
+                <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
+                {{ trans('global.add') }}&nbsp;{{ trans('global.customer_category') }}
+            </a>
+        @endcan
+    </div>
+</div>
+<div class="card-body">
 @if($customerCategories->count() > 0)
     <div class="table-responsive" data-toggle="lists">
         <table class="table table-xl mb-0 thread-border-top-0 table-striped">
@@ -54,3 +65,4 @@
         <p class="h4">{{ __('global.no_customer_categories_yet') }}</p>
     </div>
 @endif
+</div>
