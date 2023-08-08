@@ -62,10 +62,18 @@ class SpecialDealsController extends Controller
     {
         abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $where = array('id' => $id);
-        $deal = SpecialDeals::where($where)->first();
+        $where = array('special_deals.id' => $id);
+        $deal = SpecialDeals::where($where)
+            ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
+            ->join('customers', 'customers.acc_main', '=', 'special_deals.CustomerID')
+            ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
+            ->first();
 
-        return Response::json($deal);
+        $dealCustomer = SpecialDeals::where($where)
+
+            ->first();
+
+        return response()->json($deal);
     }
 
     /**

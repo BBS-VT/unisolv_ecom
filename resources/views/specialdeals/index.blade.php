@@ -87,10 +87,11 @@
                                 </td>
                                 <td>
                                     @can('specialdeal_show')
-                                        <a href="javascript:void(0)" id="show_deal" data-id="{{ $deal->id }}" >
+                                        <a href="javascript:void(0)" id="show_deal" data-url="{{ route('deals.show', $deal->id) }}"
+                                           data-toggle="tooltip" title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
+                                           data-placement="top">
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
-
                                     @endcan
                                     &nbsp;
                                     @can('specialdeal_edit')
@@ -313,26 +314,22 @@
 
     <script>
         $(document).ready(function () {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
 
-            $('body'.on('click', '#show_deal', function () {
-                var deal_id = $(this).data('id');
-                $.get('deals/' + deal_id, function (data) {
+            $('body').on('click', '#show_deal', function () {
+                var dealURL = $(this).data('url');
+                $.get(dealURL, function (data) {
+                    $('#showDealModal').modal('show');
                     $('#deal_id').val(data.id);
-                    $('#deal_name').val(data.DealName);
-                    $('#deal_type').val(data.DealType);
+                    $('#deal_name').val(data.DealDescription);
+                    $('#deal_customer').val(data.CustomerName);
+                    $('#deal_product').val(data.StockItemName);
                     $('#deal_amount').val(data.DiscountAmount);
                     $('#deal_percentage').val(data.DiscountPercentage);
                     $('#deal_unit_price').val(data.UnitPrice);
                     $('#deal_start_date').val(data.StartDate);
                     $('#deal_end_date').val(data.EndDate);
-                    $('#showDealModal').modal('show');
                 })
-            }))
+            })
         })
     </script>
 
