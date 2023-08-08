@@ -87,7 +87,7 @@
                                 </td>
                                 <td>
                                     @can('specialdeal_show')
-                                        <a data-toggle="modal" data-id="'.$deal->id.'" data-target="#displayDeal" >
+                                        <a href="javascript:void(0)" id="show_deal" data-id="{{ $deal->id }}" >
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
 
@@ -311,5 +311,29 @@
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
 
+    <script>
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('body'.on('click', '#show_deal', function () {
+                var deal_id = $(this).data('id');
+                $.get('deals/' + deal_id, function (data) {
+                    $('#deal_id').val(data.id);
+                    $('#deal_name').val(data.DealName);
+                    $('#deal_type').val(data.DealType);
+                    $('#deal_amount').val(data.DiscountAmount);
+                    $('#deal_percentage').val(data.DiscountPercentage);
+                    $('#deal_unit_price').val(data.UnitPrice);
+                    $('#deal_start_date').val(data.StartDate);
+                    $('#deal_end_date').val(data.EndDate);
+                    $('#showDealModal').modal('show');
+                })
+            }))
+        })
+    </script>
 
 @endpush

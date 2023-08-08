@@ -58,13 +58,14 @@ class SpecialDealsController extends Controller
         return redirect()->route('deals.index');
     }
 
-    public function show(SpecialDeals $specialDeals)
+    public function show($id)
     {
         abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $deals = SpecialDeals::find($specialDeals);
+        $where = array('id' => $id);
+        $deal = SpecialDeals::where($where)->first();
 
-        return view('specialdeals.show', compact($deals));
+        return Response::json($deal);
     }
 
     /**

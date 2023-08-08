@@ -1,4 +1,4 @@
-<div class="modal fade bd-example-modal-lg" id="displayDeal" tabindex="-1" role="dialog" aria-labelledby="displayDealLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-lg" id="showDealModal" tabindex="-1" role="dialog" aria-labelledby="displayDealLabel" aria-hidden="true">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -14,8 +14,8 @@
                         <div class="form-group row">
                             <label for="DealDescription" class="col-sm-4 col-form-label text-left required">{{ trans('cruds.deal.fields.description') }}</label>
                             <div class="col-lg-8">
-                                <input class="form-control" type="hidden" value="{{ $deal->id ??  '' }}" >
-                                <input class="form-control" type="text" value="{{ $deal->DealDescription ??  '' }}" >
+                                <input class="form-control" type="hidden" id="deal_id" name="deal_id" >
+                                <input class="form-control" type="text" id="deal_name" name="deal_name" value="" >
                             </div>
                         </div>
                         <div class="mb-3 row">
