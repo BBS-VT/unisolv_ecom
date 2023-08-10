@@ -37,7 +37,7 @@ class StockMasterImport implements ToModel, WithStartRow
             'CostPrice'          => $row[24],
             'SellingPrice'       => $row[31],
             'SearchDetails'      => $row[30],
-            'DiscountPercentage' => $row[44],
+            'DiscountPercentage' => $row[45],
             'status'             => '1',
             'LastEditedBy'       => Auth::user()->id,
         ]);
