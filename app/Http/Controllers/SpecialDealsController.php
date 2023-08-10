@@ -63,17 +63,26 @@ class SpecialDealsController extends Controller
         abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $where = array('special_deals.id' => $id);
+
         $deal = SpecialDeals::where($where)
             ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
             ->join('customers', 'customers.acc_main', '=', 'special_deals.CustomerID')
             ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
             ->first();
 
-        $dealCustomer = SpecialDeals::where($where)
+        if ( is_null($deal)) {
+            $deal = SpecialDeals::where($where)
+                ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
+                ->join('customers', 'customers.BuyingGroupID', '=', 'special_deals.BuyingGroupID')
+                ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
+                ->get();
 
-            ->first();
+                return response()->json($deal);
 
-        return response()->json($deal);
+        } else {
+            return response()->json($deal);
+        }
+
     }
 
     /**
@@ -87,6 +96,8 @@ class SpecialDealsController extends Controller
         \Excel::import(new SpecialDealsImport,$request->import_file);
 
         DB::statement('UPDATE special_deals SET CustomerID = TRIM(CustomerID)');
+        DB::statement('UPDATE special_deals SET BuyingGroupID = CustomerID WHERE CustomerID LIKE '%P%'');
+        DB::statement('UPDATE special_deals SET DealDescription = CustomerID WHERE CustomerID LIKE '%P%'');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
 

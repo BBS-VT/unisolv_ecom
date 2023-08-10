@@ -270,7 +270,7 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode("3.2"));
         $identificationTag
             ->appendChild($document->createElement("InstanceIdentifier"))
-            ->appendChild($document->createTextNode($order->OrderNumber));
+            ->appendChild($document->createTextNode($order->CustomerPurchaseOrderNumber));
         $identificationTag
             ->appendChild($document->createElement("Type"))
             ->appendChild($document->createTextNode("Order"));
@@ -307,7 +307,7 @@ class OrdersController extends Controller
         );
         $orderidentityTag
             ->appendChild($document->createElement("entityIdentification"))
-            ->appendChild($document->createTextNode("$order->CustomerPurchaseOrderNumber"));
+            ->appendChild($document->createTextNode($order->OrderNumber));
         $orderTag
             ->appendChild($document->createElement("orderTypeCode"))
             ->appendChild($document->createTextNode("220"));

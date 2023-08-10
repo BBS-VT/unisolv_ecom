@@ -69,11 +69,21 @@
                             <tr data-entry-id="{{ $deal->id }}">
                                 <td> </td>
                                 <td>
-                                    {{ $deal->DealDescription ?? '' }}
-                                    <span class="badge badge-secondary">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
-                                    <span class="badge badge-success">{{ $deal->customer->CustomerName ?? '' }}</span>
-                                    <span class="badge badge-danger">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
-                                    <span class="badge badge-warning">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
+                                    @if(!empty($deal->BuyinGroupID))
+                                        @foreach($deal->buyingGroup as $key => $group)
+                                            @foreach($group->customer as $entity)
+                                                {{ $group->BuyingGroupName }} -
+                                                <span class="badge badge-info">{{ $entity->CustomerName }}</span>
+                                            @endforeach
+                                        @endforeach
+                                    @else
+                                        {{ $deal->DealDescription ?? '' }}
+                                        <span class="badge badge-secondary">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
+                                        <span class="badge badge-success">{{ $deal->customer->CustomerName ?? '' }}</span>
+                                        <span class="badge badge-danger">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
+                                        <span class="badge badge-warning">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
+                                    @endif
+
                                 </td>
                                 <td> {{ $deal->StartDate ?? '' }} - {{ $deal->EndDate ?? '' }}</td>
                                 <td> {{ $deal->DiscountPercentage ?? $deal->DiscountAmount }} </td>
