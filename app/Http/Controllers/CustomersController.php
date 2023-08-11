@@ -230,7 +230,8 @@ class CustomersController extends Controller
 
         DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
         DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
-        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
+        DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
+//        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
         DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
