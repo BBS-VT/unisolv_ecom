@@ -96,8 +96,8 @@ class SpecialDealsController extends Controller
         \Excel::import(new SpecialDealsImport,$request->import_file);
 
         DB::statement('UPDATE special_deals SET CustomerID = TRIM(CustomerID)');
-        //DB::statement('UPDATE special_deals SET BuyingGroupID = CustomerID WHERE CustomerID LIKE '%P%'');
-        //DB::statement('UPDATE special_deals SET DealDescription = CustomerID WHERE CustomerID LIKE '%P%'');
+        DB::statement('UPDATE special_deals SET BuyingGroupID = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
+        DB::statement('UPDATE special_deals SET DealDescription = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
 
