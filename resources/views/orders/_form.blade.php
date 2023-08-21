@@ -49,6 +49,7 @@
                         <th class="col-4 col-sm-4">{{ __('global.products') }}</th>
                         <th class="d-none d-xl-block">{{ __('global.taxes') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.price') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.discount') }}</th>
                         <th class="col-2 col-sm-2 text-right">{{ __('global.total') }}</th>
@@ -56,17 +57,20 @@
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-25">{{ __('global.taxes') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-15">{{ __('global.price') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and $discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
                         <th class="w-20">{{ __('global.discount') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and !$discount_per_item)
                         <th class="w-60">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @endif
@@ -91,6 +95,9 @@
                     @endif
                     <td class="col-2 col-sm-2">
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
+                    </td>
+                    <td class="col-2 col-sm-2">
+                        <input name="stockOnhand[]" type="number" class=" form-control priceListener" value="0" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
@@ -147,6 +154,9 @@
                             @endif
                             <td class="col-2 col-sm-2">
                                 <input name="quantity[]" type="number" class="form-control priceListener" value="{{ $item->quantity }}" required>
+                            </td>
+                            <td class="col-2 col-sm-2">
+                                <input name="stockOnhand[]" type="number" class="form-control priceListener" value="{{ $item->QuantityOnHand }}" readonly>
                             </td>
                             <td class="col-2 col-sm-2">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>

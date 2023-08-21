@@ -128,6 +128,7 @@
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
             var discountInput = element.closest('tr').find('[name="discount[]"]');
+            var stockOnhand = element.closest('tr').find('[name="stockOnhand[]"');
 
             // Set selected taxes from product
             var taxIds = [];
@@ -137,6 +138,9 @@
             });
             taxesSelect.val(taxIds);
             taxesSelect.trigger('change');
+
+            // Set product stock on hand
+            stockOnhand.val(selectedOption.data('QuantityOnHand'));
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
