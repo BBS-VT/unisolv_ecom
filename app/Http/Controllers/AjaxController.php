@@ -95,7 +95,7 @@ class AjaxController extends Controller
             if (count($buyingGroupDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.BuyingGroupID', 'special_deals.StartDate', 'special_deals.EndDate',
-                    'special_deals.DiscountPercentage', 'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand')
+                    'special_deals.DiscountPercentage', 'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand', 'products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($buyingGroup, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');
@@ -110,7 +110,7 @@ class AjaxController extends Controller
             } elseif (count($specialDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage',
-                    'special_deals.UnitPrice','stock_item_holdings.QuantityOnHand')
+                    'special_deals.UnitPrice','stock_item_holdings.QuantityOnHand','products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');
@@ -126,7 +126,7 @@ class AjaxController extends Controller
                 $products = Product::findByCompany($currentCompany->id)
                     ->select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                         'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage',
-                        'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand')
+                        'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand','products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');
@@ -143,7 +143,7 @@ class AjaxController extends Controller
             if (count($buyingGroupDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.BuyingGroupID', 'special_deals.StartDate', 'special_deals.EndDate',
-                    'special_deals.DiscountPercentage', 'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand')
+                    'special_deals.DiscountPercentage', 'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand','products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($buyingGroup, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');
@@ -161,7 +161,7 @@ class AjaxController extends Controller
             } elseif (count($specialDeal) > 0) {
                 $products = Product::select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                     'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage',
-                    'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand')
+                    'special_deals.UnitPrice', 'stock_item_holdings.QuantityOnHand','products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');
@@ -180,7 +180,7 @@ class AjaxController extends Controller
                 $products = Product::findByCompany($currentCompany->id)
                     ->select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode', 'products.SellingPrice AS price',
                         'products.DiscountPercentage AS discount', 'special_deals.StartDate', 'special_deals.EndDate', 'special_deals.DiscountPercentage',
-                        'special_deals.UnitPrice','stock_item_holdings.QuantityOnHand')
+                        'special_deals.UnitPrice','stock_item_holdings.QuantityOnHand','products.DiscountPercentage AS maxDiscount')
                     ->distinct()
                     ->leftJoin('special_deals', function ($join) use ($matchCustomer, $dealDate) {
                         $join->on('products.StockCode', '=', 'special_deals.StockItemID');

@@ -97,7 +97,7 @@
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td class="col-2 col-sm-2">
-                        <input name="stockOnhand[]" type="number" class=" form-control priceListener" value="0" readonly>
+                        <input name="stockOnhand[]" type="text" class=" form-control " value="0" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
@@ -106,6 +106,7 @@
                         <td class="col-2 col-sm-2">
                             <div class="input-group input-group-merge">
                                 <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" value="0">
+                                <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener max_discount" value="0">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
@@ -165,6 +166,7 @@
                                 <td class="col-2 col-sm-2">
                                     <div class="input-group input-group-merge">
                                         <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" value="{{ $item->discount_val }}">
+                                        <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener" value="{{ $item->maxdiscount }}">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 %
