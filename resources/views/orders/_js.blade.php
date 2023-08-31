@@ -134,7 +134,7 @@
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
             var discountInput = element.closest('tr').find('[name="discount[]"]');
-            var maxDiscount = element.closest('tr').find('[name="maxDiscount[]"]')
+            var maxdiscount = element.closest('tr').find('[name="maxDiscount[]"]')
             var stockOnhand = element.closest('tr').find('[name="stockOnhand[]"');
 
             // Set selected taxes from product
@@ -151,7 +151,7 @@
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
-            maxDiscount.val(selectedOption.data('maxDiscount'));
+            maxdiscount.val(selectedOption.data('maxDiscount'));
 
             // Set product price for price input
             priceInput.val(selectedOption.data('price'));
@@ -224,22 +224,22 @@
                             $('#add_product_row').attr('disabled', false);
                             $('#save_form_button').attr('disabled', false);
 
-                    } else if(globalDiscount !== '0.01') {
+                        /*} else if(globalDiscount !== '0.01') {
 
-                        if (discount <= globalDiscount) {
+                            if (discount <= globalDiscount) {
 
-                            amount = Number(amount) - Number(discountAmount);
-                            $('#add_product_row').attr('disabled', false);
-                            $('#save_form_button').attr('disabled', false);
+                                amount = Number(amount) - Number(discountAmount);
+                                $('#add_product_row').attr('disabled', false);
+                                $('#save_form_button').attr('disabled', false);
 
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                text: 'Discount cannot exceed ' + globalDiscount + ' % for this item',
-                            })
-                            $('#add_product_row').attr('disabled', true);
-                            $('#save_form_button').attr('disabled', true);
-                        }
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    text: 'Discount cannot exceed ' + globalDiscount + ' % for this item',
+                                })
+                                $('#add_product_row').attr('disabled', true);
+                                $('#save_form_button').attr('disabled', true);
+                            }*/
 
                     } else {
                         amount = Number(amount) - Number(discountAmount);

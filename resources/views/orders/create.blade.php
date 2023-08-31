@@ -45,6 +45,29 @@
         $(document).ready(function() {
             addProductRow();
         });
+        $(document).on("change keyup blur", "#chDiscount", function () {
+            var discount = Number($(this).find('[name="discount[]"]').val());
+            var maxdiscount = Number(row.find('[name="maxdiscount[]"]').val());
+
+            if(maxdiscount !== '0.01') {
+
+                if (discount <= maxdiscount) {
+
+                    calculateRowPrice();
+                    /*amount = Number(amount) - Number(discountAmount);
+                    $('#add_product_row').attr('disabled', false);
+                    $('#save_form_button').attr('disabled', false);*/
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: 'Discount cannot exceed ' + maxdiscount + ' % for this item',
+                    })
+                    $('#add_product_row').attr('disabled', true);
+                    $('#save_form_button').attr('disabled', true);
+                }
+            }
+        })
     </script>
 @endpush
 

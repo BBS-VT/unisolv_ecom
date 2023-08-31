@@ -46,12 +46,12 @@
             <thead>
                 <tr>
                     @if($tax_per_item and $discount_per_item)
-                        <th class="col-4 col-sm-4">{{ __('global.products') }}</th>
-                        <th class="d-none d-xl-block">{{ __('global.taxes') }}</th>
-                        <th class="col-2 col-sm-2">{{ __('global.quantity') }}</th>
-                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
-                        <th class="col-2 col-sm-2">{{ __('global.price') }}</th>
-                        <th class="col-2 col-sm-2">{{ __('global.discount') }}</th>
+                        <th >{{ __('global.products') }}</th>
+                        <th >{{ __('global.taxes') }}</th>
+                        <th >{{ __('global.quantity') }}</th>
+                        <th >{{ __('global.stockOnhand') }}</th>
+                        <th >{{ __('global.price') }}</th>
+                        <th >{{ __('global.discount') }}</th>
                         <th class="col-2 col-sm-2 text-right">{{ __('global.total') }}</th>
                     @elseif($tax_per_item and !$discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
@@ -79,14 +79,14 @@
             </thead>
             <tbody class="list" id="items">
                 <tr id="product_row_template" class="d-none col-4 col-sm-4">
-                    <td class="select-container">
+                    <td width="25%" class="select-container">
                         <select name="product[]" class="select2 form-control priceListener select-with-footer" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
                     </td>
                     @if($tax_per_item)
-                        <td class="select-container d-none d-xl-block">
-                            <select name="taxes[]" multiple class="form-control priceListener hidden">
+                        <td class="select-container d-none d-xl-block" style="visibility:hidden;">
+                            <select name="taxes[]" type="hidden" multiple class="form-control priceListener">
                                 @foreach(get_tax_types_select2_array($currentCompany->id) as $option )
                                     <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}">{{ $option['text'] }}</option>
                                 @endforeach
@@ -106,7 +106,7 @@
                         <td class="col-2 col-sm-2">
                             <div class="input-group input-group-merge">
                                 <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" value="0">
-                                <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener max_discount" value="0">
+                                <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener" value="0">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
@@ -145,7 +145,7 @@
 
                             </td>
                             @if($tax_per_item)
-                                <td class="select-container d-none d-xl-block">
+                                <td class="select-container d-none d-xl-block" style="visibility:hidden;">
                                     <select name="taxes[]" multiple class="form-control priceListener select-with-footer select2-hidden-accessible">
                                         @foreach(get_tax_types_select2_array($currentCompany->id) as $option)
                                             <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $item->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
@@ -165,8 +165,8 @@
                             @if($discount_per_item)
                                 <td class="col-2 col-sm-2">
                                     <div class="input-group input-group-merge">
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" value="{{ $item->discount_val }}">
-                                        <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener" value="{{ $item->maxdiscount }}">
+                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
+                                        <input name="maxdiscount[]" type="number" class="form-control form-control-prepended"  value="{{ $item->maxdiscount }}">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 %
