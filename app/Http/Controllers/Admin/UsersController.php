@@ -36,15 +36,31 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = $request->all();
-        $user['IsSalesperson'] = $request->input('IsSalesperson');
-        User::create($user);
-        //$user = User::create($request->all());
+        $userdata = $request->all();
+        $userdata['IsSalesperson'] = $request->input('IsSalesperson');
+
+        // Check if user is a sales person
+        if(isset($request->IsSalesperson)) {
+            $salesperson = "1";
+        } else {
+            $salesperson = "0";
+        }
+        $userdata['IsSalesperson'] = $salesperson;
+
+        // Check if user is a customer
+        if(isset($request->IsCustomer)) {
+            $customer = "1";
+        } else {
+            $customer = "0";
+        }
+        $userdata['IsCustomer'] = $customer;
+
+        //echo "<pre>"; print_r($userdata); die;
+        $user = User::create($userdata);
 
         $user->roles()->sync($request->input('roles', []));
 
-
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index')->with('flash_message', 'User successfully added');
     }
 
     public function edit(User $user)
