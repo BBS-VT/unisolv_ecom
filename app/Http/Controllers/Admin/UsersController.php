@@ -36,6 +36,9 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
+        $authUser = $request->user();
+        $currentCompany = $authUser->currentCompany();
+
         $userdata = $request->all();
         $userdata['IsSalesperson'] = $request->input('IsSalesperson');
 
@@ -59,6 +62,8 @@ class UsersController extends Controller
         $user = User::create($userdata);
 
         $user->roles()->sync($request->input('roles', []));
+
+        $user->attachCompany($currentCompany);
 
         return redirect()->route('admin.users.index')->with('flash_message', 'User successfully added');
     }
