@@ -97,7 +97,7 @@
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td class="col-2 col-sm-2">
-                        <input name="stockOnhand[]" type="text" class=" form-control " value="0" readonly>
+                        <input name="stockOnHand[]" type="text" class=" form-control stock_input" value="0" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
@@ -105,8 +105,8 @@
                     @if($discount_per_item)
                         <td class="col-2 col-sm-2">
                             <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" value="0">
-                                <input name="maxdiscount[]" type="number" class="form-control form-control-prepended priceListener" value="0">
+                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onkeyup="checkScore(this.value)" value="0">
+                                <input type="number" name="maxdiscount[]" id="maxdiscount" class="form-control" >
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
@@ -157,7 +157,7 @@
                                 <input name="quantity[]" type="number" class="form-control priceListener" value="{{ $item->quantity }}" required>
                             </td>
                             <td class="col-2 col-sm-2">
-                                <input name="stockOnhand[]" type="number" class="form-control priceListener" value="{{ $item->QuantityOnHand }}" readonly>
+                                <input name="stockOnHand[]" type="number" class="form-control stock_input " value="{{ $item->stockOnHand }}" readonly>
                             </td>
                             <td class="col-2 col-sm-2">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>
@@ -165,8 +165,8 @@
                             @if($discount_per_item)
                                 <td class="col-2 col-sm-2">
                                     <div class="input-group input-group-merge">
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
-                                        <input name="maxdiscount[]" type="number" class="form-control form-control-prepended"  value="{{ $item->maxdiscount }}">
+                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onkeyup="checkDiscount(this.value)" value="{{ $item->discount_val }}">
+                                        <input type="number" name="maxdiscount[]" id="maxdiscount" class="form-control" >
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 %

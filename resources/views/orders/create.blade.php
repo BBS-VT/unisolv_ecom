@@ -45,18 +45,35 @@
         $(document).ready(function() {
             addProductRow();
         });
-        $(document).on("change keyup blur", "#chDiscount", function () {
+        $(document).on("change", "#chDiscount", function () {
+            var product_id = $(this).closest('tr').find('[name="product[]"]').val();
             var discount = Number($(this).find('[name="discount[]"]').val());
-            var maxdiscount = Number(row.find('[name="maxdiscount[]"]').val());
+            //console.log("product",product_id);
+            //console.log("discount",discount);
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ route('ajax.maxdiscount') }}',
+                data: { _token: CSRF_TOKEN,'id': product_id },
+                dataType: 'json',
+                success: function(data) {
+                    //console.log("maxdiscount", data.maxdiscount);
+                    $('#maxdiscount').val(data.maxdiscount);
+                },
+                error: function() {
+
+                }
+            });
+            /*var maxdiscount = Number(row.find('[name="maxdiscount[]"]').val());
 
             if(maxdiscount !== '0.01') {
 
                 if (discount <= maxdiscount) {
 
                     calculateRowPrice();
-                    /*amount = Number(amount) - Number(discountAmount);
+                    /!*amount = Number(amount) - Number(discountAmount);
                     $('#add_product_row').attr('disabled', false);
-                    $('#save_form_button').attr('disabled', false);*/
+                    $('#save_form_button').attr('disabled', false);*!/
 
                 } else {
                     Swal.fire({
@@ -66,8 +83,26 @@
                     $('#add_product_row').attr('disabled', true);
                     $('#save_form_button').attr('disabled', true);
                 }
-            }
+            }*/
         })
+    </script>
+    <script type="text/javascript">
+        function checkScore(value) {
+            let max_discount = $(this).find('[name="maxdiscount[]"]').val();
+            console.log("max_discount",max_discount);
+            let discount = Number($(this).find('[name="discount[]"]').val());
+
+            if (discount <= max_discount) {
+                calculateRowPrice();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Discount cannot exceed ' + max_discount + ' % for this item',
+                })
+                $('#add_product_row').attr('disabled', true);
+                $('#save_form_button').attr('disabled', true);
+            }
+        }
     </script>
 @endpush
 

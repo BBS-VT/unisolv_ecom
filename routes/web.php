@@ -85,6 +85,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Ajax requests
     Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
     Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
+    Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
 
 });
 
