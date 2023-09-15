@@ -88,9 +88,10 @@
     </script>
     <script type="text/javascript">
         function checkScore(value) {
-            let max_discount = $(this).find('[name="maxdiscount[]"]').val();
+            let max_discount = Number($(this).find('[name="maxdiscount[]"]').val());
             console.log("max_discount",max_discount);
             let discount = Number($(this).find('[name="discount[]"]').val());
+            console.log("discount_validation", discount);
 
             if (discount <= max_discount) {
                 calculateRowPrice();
