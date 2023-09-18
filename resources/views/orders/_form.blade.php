@@ -7,12 +7,12 @@
                 <input type="hidden" name="salesperson_id" value="{{ auth()->user()->RepCode }}" />
             @endif
                 <label for="order_number">{{ __('cruds.order.fields.number') }}</label>
-            <input type="text" name="order_number" class="form-control" value="{{ $order->order_number }}" readonly>
+            <input type="text" name="order_number" id="order_number" class="form-control" value="{{ $order->order_number }}" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
+            <label class="required" for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
             <select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->customer_id)
@@ -29,13 +29,13 @@
     <div class="col-md-2">
         <div class="form-group">
             <label class="required" for="reference_number">{{ __('cruds.order.fields.ponumber') }}</label>
-            <input type="text" name="reference_number"  class="form-control" required />
+            <input type="text" name="reference_number" id="reference_number" class="form-control" required />
         </div>
     </div>
     <div class="col-md-2">
         <div class="form-group">
             <label class="required" for="order_date">{{ __('cruds.order.fields.order_date') }}</label>
-            <input type="text" name="order_date"  class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
+            <input type="text" name="order_date" id="order_date" class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
         </div>
     </div>
 </div>
@@ -105,12 +105,15 @@
                     @if($discount_per_item)
                         <td class="col-2 col-sm-2">
                             <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onkeyup="checkScore(this.value)" value="0">
-                                <input type="number" name="maxdiscount[]" id="maxdiscount" class="form-control" >
+                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="0">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
                             </div>
+
+                        </td>
+                        <td>
+                            <input type="number" name="max_discount[]" id="max_discount" class="form-control" >
                         </td>
                     @endif
                     <td class="text-right">
@@ -165,14 +168,18 @@
                             @if($discount_per_item)
                                 <td class="col-2 col-sm-2">
                                     <div class="input-group input-group-merge">
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onkeyup="checkDiscount(this.value)" value="{{ $item->discount_val }}">
-                                        <input type="number" name="maxdiscount[]" id="maxdiscount" class="form-control" >
+                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">
+
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 %
                                             </div>
                                         </div>
                                     </div>
+
+                                </td>
+                                <td>
+                                    <input name="max_discount[]" type="number"  id="max_discount" class="form-control" >
                                 </td>
                             @endif
                             <td class="text-right">
@@ -203,12 +210,12 @@
     <div class="col-md-5 mt-4 pr-4">
         <div class="form-group">
             <label for="notes">{{ __('global.notes') }}</label>
-            <textarea name="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
+            <textarea name="notes" id="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
         </div>
 
         <div class="form-group">
             <label for="private_notes">{{ __('global.private_notes') }}</label>
-            <textarea name="private_notes" class="form-control" rows="2">{{ $order->private_notes }}</textarea>
+            <textarea name="private_notes" id="private_notes" class="form-control" rows="2">{{ $order->private_notes }}</textarea>
         </div>
     </div>
 

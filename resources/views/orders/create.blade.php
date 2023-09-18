@@ -47,9 +47,7 @@
         });
         $(document).on("change", "#chDiscount", function () {
             var product_id = $(this).closest('tr').find('[name="product[]"]').val();
-            var discount = Number($(this).find('[name="discount[]"]').val());
-            //console.log("product",product_id);
-            //console.log("discount",discount);
+            //var discount = Number($(this).find('[name="discount[]"]').val());
 
             $.ajax({
                 type: 'GET',
@@ -58,42 +56,38 @@
                 dataType: 'json',
                 success: function(data) {
                     //console.log("maxdiscount", data.maxdiscount);
-                    $('#maxdiscount').val(data.maxdiscount);
+                    $('#max_discount').val(data.maxdiscount);
                 },
-                error: function() {
-
+                error: function(x , e) {
+                    if (x.status==0) {
+                        alert('You are offline!!\n Please check your network');
+                    } else if(x.status==404) {
+                        alert('Requested URL not found.');
+                    } else if(x.status==500) {
+                        alert('Internal Server Error.');
+                    } else if(e=='parsererror') {
+                        alert('Error.\nParsing JSON Request failed.');
+                    } else if(e=='timeout') {
+                        alert('Request Timed out');
+                    } else {
+                        alert('Unknown Error.\n'+x.responseText);
+                    }
                 }
             });
-            /*var maxdiscount = Number(row.find('[name="maxdiscount[]"]').val());
-
-            if(maxdiscount !== '0.01') {
-
-                if (discount <= maxdiscount) {
-
-                    calculateRowPrice();
-                    /!*amount = Number(amount) - Number(discountAmount);
-                    $('#add_product_row').attr('disabled', false);
-                    $('#save_form_button').attr('disabled', false);*!/
-
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        text: 'Discount cannot exceed ' + maxdiscount + ' % for this item',
-                    })
-                    $('#add_product_row').attr('disabled', true);
-                    $('#save_form_button').attr('disabled', true);
-                }
-            }*/
         })
     </script>
-    <script type="text/javascript">
-        function checkScore(value) {
-            let max_discount = Number($(this).find('[name="maxdiscount[]"]').val());
-            console.log("max_discount",max_discount);
-            let discount = Number($(this).find('[name="discount[]"]').val());
+    <script>
+        function validateDiscount(value) {
+            let maxDiscount = $(this).closest('tr').find("#max_discount").value;
+            let discount = $(this).closest('tr').find("#discount").value;
+            //var currentRow=$(this).closest("tr");
+
+            //var maxDiscount = currentRow.find("td:eq(6)").text();
+            //var discount = currentRow.find("td:eq(5)").text();
+            console.log("max_discount", maxDiscount);
             console.log("discount_validation", discount);
 
-            if (discount <= max_discount) {
+            if (discount <= maxDiscount) {
                 calculateRowPrice();
             } else {
                 Swal.fire({
@@ -105,5 +99,6 @@
             }
         }
     </script>
+
 @endpush
 

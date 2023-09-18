@@ -117,12 +117,9 @@
                 if(data.discount !== null) {
                     globalDiscount = data.discount;
                 }
-                //if(data.maxDiscount !== null) {
-                //    $(data.element).attr('data-maxDiscount', data.maxDiscount);
-                    //console.log('maxDiscount', data.maxDiscount);
-                //}
+
                 $(data.element).attr('data-stockOnHand', data.QuantityOnHand);
-                    //console.log('stockOnHand', data.QuantityOnHand);
+
 
 
                 return data.text;
@@ -135,7 +132,6 @@
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
             var discountInput = element.closest('tr').find('[name="discount[]"]');
-            //var maxdiscount = element.closest('tr').find('[name="maxDiscount[]"]');
             var stockOnHand = element.closest('tr').find('[name="stockOnHand[]"]');
 
 
@@ -154,8 +150,8 @@
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
-            console.log('discount', selectedOption.data('discount'));
-            //maxdiscount.val(selectedOption.data('maxDiscount'));
+            //console.log('discount', selectedOption.data('discount'));
+
 
             // Set product price for price input
             priceInput.val(selectedOption.data('price'));
@@ -207,12 +203,6 @@
 
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
-            //var maxdiscount = Number(row.find('[name="maxdiscount[]"]').val());
-            //console.log("globalDiscount", globalDiscount);
-            //console.log("discount", discount);
-            //console.log("contractDiscount", contractDiscount);
-            //console.log("maxdiscount", maxdiscount);
-
 
             // calculate discount
 
@@ -368,5 +358,7 @@
             var product = row.find('[name="product[]"]')
         });
     }
+
+
 
 </script>
