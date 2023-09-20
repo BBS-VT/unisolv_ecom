@@ -100,7 +100,7 @@
                         <input name="stockOnHand[]" type="text" class=" form-control stock_input" value="0" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
-                        <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
+                        <input name="price[]" type="text" class="form-control price_input priceListener"  autocomplete="off" value="0" readonly>
                     </td>
                     @if($discount_per_item)
                         <td class="col-2 col-sm-2">

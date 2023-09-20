@@ -45,7 +45,7 @@
         $(document).ready(function() {
             addProductRow();
         });
-        $(document).on("change", "#chDiscount", function () {
+        $(document).on("click", "#chDiscount", function () {
             var product_id = $(this).closest('tr').find('[name="product[]"]').val();
             //var discount = Number($(this).find('[name="discount[]"]').val());
 
@@ -78,14 +78,13 @@
     </script>
     <script>
         function validateDiscount(value) {
-            let maxDiscount = $(this).closest('tr').find("#max_discount").value;
-            let discount = $(this).closest('tr').find("#discount").value;
-            //var currentRow=$(this).closest("tr");
+            var maxDiscount = $(this.element).closest('tr').find('[name="discount[]"]').val();
 
-            //var maxDiscount = currentRow.find("td:eq(6)").text();
-            //var discount = currentRow.find("td:eq(5)").text();
-            console.log("max_discount", maxDiscount);
-            console.log("discount_validation", discount);
+            console.log(maxDiscount);
+            /*var maxDiscount = currentRow.children("#max_discount").html();
+            var discount = currentRow.children("#discount").html();
+            console.log("maximum discount", maxDiscount);
+            console.log("discount validation", discount);
 
             if (discount <= maxDiscount) {
                 calculateRowPrice();
@@ -96,7 +95,7 @@
                 })
                 $('#add_product_row').attr('disabled', true);
                 $('#save_form_button').attr('disabled', true);
-            }
+            }*/
         }
     </script>
 
