@@ -42,7 +42,7 @@
 
 <div class="col-12 mt-5">
     <div class="table-responsive" data-toggle="lists">
-        <table class="table table-xl mb-0 thead-border-top-0 table-striped">
+        <table class="table table-xl mb-0 thead-border-top-0 table-striped" id="orderDetail">
             <thead>
                 <tr>
                     @if($tax_per_item and $discount_per_item)
@@ -97,7 +97,7 @@
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td class="col-2 col-sm-2">
-                        <input name="stockOnHand[]" type="text" class=" form-control stock_input" value="0" readonly>
+                        <input name="stockOnHand[]" type="text" class=" form-control stock_input" value="" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener"  autocomplete="off" value="0" readonly>
@@ -105,16 +105,15 @@
                     @if($discount_per_item)
                         <td class="col-2 col-sm-2">
                             <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="0">
+{{--                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="">--}}
+                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" value="">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">%</div>
                                 </div>
                             </div>
 
                         </td>
-                        <td>
-                            <input type="number" name="max_discount[]" id="max_discount" class="form-control" >
-                        </td>
+
                     @endif
                     <td class="text-right">
                         <p class="mb-1">
@@ -168,7 +167,8 @@
                             @if($discount_per_item)
                                 <td class="col-2 col-sm-2">
                                     <div class="input-group input-group-merge">
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">
+{{--                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">--}}
+                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
 
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
@@ -178,9 +178,7 @@
                                     </div>
 
                                 </td>
-                                <td>
-                                    <input name="max_discount[]" type="number"  id="max_discount" class="form-control" >
-                                </td>
+
                             @endif
                             <td class="text-right">
                                 <p class="mb-1">

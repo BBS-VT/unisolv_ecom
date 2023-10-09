@@ -44,10 +44,10 @@
     <script>
         $(document).ready(function() {
             addProductRow();
+
         });
-        $(document).on("click", "#chDiscount", function () {
+        $(document).on("keyup", "#chDiscount", function () {
             var product_id = $(this).closest('tr').find('[name="product[]"]').val();
-            //var discount = Number($(this).find('[name="discount[]"]').val());
 
             $.ajax({
                 type: 'GET',
@@ -55,8 +55,9 @@
                 data: { _token: CSRF_TOKEN,'id': product_id },
                 dataType: 'json',
                 success: function(data) {
-                    //console.log("maxdiscount", data.maxdiscount);
-                    $('#max_discount').val(data.maxdiscount);
+                    window.discountValidate = data.discValidate;
+                    //console.log("discountValidate", discountValidate);
+                    validateDiscount();
                 },
                 error: function(x , e) {
                     if (x.status==0) {
@@ -74,30 +75,31 @@
                     }
                 }
             });
+
+
+            function validateDiscount() {
+
+                $('#orderDetail td').on('change', function() {
+                    var row = $(this).closest('tr');
+                    var id = $(row).find('[name="discount[]"]').val();
+
+                    //console.log("id", id);
+                    //console.log("discountValidate", discountValidate);
+
+                    if (id <= discountValidate) {
+                        calculateRowPriceNoContract();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Discount cannot exceed ' + discountValidate + ' % for this item',
+                        })
+                    }
+                });
+
+            }
         })
     </script>
-    <script>
-        function validateDiscount(value) {
-            var maxDiscount = $(this.element).closest('tr').find('[name="discount[]"]').val();
 
-            console.log(maxDiscount);
-            /*var maxDiscount = currentRow.children("#max_discount").html();
-            var discount = currentRow.children("#discount").html();
-            console.log("maximum discount", maxDiscount);
-            console.log("discount validation", discount);
-
-            if (discount <= maxDiscount) {
-                calculateRowPrice();
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    text: 'Discount cannot exceed ' + max_discount + ' % for this item',
-                })
-                $('#add_product_row').attr('disabled', true);
-                $('#save_form_button').attr('disabled', true);
-            }*/
-        }
-    </script>
 
 @endpush
 

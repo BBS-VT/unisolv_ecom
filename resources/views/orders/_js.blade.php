@@ -4,6 +4,8 @@
     var globalCustomer = 0;
     var globalDiscount = 0;
     var contractDiscount = 0;
+    var discountValidate;
+
 
     $("#customer").select2({
         ajax: {
@@ -269,6 +271,63 @@
         calculateTotalPrice(subTotal, taxes);
     }
 
+    function calculateRowPriceNoContract() {
+        var subTotal = 0;
+        var taxes = {};
+
+        $('tbody tr').each(function(index, element) {
+            var row = $(element);
+
+            // If the row is template just continue
+            if(row.attr('id') === 'product_row_template') return;
+
+            // quantity
+            var quantity = Number(row.find('[name="quantity[]"]').val());
+            //console.log(quantity)
+
+            // price
+            var price = Number(row.find('.price_input').unmask()) / 100;
+
+            // amount
+            var amount = (quantity * price);
+
+
+            // Calculate taxes
+            var totalTaxAmount = Number(0);
+            var selected_taxes = row.find('[name="taxes[]"]').find(':selected');
+            selected_taxes.each(function (index, tax) {
+                var percent = $(tax).data('percent');
+                var taxAmount = calculatePercent(percent, amount);
+                //console.log("taxAmount", taxAmount);
+                totalTaxAmount += Number(taxAmount);
+            });
+
+            // Add tax amount to Item Total
+            amount = Number(amount) + Number(totalTaxAmount) - Number(totalTaxAmount);
+
+            // discount
+            var discount = Number(row.find('[name="discount[]"]').val());
+
+            // calculate discount
+
+            if(!isNaN(discount) && discount != undefined && discount != 0) {
+                var discountAmount = calculatePercent(discount, amount);
+                amount = Number(amount) - Number(discountAmount);
+            }
+            // Add Item Total to Sub Total
+            subTotal += Number(amount);
+
+            var amountPrice = Number(amount) ;
+            //console.log("subTotal", subTotal);
+
+            // Set price input value
+            row.find('.amount_price').val(amountPrice.toFixed(2));
+            row.find('.amount_price').focusout();
+        });
+
+        calculateTotalPrice(subTotal, taxes);
+    }
+
     function calculateTotalPrice(subTotal, taxes) {
         // Total value
         total = 0;
@@ -358,7 +417,6 @@
             var product = row.find('[name="product[]"]')
         });
     }
-
 
 
 </script>

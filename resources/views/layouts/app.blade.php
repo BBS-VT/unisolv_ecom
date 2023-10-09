@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
 
 <head>
     <meta charset="utf-8" />
-    <title>{{ config('app.name', 'Unisolv CRM') }}</title>
+    <title> @yield('title') | {{ config('app.name', 'Unisolv') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ URL::asset('images/favicon.ico') }}">
 
     <!-- App css -->
     <link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />

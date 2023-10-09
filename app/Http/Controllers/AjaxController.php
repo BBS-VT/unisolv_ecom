@@ -210,6 +210,6 @@ class AjaxController extends Controller
             ->where('id', $request->id)
             ->value('DiscountPercentage');
 
-        return response()->json(['maxdiscount' => $maxdiscount]);
+        return response()->json(['discValidate' => $maxdiscount]);
     }
 }
