@@ -97,7 +97,7 @@
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td class="col-2 col-sm-2">
-                        <input name="stockOnHand[]" type="text" class=" form-control stock_input" value="" readonly>
+                        <input name="QuantityOnHand[]" type="text" class=" form-control stock_input" value="" readonly>
                     </td>
                     <td class="col-2 col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener"  autocomplete="off" value="0" readonly>
@@ -159,7 +159,7 @@
                                 <input name="quantity[]" type="number" class="form-control priceListener" value="{{ $item->quantity }}" required>
                             </td>
                             <td class="col-2 col-sm-2">
-                                <input name="stockOnHand[]" type="number" class="form-control stock_input " value="{{ $item->stockOnHand }}" readonly>
+                                <input name="QuantityOnHand[]" type="number" class="form-control stock_input " value="{{ $item->QuantityOnHand }}" readonly>
                             </td>
                             <td class="col-2 col-sm-2">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>

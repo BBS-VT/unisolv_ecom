@@ -5,6 +5,7 @@
     var globalDiscount = 0;
     var contractDiscount = 0;
     var discountValidate;
+    var stockOnhand = 0
 
 
     $("#customer").select2({
@@ -120,9 +121,7 @@
                     globalDiscount = data.discount;
                 }
 
-                $(data.element).attr('data-stockOnHand', data.QuantityOnHand);
-
-
+                stockOnhand = data.QuantityOnHand;
 
                 return data.text;
             }
@@ -136,7 +135,6 @@
             var discountInput = element.closest('tr').find('[name="discount[]"]');
             var stockOnHand = element.closest('tr').find('[name="stockOnHand[]"]');
 
-
             // Set selected taxes from product
             var taxIds = [];
             var taxes = selectedOption.data('taxes');
@@ -147,12 +145,11 @@
             taxesSelect.trigger('change');
 
             // Set product stock on hand
-            stockOnHand.val(selectedOption.data('stockOnHand'));
-
+            stockOnHand.val(stockOnhand);
+            console.log('stockOnHand', stockOnhand);
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
-            //console.log('discount', selectedOption.data('discount'));
 
 
             // Set product price for price input
@@ -220,22 +217,6 @@
                             $('#add_product_row').attr('disabled', false);
                             $('#save_form_button').attr('disabled', false);
 
-                        /*} else if(globalDiscount !== '0.01') {
-
-                            if (discount <= globalDiscount) {
-
-                                amount = Number(amount) - Number(discountAmount);
-                                $('#add_product_row').attr('disabled', false);
-                                $('#save_form_button').attr('disabled', false);
-
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    text: 'Discount cannot exceed ' + globalDiscount + ' % for this item',
-                                })
-                                $('#add_product_row').attr('disabled', true);
-                                $('#save_form_button').attr('disabled', true);
-                            }*/
 
                     } else {
                         amount = Number(amount) - Number(discountAmount);
