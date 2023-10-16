@@ -47,7 +47,7 @@
                 <tr>
                     @if($tax_per_item and $discount_per_item)
                         <th >{{ __('global.products') }}</th>
-                        <th >{{ __('global.taxes') }}</th>
+                        <th style="visibility:hidden;">{{ __('global.taxes') }}</th>
                         <th >{{ __('global.quantity') }}</th>
                         <th >{{ __('global.stockOnhand') }}</th>
                         <th >{{ __('global.price') }}</th>
