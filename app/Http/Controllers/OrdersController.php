@@ -248,9 +248,12 @@ class OrdersController extends Controller
         $senderTag = $headerTag->appendChild(
             $document->createElement("Sender")
         );
+        /*$senderTag
+            ->appendChild($document->createElement("Identifier"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $senderTag
             ->appendChild($document->createElement("Identifier"))
-            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+            ->appendChild($document->createTextNode($order->customer->acc_main));
 
         $receiverTag = $headerTag->appendChild(
             $document->createElement("Receiver")
@@ -318,9 +321,12 @@ class OrdersController extends Controller
         $orderbuyerTag = $orderTag->appendChild(
             $document->createElement("buyer")
         );
+        /*$orderbuyerTag
+            ->appendChild($document->createElement("gln"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $orderbuyerTag
             ->appendChild($document->createElement("gln"))
-            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+            ->appendChild($document->createTextNode($order->customer->acc_main));
         $orderbuyerTag
             ->appendChild($document->createElement("additionalPartyIdentification"))
             ->appendChild($document->createTextNode($order->customer->acc_main));
