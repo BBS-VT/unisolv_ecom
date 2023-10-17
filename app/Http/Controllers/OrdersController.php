@@ -253,7 +253,7 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $senderTag
             ->appendChild($document->createElement("Identifier"))
-            ->appendChild($document->createTextNode($order->customer->acc_main));
+            ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
 
         $receiverTag = $headerTag->appendChild(
             $document->createElement("Receiver")
@@ -326,7 +326,7 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $orderbuyerTag
             ->appendChild($document->createElement("gln"))
-            ->appendChild($document->createTextNode($order->customer->acc_main));
+            ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
         $orderbuyerTag
             ->appendChild($document->createElement("additionalPartyIdentification"))
             ->appendChild($document->createTextNode($order->customer->acc_main));
@@ -446,9 +446,12 @@ class OrdersController extends Controller
             $orderlogisicalshipTag = $orderlogisicalinfoTag->appendChild(
                 $document->createElement("shipTo")
             );
+            /*$orderlogisicalshipTag
+                ->appendChild($document->createElement("gln"))
+                ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
             $orderlogisicalshipTag
                 ->appendChild($document->createElement("gln"))
-                ->appendChild($document->createTextNode($order->customer->StoreEAN));
+                ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
             $orderlogisicalshipTag
                 ->appendChild($document->createElement("additionalPartyIdentification"))
                 ->appendChild($document->createTextNode($order->customer->acc_main));
