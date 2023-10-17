@@ -10,17 +10,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="shortcut icon" href="{{ URL::asset('images/favicon.ico') }}">
 
+    @include('layouts.partials.head-css')
     <!-- App css -->
-    <link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    {{--<link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/metisMenu.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ URL::asset('plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
-{{--    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />--}}
+--}}{{--    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />--}}{{--
     <link href="{{ URL::asset('css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet" type="text/css" />
     @stack('style')
-    @shared
+    @shared--}}
 
 </head>
 
@@ -46,7 +47,7 @@
 <!-- end page-wrapper -->
 
 <!-- jQuery  -->
-<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+{{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ URL::asset('js/metisMenu.min.js') }}"></script>
 <script src="{{ URL::asset('js/waves.js') }}"></script>
@@ -66,7 +67,8 @@
 <script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/custom.js') }}"></script>
 
-@stack('custom-scripts')
+@stack('custom-scripts')--}}
+@include('layouts.partials.vendor-scripts')
 
 @include('layouts._flash')
 
