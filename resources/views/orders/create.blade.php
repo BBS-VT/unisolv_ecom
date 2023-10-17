@@ -45,7 +45,7 @@
     <script src="{{ URL::asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
     <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
 
-    @include('orders._js')
+
 
     <script>
         $(document).ready(function() {
@@ -105,6 +105,8 @@
             }
         })
     </script>
+
+    @include('orders._js')
 
 
 @endsection
