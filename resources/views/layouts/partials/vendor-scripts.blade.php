@@ -4,7 +4,7 @@
     <script src="{{ URL::asset('js/waves.js') }}"></script>
     <script src="{{ URL::asset('js/feather.min.js') }}"></script>
     <script src="{{ URL::asset('js/simplebar.min.js') }}"></script>
-
+    <script src="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
     <script src="{{ URL::asset('js/dropdown.js') }}"></script>
     <script src="{{ URL::asset('js/moment.js') }}"></script>
     <script src="{{ URL::asset('plugins/daterangepicker/daterangepicker.js') }}"></script>

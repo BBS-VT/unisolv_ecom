@@ -82,10 +82,10 @@
                 }
             });
 
-
             function validateDiscount() {
 
-                $('#orderDetail td').on('change', function() {
+                $('#orderDetail td').on('change', function(e) {
+                    e.preventDefault();
                     var row = $(this).closest('tr');
                     var id = $(row).find('[name="discount[]"]').val();
 
@@ -93,7 +93,9 @@
                     //console.log("discountValidate", discountValidate);
 
                     if (id <= discountValidate) {
+
                         calculateRowPriceNoContract();
+
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -101,13 +103,11 @@
                         })
                     }
                 });
-
             }
         })
     </script>
 
     @include('orders._js')
-
 
 @endsection
 

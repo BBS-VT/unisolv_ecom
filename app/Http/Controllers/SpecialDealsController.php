@@ -98,6 +98,7 @@ class SpecialDealsController extends Controller
         DB::statement('UPDATE special_deals SET CustomerID = TRIM(CustomerID)');
         DB::statement('UPDATE special_deals SET BuyingGroupID = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
         DB::statement('UPDATE special_deals SET DealDescription = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
+        DB::statement('DELETE t1 FROM special_deals t1 INNER JOIN special_deals t2 WHERE t1.id < t2.id AND t1.StockItemID = t2.StockItemID AND t1.BuyingGroupID = t2.BuyingGroupID AND t1.BuyingGroupID != ""');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
 

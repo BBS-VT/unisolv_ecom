@@ -205,6 +205,10 @@
 
             // calculate discount
 
+            console.log("discount", discount);
+            console.log("globalDiscount", globalDiscount);
+            console.log("contractDiscount", contractDiscount);
+
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
@@ -218,7 +222,13 @@
                             $('#save_form_button').attr('disabled', false);
 
 
-                    } else {
+                    } else if (globalDiscount > 0 && contractDiscount === undefined) {
+                        Number(row.find('[name="discount[]"]').attr("readonly", "false"));
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+                    }
+
+                    else {
                         amount = Number(amount) - Number(discountAmount);
 
                         Number(row.find('[name="discount[]"]').attr("readonly", "true"));
@@ -236,6 +246,10 @@
                 $('#add_product_row').attr('disabled', false);
                 $('#save_form_button').attr('disabled', false);
 
+            } else {
+                Number(row.find('[name="discount[]"]').removeAttr("readonly"));
+                $('#add_product_row').attr('disabled', false);
+                $('#save_form_button').attr('disabled', false);
             }
 
             // Add Item Total to Sub Total

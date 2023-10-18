@@ -130,7 +130,7 @@
                 @if($order->items->count() > 0)
                     @foreach($order->items as $item)
                         <tr>
-                            <td class="select-container col-4 col-sm-4">
+                            <td class="select-container col-6 col-sm-6">
                                 <select name="product[]" class="form-control mb-3 priceListener select-with-footer" style="width: 100%; height:36px;" >
                                     <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
