@@ -88,11 +88,13 @@
 
                     var row = $(this).closest('tr');
                     var id = $(row).find('[name="discount[]"]').val();
+                    var currentDiscount = parseInt(id);
 
-                    console.log("id", id);
-                    console.log("discountValidate", discountValidate);
+                    //console.log("id", id);
+                    //console.log("currentDiscount", currentDiscount);
+                    //console.log("discountValidate", discountValidate);
 
-                    if (id <= discountValidate) {
+                    if (currentDiscount <= discountValidate) {
 
                         calculateRowPrice();
 
@@ -105,6 +107,7 @@
                                 $('#add_product_row').attr('disabled', true);
                                 $('#add_product_row').css('cursor', 'not-allowed');
                                 $('#save_form_button').attr('disabled', true);
+                                $('#save_form_button').css('cursor', 'not-allowed');
                             },
                             //function() { return false; }
                         );
