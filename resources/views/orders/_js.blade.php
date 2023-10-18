@@ -205,30 +205,33 @@
 
             // calculate discount
 
-            console.log("discount", discount);
-            console.log("globalDiscount", globalDiscount);
-            console.log("contractDiscount", contractDiscount);
+            //console.log("discount", discount);
+            //console.log("globalDiscount", globalDiscount);
+            //console.log("contractDiscount", contractDiscount);
 
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
 
                     if (contractDiscount != undefined && contractDiscount !== 0) {
 
-                            amount = Number(amount) - Number(discountAmount);
+                        amount = Number(amount) - Number(discountAmount);
 
-                            Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
 
-                            $('#add_product_row').attr('disabled', false);
-                            $('#save_form_button').attr('disabled', false);
-
-
-                    } else if (globalDiscount > 0 && contractDiscount === undefined) {
-                        Number(row.find('[name="discount[]"]').attr("readonly", "false"));
                         $('#add_product_row').attr('disabled', false);
                         $('#save_form_button').attr('disabled', false);
+
+                    } else if (globalDiscount > 0 && contractDiscount === undefined) {
+
+                        Number(row.find('[name="discount[]"]').removeAttr("readonly"));
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+
+                        amount = Number(amount) - Number(discountAmount);
                     }
 
                     else {
+
                         amount = Number(amount) - Number(discountAmount);
 
                         Number(row.find('[name="discount[]"]').attr("readonly", "true"));
@@ -247,6 +250,7 @@
                 $('#save_form_button').attr('disabled', false);
 
             } else {
+
                 Number(row.find('[name="discount[]"]').removeAttr("readonly"));
                 $('#add_product_row').attr('disabled', false);
                 $('#save_form_button').attr('disabled', false);

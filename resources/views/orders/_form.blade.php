@@ -78,7 +78,7 @@
                 </tr>
             </thead>
             <tbody class="list" id="items">
-                <tr id="product_row_template" class="d-none col-6 col-sm-6">
+                <tr id="product_row_template" class="d-none col-4 col-sm-4">
                     <td width="40%" class="select-container">
                         <select name="product[]" class="select2 form-control priceListener" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
@@ -97,13 +97,13 @@
                         <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
                     <td class="col-sm-2">
-                        <input name="QuantityOnHand[]" type="text" class=" form-control stock_input" value="" readonly>
+                        <input name="QuantityOnHand[]" type="number" class="form-control stock_input" value="" readonly>
                     </td>
-                    <td class="col-sm-2">
+                    <td class="col-sm-4">
                         <input name="price[]" type="text" class="form-control price_input priceListener"  autocomplete="off" value="0" readonly>
                     </td>
                     @if($discount_per_item)
-                        <td class="col-sm-2">
+                        <td class="col-sm-4">
                             <div class="input-group input-group-merge">
 {{--                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="">--}}
                                 <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" value="">
@@ -130,7 +130,7 @@
                 @if($order->items->count() > 0)
                     @foreach($order->items as $item)
                         <tr>
-                            <td class="select-container col-6 col-sm-6">
+                            <td class="select-container col-4 col-sm-4">
                                 <select name="product[]" class="form-control mb-3 priceListener select-with-footer" style="width: 100%; height:36px;" >
                                     <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
@@ -155,17 +155,17 @@
                                     </select>
                                 </td>
                             @endif
-                            <td class="col-sm-4">
+                            <td class="col-sm-2">
                                 <input name="quantity[]" type="number" class="form-control priceListener" value="{{ $item->quantity }}" required>
                             </td>
-                            <td class="col-sm-4">
+                            <td class="col-sm-2">
                                 <input name="QuantityOnHand[]" type="number" class="form-control stock_input " value="{{ $item->QuantityOnHand }}" readonly>
                             </td>
-                            <td class="col-sm-2">
+                            <td class="col-sm-4">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>
                             </td>
                             @if($discount_per_item)
-                                <td class="col-2 col-sm-2">
+                                <td class="col-4 col-sm-4">
                                     <div class="input-group input-group-merge">
 {{--                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">--}}
                                         <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
@@ -182,7 +182,7 @@
                             @endif
                             <td class="text-right">
                                 <p class="mb-1">
-                                    <input type="text" name="total[]" class=" col-sm-3 price_input text-right price-text amount_price" value="{{ $item->total }}" readonly>
+                                    <input type="text" name="total[]" class="col-sm-2 price_input text-right price-text amount_price" value="{{ $item->total }}" readonly>
                                 </p>
                                 <div class="tax_list"></div>
                             </td>
@@ -279,7 +279,7 @@
             </div>
         </div>
         <div class="col-12 text-center float-right mt-3">
-            <button type="button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
+            <button type="button" id="save_form_button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
             <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>
     </div>

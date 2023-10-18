@@ -84,23 +84,30 @@
 
             function validateDiscount() {
 
-                $('#orderDetail td').on('change', function(e) {
-                    e.preventDefault();
+                $('#orderDetail td').on('change', function() {
+
                     var row = $(this).closest('tr');
                     var id = $(row).find('[name="discount[]"]').val();
 
-                    //console.log("id", id);
-                    //console.log("discountValidate", discountValidate);
+                    console.log("id", id);
+                    console.log("discountValidate", discountValidate);
 
                     if (id <= discountValidate) {
 
-                        calculateRowPriceNoContract();
+                        calculateRowPrice();
 
                     } else {
                         Swal.fire({
                             icon: 'error',
                             text: 'Discount cannot exceed ' + discountValidate + ' % for this item',
-                        })
+                        }).then(
+                            function () {
+                                $('#add_product_row').attr('disabled', true);
+                                $('#add_product_row').css('cursor', 'not-allowed');
+                                $('#save_form_button').attr('disabled', true);
+                            },
+                            //function() { return false; }
+                        );
                     }
                 });
             }
