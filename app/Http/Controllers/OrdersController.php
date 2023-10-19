@@ -317,7 +317,7 @@ class OrdersController extends Controller
 
         $orderTag
             ->appendChild($document->createElement("additionalOrderInstruction"))
-            ->appendChild($document->createTextNode(""));
+            ->appendChild($document->createTextNode(($order->CustomerPurchaseOrderNumber)));
         $orderbuyerTag = $orderTag->appendChild(
             $document->createElement("buyer")
         );
