@@ -359,16 +359,10 @@ class OrdersController extends Controller
                 ->appendChild($document->createElement("additionalOrderLineInstruction"))
                 ->appendChild($document->createTextNode(" "));
 
-            /*$orderlineitemTag
-                ->appendChild($document->createElement("netAmount"))
-                ->appendChild($document->createTextNode( number_format(($key->total / 1.15) / 100, 2, ".", " ")));*/
             $orderlineitemTag
                 ->appendChild($document->createElement("netAmount"))
                 ->appendChild($document->createTextNode( number_format(($key->product->SellingPrice / 1.15), 2, ".", " ")));
 
-            /*$orderlineitemTag
-                ->appendChild($document->createElement("netPrice"))
-                ->appendChild($document->createTextNode( number_format($key->total / 100, 2, ".", " " )));*/
             $orderlineitemTag
                 ->appendChild($document->createElement("netPrice"))
                 ->appendChild($document->createTextNode( number_format($key->product->SellingPrice , 2, ".", " " )));
@@ -376,16 +370,9 @@ class OrdersController extends Controller
             $orderlineitemTag
                 ->appendChild($document->createElement("discountPercentage"))
                 ->appendChild($document->createTextNode( bcdiv($key->discount_val, 1, 2)));
-            /*$orderlineitemTag
-                ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
-                ->appendChild($document->createTextNode( number_format((($key->total / $key->Quantity) / 1.15 ) / 100, 2, ".", " ")));*/
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
                 ->appendChild($document->createTextNode( number_format((($key->product->SellingPrice * $key->Quantity) / 1.15 ) , 2, ".", " ")));
-
-            /*$orderlineitemTag
-                ->appendChild($document->createElement("monetaryAmountIncludingTaxes"))
-                ->appendChild($document->createTextNode( number_format( ($key->total / $key->Quantity) / 100, 2, ".", " ") ));*/
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountIncludingTaxes"))
                 ->appendChild($document->createTextNode( number_format( ($key->product->SellingPrice * $key->Quantity) , 2, ".", " ") ));
@@ -393,9 +380,7 @@ class OrdersController extends Controller
             $ordertradeitemTag = $orderlineitemTag->appendChild(
                 $document->createElement("transactionalTradeItem")
             );
-            /*$ordertradeitemTag
-                ->appendChild($document->createElement("gtin"))
-                ->appendChild($document->createTextNode($key->product->Barcode));*/
+
             $ordertradeitemTag
                 ->appendChild($document->createElement("gtin"))
                 ->appendChild($document->createTextNode( empty($key->product->Barcode) ? $key->product->StockCode : $key->product->Barcode ));
@@ -446,9 +431,7 @@ class OrdersController extends Controller
             $orderlogisicalshipTag = $orderlogisicalinfoTag->appendChild(
                 $document->createElement("shipTo")
             );
-            /*$orderlogisicalshipTag
-                ->appendChild($document->createElement("gln"))
-                ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
+
             $orderlogisicalshipTag
                 ->appendChild($document->createElement("gln"))
                 ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));

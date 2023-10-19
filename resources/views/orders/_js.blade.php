@@ -120,9 +120,7 @@
                 if(data.discount !== null) {
                     globalDiscount = data.discount;
                 }
-
-                stockOnhand = data.QuantityOnHand;
-
+                $(data.element).attr('data-stock', data.stock);
                 return data.text;
             }
         });
@@ -133,7 +131,7 @@
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
             var discountInput = element.closest('tr').find('[name="discount[]"]');
-            var stockOnHand = element.closest('tr').find('[name="stockOnHand[]"]');
+            var stockInput = element.closest('tr').find('[name="QuantityOnHand[]"]');
 
             // Set selected taxes from product
             var taxIds = [];
@@ -145,8 +143,7 @@
             taxesSelect.trigger('change');
 
             // Set product stock on hand
-            stockOnHand.val(stockOnhand);
-            console.log('stockOnHand', stockOnhand);
+            stockInput.val(selectedOption.data('stock'));
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
