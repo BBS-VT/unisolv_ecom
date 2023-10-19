@@ -48,11 +48,11 @@
                     @if($tax_per_item and $discount_per_item)
                         <th >{{ __('global.products') }}</th>
                         <th class="d-none " style="visibility:hidden;">{{ __('global.taxes') }}</th>
-                        <th class="align-self-center">{{ __('global.quantity') }}</th>
-                        <th class="align-self-center">{{ __('global.stockOnhand') }}</th>
-                        <th class="align-self-center">{{ __('global.price') }}</th>
-                        <th class="align-self-center">{{ __('global.discount') }}</th>
-                        <th class="col-sm-1 text-right">{{ __('global.total') }}</th>
+                        <th >{{ __('global.quantity') }}</th>
+                        <th >{{ __('global.stockOnhand') }}</th>
+                        <th >{{ __('global.price') }}</th>
+                        <th >{{ __('global.discount') }}</th>
+                        <th class="text-end w-10">{{ __('global.total') }}</th>
                     @elseif($tax_per_item and !$discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-25">{{ __('global.taxes') }}</th>

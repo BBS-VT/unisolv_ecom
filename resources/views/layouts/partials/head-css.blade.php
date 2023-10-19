@@ -6,4 +6,5 @@
 <link href="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ URL::asset('plugins/animate/animate.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ URL::asset('css/app.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet" type="text/css" />
 @shared
