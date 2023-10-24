@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
-@endpush
+@endsection
 
 @section('content')
     <div class="row">
@@ -213,7 +213,7 @@
     </div>
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
@@ -275,7 +275,7 @@
             });
         });
     </script>
-@endpush
+@endsection
 
 
 

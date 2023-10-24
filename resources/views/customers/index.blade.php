@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
-@endpush
+@endsection
 
 @section('content')
 
@@ -228,7 +228,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script>
         $(function () {
             let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
@@ -264,4 +264,4 @@
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
 
-@endpush
+@endsection
