@@ -52,6 +52,28 @@
             addProductRow();
 
         });
+
+        $(document).on("click", "#reference_number", function(e) {
+            var $select2 = $('.js-customer', $(this));
+
+            $select2.parents('.form-group').removeClass('is-invalid')
+
+            if ($select2.val() == '') {
+
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please select a customer',
+                }).then(
+                    function () {
+                        $select2.parents('.form-group').addClass('is-invalid')
+                    }
+                )
+            }
+
+            e.preventDefault();
+            return false;
+        })
+
         $(document).on("keyup", "#chDiscount", function () {
             var product_id = $(this).closest('tr').find('[name="product[]"]').val();
 

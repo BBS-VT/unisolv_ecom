@@ -13,7 +13,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label class="required" for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
-            <select id="customer" name="customer_id" data-toggle="select" class="select2 form-control " data-select2-id="customer">
+            <select id="customer" name="customer_id" data-toggle="select" class="select2 form-control js-customer" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->customer_id)
                     <option value="{{ $order->customer_id }}"
