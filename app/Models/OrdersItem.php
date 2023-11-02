@@ -52,7 +52,7 @@ class OrdersItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'StockItem', 'id');
+        return $this->belongsTo(Product::class, 'StockItem', 'StockCode');
     }
 
     /**

@@ -111,10 +111,10 @@ class OrdersController extends Controller
      */
     public function store(Store $request)
     {
-        //echo "<pre>";
-        //print_r($request->all());
-        //die;
-        $user = $request->user();
+        echo "<pre>";
+        print_r($request->all());
+        die;
+        /*$user = $request->user();
         $currentCompany = $user->currentCompany();
 
         // Get company based settings
@@ -190,7 +190,7 @@ class OrdersController extends Controller
         }
 
         session()->flash('alert-success', __('global.order_added'));
-        return redirect()->route('orders.index');
+        return redirect()->route('orders.index');*/
     }
 
     public function show(Order $order)
