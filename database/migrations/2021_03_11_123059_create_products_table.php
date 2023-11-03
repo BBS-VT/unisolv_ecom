@@ -16,8 +16,8 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('StockItemName', 100);
-            $table->string('StockCode', 12)->unique();
-            $table->bigInteger('SupplierID')->unsigned()->nullable();
+            $table->string('StockCode', 20)->unique();
+            $table->string('SupplierID')->nullable();
             $table->bigInteger('UnitPackageID')->unsigned()->nullable();
             $table->bigInteger('OuterPackageID')->unsigned()->nullable();
             $table->bigInteger('TaxRateID')->unsigned();
@@ -27,8 +27,8 @@ class CreateProductsTable extends Migration
             $table->bigInteger('Packsize')->unsigned()->default('1');
             $table->string('Barcode', 50)->nullable();
             $table->string('AltBarcode', 50)->nullable();
-            $table->decimal('CostPrice', 18,3);
-            $table->decimal('SellingPrice', 18,3);
+            $table->decimal('CostPrice', 18,2);
+            $table->decimal('SellingPrice', 18,2);
             $table->decimal('WeightPerUnit', 18,3)->default('0.000');
             $table->longText('MarketingComments')->nullable();
             $table->string('SearchDetails')->nullable();

@@ -135,7 +135,7 @@
                                 <select name="product[]" class="form-control mb-3 priceListener select-with-footer" style="width: 100%; height:36px;" >
                                     <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
-                                        <option value="{{ $item->product_id }}" selected="">
+                                        <option value="{{ $item->StockCode }}" selected="">
                                             {{ intval( ltrim( $product->StockCode, '0')) }} &nbsp;
                                             {{ $product->StockItemName }} -
                                             (R {{ !floatval($product->DiscountPercentage) ?

@@ -111,10 +111,10 @@ class OrdersController extends Controller
      */
     public function store(Store $request)
     {
-        echo "<pre>";
-        print_r($request->all());
-        die;
-        /*$user = $request->user();
+        //echo "<pre>";
+        //print_r($request->all());
+        //die;
+        $user = $request->user();
         $currentCompany = $user->currentCompany();
 
         // Get company based settings
@@ -154,11 +154,13 @@ class OrdersController extends Controller
         for ($i=0; $i < count($request->product); $i++) {
             if (isset($request->quantity[$i]) && isset($request->price[$i])){
 
+                $stockItem = Product::find($request->product[$i]);
                 //OrdersItem::create([
                 $item = $order->items()->create([
                     'OrderID'           => $request->order_number,
                     'company_id'        => $currentCompany->id,
-                    'StockItem'         => $request->product[$i],
+                    //'StockItem'         => $request->product[$i],
+                    'StockItem'         => $stockItem->StockCode,
                     'discount_type'     => 'percent',
                     'discount_val'      => $request->discount[$i] ?? 0,
                     'Quantity'          => $request->quantity[$i],
@@ -190,7 +192,7 @@ class OrdersController extends Controller
         }
 
         session()->flash('alert-success', __('global.order_added'));
-        return redirect()->route('orders.index');*/
+        return redirect()->route('orders.index');
     }
 
     public function show(Order $order)
