@@ -37,7 +37,7 @@ class Store extends FormRequest
                 'product.*' => 'required',
 
                 'quantity' => 'required|array|max:'.$max_lenght,
-                'quantity.*' => 'required|integer|min:0',
+                'quantity.*' => 'required|numeric|min:0',
 
                 'price' => 'required|array|max:'.$max_lenght,
                 'price.*' => 'required',

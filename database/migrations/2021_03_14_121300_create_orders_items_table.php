@@ -18,7 +18,7 @@ class CreateOrdersItemsTable extends Migration
             $table->unsignedBigInteger('OrderID');
             $table->string('StockItem', 20);
             $table->unsignedBigInteger('PackageTypeID')->nullable();
-            $table->unsignedBigInteger('Quantity');
+            $table->decimal('Quantity', 15,2);
             $table->decimal('UnitPrice', 18,3);
             $table->decimal('TaxRate', 18,3);
             $table->unsignedBigInteger('PickedQuantity')->nullable();
