@@ -41,7 +41,6 @@ class OrdersItem extends Model
     protected $casts = [
         'UnitPrice'     => 'integer',
         'total'         => 'integer',
-        'Quantity'      => 'float',
         'discount_val'  => 'float',
     ];
 
