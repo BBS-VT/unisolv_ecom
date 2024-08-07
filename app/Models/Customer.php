@@ -26,6 +26,7 @@ class Customer extends Model
     protected $fillable = [
         'acc_main',
         'acc_sub',
+        'acc_code',
         'company_id',
         'CustomerName',
         'BillToCustomerID',
@@ -130,6 +131,12 @@ class Customer extends Model
     public function customerBalance()
     {
         return $this->hasOne(CustomerBalance::class, 'AccMain', 'acc_main');
+    }
+
+    public function customerSubBalance()
+    {
+        return $this->hasOne(CustomerBalance::class, 'AccCode', 'acc_code');
+
     }
 
     /**

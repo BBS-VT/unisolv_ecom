@@ -15,8 +15,9 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('acc_main', 11)->unique();
+            $table->string('acc_main', 11);
             $table->string('acc_sub', 3)->default('000');
+            $table->string('acc_code', 15);
             $table->string('CustomerName', 100);
             $table->bigInteger('BillToCustomerID')->unsigned()->nullable();
             $table->string('CustomerCategoryID')->nullable();
@@ -52,7 +53,7 @@ class CreateCustomersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['acc_main', 'StoreEAN']);
+            $table->index(['acc_main', 'acc_code', 'StoreEAN']);
 
             $table->foreign('CountryID')->references('id')->on('countries');
             $table->foreign('SalesRepID')->references('id')->on('users');

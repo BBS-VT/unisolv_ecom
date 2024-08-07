@@ -89,20 +89,37 @@ class CustomersController extends Controller
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
 
-        $balance_bf = ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+        $displaySubAccount = $customer->company->getSetting('display_subaccount');
 
-        $overdue_balance = ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+        if ($displaySubAccount == '1') {
+            $balance_bf = ($customer->customerSubBalance->AgedBalance2 ?? '0.00') + ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
-        $balance_total = ($customer->customerBalance->AgedBalance1 ?? '0.00') + ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+            $overdue_balance = ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
-        $customer->load('customerBalance', 'lastedited');
+            $balance_total = ($customer->customerSubBalance->AgedBalance1 ?? '0.00') + ($customer->customerSubBalance->AgedBalance2 ?? '0.00') + ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
-        //echo "<pre>"; print_r($balance_total); die;
+            $customer->load('customerSubBalance', 'lastedited');
+
+        } else {
+
+            $balance_bf = ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $overdue_balance = ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $balance_total = ($customer->customerBalance->AgedBalance1 ?? '0.00') + ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $customer->load('customerBalance', 'lastedited');
+        }
+
+        //echo "<pre>"; print_r($customer); die;
         return view('customers.show', compact('customer', 'customerOrders', 'salesreps',
-            'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total'));
+            'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total', 'displaySubAccount'));
         //return response()->json($customer->customerBalance());
     }
 
@@ -231,6 +248,7 @@ class CustomersController extends Controller
         DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
         DB::statement('UPDATE customers SET acc_main = LPAD(acc_main, 6, "0")');
         DB::statement('UPDATE customers SET acc_sub = "000" where acc_sub = "0"');
+        DB::statement('UPDATE customers SET acc_code = CONCAT(acc_main, '-', acc_sub)');
         DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
         DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
 //        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');

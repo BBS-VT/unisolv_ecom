@@ -14,6 +14,7 @@ class CustomerBalance extends Model
     protected $fillable = [
         'AccMain',
         'AccSub',
+        'AccCode',
         'AgedBalance1',
         'AgedBalance2',
         'AgedBalance3',

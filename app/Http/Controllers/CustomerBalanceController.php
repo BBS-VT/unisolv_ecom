@@ -26,6 +26,7 @@ class CustomerBalanceController extends Controller
         DB::statement('UPDATE customer_balances SET AccMain = TRIM(AccMain)');
         DB::statement('UPDATE customer_balances SET AccMain = LPAD(AccMain, 6, "0")');
         DB::statement('UPDATE customer_balances SET AccSub = "000" where AccSub = "0"');
+        DB::statement('UPDATE customer_balances SET AccCode = CONCAT(AccMain, '-', AccSub)');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         return redirect()->back()->with('success', 'File imported successfully');

@@ -14,7 +14,11 @@
                     <div class="mb-3 row">
                         <label for="example-text-input" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">{{ trans('global.account') }}</label>
                         <div class="col-sm-10">
-                            <input class="form-control" type="text" value="{{ $customer->acc_main }} &nbsp; &nbsp; {{ $customer->CustomerName }}" >
+                            @if ($displaySubAccount == "1")
+                                <input class="form-control" type="text" value="{{ $customer->acc_main }} - {{ $customer->acc_sub }}&nbsp; &nbsp; {{ $customer->CustomerName }}">
+                            @else
+                                <input class="form-control" type="text" value="{{ $customer->acc_main }} &nbsp; &nbsp; {{ $customer->CustomerName }}" >
+                            @endif
                         </div>
                     </div>
                     <hr>
@@ -33,39 +37,76 @@
                             <div class="card">
                                 <div class="card-body">
                                     <table class="table">
-                                        <tbody>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.current') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance1) ?
-                                                number_format($customer->customerBalance->AgedBalance1, 2, ".", " ") : '0.00' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.period1') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance2) ?
-                                                number_format($customer->customerBalance->AgedBalance2, 2, ".", " ") : '0.00' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.period2') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance3) ?
-                                                number_format($customer->customerBalance->AgedBalance3, 2, ".", " ") : '0.00' }}</td>
+                                        @if ($displaySubAccount == "1")
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.current') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance1) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance1, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period1') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance2) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance2, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period2') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance3) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance3, 2, ".", " ") : '0.00' }}</td>
 
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.period3') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance4) ?
-                                                number_format($customer->customerBalance->AgedBalance4, 2, ".", " ") : '0.00' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.period4') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance5) ?
-                                                number_format($customer->customerBalance->AgedBalance5, 2, ".", " ") : '0.00' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">{{ trans('global.period5') }}</td>
-                                            <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance6) ?
-                                                number_format($customer->customerBalance->AgedBalance6, 2, ".", " ") : '0.00' }}</td>
-                                        </tr>
-                                        </tbody>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period3') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance4) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance4, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period4') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance5) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance5, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period5') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerSubBalance->AgedBalance6) ?
+                                                    number_format($customer->customerSubBalance->AgedBalance6, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        @else
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.current') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance1) ?
+                                                    number_format($customer->customerBalance->AgedBalance1, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period1') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance2) ?
+                                                    number_format($customer->customerBalance->AgedBalance2, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period2') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance3) ?
+                                                    number_format($customer->customerBalance->AgedBalance3, 2, ".", " ") : '0.00' }}</td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period3') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance4) ?
+                                                    number_format($customer->customerBalance->AgedBalance4, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period4') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance5) ?
+                                                    number_format($customer->customerBalance->AgedBalance5, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">{{ trans('global.period5') }}</td>
+                                                    <td class="semi-bold">{{ !empty($customer->customerBalance->AgedBalance6) ?
+                                                    number_format($customer->customerBalance->AgedBalance6, 2, ".", " ") : '0.00' }}</td>
+                                                </tr>
+                                            </tbody>
+                                        @endif
+
                                     </table>
                                 </div>
                             </div>
