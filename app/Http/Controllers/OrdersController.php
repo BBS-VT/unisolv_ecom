@@ -328,7 +328,8 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $orderbuyerTag
             ->appendChild($document->createElement("gln"))
-            ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
+            /*->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));*/
+            ->appendChild($document->createTextNode($order->customer->acc_main));
         $orderbuyerTag
             ->appendChild($document->createElement("additionalPartyIdentification"))
             ->appendChild($document->createTextNode($order->customer->acc_main));
