@@ -29,7 +29,7 @@ class CreateOrdersItemsTable extends Migration
             $table->foreign('OrderID')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('PackageTypeID')->references('id')->on('package_types');
             $table->foreign('LastEditedBy')->references('id')->on('users');
-            $table->foreign('StockItem')->references('id')->on('products');
+            $table->foreign('StockItem')->references('StockCode')->on('products');
         });
     }
 

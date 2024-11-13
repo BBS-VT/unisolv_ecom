@@ -53,7 +53,10 @@ class CreateCustomersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['acc_main', 'acc_code', 'StoreEAN']);
+            $table->index('acc_main');
+            $table->index('acc_sub');
+            $table->index('acc_code');
+            $table->index('StoreEAN');
 
             $table->foreign('CountryID')->references('id')->on('countries');
             $table->foreign('SalesRepID')->references('id')->on('users');
