@@ -7,12 +7,16 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyProductCategoryRequest;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
+use App\Imports\ProductCategoryImport;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelType;
 
 class ProductCategoryController extends Controller
 {
@@ -120,5 +124,30 @@ class ProductCategoryController extends Controller
             ProductCategory::where('id',$data['category_id'])->update(['status'=>$status]);
             return response()->json(['status'=>$status,'category_id'=>$data['category_id']]);
         }
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('csv_file');
+
+        // Check extension and MIME type
+        if ($file->getClientOriginalExtension() !== 'csv') {
+            return back()->with('error', 'The uploaded file must have a .csv extension.');
+        }
+
+        try {
+            // Import categories with explicit file type
+            $userId = Auth::id();
+            Excel::import(new ProductCategoryImport($userId), $file->getPathname(), null, ExcelType::CSV);
+            return back()->with('success', 'Categories imported successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error during import', ['message' => $e->getMessage()]);
+            return back()->with('error', 'Error during import: ' . $e->getMessage());
+        }
+
     }
 }

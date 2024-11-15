@@ -4,6 +4,7 @@
     <link href="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
 
 @endpush
 
@@ -32,6 +33,22 @@
                                     {{ trans('global.add') }} {{ trans('cruds.productCategory.title_singular') }}
                                 </a>
                             @endcan
+                            @can('productCategory_import')
+                                <ul class="list-unstyled float-right mb-0">
+                                    <li class="dropdown">
+                                        <a href="#" class="btn btn-sm btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
+                                           data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                            <i data-feather="upload" class="align-self-center icon-xs"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" data-toggle="modal" data-target="#importCategorymaster" href="#">
+                                                <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
+                                                {{ trans('global.import') }} {{ trans('cruds.productCategory.title') }}
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            @endcan
                         </div>
                     </div>
                 </div><!--end card-header-->
@@ -51,7 +68,7 @@
                         @foreach($productCategories as $key => $productCategory)
                             <tr data-entry-id="{{ $productCategory->id }}">
                                 <td></td>
-                                <td>{{ $productCategory->id ?? '' }}</td>
+                                <td>{{ $productCategory->CategoryCode ?? '' }}</td>
                                 <td>{{ $productCategory->StockGroupName ?? '' }}</td>
                                 <td>
                                     @if($productCategory->status==1)
@@ -101,6 +118,30 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="importCategorymaster" tabindex="-1" role="dialog" aria-labelledby="importCategorymaster" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h6 class="modal-title m-0 text-white" id="importCategorymasterLabel">{{ trans('global.import') }} {{ trans('cruds.productCategory.title') }}</h6>
+                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-times text-white"></i></span>
+                    </button>
+                </div>
+                <form action="{{ route('importProductCategories') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                    {{ csrf_field() }}
+                    <div class="modal-body">
+                        <div class="row">
+                            <input type="file" id="input-file-now" name="csv_file" class="dropify">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-gradient-danger">Import File</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -165,5 +206,8 @@
     <script src="{{ asset('/plugins/datatables/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('/pages/jquery.datatable.init.js') }}"></script>
+
+<script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
+<script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
 
 @endpush

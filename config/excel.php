@@ -45,6 +45,8 @@ return [
             'delimiter'              => ',',
             'enclosure'              => '"',
             'line_ending'            => PHP_EOL,
+            'escape_character'       => '\\',
+            'input_encoding'         => 'UTF-8',
             'use_bom'                => false,
             'include_separator_line' => false,
             'excel_compatibility'    => false,

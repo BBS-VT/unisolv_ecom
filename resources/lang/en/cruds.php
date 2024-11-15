@@ -274,11 +274,13 @@ return [
         'title_singular' => 'Product Management',
     ],
     'productCategory'   => [
-        'title'          => 'Categories',
-        'title_singular' => 'Category',
+        'title'          => 'Departments',
+        'title_singular' => 'Department',
         'fields'         => [
             'id'                 => 'ID',
             'id_helper'          => '',
+            'category_code'      => 'Department Code',
+            'category_code_helper' => '',
             'name'               => 'Name',
             'name_helper'        => '',
             'description'        => 'Description',
