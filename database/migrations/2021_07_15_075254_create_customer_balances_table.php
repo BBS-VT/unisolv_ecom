@@ -16,7 +16,7 @@ class CreateCustomerBalancesTable extends Migration
         Schema::create('customer_balances', function (Blueprint $table) {
             $table->string('AccMain', 11);
             $table->string('AccSub', 3)->default('000');
-            $table->string('AccCode', 15);
+            $table->string('AccCode', 15)->default('000-000');
             $table->decimal('AgedBalance1', 18,3)->default('0.000');
             $table->decimal('AgedBalance2', 18,3)->default('0.000');
             $table->decimal('AgedBalance3', 18,3)->default('0.000');
