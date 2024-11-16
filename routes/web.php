@@ -43,6 +43,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('product-categories/ckmedia', 'ProductCategoryController@storeCKEditorImages')->name('product-categories.storeCKEditorImages');
     Route::post('update-category-status', 'ProductCategoryController@updateCategoryStatus');
     Route::post('importCategories', 'ProductCategoryController@importExcel')->name('importProductCategories');
+    Route::post('product-categories/update/{id}', 'ProductCategoryController@update')->name('productCategories.update');
+    Route::post('product-categories/store', 'ProductCategoryController@store')->name('productCategories.store');
     Route::resource('product-categories', 'ProductCategoryController');
 
     // Product Tags

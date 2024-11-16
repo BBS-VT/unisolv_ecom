@@ -15,7 +15,7 @@ class CustomerBalanceImport implements ToModel, WithStartRow
      */
     public function startRow(): int
     {
-        return 9;
+        return 2;
     }
 
     /**

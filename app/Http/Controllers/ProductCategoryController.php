@@ -38,7 +38,7 @@ class ProductCategoryController extends Controller
         return view('productCategories.create');
     }
 
-    public function store(StoreProductCategoryRequest $request)
+    /*public function store(StoreProductCategoryRequest $request)
     {
         $productCategory = ProductCategory::create($request->all());
 
@@ -51,6 +51,28 @@ class ProductCategoryController extends Controller
         }
 
         return redirect()->route('product-categories.index');
+    }*/
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'CategoryCode' => 'required|string|max:4',
+            'StockGroupName' => 'required|string|max:255',
+            'ParentID' => 'nullable|exists:product_categories,id',
+        ]);
+
+        ProductCategory::updateOrCreate(
+            ['id' => $request->id],
+            [
+                'CategoryCode' => $request->CategoryCode,
+                'StockGroupName' => $request->StockGroupName,
+                'ParentID' => $request->ParentID,
+                'LastEditedBy' => auth()->id(),
+                'status' => 1,
+            ]
+        );
+
+        return response()->json(['success' => true, 'message' => 'Category created successfully.']);
     }
 
     public function edit(ProductCategory $productCategory)
@@ -60,19 +82,24 @@ class ProductCategoryController extends Controller
         return view('productCategories.edit', compact('productCategory'));
     }
 
-    public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
+    public function update(Request $request, $id)
     {
-        $productCategory->update($request->all());
+        $request->validate([
+            'CategoryCode' => 'required|string|max:4',
+            'StockGroupName' => 'required|string|max:255',
+            'ParentID' => 'nullable|exists:product_categories,id',
+        ]);
 
-        if ($request->input('photo', false)) {
-            if (!$productCategory->photo || $request->input('photo') !== $productCategory->photo->file_name) {
-                $productCategory->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
-            }
-        }elseif ($productCategory->photo) {
-            $productCategory->photo->delete();
-        }
+        $category = ProductCategory::find($id);
+        $category->update([
+            'CategoryCode' => $request->CategoryCode,
+            'StockGroupName' => $request->StockGroupName,
+            'ParentID' => $request->ParentID,
+            'LastEditedBy' => auth()->id(),
+            'status' => 1,
+        ]);
 
-        return redirect()->route('product-categories.index');
+        return response()->json(['success' => true, 'message' => 'Category updated successfully.']);
     }
 
     public function show(ProductCategory $productCategory)
