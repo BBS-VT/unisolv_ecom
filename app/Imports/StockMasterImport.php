@@ -34,7 +34,7 @@ class StockMasterImport implements ToModel, WithStartRow
             'PackSize'           => $row[5],
             'Barcode'            => $row[6],
             'AltBarcode'         => $row[7],
-            'CostPrice'          => $row[8],
+            'AverageCostPrice'   => $row[8],
             'SellingPrice'       => $row[9],
             'SearchDetails'      => $row[10],
             'DiscountPercentage' => $row[11],

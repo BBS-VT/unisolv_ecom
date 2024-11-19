@@ -74,10 +74,15 @@
     function setupCustomer() {
         var customer_id = $("#customer").val();
         globalCustomer = customer_id;
-        var currency = $('#customer').find(':selected').data('currency');
 
         // Setup currency
+        var currency = $('#customer').find(':selected').data('currency');
         window.sharedData.company_currency = currency;
+
+        // Get and set customer's default price
+        var defaultPrice = $('#customer').find(':selected').data('default_price');
+        window.sharedData.default_price = defaultPrice || 'price';
+
         setupPriceInput(window.sharedData.company_currency);
     }
 
@@ -120,6 +125,9 @@
                 if(data.discount !== null) {
                     globalDiscount = data.discount;
                 }
+                $(data.element).attr('data-price2', data.price2);
+                $(data.element).attr('data-price3', data.price3);
+                $(data.element).attr('data-avgcost', data.avgcost);
                 $(data.element).attr('data-stock', data.stock);
                 return data.text;
             }

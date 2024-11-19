@@ -41,6 +41,7 @@ class Customer extends Model
         'StandardDiscountPercentage',
         'IsStatementSent',
         'IsOnCreditHold',
+        'PriceIndicator',
         'PaymentDays',
         'PhoneNumber',
         'FaxNumber',
