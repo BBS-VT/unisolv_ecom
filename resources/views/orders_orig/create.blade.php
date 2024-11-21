@@ -1,10 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.app', ['page' => 'orders'])
 
-@push('style')
+@section('title', __('global.create_order'))
+
+@section('style')
+    {{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css">
+    <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />--}}
     <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
-@endpush
+@endsection
 
 @section('content')
     <div class="row">
@@ -18,138 +23,123 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">{{ trans('global.new_order') }} </h4>
+                    <h4 class="card-title">{{ __('global.new_order') }} </h4>
 
                 </div>
                 <div class="card-body">
-                    <form action="/orders/create_step1" method="POST" >
+                    <form action="{{ route('orders.store') }}" method="POST" id="order_form">
+                        @include('layouts._form_errors')
                         @csrf
-                        <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    @if (!auth()->user()->repcode)
-                                        <input type="hidden" name="order[SalesPersonID]" id="SalesPersonID" value="{{ auth()->user()->id }}" />
-                                    @else
-                                        <input type="hidden" name="order[SalesPersonID]" id="SalesPersonID" value="{{ auth()->user()->RepCode }}" />
-                                    @endif
-                                    <input type="hidden" name="order[LastEditedBy]" id="LastEditedBy" value="{{ auth()->user()->id }}" />
-                                    <input type="hidden" name="order[OrderStatusID]" id="OrderStatusID" value="1" />
-                                    <input type="hidden" name="order[Authorisation]" id="Authorisation" value="0" />
-                                    <label for="OrderNumber">{{ trans('cruds.order.fields.number') }}</label>
-                                    <input type="text" name="order[OrderNumber]" id="OrderNumber" class="form-control"
-                                           value="{{ App\Models\Order::getNextOrderNumber() }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="required" for="CustomerID">{{ trans('cruds.order.fields.customer_name') }}</label>
-                                    <select class="form-control mb-3 select2-canal {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}"  name="order[CustomerID]"  required>
-                                        @foreach($customers as $id => $customer)
-                                            <option value="{{ $id }}" >{{ $customer }}</option>
-                                        @endforeach
-                                    </select>
-                                    @if($errors->has('CustomerID'))
-                                        <em class="invalid-feedback">
-                                            {{ $errors->first('CustomerID') }}
-                                        </em>
-                                    @endif
-                                    <p class="helper-block">
-                                        {{ trans('cruds.order.fields.customer_name_helper') }}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="required" for="CustomerPurchaseOrderNumber">{{ trans('cruds.order.fields.ponumber') }}</label>
-                                    <input type="text" name="order[CustomerPurchaseOrderNumber]"  class="form-control" required />
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="required" for="OrderDate">{{ trans('cruds.order.fields.order_date') }}</label>
-                                    <input type="text" name="order[OrderDate]"  class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
-                                </div>
-                            </div>
-                        </div>
 
-                        <div>
-                            <input class="btn btn-danger float-right" type="submit" value="{{ trans('global.next') }}">
-                            <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ trans('global.cancel') }}</a>
-                        </div>
+                        @include('orders._form')
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
     <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
     <script src="{{ URL::asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
     <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
 
-    <script src="{{ URL::asset('pages/jquery.forms-advanced.js') }}"></script>
 
 
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
+            addProductRow();
 
-            $(".select2-canal").select2();
-
-            let row_number = {{ count(old('products', [''])) }};
-            $("#add_row").click(function(e){
-                e.preventDefault();
-                let new_row_number = row_number - 1;
-                $('#product' + row_number).html($('#product' + new_row_number).html()).find('td:first-child');
-                $('#products_table').append('<tr id="product' + (row_number + 1) + '"></tr>');
-                row_number++;
-            });
-            $("#delete_row").click(function(e){
-                e.preventDefault();
-                if(row_number > 1){
-                    $("#product" + (row_number - 1)).html('');
-                    row_number--;
-                }
-            });
-
-            $('#products_table tbody').on('keyup change', function() {
-                calc();
-            });
-
-            $('#tax').on('keyup change', function() {
-                calc_total();
-            });
         });
 
-        function calc()
-        {
-            $('#products_table tbody tr').each(function(i, element) {
-                var html = $(this).html();
-                if (html !='')
-                {
-                    var qty = $(this).find('.qty').val();
-                    var price = $(this).find('.price').val();
-                    $(this).find('.total').val(qty*price);
+        $(document).on("click", "#reference_number", function(e) {
+            var $select2 = $('.js-customer', $(this));
 
-                    calc_total();
+            $select2.parents('.form-group').removeClass('is-invalid')
+
+            if ($select2.val() == '') {
+
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Please select a customer',
+                }).then(
+                    function () {
+                        $select2.parents('.form-group').addClass('is-invalid')
+                    }
+                )
+            }
+
+            e.preventDefault();
+            return false;
+        })
+
+        $(document).on("keyup", "#chDiscount", function () {
+            var product_id = $(this).closest('tr').find('[name="product[]"]').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '{{ route('ajax.maxdiscount') }}',
+                data: { _token: CSRF_TOKEN,'id': product_id },
+                dataType: 'json',
+                success: function(data) {
+                    window.discountValidate = data.discValidate;
+                    //console.log("discountValidate", discountValidate);
+                    validateDiscount();
+                },
+                error: function(x , e) {
+                    if (x.status==0) {
+                        alert('You are offline!!\n Please check your network');
+                    } else if(x.status==404) {
+                        alert('Requested URL not found.');
+                    } else if(x.status==500) {
+                        alert('Internal Server Error.');
+                    } else if(e=='parsererror') {
+                        alert('Error.\nParsing JSON Request failed.');
+                    } else if(e=='timeout') {
+                        alert('Request Timed out');
+                    } else {
+                        alert('Unknown Error.\n'+x.responseText);
+                    }
                 }
             });
-        }
 
-        function calc_total()
-        {
-            total=0;
-            $('.total').each(function() {
-                total += parseInt($(this).val());
-            });
-            $('#sub_total').val(total.toFixed(2));
-            tax_sum=total*0.15;
-            $('#tax_amount').val(tax_sum.toFixed(2));
-            inv_total=total*1.15;
-            $('#total_amount').val(inv_total.toFixed(2));
-        }
+            function validateDiscount() {
+
+                $('#orderDetail td').on('change', function() {
+
+                    var row = $(this).closest('tr');
+                    var id = $(row).find('[name="discount[]"]').val();
+                    var currentDiscount = parseInt(id);
+
+                    //console.log("id", id);
+                    //console.log("currentDiscount", currentDiscount);
+                    //console.log("discountValidate", discountValidate);
+
+                    if (currentDiscount <= discountValidate) {
+
+                        calculateRowPrice();
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Discount cannot exceed ' + discountValidate + ' % for this item',
+                        }).then(
+                            function () {
+                                $('#add_product_row').attr('disabled', true);
+                                $('#add_product_row').css('cursor', 'not-allowed');
+                                $('#save_form_button').attr('disabled', true);
+                                $('#save_form_button').css('cursor', 'not-allowed');
+                            },
+                            //function() { return false; }
+                        );
+                    }
+                });
+            }
+        })
     </script>
 
-@endpush
+    @include('orders._js')
+
+@endsection
+

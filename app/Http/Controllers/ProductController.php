@@ -18,19 +18,64 @@ use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Session;
 use DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = Product::all();
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
 
-        return view('products.index', compact('products'));
+        if ($request->ajax()) {
 
+            $products = Product::findByCompany($currentCompany->id)
+                ->select('id', 'StockCode', 'StockItemName', 'Barcode', 'AltBarCode', 'SellingPrice', 'SellingPrice2','SellingPrice3',
+                    'AverageCostPrice')
+                ->with('stockHolding')
+                ->get();
+
+            return DataTables::of($products)
+                ->addColumn('prices', function ($product) {
+                    return "
+                        <div>1: {$product->SellingPrice}</div>
+                        <div>2: {$product->SellingPrice2}</div>
+                        <div>3: {$product->SellingPrice3}</div>
+                    ";
+                })
+                ->addColumn('costPrices', function ($product) {
+                    $averageCostPrice = $product->AverageCostPrice ?? 0;
+                    $lastCostPrice = optional($product->stockHolding)->LastCostPrice ?? 0;
+
+                    return "
+                        <div>Avg: {$averageCostPrice}</div>
+                        <div>Last: {$lastCostPrice}</div>
+                    ";
+                })
+                ->addColumn('quantity_on_hand', function ($product) {
+                    return optional($product->stockHolding)->QuantityOnHand ?? 0;
+                })
+                ->addColumn('action', function ($product) {
+                    // Adding both 'View' and 'Edit' buttons
+                    $viewButton = '<a href="'.route('products.show',
+                            $product->id).'" class="btn btn-sm btn-outline-primary"><i class="dripicons-preview"></i></a>';
+                    $editButton = '<a href="'.route('products.edit',
+                            $product->id).'" class="btn btn-sm btn-outline-warning"><i class="dripicons-document-edit"></i></a>';
+
+                    // Delete button with SweetAlert trigger
+                    $deleteButton = '<a href="javascript:void(0)" data-id="'.$product->id.'" class="btn btn-sm btn-outline-danger delete-product"><i class="dripicons-trash"></i></a>';
+
+                    return $viewButton.' '.$editButton.' '.$deleteButton;
+                })
+                ->rawColumns(['prices','costPrices','action'])
+                ->make(true);
+        }
+
+        return view('products.index');
     }
 
     public function create()

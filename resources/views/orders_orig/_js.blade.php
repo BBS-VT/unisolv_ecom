@@ -153,13 +153,31 @@
             // Set product stock on hand
             stockInput.val(selectedOption.data('stock'));
 
+            var price1 = parseFloat(selectedOption.data('price') || 0);
+            var price2 = parseFloat(selectedOption.data('price2') || 0);
+            var price3 = parseFloat(selectedOption.data('price3') || 0);
+            var avgCost = parseFloat(selectedOption.data('avgcost') || 0);
+
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
 
 
             // Set product price for price input
-            priceInput.val(selectedOption.data('price'));
+            //priceInput.val(selectedOption.data('price'));
+            var defaultPrice = window.sharedData.default_price;
+            var selectedPrice = defaultPrice === 'price2' ? price2 : defaultPrice === 'price3' ? price3 : price1;
+            priceInput.val(selectedPrice);
             priceInput.focusout();
+
+            // Display a warning if the selected price is below avg cost
+            if (selectedPrice < avgCost) {
+                Swal.fire({
+                    title: 'Warning',
+                    text: 'The selected prices is below the average cost price',
+                    icon: 'warning',
+                    confirmButtonText: 'Ok'
+                });
+            }
 
             calculateRowPrice();
         });
@@ -388,7 +406,24 @@
 
     function initializePriceListener() {
         $(".priceListener").change(function() {
-            calculateRowPrice()
+
+            $(".price_input").change(function() {
+                var row = $(this).closest('tr');
+                var avgCost = parseFloat(row.find(':selected').data('avgcost') || 0);
+                var enteredPrice = parseFloat($(this).val());
+
+                if (enteredPrice < avgCost) {
+                    Swal.fire({
+                        title: 'Warning',
+                        text: 'The selected prices is below the average cost price',
+                        icon: 'warning',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+
+                calculateRowPrice()
+            })
+
         });
     }
 

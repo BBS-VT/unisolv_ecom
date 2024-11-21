@@ -15,7 +15,7 @@
 <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm mr-1" height="24">
                                     <img src="assets/images/logo-dark.png" alt="logo-large" class="logo-lg logo-dark" height="20">
                                     <img src="assets/images/logo.png" alt="logo-large" class="logo-lg logo-light" height="20">-->
-                                    <p class="mt-2 mb-0 text-muted">Quenera Distribution Pty (LTD)</p>
+                                    <p class="mt-2 mb-0 text-muted">Viedgesville Wholesalers Pty (LTD)</p>
                                 </div><!--end col-->
                                 <div class="col-md-8">
 
@@ -37,8 +37,8 @@
                                         <li class="list-inline-item">
                                             <div class="pl-3">
                                                 <i class="mdi mdi-map-marker"></i>
-                                                <p class="text-muted mb-0">1 Strelitzia St</p>
-                                                <p class="text-muted mb-0">Braelyn, East London, 5201</p>
+                                                <p class="text-muted mb-0">Main Road</p>
+                                                <p class="text-muted mb-0">Viedgesville, 5102</p>
                                             </div>
                                         </li>
                                     </ul>
@@ -93,7 +93,8 @@
                                                     <th>Stock Code</th>
                                                     <th>Description</th>
                                                     <th class="text-center">Qty</th>
-                                                    <th class="text-right">U/Price(Ex)</th>
+                                                    <th class="text-right">Price(Exc)</th>
+                                                    <th class="text-right">Discount</th>
                                                     <th class="text-right">Unit Tax</th>
                                                     <th class="text-right">Net Price</th>
                                                     <th class="text-right">Total(Incl)</th>
@@ -111,6 +112,7 @@
                                                     </td>
                                                     <td class="text-center">{{ $key->Quantity }}</td>
                                                     <td class="text-right">{{ number_format($key->UnitPrice / (1+($key->TaxRate/100)), 2, ".", " ") }}</td>
+                                                    <td class="text-right">{{ number_format($key->discount_val, 2, ".", " ") }} &nbsp;%</td>
                                                     <td class="text-right">{{ number_format($key->UnitPrice - ($key->UnitPrice / (1+($key->TaxRate/100))), 2, ".", " ") }}</td>
                                                     <td class="text-right">{{ number_format($key->UnitPrice, 2, ".", " ") }}</td>
                                                     <td class="text-right">{{ number_format(($key->Quantity * $key->UnitPrice), 2, ".", " ") }}</td>

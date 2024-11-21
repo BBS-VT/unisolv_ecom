@@ -101,7 +101,8 @@
                         <input name="QuantityOnHand[]" type="number" class="form-control stock_input" value="" readonly>
                     </td>
                     <td class="col-sm-4">
-                        <input name="price[]" type="text" class="form-control price_input priceListener"  autocomplete="off" value="0" readonly>
+                        <input name="price[]" type="text" class="form-control price_input priceListener"
+                                autocomplete="off" value="0" >
                     </td>
                     @if($discount_per_item)
                         <td class="col-sm-4">
@@ -164,6 +165,7 @@
                             </td>
                             <td class="col-sm-4">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>
+
                             </td>
                             @if($discount_per_item)
                                 <td class="col-4 col-sm-4">

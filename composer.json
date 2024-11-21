@@ -31,6 +31,7 @@
         "spatie/laravel-activitylog": "3.17.0",
         "spatie/laravel-medialibrary": "^9.0.0",
         "spatie/laravel-query-builder": "^4.0",
+        "yajra/laravel-datatables": "^1.5",
         "yajra/laravel-datatables-oracle": "^9.6"
     },
     "require-dev": {
