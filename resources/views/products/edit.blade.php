@@ -214,7 +214,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row">
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="TaxRateID">{{ trans('cruds.product.fields.vatid') }}</label>
                                             <input class="form-control {{ $errors->has('TaxRateID') ? 'is-invalid' : '' }}" type="text" name="TaxRateID"
@@ -227,11 +227,11 @@
                                             <span class="help-block">{{ trans('cruds.product.fields.vatid_helper') }}</span>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
                                             <input class="form-control text-center {{ $errors->has('CostPrice') ? 'is-invalid' : '' }}" type="number" name="CostPrice" id="CostPrice"
-                                                   value="{{ number_format((float)$product->CostPrice, 2, '.', '') }}" step="0.01">
+                                                   value="{{ number_format((float)$product->AverageCostPrice, 2, '.', '') }}" step="0.01">
                                             @if($errors->has('CostPrice'))
                                                 <div class="invalid-feedback">
                                                     {{ $errors->first('CostPrice') }}
@@ -240,7 +240,20 @@
                                             <span class="help-block">{{ trans('cruds.product.fields.cost_helper') }}</span>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
+                                            <input class="form-control text-center {{ $errors->has('CostPrice') ? 'is-invalid' : '' }}" type="number" name="CostPrice" id="CostPrice"
+                                                   value="{{ number_format((float)$product->stockHolding->LastCostPrice, 2, '.', '') }}" step="0.01">
+                                            @if($errors->has('CostPrice'))
+                                                <div class="invalid-feedback">
+                                                    {{ $errors->first('CostPrice') }}
+                                                </div>
+                                            @endif
+                                            <span class="help-block">{{ trans('cruds.product.fields.cost_helper') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="DiscountPercentage">{{ trans('cruds.product.fields.discount') }}</label>
                                             <input id="DiscountPercentage" class="form-control text-center{{ $errors->has('DiscountPercentage') ? 'is-invalid' : '' }}" type="text"
@@ -269,16 +282,58 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label class="required" for="SellingPrice">{{ trans('cruds.product.fields.price') }}</label>
-                                            <input class="form-control {{ $errors->has('SellingPrice') ? 'is-invalid' : '' }}" type="number" name="SellingPrice" id="SellingPrice"
-                                                   value="{{ $product->SellingPrice }}" step="0.01" required>
-                                            @if($errors->has('SellingPrice'))
-                                                <div class="invalid-feedback">
-                                                    {{ $errors->first('SellingPrice') }}
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label class="required"
+                                                           for="SellingPrice">{{ trans('cruds.product.fields.price') }}</label>
+                                                    <input
+                                                        class="form-control {{ $errors->has('SellingPrice') ? 'is-invalid' : '' }}"
+                                                        type="number" name="SellingPrice" id="SellingPrice"
+                                                        value="{{ $product->SellingPrice }}" step="0.01" required>
+                                                    @if($errors->has('SellingPrice'))
+                                                        <div class="invalid-feedback">
+                                                            {{ $errors->first('SellingPrice') }}
+                                                        </div>
+                                                    @endif
+                                                    <span
+                                                        class="help-block">{{ trans('cruds.product.fields.price_helper') }}</span>
                                                 </div>
-                                            @endif
-                                            <span class="help-block">{{ trans('cruds.product.fields.price_helper') }}</span>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label class="required"
+                                                           for="SellingPrice2">{{ trans('cruds.product.fields.price2') }}</label>
+                                                    <input
+                                                        class="form-control {{ $errors->has('SellingPrice2') ? 'is-invalid' : '' }}"
+                                                        type="number" name="SellingPrice2" id="SellingPrice2"
+                                                        value="{{ $product->SellingPrice2 }}" step="0.01" required>
+                                                    @if($errors->has('SellingPrice2'))
+                                                        <div class="invalid-feedback">
+                                                            {{ $errors->first('SellingPrice2') }}
+                                                        </div>
+                                                    @endif
+                                                    <span
+                                                        class="help-block">{{ trans('cruds.product.fields.price_helper') }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label class="required"
+                                                           for="SellingPrice3">{{ trans('cruds.product.fields.price3') }}</label>
+                                                    <input
+                                                        class="form-control {{ $errors->has('SellingPrice3') ? 'is-invalid' : '' }}"
+                                                        type="number" name="SellingPrice" id="SellingPrice"
+                                                        value="{{ $product->SellingPrice3 }}" step="0.01" required>
+                                                    @if($errors->has('SellingPrice3'))
+                                                        <div class="invalid-feedback">
+                                                            {{ $errors->first('SellingPrice3') }}
+                                                        </div>
+                                                    @endif
+                                                    <span
+                                                        class="help-block">{{ trans('cruds.product.fields.price_helper') }}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
