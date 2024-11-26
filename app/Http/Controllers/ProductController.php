@@ -118,7 +118,7 @@ class ProductController extends Controller
 
             $title = "new";
             $product = new Product;
-            $productdata = array();
+            $productdata = [];
             $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
             $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
             $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
