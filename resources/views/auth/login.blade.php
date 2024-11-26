@@ -1,4 +1,8 @@
-@extends('layouts.auth')
+{{--@extends('layouts.auth')--}}
+@extends('layouts.master-without-nav')
+@section('title')
+    @lang('Login')
+@endsection
 
 @section('content')
     <div class="container">
