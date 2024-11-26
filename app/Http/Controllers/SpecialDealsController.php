@@ -62,7 +62,7 @@ class SpecialDealsController extends Controller
     {
         abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $where = array('special_deals.id' => $id);
+        $where = ['special_deals.id' => $id];
 
         $deal = SpecialDeals::where($where)
             ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')

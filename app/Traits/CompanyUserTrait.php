@@ -13,7 +13,7 @@ trait CompanyUserTrait
      */
     public function companies()
     {
-        return $this->belongsToMany('\App\Models\Company', 'company_user', 'user_id', 'company_id');
+        return $this->belongsToMany(\App\Models\Company::class, 'company_user', 'user_id', 'company_id');
     }
 
     /**
@@ -46,7 +46,7 @@ trait CompanyUserTrait
     public static function bootCompanyUserTrait()
     {
         static::deleting(function (Model $user) {
-            if (!method_exists('App\Models\User', 'bootSoftDeletes')) {
+            if (!method_exists(\App\Models\User::class, 'bootSoftDeletes')) {
                 $user->companies()->sync([]);
             }
             return true;
