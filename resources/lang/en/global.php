@@ -5,6 +5,7 @@ return [
     'actions'                              => 'Actions',
     'add'                                  => 'Add',
     'add_package_type'                     => 'Add Package Type',
+    'add_product'                          => 'Add New Product',
     'active'                               => 'Active',
     'all'                                  => 'All',
     'all_orders'                           => 'All Orders',
