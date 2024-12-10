@@ -83,6 +83,13 @@
                     <select class="form-control select2 product-select">
                         <option disabled selected>Select Product</option>
                     </select>
+                    <div class="product-prices mt-3" style="display: none;">
+                        <p><strong>Selling Price 1:</strong> <span id="price"></span></p>
+                        <p><strong>Selling Price 2:</strong> <span id="price2"></span></p>
+                        <p><strong>Selling Price 3:</strong> <span id="price3"></span></p>
+                        <p><strong>Average Cost:</strong> <span id="average-cost"></span></p>
+                        <p><strong>Last Cost:</strong> <span id="last-cost"></span></p>
+                    </div>
                 </td>
                 <td>
                     <input type="text" class="form-control stock-input" readonly>
@@ -221,7 +228,8 @@
                     },
                     processResults: function (data) {
                         return { results: data };
-                    }
+                    },
+                    cache: true,
                 },
                 width: 'resolve',
                 dropdownAutoWidth: true
@@ -229,19 +237,28 @@
 
             // Handle product selection to populate prices
             template.find('.product-select').on('change', function () {
+                const selectedProductId = $(this).val();
+                const row = $(this).closest('tr');
+                const priceSelect = row.find('.price-select');
+                const stockInput = row.find('.stock-input');
+                const productPricesSection = row.find('.product-prices');
+
+                $aja
+            })
+            /*template.find('.product-select').on('change', function () {
                 const selectedOption = $(this).find(':selected');
                 const priceSelect = template.find('.price-select');
                 const stockInput = template.find('.stock-input');
 
                 // Populate prices and stock
                 priceSelect.empty().append(`
-                    <option value="${selectedOption.data('price1')}">Price 1 - ${selectedOption.data('price1')}</option>
+                    <option value="${selectedOption.data('price')}">Price 1 - ${selectedOption.data('price')}</option>
                     <option value="${selectedOption.data('price2')}">Price 2 - ${selectedOption.data('price2')}</option>
                     <option value="${selectedOption.data('price3')}">Price 3 - ${selectedOption.data('price3')}</option>
                 `);
 
                 stockInput.val(selectedOption.data('stock'));
-            });
+            });*/
 
             // Handle price and quantity updates
             template.find('.quantity-input, .price-select, .discount-input').on('input change', function () {
