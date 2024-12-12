@@ -229,28 +229,28 @@
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
-                                            <input class="form-control text-center {{ $errors->has('CostPrice') ? 'is-invalid' : '' }}" type="number" name="CostPrice" id="CostPrice"
+                                            <label class="required" for="AverageCostPrice">{{ trans('cruds.product.fields.ave_cost') }}</label>
+                                            <input class="form-control text-center {{ $errors->has('AverageCostPrice') ? 'is-invalid' : '' }}" type="number" name="AverageCostPrice" id="AverageCostPrice"
                                                    value="{{ number_format((float)$product->AverageCostPrice, 2, '.', '') }}" step="0.01">
-                                            @if($errors->has('CostPrice'))
+                                            @if($errors->has('AverageCostPrice'))
                                                 <div class="invalid-feedback">
-                                                    {{ $errors->first('CostPrice') }}
+                                                    {{ $errors->first('AverageCostPrice') }}
                                                 </div>
                                             @endif
-                                            <span class="help-block">{{ trans('cruds.product.fields.cost_helper') }}</span>
+                                            <span class="help-block">{{ trans('cruds.product.fields.ave_cost_helper') }}</span>-
                                         </div>
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
-                                            <input class="form-control text-center {{ $errors->has('CostPrice') ? 'is-invalid' : '' }}" type="number" name="CostPrice" id="CostPrice"
+                                            <label class="required" for="LastCostPrice">{{ trans('cruds.product.fields.last_cost') }}</label>
+                                            <input class="form-control text-center {{ $errors->has('LastCostPrice') ? 'is-invalid' : '' }}" type="number" name="LastCostPrice" id="LastCostPrice"
                                                    value="{{ number_format((float)$product->stockHolding->LastCostPrice, 2, '.', '') }}" step="0.01">
-                                            @if($errors->has('CostPrice'))
+                                            @if($errors->has('LastCostPrice'))
                                                 <div class="invalid-feedback">
-                                                    {{ $errors->first('CostPrice') }}
+                                                    {{ $errors->first('LastCostPrice') }}
                                                 </div>
                                             @endif
-                                            <span class="help-block">{{ trans('cruds.product.fields.cost_helper') }}</span>
+                                            <span class="help-block">{{ trans('cruds.product.fields.last_cost_helper') }}</span>
                                         </div>
                                     </div>
                                     <div class="col-sm-2">

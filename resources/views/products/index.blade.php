@@ -89,8 +89,8 @@
                             <th>{{ trans('cruds.product.fields.sku') }}</th>
                             <th>{{ trans('cruds.product.fields.name') }} </th>
                             <th>{{ trans('cruds.product.fields.barcode') }}</th>
-                            <th>{{ trans('cruds.product.fields.price') }}</th>
-                            <th>{{ trans('cruds.product.fields.cost') }}</th>
+                            <th>{{ __('Selling Price') }}</th>
+                            <th>{{ __('Cost') }}</th>
                             <th>{{ trans('cruds.product.fields.quantity') }}</th>
                             <th width="100px">Action</th>
                         </tr>
@@ -187,7 +187,7 @@
                     {data: null,
                         render: data => data.Barcode + ' | ' + data.AltBarcode
                     },
-                    {data:'prices', name: 'prices', orderable: false, searchable:false },
+                    {data:'prices', name: 'prices', orderable: false, searchable:false  },
                     {data:'costPrices', name: 'costPrices', orderable: false, searchable:false },
                     {data:'quantity_on_hand', name: 'quantity_on_hand', orderable: true, searchable:false },
 
@@ -221,7 +221,9 @@
                     },
                 ],
             });
+
         });
+
 
         $(document).on('click', '.delete-product', function () {
             var productId = $(this).data('id');
