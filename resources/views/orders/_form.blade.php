@@ -84,6 +84,12 @@
                         <select name="product[]" class="select2 form-control priceListener" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
+                        <div class="row">
+                            <div class="product-details">
+                                <strong>Price 1:</strong> <span class="price_input"></span>
+                                <strong>Cost:</strong> <span class="cost-price"></span>
+                            </div>
+                        </div>
                     </td>
                     @if($tax_per_item)
                         <td class="select-container d-none d-xl-block d-l-block" style="visibility:hidden;">
@@ -138,15 +144,21 @@
                                     @foreach ($products as $product)
                                         <option value="{{ $item->StockCode }}" selected="">
                                             {{ intval( ltrim( $product->StockCode, '0')) }} &nbsp;
-                                            {{ $product->StockItemName }} -
-                                            (R {{ !floatval($product->DiscountPercentage) ?
-                                                                ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
-                                                                : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
-                                            [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
+                                            {{ $product->StockItemName }}
                                         </option>
                                     @endforeach
                                 </select>
-
+                                <div class="row">
+                                    (R {{ !floatval($product->DiscountPercentage) ?
+                                                                ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
+                                                                : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
+                                    [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
+                                    <div class="product-details">
+                                        <strong>Price 1:</strong> <span class="selling-price"></span>
+                                        <strong>Cost:</strong> <span class="cost-price"></span>
+                                        <strong>On Hand:</strong> <span class="selling-price"></span>
+                                    </div>
+                                </div>
                             </td>
                             @if($tax_per_item)
                                 <td class="select-container d-none d-xl-block" style="visibility:hidden;">
@@ -174,9 +186,7 @@
                                         <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
 
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                %
-                                            </div>
+                                            <div class="input-group-text">% </div>
                                         </div>
                                     </div>
 

@@ -41,6 +41,12 @@ ul.sidebar-menu li.sidebar-menu-item {
     list-style-type: none;
 }
 
+.sidebar-menu-action {
+    text-decoration: none;
+    color: #fff;
+}
+
+
 .dropdown-mega {
     position: static !important;
 }
@@ -179,3 +185,4 @@ ul.sidebar-menu li.sidebar-menu-item {
 .w-50 {
     width: 50% !important;
 }
+
