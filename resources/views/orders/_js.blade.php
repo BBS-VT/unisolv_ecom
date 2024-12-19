@@ -124,6 +124,7 @@
                 $(data.element).attr('data-price2', data.price2);
                 $(data.element).attr('data-price3', data.price3);
                 $(data.element).attr('data-avgcost', data.avgcost);
+                $(data.element).attr('data-lastcost', data.lastcost);
 
                 $(data.element).attr('data-stock', data.stock);
 
@@ -144,6 +145,7 @@
             var price2Display = element.closest('tr').find('.price2-display');
             var price3Display = element.closest('tr').find('.price3-display');
             var avgCostDisplay = element.closest('tr').find('.avg-cost-display');
+            var lastCostDisplay = element.closest('tr').find('.last-cost-display');
 
             // Set selected taxes from product
             var taxIds = [];
@@ -165,7 +167,7 @@
             price2Display.text(selectedOption.data('price2'));
             price3Display.text(selectedOption.data('price3'));
             avgCostDisplay.text(selectedOption.data('avgcost'));
-
+            lastCostDisplay.text(selectedOption.data('lastcost'));
 
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));

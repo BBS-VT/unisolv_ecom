@@ -52,7 +52,7 @@
                         <th >{{ __('global.quantity') }}</th>
                         <th >{{ __('global.stockOnhand') }}</th>
                         <th >{{ __('global.price') }}</th>
-                        <th >{{ __('global.discount') }}</th>
+                        <th class="w-25">{{ __('global.discount') }}</th>
                         <th class="text-end w-10">{{ __('global.total') }}</th>
                     @elseif($tax_per_item and !$discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
@@ -90,7 +90,7 @@
                                 <div class="me-4"><strong>Price 2:</strong> <span class="price2-display text-muted"></span>&nbsp;</div>
                                 <div class="me-4"><strong>Price 3:</strong> <span class="price3-display text-muted"></span>&nbsp;</div>
                                 <div class="me-4"><strong>Avg Cost:</strong> <span class="avg-cost-display text-danger"></span>&nbsp;</div>
-                                <div class="me-4"><strong>Last Cost:</strong> <span class="avg-cost-display text-warning"></span>&nbsp;</div>
+                                <div class="me-4"><strong>Last Cost:</strong> <span class="last-cost-display text-warning"></span>&nbsp;</div>
                             </div>
                         </div>
                     </td>
@@ -109,20 +109,17 @@
                     <td class="col-sm-2">
                         <input name="QuantityOnHand[]" type="number" class="form-control stock_input" value="" readonly>
                     </td>
-                    <td class="col-sm-4">
+                    <td class="col-sm-2">
                         <input name="price[]" type="text" class="form-control price_input priceListener"
                                 autocomplete="off" value="0" >
                     </td>
                     @if($discount_per_item)
                         <td class="col-sm-4">
-                            <div class="input-group input-group-merge">
+                            <div class="input-group d-flex align-items-center">
 {{--                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="">--}}
-                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" value="">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">%</div>
-                                </div>
+                                <input name="discount[]" type="number" class="form-control priceListener discountListener" id="chDiscount" value="" style="min-width: 0;">
+                                <span class="input-group-text">% </span>
                             </div>
-
                         </td>
 
                     @endif
@@ -173,23 +170,18 @@
                             <td class="col-sm-2">
                                 <input name="QuantityOnHand[]" type="number" class="form-control stock_input " value="{{ $item->QuantityOnHand }}" readonly>
                             </td>
-                            <td class="col-sm-4">
+                            <td class="col-sm-2">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>
 
                             </td>
                             @if($discount_per_item)
-                                <td class="col-4 col-sm-4">
-                                    <div class="input-group input-group-merge">
+                                <td class="col-sm-4">
+                                    <div class="input-group d-flex align-items-center">
 {{--                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">--}}
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" value="{{ $item->discount_val }}">
-
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">% </div>
-                                        </div>
+                                        <input name="discount[]" type="number" class="form-control priceListener" id="chDiscount" value="{{ $item->discount_val }}" style="min-width: 0;">
+                                        <span class="input-group-text">% </span>
                                     </div>
-
                                 </td>
-
                             @endif
                             <td class="text-right">
                                 <p class="mb-1">
