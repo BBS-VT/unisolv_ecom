@@ -45,6 +45,7 @@ class Product extends Model implements HasMedia
         'SellingPrice',
         'SellingPrice2',
         'SellingPrice3',
+        'SellingPrice4',
         'DiscountPercentage',
         'WeightPerUnit',
         'MarketingComments',

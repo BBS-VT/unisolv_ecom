@@ -17,6 +17,7 @@ class AddPricesToProductsTable extends Migration
             $table->renameColumn('CostPrice', 'AverageCostPrice');
             $table->decimal('SellingPrice2', 10, 2)->nullable()->after('SellingPrice');
             $table->decimal('SellingPrice3', 10, 2)->nullable()->after('SellingPrice2');
+            $table->decimal('SellingPrice4', 10, 2)->nullable()->after('SellingPrice3');
         });
     }
 

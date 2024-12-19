@@ -23,7 +23,7 @@
                                         <li class="list-inline-item">
                                             <div class="pl-3">
                                                 <i class="mdi mdi-web"></i>
-                                                <p class="text-muted mb-0">quenera@mjpress.co.za</p>
+                                                <p class="text-muted mb-0">admin@viedges.co.za</p>
                                                 <p class="text-muted mb-0">www.qrstuvwxyz.com</p>
                                             </div>
                                         </li>
