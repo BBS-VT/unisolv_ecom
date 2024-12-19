@@ -115,7 +115,7 @@
                                             </select>
                                             @if($errors->has('subCategories'))
                                                 <div class="invalid-feedback">
-                                                    {{ $errors->first('categories') }}
+                                                    {{ $errors->first('subCategories') }}
                                                 </div>
                                             @endif
                                             <span class="help-block">{{ trans('cruds.product.fields.category_helper') }}</span>
