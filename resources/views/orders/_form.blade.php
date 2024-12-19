@@ -84,10 +84,13 @@
                         <select name="product[]" class="select2 form-control priceListener" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
-                        <div class="row">
-                            <div class="product-details">
-                                <strong>Price 1:</strong> <span class="price_input"></span>
-                                <strong>Cost:</strong> <span class="cost-price"></span>
+                        <div class="mx-2 row mt-1">
+                            <div class="product-details d-flex justify-content-between align-items-center">
+                                <div class="me-4"><strong>Price 1:</strong> <span class="price1-display"></span>&nbsp;</div>
+                                <div class="me-4"><strong>Price 2:</strong> <span class="price2-display text-muted"></span>&nbsp;</div>
+                                <div class="me-4"><strong>Price 3:</strong> <span class="price3-display text-muted"></span>&nbsp;</div>
+                                <div class="me-4"><strong>Avg Cost:</strong> <span class="avg-cost-display text-danger"></span>&nbsp;</div>
+                                <div class="me-4"><strong>Last Cost:</strong> <span class="avg-cost-display text-warning"></span>&nbsp;</div>
                             </div>
                         </div>
                     </td>
@@ -153,11 +156,6 @@
                                                                 ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
                                                                 : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
                                     [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
-                                    <div class="product-details">
-                                        <strong>Price 1:</strong> <span class="selling-price"></span>
-                                        <strong>Cost:</strong> <span class="cost-price"></span>
-                                        <strong>On Hand:</strong> <span class="selling-price"></span>
-                                    </div>
                                 </div>
                             </td>
                             @if($tax_per_item)
