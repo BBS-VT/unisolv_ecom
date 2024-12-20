@@ -23,29 +23,24 @@
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Sales</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
                     <li class="nav-item">
-                        <div class="row d-flex justify-content-between">
-                            <a href="{{ route('orders.index') }}" class="nav-link">{{ __('Orders') }} </a>
-                            <a href="{{ route('orders.create') }}" class="sidebar-menu-action">
-                                <i class="fas fa-plus mr-2 icon-plus"></i>
-                            </a>
-                        </div>
+                        <a href="{{ route('orders.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Orders') }} </a>
+                        {{--<a href="{{ route('orders.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
                     </li>
-                    <li class="sidebar-menu-item">
-                        <div class="row d-flex justify-content-between">
-                            <a href="{{ route('customers.index') }}" class="nav-link">{{ __('Customers') }} </a>
-                            <a href="{{ route('customers.create') }}" class="sidebar-menu-action">
-                                <i class="fas fa-plus mr-2 icon-plus"></i>
-                            </a>
-                        </div>
+                    <li class="nav-item">
+                        <a href="{{ route('customers.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Customers') }} </a>
+                        {{--<a href="{{ route('customers.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
                     </li>
                     @can('specialdeal_access')
-                    <li class="sidebar-menu-item">
-                        <div class="row d-flex justify-content-between">
-                            <a href="{{ route('deals.index') }}" class="nav-link">{{ __('Contract Discounts') }} </a>
-                            <a href="{{ route('deals.create') }}" class="sidebar-menu-action">
-                                <i class="fas fa-plus mr-2 icon-plus"></i>
-                            </a>
-                        </div>
+                    <li class="nav-item">
+                        <a href="{{ route('deals.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Contract Discounts') }} </a>
+                        {{--<a href="{{ route('deals.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
+
                     </li>
                     @endcan
                     {{--<li>

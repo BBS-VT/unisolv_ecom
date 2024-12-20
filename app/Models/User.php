@@ -103,10 +103,11 @@ class User extends Authenticatable
      *
      * @return mixed
      */
-    public function getSetting($key)
+    /**public function getSetting($key)
     {
         return UserSetting::getSetting($key, $this->id);
     }
+    */
 
     /**
      * Set User Specified setting
@@ -116,10 +117,10 @@ class User extends Authenticatable
      *
      * @return void
      */
-    public function setSetting($key, $value)
+    /*public function setSetting($key, $value)
     {
         return UserSetting::setSetting($key, $value, $this->id);
-    }
+    }*/
 
     /**
      * Get Full Name Attribute
@@ -158,7 +159,8 @@ class User extends Authenticatable
      */
     public function getAvatarAttribute()
     {
-        $avatar = $this->getSetting('avatar');
-        return $avatar ? asset($avatar) : $this->getDefaultAvatar();
+        //$avatar = $this->getSetting('avatar');
+        //return $avatar ? asset($avatar) : $this->getDefaultAvatar();
+        return asset('/images/users/user-1.jpg');
     }
 }

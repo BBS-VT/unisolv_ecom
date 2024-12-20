@@ -107,7 +107,7 @@
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="false" aria-expanded="false">
-                    <span class="ml-1 nav-user-name hidden-sm">{{ Auth::user()->PreferredName }}</span>
+                    <span class="ms-1 nav-user-name hidden-sm">{{ Auth::user()->PreferredName }}</span>
                     <img src="{{ asset('images/users/user-5.jpg') }}" alt="profile-user" class="rounded-circle thumb-xs" />
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
