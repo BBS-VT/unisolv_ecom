@@ -55,7 +55,7 @@ class NewOrderNotification extends Notification
     {
         return [
             'order_id' => $this->order->id,
-            'order_details' => $this->order->CustomerName,
+            'order_details' => $this->order->customer->CustomerName,
             'message' => 'New order has been placed',
             'created_at' => $this->order->created_at->toDateTimeString(),
         ];
