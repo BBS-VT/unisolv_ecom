@@ -102,7 +102,7 @@
             <tr>
                 <th colspan="3" style="text-align: right;">Tax:</th>
                 {{--<td>{{ number_format($order->tax, 2) }}</td>--}}
-                <td>{{ number_format(($order->total - ($order->total / 1.15)), 2) }}</td>
+                <td>{{ number_format((($order->total / 100) - (($order->total / 1.15) /100)), 2) }}</td>
             </tr>
             <tr>
                 <th colspan="3" style="text-align: right;">Total:</th>

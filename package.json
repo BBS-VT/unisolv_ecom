@@ -15,10 +15,13 @@
     },
     "dependencies": {
         "browser-sync": "^2.29.1",
+        "inputmask": "^5.0.9",
+        "laravel-echo": "^1.17.1",
         "lodash": "^4.17.21",
         "popper.js": "^1.16.1",
         "postcss": "^8.4.23",
         "postcss-import": "^15.1.0",
+        "pusher-js": "^8.4.0-rc2",
         "resolve-url-loader": "^5.0.0",
         "rimraf": "^5.0.5",
         "rtlcss": "^4.1.0",

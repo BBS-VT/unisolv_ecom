@@ -11,4 +11,5 @@
     <script src="{{ URL::asset('js/jquery.priceformat.min.js') }}"></script>
     <script src="{{ URL::asset('js/app.js') }}"></script>
     <script src="{{ URL::asset('js/custom.js') }}"></script>
+    <script src="{{ URL::asset('js/notifications.js') }}"></script>
 @yield('script')
