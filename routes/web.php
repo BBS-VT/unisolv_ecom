@@ -133,6 +133,10 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::get('/company', 'CompanyController@index')->name('company');
     Route::post('/company', 'CompanyController@update')->name('company.update');
 
+    // Settings>Order Settings
+    Route::get('/order', 'OrderController@index')->name('order');
+    Route::post('/order', 'OrderController@update')->name('order.update');
+
     // Settings>Preferences
     Route::get('/preferences', 'PreferenceController@index')->name('preferences');
     Route::post('/preferences', 'PreferenceController@update')->name('preferences.update');

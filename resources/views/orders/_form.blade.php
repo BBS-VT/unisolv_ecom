@@ -86,11 +86,15 @@
                         </select>
                         <div class="mx-2 row mt-1">
                             <div class="product-details d-flex justify-content-between align-items-center">
-                                <div class="me-4"><strong>Price 1:</strong> <span class="price1-display"></span>&nbsp;</div>
-                                <div class="me-4"><strong>Price 2:</strong> <span class="price2-display text-muted"></span>&nbsp;</div>
-                                <div class="me-4"><strong>Price 3:</strong> <span class="price3-display text-muted"></span>&nbsp;</div>
-                                <div class="me-4"><strong>Avg Cost:</strong> <span class="avg-cost-display text-danger"></span>&nbsp;</div>
-                                <div class="me-4"><strong>Last Cost:</strong> <span class="last-cost-display text-warning"></span>&nbsp;</div>
+                                @if($display_selling_prices == true)
+                                    <div class="me-4"><strong>Price 1:</strong> <span class="price1-display"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Price 2:</strong> <span class="price2-display text-muted"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Price 3:</strong> <span class="price3-display text-muted"></span>&nbsp;</div>
+                                @endif
+                                @if($display_cost_prices == true)
+                                    <div class="me-4"><strong>Avg Cost:</strong> <span class="avg-cost-display text-danger"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Last Cost:</strong> <span class="last-cost-display text-warning"></span>&nbsp;</div>
+                                @endif
                             </div>
                         </div>
                     </td>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\Store;
 use App\Http\Requests\Order\Update;
 use App\Models\Product;
+use Illuminate\Support\Facades\Mail;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Customer;
@@ -19,6 +20,8 @@ use Mpociot\VatCalculator\Facades\VatCalculator;
 use Carbon\Carbon;
 use Spatie\ArrayToXml\ArrayToXml;
 use Session;
+use App\Mail\FulfillmentNotificationMail;
+use App\Mail\OrderConfirmationMail;
 
 class OrdersController extends Controller
 {
@@ -98,8 +101,11 @@ class OrdersController extends Controller
         $products = Product::all();
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
+        $display_selling_prices = (boolean) $currentCompany->getSetting('display_selling_prices');
+        $display_cost_prices = (boolean) $currentCompany->getSetting('display_cost_prices');
 
-        return view('orders.create', compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item', 'currentCompany'));
+        return view('orders.create', compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item', 'currentCompany',
+            'display_selling_prices', 'display_cost_prices'));
     }
 
     /**
@@ -189,6 +195,23 @@ class OrdersController extends Controller
                     'tax_type_id' => $tax
                 ]);
             }
+        }
+
+        // Fetch notification settings
+        $orderCustomerConfirmation = (boolean) $currentCompany->getSetting('order_customer_confirmation');
+        $orderFulfillmentNotification = (boolean) $currentCompany->getSetting('order_fulfillment_notification');
+        $fulfillmentEmail = $currentCompany->getSetting('fulfillment_mailbox');
+
+        // Send confirmation email to customer
+        if ($orderCustomerConfirmation && $order->customer->GeneralEmailAddress) {
+            Mail::to($order->customer->GeneralEmailAddress)->send(new OrderConfirmationMail($order));
+        }
+
+        // Notify fulfillment team
+        if ($orderFulfillmentNotification && $fulfillmentEmail ) {
+            Mail::to($fulfillmentEmail)->send(new FulfillmentNotificationMail($order));
+        } else {
+            \Log::warning('Fulfillment mailbox not configured');
         }
 
         session()->flash('alert-success', __('global.order_added'));

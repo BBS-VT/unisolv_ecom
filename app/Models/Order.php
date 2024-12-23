@@ -394,5 +394,9 @@ class Order extends Model
         return $total_amount;
     }
 
+    public function getIsUrgentAttribute()
+    {
+        //return $this->priority == 'urgent' || $this->OrderDate && $this->ExpectedDeliveryDate->isToday();
+    }
 
 }

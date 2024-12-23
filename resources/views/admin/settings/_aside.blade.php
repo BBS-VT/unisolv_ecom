@@ -29,4 +29,10 @@
             <span class="sidebar-menu-text">{{ __('global.product_settings') }}</span>
         </a>
     </li>
+    <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.order') }}" class="sidebar-menu-button {{ $tab == 'order' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="settings" ></i>
+            <span class="sidebar-menu-text">{{ __('global.order_settings') }}</span>
+        </a>
+    </li>
 </ul>
