@@ -211,7 +211,7 @@
                                 {{ csrf_field() }}
                                 <div class="modal-body">
                                     <div class="row">
-                                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                                        <input type="file" id="fileUpload" name="import_file" class="dropify">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -262,6 +262,36 @@
     <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.datatable.init.js') }}"></script>
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
-    <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
+{{--    <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>--}}
+
+    <script>
+        $(document).ready(function() {
+            $('#fileUpload').dropify();
+
+            $('#fileUpload').on('change', function() {
+                let fileInput = this;
+                let formData = new FormData();
+                formData.append('file, fileInput.files[0]');
+
+                $.ajax({
+                    url: "{{ route('file.upload') }}",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        console.log(response.message);
+                        console.log('File Path:', response.filePath);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
 
 @endsection

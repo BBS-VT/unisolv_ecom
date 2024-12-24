@@ -3,6 +3,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\FileUploadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +27,8 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
    Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
+
+   Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 
    // Customers
    Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
