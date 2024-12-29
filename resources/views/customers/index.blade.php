@@ -5,6 +5,21 @@
     <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
+    <style>
+        #progressIndicator {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -207,7 +222,8 @@
                                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                 </button>
                             </div>
-                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+{{--                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">--}}
+                            <form id="uploadForm" class="form-horizontal"  enctype="multipart/form-data">
                                 {{ csrf_field() }}
                                 <div class="modal-body">
                                     <div class="row">
@@ -215,9 +231,12 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-gradient-danger">Import File</button>
+                                    <button type="button" id="importButton" class="btn btn-gradient-danger">Import File</button>
                                 </div>
                             </form>
+                            <div id="progressIndicator" style="display:none;">
+                                <p>Uploading file... Please wait.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,6 +292,10 @@
                 let formData = new FormData();
                 formData.append('file', fileInput.files[0]);
 
+                // Show progress indicator and disable Import button
+                $('#progressIndicator').show();
+                $('#importButton').prop('disabled', true);
+
                 $.ajax({
                     url: "{{ route('file.upload') }}",
                     type: "POST",
@@ -283,14 +306,47 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     },
                     success: function(response) {
-                        console.log(response.message);
-                        console.log('File Path:', response.filePath);
+                        $('#progressIndicator').hide();
+                        $('#importButton').prop('disabled', false);
+
+                        uploadedFilePath = response.filePath;
+
+                        console.log(response.message, uploadedFilePath);
                     },
                     error: function(error) {
                         console.error('Error:', error.responseJSON.message);
+
+                        $('#progressIndicator').hide();
+                        $('#importButton').prop('disabled', true);
                     }
                 });
             });
+
+            $('#importButton').on('click', function () {
+                if (!uploadedFilePath) {
+                    alert('Please upload a file before importing');
+                    return;
+                }
+
+
+                $.ajax({
+                    url: "{{ route('importCustomermaster') }}",
+                    type: "POST",
+                    data: {
+                        file_path: uploadedFilePath,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        alert('File imported successfully');
+                    },
+                    error: function (error) {
+                        /*console.error('Error importing file:', error.responseJSON.message || 'Unexpected error occurred');
+                        alert('Error: ' + (error.responseJSON.message || 'Please check your input and try again'));*/
+                        alert('Error starting import process');
+                    }
+                });
+            });
+
         });
     </script>
 

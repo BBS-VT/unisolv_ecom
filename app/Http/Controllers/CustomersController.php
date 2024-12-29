@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportCustomersJob;
 use App\Models\BuyingGroup;
 use App\Models\Customer;
 use App\Models\CustomerCategory;
@@ -16,6 +17,8 @@ use App\Http\Requests\UpdateCustomerRequest;
 use Gate;
 use DateTime;
 use DB;
+use Log;
+use Storage;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -233,30 +236,68 @@ class CustomersController extends Controller
 
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function importExcel(Request $request)
+
+    /*public function importExcel(Request $request)
     {
+        // Check user permission
         abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Customer::truncate();
+        $filePath = $request->file_path;
+        if (!$filePath || !Storage::exists($filePath)) {
+            return back()->withErrors(['error' => 'Uploaded file not found.']);
+        }
 
-        \Excel::import(new CustomerMasterImport,$request->import_file);
+        ImportCustomersJob::dispatch($filePath);
 
-        DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
-        DB::statement('UPDATE customers SET acc_main = LPAD(acc_main, 6, "0")');
-        DB::statement('UPDATE customers SET acc_sub = "000" where acc_sub = "0"');
-        DB::statement('UPDATE customers SET acc_code = CONCAT(acc_main, "-", acc_sub)');
-        DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
-        DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
-//        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
-        DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
+        return response()->json(['message' => 'Import started successfully'], 200);
+    }*/
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        \Session::put('success', 'File imported successfully');
+    public function importExcel(Request $request)
+    {
+        // Check user permission
+        abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return back();
+        try {
+
+            // Validate that the file exists
+            Log::info("Import started");
+            $filePath = $request->file_path;
+            if (!$filePath || !Storage::exists($filePath)) {
+                return back()->withErrors(['error' => 'Uploaded file not found.']);
+            }
+            Log::info("File exists at path: {$filePath}");
+
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+            Customer::truncate();
+
+            // Import the file
+            \Excel::import(new CustomerMasterImport, storage_path('app/'.$filePath));
+            Log::info("Import completed");
+
+            // Perform post-import SQL updates
+            DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
+            DB::statement('UPDATE customers SET acc_main = LPAD(acc_main, 6, "0")');
+            DB::statement('UPDATE customers SET acc_sub = "000" where acc_sub = "0"');
+            DB::statement('UPDATE customers SET acc_code = CONCAT(acc_main, "-", acc_sub)');
+            DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
+            DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
+            //        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
+            DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
+
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+
+            Storage::delete($filePath);
+
+            return response()->json(['message' => 'File imported successfully'], 200);
+
+        } catch (\Exception $e) {
+            // Set error message
+            //\Session::put('error', 'Error importing file: ' . $e->getMessage());
+            Log::error("Import failed: " . $e->getMessage());
+
+            return response()->json(['message' => 'Error importing file: ' . $e->getMessage()], 500);
+        }
+
+        //return back();
     }
 }
