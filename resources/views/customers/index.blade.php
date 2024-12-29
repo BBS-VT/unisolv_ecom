@@ -271,7 +271,7 @@
             $('#fileUpload').on('change', function() {
                 let fileInput = this;
                 let formData = new FormData();
-                formData.append('file, fileInput.files[0]');
+                formData.append('file', fileInput.files[0]);
 
                 $.ajax({
                     url: "{{ route('file.upload') }}",
