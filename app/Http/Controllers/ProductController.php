@@ -42,29 +42,78 @@ class ProductController extends Controller
             $cacheKey = "products_company_{$currentCompany->id}";
             $cacheTTL = 3600; // 1 hour
 
-            $products = Cache::remember($cacheKey, $cacheTTL, function () use ($currentCompany) {
-                return Product::findByCompany($currentCompany->id)
-                    ->select(
-                        'id',
-                        'StockCode',
-                        'StockItemName',
-                        'Barcode',
-                        'AltBarCode',
-                        'SellingPrice',
-                        'SellingPrice2',
-                        'SellingPrice3',
-                        'AverageCostPrice'
-                    )
-                    ->with('stockHolding')
-                    ->get();
-            });
-            /*$products = Product::findByCompany($currentCompany->id)
-                ->select('id', 'StockCode', 'StockItemName', 'Barcode', 'AltBarCode', 'SellingPrice', 'SellingPrice2','SellingPrice3',
-                    'AverageCostPrice')
-                ->with('stockHolding')
-                ->get();*/
+            $query = Product::query()
+                    ->where('company_id', $currentCompany->id)
+                    ->select([
+                        'products.id',
+                        'products.StockCode',
+                        'products.StockItemName',
+                        'products.Barcode',
+                        'products.AltBarCode',
+                        'products.SellingPrice',
+                        'products.SellingPrice2',
+                        'products.SellingPrice3',
+                        'products.AverageCostPrice'
+                    ]);
 
-            return DataTables::of($products)
+            $query->leftJoin('stock_item_holdings', 'products.StockCode', '=', 'stock_item_holdings.StockCode')
+                    ->addSelect([
+                        'stock_item_holdings.QuantityOnHand',
+                        'stock_item_holdings.LastCostPrice'
+                    ]);
+
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $searchValue = $request->input('search.value');
+
+                $query->where(function ($q) use ($searchValue) {
+                    $q->where('products.StockCode', 'like', "%{$searchValue}%")
+                        ->orWhere('products.StockItemName', 'like', "%{$searchValue}%")
+                        ->orWhere('products.Barcode', 'like', "%{$searchValue}%")
+                        ->orWhere('products.AltBarCode', 'like', "%{$searchValue}%");
+                });
+            }
+
+            if ($request->has('columns')) {
+                foreach ($request->input('columns') as $index => $column) {
+                    if (isset($column['search']) && !empty($column['search']['value'])) {
+                        $columnName = $column['name'];
+                        $searchValue = $column['search']['value'];
+
+                        switch ($columnName) {
+                            case 'StockCode':
+                                $query->where('products.StockCode', 'like', "%{$searchValue}%");
+                                break;
+                            case 'StockItemName':
+                                $query->where('products.StockItemName', 'like', "%{$searchValue}%");
+                                break;
+                            case 'Barcode':
+                                $query->where(function($q) use ($searchValue) {
+                                    $q->where('products.Barcode', 'like', "%{$searchValue}%")
+                                        ->orWhere('products.AltBarcode', 'like', "%{$searchValue}%");
+                                });
+                                break;
+                            case 'quantity_on_hand':
+                                // Handle numeric search for quantity
+                                if (is_numeric($searchValue)) {
+                                    $query->where('stock_item_holdings.QuantityOnHand', '=', $searchValue);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+
+            return DataTables::of($query)
+                ->addColumn('barcodes', function ($product) {
+                    $primaryBarcode = $product->Barcode ? $product->Barcode : 'N/A';
+                    $alternateBarcode = $product->AltBarCode ? $product->AltBarCode : 'N/A';
+
+                    return "
+                        <div>Barcode: {$primaryBarcode}</div>
+                        <div>Alt: {$alternateBarcode}</div>
+                    ";
+                })
                 ->addColumn('prices', function ($product) {
                     $currency = auth()->user()->currentCompany()->currency; // Fetch system-wide currency
 
@@ -80,7 +129,7 @@ class ProductController extends Controller
                 })
                 ->addColumn('costPrices', function ($product) {
                     $averageCostPrice = number_format($product->AverageCostPrice ?? 0, 2); // Format to 2 decimals
-                    $lastCostPrice = number_format(optional($product->stockHolding)->LastCostPrice ?? 0, 2);
+                    $lastCostPrice = number_format($product->LastCostPrice ?? 0, 2);
 
                     return "
                         <div>Avg: $averageCostPrice</div>
@@ -88,7 +137,7 @@ class ProductController extends Controller
                     ";
                 })
                 ->addColumn('quantity_on_hand', function ($product) {
-                    return optional($product->stockHolding)->QuantityOnHand ?? 0;
+                    return $product->QuantityOnHand ?? 0;
                 })
                 ->addColumn('action', function ($product) {
                     // Adding both 'View' and 'Edit' buttons
@@ -102,7 +151,13 @@ class ProductController extends Controller
 
                     return $viewButton.' '.$editButton.' '.$deleteButton;
                 })
-                ->rawColumns(['prices','costPrices','action'])
+                ->filterColumn('barcodes', function($query, $keyword) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('products.Barcode', 'like', "%{$keyword}%")
+                            ->orWhere('products.AltBarCode', 'like', "%{$keyword}%");
+                    });
+                })
+                ->rawColumns(['barcodes','prices','costPrices','action'])
                 ->make(true);
         }
 
