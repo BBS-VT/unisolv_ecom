@@ -7,6 +7,9 @@ use App\Http\Requests\MassDestroyProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Imports\StockMasterImport;
+use App\Jobs\ProcessCsvImport;
+use App\Jobs\UpdateProductFields;
+use App\Models\ImportJob;
 use App\Models\PackageType;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -285,28 +288,57 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * @return \Illuminate\Support\Collection
-     */
     public function importExcel(Request $request)
     {
         abort_if(Gate::denies('stock_quantityImport'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        Product::truncate();
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000'
+        ]);
 
-        \Excel::import(new StockMasterImport,$request->import_file);
+        // Store the file for processing
+        $path = $request->file('import_file')->store('temp');
+        $filename = $request->file('import_file')->getClientOriginalName();
 
-        DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
-        DB::statement('UPDATE products SET StockCode = TRIM(StockCode)');
-        DB::statement('UPDATE products SET SupplierID = TRIM(SupplierID)');
-        DB::statement('UPDATE products SET AltBarcode = TRIM(AltBarcode)');
+        $importJob = ImportJob::create([
+            'filename' => $filename,
+            'total_rows' => 0, // Will be updated by the job
+            'processed_rows' => 0,
+            'status' => ImportJob::STATUS_PENDING,
+            'started_at' => now(),
+        ]);
 
+        ProcessCsvImport::dispatch($path, $importJob->id);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-        \Session::put('success', 'File imported successfully');
+        Session::put('success', 'File upload successful. Import is being processed in the background.');
+        Session::put('import_job_id', $importJob->id);
 
         return back();
     }
+
+    public function checkImportProgress($importJobId)
+    {
+        $importJobId = ImportJob::findOrFail($importJobId);
+
+        return response()->json([
+            'status'        => $importJobId->status,
+            'progress'      => $importJobId->progress,
+            'processed_rows' => $importJobId->processed_rows,
+            'total_rows'    => $importJobId->total_rows,
+            'error_message' => $importJobId->error_message,
+        ]);
+    }
+
+    public function showImportStatus()
+    {
+        $recentImports = ImportJob::orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('admin.imports.status', compact('recentImports'));
+    }
+
+
+
 
 }

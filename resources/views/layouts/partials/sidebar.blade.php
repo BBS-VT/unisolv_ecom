@@ -131,7 +131,7 @@
            <li class="menu-label my-2">Components & Extra</li>--}}
 
             <li>
-                <a href="widgets.html"><i data-feather="layers" class="align-self-center menu-icon"></i><span>Reports</span><span class="badge badge-soft-success menu-arrow">New</span></a>
+                <a href="{{ route('admin.imports.status') }}"><i data-feather="layers" class="align-self-center menu-icon"></i><span>Reports</span><span class="badge badge-soft-success menu-arrow">New</span></a>
             </li>
 
             @can('user_management_access')

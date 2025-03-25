@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -117,6 +118,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
 
     // Customer Group
     Route::resource('customer-category', 'CustomerCategoryController');
+
+    // Import routes
+    Route::post('imports/process', [ProductController::class, 'importExcel'])
+        ->name('imports.process');
+    Route::get('imports/status', [ProductController::class, 'showImportStatus'])
+        ->name('imports.status');
+    Route::get('imports/check-progress/{importJobId}', [ProductController::class, 'checkImportProgress'])
+        ->name('imports.check-progress');
+
 
     // Order Status
     Route::resource('orderstatus', 'OrderStatusController');

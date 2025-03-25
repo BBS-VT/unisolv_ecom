@@ -131,7 +131,7 @@
                                         <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                     </button>
                                 </div>
-                                <form action="{{ route('importStockmaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                <form action="{{ route('admin.imports.process') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
                                     {{ csrf_field() }}
                                     <div class="modal-body">
                                         <div class="row">
