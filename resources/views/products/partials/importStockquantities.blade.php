@@ -7,15 +7,30 @@
                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                 </button>
             </div>
-            <form action="{{ route('importQuantities') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+            <form action="{{ route('admin.stock-holdings.import') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
                 {{ csrf_field() }}
                 <div class="modal-body">
-                    <div class="row">
-                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                    <div class="form-group">
+                        <label for="import_file">Select CSV File</label>
+                        <input type="file" name="import_file" class="form-control" required>
+                    </div>
+                    <div class="alert alert-info">
+                        <h6>Instructions:</h6>
+                        <p>Upload a CSV file with the following columns:</p>
+                        <ul>
+                            <li>Stock Code (column A)</li>
+                            <li>Quantity on Hand (column K)</li>
+                            <li>Bin Location (column G)</li>
+                            <li>Last Cost Price (column Z)</li>
+                            <li>Reorder Level (column Q)</li>
+                            <li>Target Stock Level (column S)</li>
+                        </ul>
+                        <p>The import will process in the background and can handle large files.</p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-gradient-danger">Import File</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-gradient-danger">Upload and Import</button>
                 </div>
             </form>
         </div>

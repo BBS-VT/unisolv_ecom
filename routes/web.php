@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -126,6 +127,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
         ->name('imports.status');
     Route::get('imports/check-progress/{importJobId}', [ProductController::class, 'checkImportProgress'])
         ->name('imports.check-progress');
+
+    Route::post('stock-holdings/import', [StockItemHoldingsController::class, 'importExcel'])
+        ->name('stock-holdings.import');
+    Route::post('stock-holdings/link-products', [StockItemHoldingsController::class, 'linkProductsToQuantities'])
+        ->name('stock-holdings.link-products');
+    Route::get('stock-holdings/import-status', [StockItemHoldingsController::class, 'showImportStatus'])
+        ->name('stock-holdings.import-status');
 
 
     // Order Status
