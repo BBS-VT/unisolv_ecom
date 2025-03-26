@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ImportJob;
 use App\Imports\StockQuantitiesImport;
 use App\Models\StockItemHoldings;
 use Illuminate\Bus\Queueable;
@@ -45,15 +46,15 @@ class ProcessStockQuantitiesImport implements ShouldQueue
     {
         Log::info('Starting Stock Quantities import process', ['file' => $this->filePath, 'import_job_id' => $this->importJobId]);
 
-        $importJob = \App\Models\ImportJob::findOrFail($this->importJobId);
-        $importJob->update(['status' => \App\Models\ImportJob::STATUS_PROCESSING, 'started_at' => now()]);
+        $importJob = ImportJob::findOrFail($this->importJobId);
+        $importJob->update(['status' => ImportJob::STATUS_PROCESSING, 'started_at' => now()]);
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
             StockItemHoldings::truncate();
 
             // Create an instance of the importer with progress tracking
-            $importer = new ChunkedStockQuantitiesImport($this->importJobId);
+            $importer = new StockQuantitiesImport($this->importJobId);
 
             Excel::import($importer, storage_path('app/' . $this->filePath));
 

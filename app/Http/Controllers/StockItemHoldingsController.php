@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ProcessStockQuantitiesImport;
-use Ap\Models\ImportJob;
+use App\Models\ImportJob;
 use App\Models\StockItemHoldings;
 use Illuminate\Http\Request;
 use DB;
