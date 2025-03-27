@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockItemHoldingsController;
@@ -30,6 +31,10 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
+    //Route::get('/dashboard/sales', [DashboardController::class, 'index'])
+     //   ->name('dashboard.sales');
+    Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
+        ->name('dashboard.sales.chart-data');
    Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
 
    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
