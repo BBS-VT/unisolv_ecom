@@ -196,15 +196,32 @@
                                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                 </button>
                             </div>
-                            <form action="{{ route('importBalances') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
-                                {{ csrf_field() }}
+                            <form action="{{ route('admin.customer-balances.import') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                @csrf
                                 <div class="modal-body">
-                                    <div class="row">
-                                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                                    <div class="form-group">
+                                        <label for="import_file">{{ __('Select CSV File') }}</label>
+                                        <input type="file" id="input_file" name="import_file" class="dropify" required>
+                                    </div>
+                                    <div class="alert alert-info">
+                                        <h6>Instructions:</h6>
+                                        <p>Upload a CSV file with the following columns:</p>
+                                        <ul>
+                                            <li>AccMain (column E)</li>
+                                            <li>AccSub (column F)</li>
+                                            <li>AgedBalance1 (column H)</li>
+                                            <li>AgedBalance2 (column I)</li>
+                                            <li>AgedBalance3 (column J)</li>
+                                            <li>AgedBalance4 (column K)</li>
+                                            <li>AgedBalance5 (column L)</li>
+                                            <li>AgedBalance6 (column M)</li>
+                                        </ul>
+                                        <p>The import will process in the background and can handle large files.</p>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button class="btn btn-gradient-danger">Import File</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                                    <button class="btn btn-gradient-danger">{{ __('Upload & Import') }}</button>
                                 </div>
                             </form>
                         </div>

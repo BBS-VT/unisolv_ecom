@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -134,6 +136,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
         ->name('stock-holdings.link-products');
     Route::get('stock-holdings/import-status', [StockItemHoldingsController::class, 'showImportStatus'])
         ->name('stock-holdings.import-status');
+    Route::post('customer-balances/import', [CustomerBalanceController::class, 'importExcel'])
+        ->name('customer-balances.import');
 
 
     // Order Status
