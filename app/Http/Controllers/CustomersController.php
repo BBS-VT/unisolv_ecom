@@ -21,12 +21,14 @@ use Log;
 use Storage;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class CustomersController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -35,10 +37,142 @@ class CustomersController extends Controller
 
         $user = $request->user();
         $currentCompany = $user->currentCompany();
-        $customers = Customer::all();
         $display_subaccount = (boolean) $currentCompany->getSetting('display_subaccount');
 
-        return view('customers.index', compact('customers', 'display_subaccount'));
+        if ($request->ajax()) {
+            // Start with a query builder instead of loading all customers
+            $query = Customer::query()
+                ->where('company_id', $currentCompany->id)
+                ->select([
+                    'id',
+                    'acc_main',
+                    'acc_sub',
+                    'CustomerName',
+                    'DeliveryAddressLine1',
+                    'DeliveryCity',
+                    'PrimaryContactPersonID',
+                    'GeneralEmailAddress',
+                    'PhoneNumber',
+                    'VatNr',
+                    'CustomerStatus',
+                    'IsOnCreditHold',
+                ]);
+
+            return DataTables::of($query)
+                ->addColumn('account_code', function ($customer) use ($display_subaccount) {
+                    if ($display_subaccount) {
+                        return $customer->acc_main . ' ' . $customer->acc_sub;
+                    } else {
+                        return $customer->acc_main;
+                    }
+                })
+                ->addColumn('name_with_address', function ($customer) {
+                    $html = '<div class="d-flex align-items-center">';
+                    $html .= '<div class="d-flex align-items-center">';
+                    $html .= '<i class="dripicons-card mr-1"></i> <a href="' . route('customers.show', $customer->id) . '">';
+                    $html .= '&nbsp;' . ($customer->CustomerName ?? '') . '</a>';
+                    $html .= '</div></div>';
+                    $html .= '<div class="d-flex align-items-center mt-1">';
+                    $html .= '<small class="text-muted">';
+                    $html .= '<i class="dripicons-location"></i> ';
+                    $html .= ($customer->DeliveryAddressLine1 ?? '') . ' ' . ($customer->DeliveryCity ?? '');
+                    $html .= '</small></div>';
+
+                    return $html;
+                })
+                ->addColumn('contact_info', function ($customer) {
+                    $html = '<div class="d-flex align-items-center">';
+                    $html .= '<div class="d-flex align-items-center">';
+                    $html .= '<i class="dripicons-user mr-1 text-muted"></i>';
+                    $html .= '<p class="text-muted mb-0">' . ($customer->PrimaryContactID ?? '') . '</p>';
+                    $html .= '</div></div>';
+                    $html .= '<div class="d-flex align-items-center">';
+                    $html .= '<small class="text-muted">';
+                    $html .= '<i class="dripicons-mail mr-1"></i>';
+                    $html .= ($customer->GeneralEmailAddress ?? '');
+                    $html .= '</small></div>';
+
+                    return $html;
+                })
+                ->addColumn('status', function ($customer) {
+                    $html = '';
+                    if ($customer->CustomerStatus == 1) {
+                        $html .= '<a class="updateCustomerStatus" id="customer-' . $customer->id . '" customer_id="' . $customer->id . '"';
+                        $html .= ' href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to De-activate Customer">';
+                        $html .= '<span class="badge badge-success">' . trans('global.active') . '</span></a>';
+                    } else {
+                        $html .= '<a class="updateCustomerStatus" id="customer-' . $customer->id . '" customer_id="' . $customer->id . '"';
+                        $html .= ' href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Activate Customer">';
+                        $html .= '<span class="badge badge-danger">' . trans('global.inactive') . '</span></a>';
+                    }
+
+                    if ($customer->IsOnCreditHold == 1) {
+                        $html .= ' <span class="badge badge-warning">' . trans('global.credit_hold') . '</span>';
+                    }
+
+                    return $html;
+                })
+                ->addColumn('action', function ($customer) {
+                    $viewButton = '';
+                    $editButton = '';
+                    $deleteButton = '';
+
+                    if (Gate::allows('customer_show')) {
+                        $viewButton = '<a href="' . route('customers.show', $customer->id) . '" data-toggle="tooltip"';
+                        $viewButton .= ' title="' . trans('global.view') . ' ' . trans('cruds.customer.title_singular') . '"';
+                        $viewButton .= ' data-placement="top">';
+                        $viewButton .= '<i class="las dripicons-preview text-info font-18"></i></a>';
+                    }
+
+                    if (Gate::allows('customer_edit')) {
+                        $editButton = '<a href="' . route('customers.edit', $customer->id) . '" data-toggle="tooltip"';
+                        $editButton .= ' title="' . trans('global.edit') . ' ' . trans('cruds.customer.title_singular') . '"';
+                        $editButton .= ' data-placement="top">';
+                        $editButton .= '<i class="las dripicons-document-edit text-info font-18"></i></a>';
+                    }
+
+                    if (Gate::allows('customer_delete')) {
+                        $deleteButton = '<form action="' . route('customers.destroy', $customer->id) . '" method="POST"';
+                        $deleteButton .= ' onsubmit="return confirm(\'' . trans('global.areYouSure') . '\');" style="display: inline-block;">';
+                        $deleteButton .= '<input type="hidden" name="_method" value="DELETE">';
+                        $deleteButton .= '<input type="hidden" name="_token" value="' . csrf_token() . '">';
+                        $deleteButton .= '<button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"';
+                        $deleteButton .= ' data-toggle="tooltip" data-placement="top"';
+                        $deleteButton .= ' title="' . trans('global.delete') . ' ' . trans('cruds.customer.title_singular') . '">';
+                        $deleteButton .= '<i class="dripicons-trash"></i></button></form>';
+                    }
+
+                    return $viewButton . ' ' . $editButton . ' ' . $deleteButton;
+                })
+                ->filterColumn('account_code', function($query, $keyword) use ($display_subaccount) {
+                    if ($display_subaccount) {
+                        $query->where(function($q) use ($keyword) {
+                            $q->where('acc_main', 'like', "%{$keyword}%")
+                                ->orWhere('acc_sub', 'like', "%{$keyword}%");
+                        });
+                    } else {
+                        $query->where('acc_main', 'like', "%{$keyword}%");
+                    }
+                })
+                ->filterColumn('name_with_address', function($query, $keyword) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('CustomerName', 'like', "%{$keyword}%")
+                            ->orWhere('DeliveryAddressLine1', 'like', "%{$keyword}%")
+                            ->orWhere('DeliveryCity', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('contact_info', function($query, $keyword) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('PrimaryContactPersonID', 'like', "%{$keyword}%")
+                            ->orWhere('GeneralEmailAddress', 'like', "%{$keyword}%");
+                    });
+                })
+                ->rawColumns(['name_with_address', 'contact_info', 'status', 'action'])
+                ->make(true);
+        }
+
+
+        return view('customers.index', compact('display_subaccount'));
     }
 
     /**
@@ -91,6 +225,7 @@ class CustomersController extends Controller
         $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
+        $contacts = $customer->contacts;
 
         $displaySubAccount = $customer->company->getSetting('display_subaccount');
 
@@ -121,7 +256,7 @@ class CustomersController extends Controller
         }
 
         //echo "<pre>"; print_r($customer); die;
-        return view('customers.show', compact('customer', 'customerOrders', 'salesreps',
+        return view('customers.show', compact('customer', 'customerOrders', 'salesreps','contacts',
             'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total', 'displaySubAccount'));
         //return response()->json($customer->customerBalance());
     }
