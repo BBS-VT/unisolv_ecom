@@ -111,6 +111,11 @@ class CleanupCustomerBalances implements ShouldQueue
                 ->where('AccSub', '0')
                 ->update(['AccSub' => '000']);
 
+            // Update AccSub - pad with leading zeros
+            DB::table('customer_balances')
+                ->whereIn('id', $ids)
+                ->update(['AccSub' => DB::raw('LPAD(AccSub, 3, "0")')]);
+
             // Update AccCode - concatenate AccMain and AccSub
             DB::table('customer_balances')
                 ->whereIn('id', $ids)
