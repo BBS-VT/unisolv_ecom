@@ -122,20 +122,23 @@ class DashboardController extends Controller
             $revenueChangePercentage = round((($totalRevenue - $previousPeriodRevenue) / $previousPeriodRevenue) * 100, 1);
         }
 
-        // Conversion rate (placeholder - depends on how you calculate this)
-        // Typically this would be orders / quotes or visits
-        $conversionRate = 0;
-        $quotes = 0; // This would come from your quotes model
+        // Average Items per order
+        $totalOrders = DB::table('orders')
+            ->where('company_id', $currentCompany->id)
+            ->whereBetween('OrderDate', [$startDate, $endDate])
+            ->count();
 
-        if ($quotes > 0) {
-            $conversionRate = round(($ordersPlaced / $quotes) * 100, 1);
-        } else {
-            // Placeholder value if you don't track quotes
-            $conversionRate = 82.8;
-        }
+        $totalUniqueItems = DB::table('orders_items')
+            ->join('orders', 'orders_items.OrderID', '=', 'orders.id')
+            ->where('orders.company_id', $currentCompany->id)
+            ->whereBetween('orders.OrderDate', [$startDate, $endDate])
+            ->distinct('StockItem')
+            ->count('StockItem');
+
+        $avgItemsPerOrder = $totalOrders > 0 ? round($totalUniqueItems / $totalOrders, 1) : 0;
 
         // Average order value
-        $avgOrderValue = $ordersPlaced > 0 ? round($totalRevenue / $ordersPlaced, 2) : 0;
+        $avgOrderValue = $ordersPlaced > 0 ? round(($totalRevenue / $ordersPlaced) / 100, 2) : 0;
 
         // Get daily earnings for the selected period (limited to last 7 days for display)
         $dailyEarnings = Order::where('company_id', $currentCompany->id)
@@ -202,11 +205,14 @@ class DashboardController extends Controller
         $formattedEndDate = $endDate->format('d M Y');
         $todayFormatted = $today->format('M d');
 
+        $topCustomers = $this->getTopCustomers($currentCompany, $startDate, $endDate);
+        $productReorderRates = $this->getProductReorderRates($currentCompany, $startDate, $endDate);
+
         return view('dashboard', compact(
             'revenueByMonth',
             'weeklySales',
             'ordersPlaced',
-            'conversionRate',
+            'avgItemsPerOrder',
             'avgOrderValue',
             'totalRevenue',
             'revenueChangePercentage',
@@ -217,7 +223,9 @@ class DashboardController extends Controller
             'formattedStartDate',
             'formattedEndDate',
             'todayFormatted',
-            'period'
+            'period',
+            'topCustomers',
+            'productReorderRates'
         ));
     }
 
@@ -355,42 +363,69 @@ class DashboardController extends Controller
             'categoryData' => $categoryData
         ]);
     }
-    /*public function index(Request $request, User $user)
+
+    /**
+     * Get top customers by order value
+     */
+    private function getTopCustomers($currentCompany, $startDate, $endDate)
     {
+        return DB::table('orders')
+            ->join('customers', 'orders.CustomerID', '=', 'customers.id')
+            ->select(
+                'customers.id',
+                'customers.CustomerName',
+                'customers.acc_main',
+                DB::raw('COUNT(DISTINCT orders.id) as order_count'),
+                DB::raw('SUM(orders.total) as total_spent'),
+                DB::raw('SUM(orders.total) / COUNT(DISTINCT orders.id) as avg_order_value')
+            )
+            ->where('orders.company_id', $currentCompany->id)
+            ->whereBetween('orders.OrderDate', [$startDate, $endDate])
+            ->groupBy('customers.id', 'customers.CustomerName', 'customers.acc_main')
+            ->orderBy('total_spent', 'desc')
+            ->limit(5)
+            ->get();
+    }
 
-        $user = $request->user();
-        $company = $user->currentCompany();
+    /**
+     * Get product reorder rates
+     */
+    private function getProductReorderRates($currentCompany, $startDate, $endDate)
+    {
+        /*$reorderRateQuery = "
+            SELECT
+                p.id,
+                p.StockItemName,
+                p.StockCode,
+                COUNT(DISTINCT o.id) as order_count,
+                COUNT(DISTINCT o.customer_id) as unique_customers,
+                ROUND(COUNT(DISTINCT o.id) / COUNT(DISTINCT o.customer_id), 1) as reorder_ratio
+            FROM
+                products p
+            JOIN
+                orders_items oi ON p.id = oi.StockItem
+            JOIN
+                orders o ON oi.OrderID = o.id
+            WHERE
+                o.company_id = ? AND
+                o.OrderDate BETWEEN ? AND ?
+            GROUP BY
+                p.id, p.StockItemName, p.StockCode
+            HAVING
+                COUNT(DISTINCT o.customer_id) > 1
+            ORDER BY
+                reorder_ratio DESC
+            LIMIT 5
+        ";*/
+        $reorderRateQuery = Order::all();
 
-        // Dashboard Stats
-        $customersCount = Customer::findByCompany($company->id)->count();
-        $invoicesCount = Order::findByCompany($company->id)->count();
+        //return DB::select($reorderRateQuery, [
+        //    $currentCompany->id,
+        //    $startDate->format('Y-m-d H:i:s'),
+        //    $endDate->format('Y-m-d H:i:s')
+        //]);
+    }
 
-        // Due/Open Orders Invoices and Estimates
-        $dueOrders = Order::findByCompany($company->id)->active()->where('OrderStatusID', '=', 1)->take(5)->latest()->get();
-
-        // Financial Year Starts-Ends
-        $financialYearStarts = $company->getSetting('financial_month_starts');
-        $financialYearEnds = $company->getSetting('financial_month_ends');
-
-        // Create Carbon Instances from Financial Year
-        $dateStarts = Carbon::now()->month($financialYearStarts)->startOfMonth();
-        $dateEnds = Carbon::now()->month($financialYearEnds)->endOfMonth();
-
-        // if the date ends is smaller than date start, add one year to date ends
-        if($dateEnds->lt($dateStarts)){
-            $dateEnds->addYear(1)->endOfMonth();
-        }
-
-        // Create Period from given dates
-        $period = CarbonPeriod::since($dateStarts)->months(1)->until($dateEnds);
-
-        return view('dashboard', [
-            'customersCount' => $customersCount,
-            'ordersCount'    => $invoicesCount,
-            'dueOrders'      => $dueOrders,
-            'currency_code'  => $company->currency->code,
-        ]);
-    }*/
 
     public function sales()
     {

@@ -91,7 +91,7 @@
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col text-center">
-                                        <span class="h4">R {{ number_format($weeklySales, 2) }}</span>
+                                        <span class="h4">R {{ number_format(($weeklySales/100), 2) }}</span>
                                         <h6 class="text-uppercase text-muted mt-2 m-0">Weekly Sales</h6>
                                     </div><!--end col-->
                                 </div> <!-- end row -->
@@ -115,8 +115,8 @@
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col text-center">
-                                        <span class="h4">{{ $conversionRate }}%</span>
-                                        <h6 class="text-uppercase text-muted mt-2 m-0">Conversion Rate</h6>
+                                        <span class="h4">{{ $avgItemsPerOrder }}</span>
+                                        <h6 class="text-uppercase text-muted mt-2 m-0">{{ __('Items per Order') }}</h6>
                                     </div><!--end col-->
                                 </div> <!-- end row -->
                             </div><!--end card-body-->
@@ -145,7 +145,7 @@
                                 <div class="media">
                                     <img src="{{ asset('images/money-beg.png') }}" alt="" class="align-self-center" height="40">
                                     <div class="media-body align-self-center ml-3">
-                                        <h6 class="m-0 font-20"> {{ number_format($totalRevenue, 2) }}</h6>
+                                        <h6 class="m-0 font-20"> {{ number_format(($totalRevenue/100), 2) }}</h6>
                                         <p class="text-muted mb-0">Total Revenue</p>
                                     </div>
                                 </div>
@@ -199,7 +199,7 @@
                     <div class="card-header">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h4 class="card-title">Recent Orders<</h4>
+                                <h4 class="card-title">Recent Orders</h4>
                             </div>
                         </div>
                     </div>
@@ -230,8 +230,8 @@
                                                     -
                                                 @endif
                                             </td>
-                                            <td>R{{ number_format($earning->total_earnings, 2) }}</td>
-                                        </tr><!--end tr-->
+                                            <td>R {{ number_format(($earning->total_earnings)/100, 2) }}</td>
+                                        </tr>
                                     @empty
                                         <tr>
                                             <td colspan="4" class="text-center">No orders in this period</td>
@@ -273,7 +273,7 @@
                                                 <div class="media-body align-self-center">
                                                     <h6 class="m-0">{{ $product->StockItemName }}</h6>
                                                     <a href="#" class="font-12 text-primary">ID: {{ $product->StockCode }}</a>
-                                                </div><!--end media body-->
+                                                </div>
                                             </div>
                                         </td>
                                         <td>R{{ number_format($product->SellingPrice, 2) }}
@@ -308,6 +308,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+
+            @include('dashboard.partials.top_customers')
+
+            @include('dashboard.partials.product-reorder')
         </div>
 
     </div>
