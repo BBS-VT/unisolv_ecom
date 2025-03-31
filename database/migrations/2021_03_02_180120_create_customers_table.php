@@ -48,7 +48,7 @@ class CreateCustomersTable extends Migration
             $table->string('PostalPostalCode', 10)->default('0000');
             $table->boolean('CustomerStatus')->unsigned()->default('1');
             $table->bigInteger('CountryID')->unsigned()->default('202');
-            $table->bigInteger('SalesRepID')->unsigned()->nullable();
+            $table->bigInteger('SalesRepID')->unsigned()->nullable()->default('9999');
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
             $table->softDeletes();

@@ -2,33 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessCustomerBalanceImport;
 use App\Models\CustomerBalance;
+use App\Models\ImportJob;
 use Illuminate\Http\Request;
-use DB;
-use Gate;
-use App\Imports\CustomerBalanceImport;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
 class CustomerBalanceController extends Controller
 {
+
     /**
-     * @return \Illuminate\Support\Collection
+     * Process the import of customer balances
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function importExcel(Request $request)
     {
         abort_if(Gate::denies('customer_balance_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        CustomerBalance::truncate();
+        // Validate the uploaded file
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+        ]);
 
-        \Excel::import(new CustomerBalanceImport,$request->import_file);
+        // Store the file for processing
+        $path = $request->file('import_file')->store('temp');
+        $filename = $request->file('import_file')->getClientOriginalName();
 
-        DB::statement('UPDATE customer_balances SET AccMain = TRIM(AccMain)');
-        DB::statement('UPDATE customer_balances SET AccMain = LPAD(AccMain, 6, "0")');
-        DB::statement('UPDATE customer_balances SET AccSub = "000" where AccSub = "0"');
-        DB::statement('UPDATE customer_balances SET AccCode = CONCAT(AccMain, "-", AccSub)');
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        // Create an import job record to track progress
+        $importJob = ImportJob::create([
+            'filename' => $filename,
+            'total_rows' => 0, // Will be updated by the job
+            'processed_rows' => 0,
+            'status' => ImportJob::STATUS_PENDING,
+            'started_at' => now(),
+        ]);
 
-        return redirect()->back()->with('success', 'File imported successfully');
+        ProcessCustomerBalanceImport::dispatch($path, $importJob->id);
+
+        Session::put('success', 'Customer balance import has started. You can monitor progress on the imports status page.');
+        Session::put('import_job_id', $importJob->id);
+
+        return back();
     }
 }

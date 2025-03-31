@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
-@endpush
+@endsection
 
 @section('content')
     <div class="row">
@@ -481,7 +481,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
     <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
     <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
@@ -506,5 +506,5 @@
         });
     </script>
 
-@endpush
+@endsection
 

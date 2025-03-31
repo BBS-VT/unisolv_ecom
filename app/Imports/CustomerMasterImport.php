@@ -31,6 +31,41 @@ class CustomerMasterImport implements ToModel, WithStartRow
             'acc_main'             => $row[0],
             'acc_sub'              => $row[1],
             'CustomerName'         => $row[2],
+            'CustomerCategoryID'   => $row[34],
+            'BuyingGroupID'        => $row[97],
+            'StoreEAN'             => $row[71],
+            'VatNr'                => $row[90],
+            'CreditLimit'          => $row[38],
+            'AccountOpenedDate'    => $row[52],
+            'PhoneNumber'          => $row[22],
+            'FaxNumber'            => $row[23],
+            'DeliveryRoute'        => $row[50],
+            'GeneralEmailAddress'  => $row[25],
+            'DeliveryAddressLine1' => $row[11],
+            'DeliveryAddressLine2' => $row[12],
+            'DeliveryCity'         => $row[13],
+            'DeliveryPostalCode'   => $row[15],
+            'PostalAddressLine1'   => $row[4],
+            'PostalAddressLine2'   => $row[5],
+            'PostalCity'           => $row[6],
+            'PostalPostalCode'     => $row[8],
+            'CustomerStatus'       => '1',
+            'CountryID'            => '202',
+            'SalesRepID'           => $row[61],
+            'LastEditedBy'         => Auth::user()->id,
+            'created_at'           => Carbon::now(),
+        ]);
+
+    }
+
+    /*public function model( array $row )
+    {
+        return new Customer([
+            'company_id'           => '1',
+            'currency_id'          => '4',
+            'acc_main'             => $row[0],
+            'acc_sub'              => $row[1],
+            'CustomerName'         => $row[2],
             'CustomerCategoryID'   => $row[18],
             'BuyingGroupID'        => $row[21],
             'StoreEAN'             => $row[25],
@@ -55,37 +90,5 @@ class CustomerMasterImport implements ToModel, WithStartRow
             'LastEditedBy'         => Auth::user()->id,
             'created_at'           => Carbon::now(),
         ]);
-
-        /*return new Customer([
-            'company_id'           => '1',
-            'currency_id'          => '4',
-            'acc_main'             => $row[0],
-            'acc_sub'              => $row[1],
-            'CustomerName'         => $row[2],
-            'CustomerCategoryID'   => $row[34],
-            'BuyingGroupID'        => $row[97],
-            'StoreEAN'             => $row[71],
-            'VatNr'                => $row[90],
-            'CreditLimit'          => $row[38],
-            'AccountOpenedDate'    => $row[52],
-            'PhoneNumber'          => $row[22],
-            'FaxNumber'            => $row[23],
-            'DeliveryRoute'        => $row[50],
-            'GeneralEmailAddress'  => $row[25],
-            'DeliveryAddressLine1' => $row[11],
-            'DeliveryAddressLine2' => $row[12],
-            'DeliveryCity'         => $row[13],
-            'DeliveryPostalCode'   => $row[15],
-            'PostalAddressLine1'   => $row[4],
-            'PostalAddressLine2'   => $row[5],
-            'PostalCity'           => $row[6],
-            'PostalPostalCode'     => $row[8],
-            'CustomerStatus'       => '1',
-            'CountryID'            => '202',
-            'SalesRepID'           => $row[61],
-            'LastEditedBy'         => Auth::user()->id,
-            'created_at'           => Carbon::now(),
-        ]);*/
-
-    }
+    }*/
 }

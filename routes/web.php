@@ -1,8 +1,14 @@
 <?php
+
+use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +31,13 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
+    //Route::get('/dashboard/sales', [DashboardController::class, 'index'])
+     //   ->name('dashboard.sales');
+    Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
+        ->name('dashboard.sales.chart-data');
    Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
+
+   Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 
    // Customers
    Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
@@ -114,6 +126,24 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
 
     // Customer Group
     Route::resource('customer-category', 'CustomerCategoryController');
+
+    // Import routes
+    Route::post('imports/process', [ProductController::class, 'importExcel'])
+        ->name('imports.process');
+    Route::get('imports/status', [ProductController::class, 'showImportStatus'])
+        ->name('imports.status');
+    Route::get('imports/check-progress/{importJobId}', [ProductController::class, 'checkImportProgress'])
+        ->name('imports.check-progress');
+
+    Route::post('stock-holdings/import', [StockItemHoldingsController::class, 'importExcel'])
+        ->name('stock-holdings.import');
+    Route::post('stock-holdings/link-products', [StockItemHoldingsController::class, 'linkProductsToQuantities'])
+        ->name('stock-holdings.link-products');
+    Route::get('stock-holdings/import-status', [StockItemHoldingsController::class, 'showImportStatus'])
+        ->name('stock-holdings.import-status');
+    Route::post('customer-balances/import', [CustomerBalanceController::class, 'importExcel'])
+        ->name('customer-balances.import');
+
 
     // Order Status
     Route::resource('orderstatus', 'OrderStatusController');
