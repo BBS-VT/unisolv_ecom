@@ -18,10 +18,10 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $currentCustomer = Customer::findByUid($request->customer);
-        $company = $currentCustomer->company;
+        //$currentCustomer = Customer::findByUid($request->customer);
+        //$company = $currentCustomer->company;
 
         // Dashboard Stats
 

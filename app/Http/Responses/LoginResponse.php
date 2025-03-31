@@ -18,7 +18,7 @@ class LoginResponse implements LoginResponseContract
         if($authUser->IsSalesperson == '1') {
             $redirect = route('sales.dashboard');
         } elseif($authUser->IsCustomer == '1') {
-            $redirect = route('customer.dashboard');
+            $redirect = route('customers.dashboard');
         }
 
         return redirect($redirect);

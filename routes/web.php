@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\CustomerBalanceController;
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
@@ -29,13 +30,17 @@ Route::get('/', function () {
 Route::get('/catalog', 'HomeController@index')->name('catalog');
 //Auth::routes(['register' => false]);
 
+Route::group(['middleware' => ['auth','customer']], function () {
+    Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customers.dashboard');
+});
+
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
-    //Route::get('/dashboard/sales', [DashboardController::class, 'index'])
-     //   ->name('dashboard.sales');
-    Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
-        ->name('dashboard.sales.chart-data');
+   Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
+       ->name('dashboard.sales.chart-data');
    Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
+
+
 
    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 

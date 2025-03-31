@@ -271,7 +271,7 @@ class DashboardController extends Controller
                 ->whereYear('OrderDate', Carbon::now()->year)
                 ->select(
                     DB::raw('MONTH(OrderDate) as label'),
-                    DB::raw('SUM(OrderTotal) as value')
+                    DB::raw('SUM(total) as value')
                 )
                 ->groupBy(DB::raw('MONTH(OrderDate)'))
                 ->orderBy('label')
@@ -289,7 +289,7 @@ class DashboardController extends Controller
                 ->whereBetween('OrderDate', [$startDate, $endDate])
                 ->select(
                     DB::raw('DAY(OrderDate) as label'),
-                    DB::raw('SUM(OrderTotal) as value')
+                    DB::raw('SUM(total) as value')
                 )
                 ->groupBy(DB::raw('DAY(OrderDate)'))
                 ->orderBy('label')
@@ -307,7 +307,7 @@ class DashboardController extends Controller
                 ->select(
                     DB::raw('DAYOFWEEK(OrderDate) as day_of_week'),
                     DB::raw('DATE(OrderDate) as date'),
-                    DB::raw('SUM(OrderTotal) as value')
+                    DB::raw('SUM(total) as value')
                 )
                 ->groupBy('day_of_week', 'date')
                 ->orderBy('date')
@@ -325,7 +325,7 @@ class DashboardController extends Controller
                 ->whereDate('OrderDate', $startDate)
                 ->select(
                     DB::raw('HOUR(OrderDate) as label'),
-                    DB::raw('SUM(OrderTotal) as value')
+                    DB::raw('SUM(total) as value')
                 )
                 ->groupBy(DB::raw('HOUR(OrderDate)'))
                 ->orderBy('label')

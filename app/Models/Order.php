@@ -79,7 +79,7 @@ class Order extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'CustomerID', 'id');
+        return $this->belongsTo(Customer::class, 'CustomerID', 'acc_code');
     }
 
     public function orderstatus()

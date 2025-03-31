@@ -77,5 +77,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'dashboard' => \App\Http\Middleware\Dashboard::class,
+        'customer' => \App\Http\Middleware\Customer::class,
     ];
 }

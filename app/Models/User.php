@@ -38,6 +38,7 @@ class User extends Authenticatable
         'IsSalesperson',
         'RepCode',
         'IsCustomer',
+        'customer_id',
         'PhoneNumber',
         'created_at',
         'updated_at',
@@ -86,6 +87,10 @@ class User extends Authenticatable
         return $this->hasMany(Customer::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
     /**
      * Define Relation with UserSetting Model
      *
