@@ -1,11 +1,30 @@
-@extends('layouts.app')
+@extends('layouts.app', ['page' => 'dashboard'])
+
+@section('title', __('Customer Dashboard'))
+
+@section('style')
+
+@endsection
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-sm-12">
+                <div class="page-title-box">
+                    <div class="row">
+                        <div class="col">
+                            <h4 class="page-title">{{ __('My Account') }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3">
                 <div class="card">
-                    <div class="card-header">{{ __('Customer Information') }}</div>
+                    <div class="card-header">
+                        {{ __('Customer Information') }}
+                    </div>
                     <div class="card-body">
                         @if($customer)
                             <p><strong>Customer Name:</strong> {{ $customer->CustomerName }}</p>
@@ -17,63 +36,111 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">{{ __('Outstanding Balance') }}</div>
-                    <div class="card-body">
-                        @if($customerBalance)
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Aged Balance 1:</strong> <span class="{{ $customerBalance->AgedBalance1 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance1, 2) }}</span></p>
-                                    <p><strong>Aged Balance 2:</strong> <span class="{{ $customerBalance->AgedBalance2 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance2, 2) }}</span></p>
-                                    <p><strong>Aged Balance 3:</strong> <span class="{{ $customerBalance->AgedBalance3 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance3, 2) }}</span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Aged Balance 4:</strong> <span class="{{ $customerBalance->AgedBalance4 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance4, 2) }}</span></p>
-                                    <p><strong>Aged Balance 5:</strong> <span class="{{ $customerBalance->AgedBalance5 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance5, 2) }}</span></p>
-                                    <p><strong>Aged Balance 6:</strong> <span class="{{ $customerBalance->AgedBalance6 < 0 ? 'text-danger' : '' }}">R {{ number_format($customerBalance->AgedBalance6, 2) }}</span></p>
+            <div class="col-lg-9">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col">
+                                        <p class="text-dark mb-0 fw-semibold">{{ __('Current') }}</p>
+                                        @if($customerBalance)
+                                            <h3 class="m-0">R {{ number_format($customerBalance->AgedBalance1, 2) }}</h3>
+                                        @else
+                                            <p>No balance information found.</p>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        @else
-                            <p>No balance information found.</p>
-                        @endif
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col">
+                                        <p class="text-dark mb-0 fw-semibold">{{ __('30 Days') }}</p>
+                                        @if($customerBalance)
+                                            <h3 class="m-0">R {{ number_format($customerBalance->AgedBalance2, 2) }}</h3>
+                                        @else
+                                            <p>No balance information found.</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col">
+                                        <p class="text-dark mb-0 fw-semibold">{{ __('60 Days') }}</p>
+                                        @if($customerBalance)
+                                            <h3 class="m-0">R {{ number_format($customerBalance->AgedBalance3, 2) }}</h3>
+                                        @else
+                                            <p>No balance information found.</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card report-card">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="col">
+                                        <p class="text-dark mb-0 fw-semibold">{{ __('90 Days') }}</p>
+                                        @if($customerBalance)
+                                            <h3 class="m-0">R {{ number_format($customerBalance->AgedBalance4, 2) }}</h3>
+                                        @else
+                                            <p>No balance information found.</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">{{ __('Recent Orders') }}</div>
-                    <div class="card-body">
-                        @if($orders->count() > 0)
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Order Number</th>
-                                    <th>Order Date</th>
-                                    <th>Total</th>
-                                    <th>Order Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($orders as $order)
-                                    <tr>
-                                        <td>{{ $order->OrderNumber }}</td>
-                                        <td>{{ Carbon\Carbon::parse($order->OrderDate)->format('Y-m-d') }}</td>
-                                        <td>R {{ number_format(($order->total/100), 2) }}</td>
-                                        <td>{{ $order->orderStatus->name ?? 'Unknown' }}</td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <p>No recent orders found.</p>
-                        @endif
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">{{ __('Recent Orders') }}</div>
+                            <div class="card-body">
+                                @if($orders->count() > 0)
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Order Number</th>
+                                            <th>Order Date</th>
+                                            <th>Total</th>
+                                            <th>Order Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($orders as $order)
+                                            <tr>
+                                                <td>{{ $order->OrderNumber }}</td>
+                                                <td>{{ Carbon\Carbon::parse($order->OrderDate)->format('Y-m-d') }}</td>
+                                                <td>R {{ number_format(($order->total/100), 2) }}</td>
+                                                <td>{{ $order->orderStatus->name ?? 'Unknown' }}</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <p>No recent orders found.</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
+
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
