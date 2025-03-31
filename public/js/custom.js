@@ -118,6 +118,7 @@ function setupPriceInput(currency) {
     $('.price_input').priceFormat(settings);
 }
 
+
 $(document).ready(function(){
 
     // Setup date picker

@@ -40,8 +40,12 @@ class Product extends Model implements HasMedia
         'LeadTimeDays',
         'Packsize',
         'Barcode',
-        'CostPrice',
+        'AltBarcode',
+        'AverageCostPrice',
         'SellingPrice',
+        'SellingPrice2',
+        'SellingPrice3',
+        'SellingPrice4',
         'DiscountPercentage',
         'WeightPerUnit',
         'MarketingComments',
@@ -97,12 +101,12 @@ class Product extends Model implements HasMedia
 
     public function order_items()
     {
-        return $this->hasMany(OrdersItem::class,'StockItem', 'id');
+        return $this->hasMany(OrdersItem::class,'StockItem', 'id')->orderBy('StockItemName', 'desc');
     }
 
     public function specialdeals()
     {
-        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'id');
+        return $this->hasMany(SpecialDeals::class, 'StockItemID', 'StockCode');
     }
 
     public function stockHolding()

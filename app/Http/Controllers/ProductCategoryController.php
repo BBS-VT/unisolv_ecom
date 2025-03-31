@@ -7,12 +7,16 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyProductCategoryRequest;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
+use App\Imports\ProductCategoryImport;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelType;
 
 class ProductCategoryController extends Controller
 {
@@ -34,7 +38,7 @@ class ProductCategoryController extends Controller
         return view('productCategories.create');
     }
 
-    public function store(StoreProductCategoryRequest $request)
+    /*public function store(StoreProductCategoryRequest $request)
     {
         $productCategory = ProductCategory::create($request->all());
 
@@ -47,6 +51,28 @@ class ProductCategoryController extends Controller
         }
 
         return redirect()->route('product-categories.index');
+    }*/
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'CategoryCode' => 'required|string|max:4',
+            'StockGroupName' => 'required|string|max:255',
+            'ParentID' => 'nullable|exists:product_categories,id',
+        ]);
+
+        ProductCategory::updateOrCreate(
+            ['id' => $request->id],
+            [
+                'CategoryCode' => $request->CategoryCode,
+                'StockGroupName' => $request->StockGroupName,
+                'ParentID' => $request->ParentID,
+                'LastEditedBy' => auth()->id(),
+                'status' => 1,
+            ]
+        );
+
+        return response()->json(['success' => true, 'message' => 'Category created successfully.']);
     }
 
     public function edit(ProductCategory $productCategory)
@@ -56,19 +82,24 @@ class ProductCategoryController extends Controller
         return view('productCategories.edit', compact('productCategory'));
     }
 
-    public function update(UpdateProductCategoryRequest $request, ProductCategory $productCategory)
+    public function update(Request $request, $id)
     {
-        $productCategory->update($request->all());
+        $request->validate([
+            'CategoryCode' => 'required|string|max:4',
+            'StockGroupName' => 'required|string|max:255',
+            'ParentID' => 'nullable|exists:product_categories,id',
+        ]);
 
-        if ($request->input('photo', false)) {
-            if (!$productCategory->photo || $request->input('photo') !== $productCategory->photo->file_name) {
-                $productCategory->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
-            }
-        }elseif ($productCategory->photo) {
-            $productCategory->photo->delete();
-        }
+        $category = ProductCategory::find($id);
+        $category->update([
+            'CategoryCode' => $request->CategoryCode,
+            'StockGroupName' => $request->StockGroupName,
+            'ParentID' => $request->ParentID,
+            'LastEditedBy' => auth()->id(),
+            'status' => 1,
+        ]);
 
-        return redirect()->route('product-categories.index');
+        return response()->json(['success' => true, 'message' => 'Category updated successfully.']);
     }
 
     public function show(ProductCategory $productCategory)
@@ -120,5 +151,30 @@ class ProductCategoryController extends Controller
             ProductCategory::where('id',$data['category_id'])->update(['status'=>$status]);
             return response()->json(['status'=>$status,'category_id'=>$data['category_id']]);
         }
+    }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('csv_file');
+
+        // Check extension and MIME type
+        if ($file->getClientOriginalExtension() !== 'csv') {
+            return back()->with('error', 'The uploaded file must have a .csv extension.');
+        }
+
+        try {
+            // Import categories with explicit file type
+            $userId = Auth::id();
+            Excel::import(new ProductCategoryImport($userId), $file->getPathname(), null, ExcelType::CSV);
+            return back()->with('success', 'Categories imported successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error during import', ['message' => $e->getMessage()]);
+            return back()->with('error', 'Error during import: ' . $e->getMessage());
+        }
+
     }
 }

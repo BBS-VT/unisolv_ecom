@@ -16,10 +16,10 @@ class AddUuidToCustomersTable extends Migration
         Schema::table('customers', function (Blueprint $table) {
             $table->uuid('uid')->unique()->nullable()->after('id');
             $table->unsignedBigInteger('company_id')->nullable()->after('uid');
-            $table->unsignedBigInteger('currency_id')->nullable()->after('company_id');
+            $table->unsignedBigInteger('currency_id')->nullable()->after('company_id')->default('4');
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');
+
 
         });
     }

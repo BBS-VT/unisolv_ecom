@@ -11,6 +11,7 @@ use App\Models\PackageType;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
+use Cache;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,30 +19,108 @@ use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Session;
 use DB;
+use Yajra\DataTables\Facades\DataTables;
+use Cknow\Money\Money;
 
 class ProductController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = Product::all();
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
 
-        return view('products.index', compact('products'));
 
+        if ($request->ajax()) {
+
+            $cacheKey = "products_company_{$currentCompany->id}";
+            $cacheTTL = 3600; // 1 hour
+
+            $products = Cache::remember($cacheKey, $cacheTTL, function () use ($currentCompany) {
+                return Product::findByCompany($currentCompany->id)
+                    ->select(
+                        'id',
+                        'StockCode',
+                        'StockItemName',
+                        'Barcode',
+                        'AltBarCode',
+                        'SellingPrice',
+                        'SellingPrice2',
+                        'SellingPrice3',
+                        'AverageCostPrice'
+                    )
+                    ->with('stockHolding')
+                    ->get();
+            });
+            /*$products = Product::findByCompany($currentCompany->id)
+                ->select('id', 'StockCode', 'StockItemName', 'Barcode', 'AltBarCode', 'SellingPrice', 'SellingPrice2','SellingPrice3',
+                    'AverageCostPrice')
+                ->with('stockHolding')
+                ->get();*/
+
+            return DataTables::of($products)
+                ->addColumn('prices', function ($product) {
+                    $currency = auth()->user()->currentCompany()->currency; // Fetch system-wide currency
+
+                    $sellingPrice1 = number_format($product->SellingPrice ?? 0, 2);
+                    $sellingPrice2 = number_format($product->SellingPrice2 ?? 0, 2);
+                    $sellingPrice3 = number_format($product->SellingPrice3 ?? 0, 2);
+
+                    return "
+                        <div>1: $sellingPrice1</div>
+                        <div>2: $sellingPrice2</div>
+                        <div>3: $sellingPrice3</div>
+                    ";
+                })
+                ->addColumn('costPrices', function ($product) {
+                    $averageCostPrice = number_format($product->AverageCostPrice ?? 0, 2); // Format to 2 decimals
+                    $lastCostPrice = number_format(optional($product->stockHolding)->LastCostPrice ?? 0, 2);
+
+                    return "
+                        <div>Avg: $averageCostPrice</div>
+                        <div>Last: $lastCostPrice</div>
+                    ";
+                })
+                ->addColumn('quantity_on_hand', function ($product) {
+                    return optional($product->stockHolding)->QuantityOnHand ?? 0;
+                })
+                ->addColumn('action', function ($product) {
+                    // Adding both 'View' and 'Edit' buttons
+                    $viewButton = '<a href="'.route('products.show',
+                            $product->id).'" class="btn btn-sm btn-outline-primary"><i class="dripicons-preview"></i></a>';
+                    $editButton = '<a href="'.route('products.edit',
+                            $product->id).'" class="btn btn-sm btn-outline-warning"><i class="dripicons-document-edit"></i></a>';
+
+                    // Delete button with SweetAlert trigger
+                    $deleteButton = '<a href="javascript:void(0)" data-id="'.$product->id.'" class="btn btn-sm btn-outline-danger delete-product"><i class="dripicons-trash"></i></a>';
+
+                    return $viewButton.' '.$editButton.' '.$deleteButton;
+                })
+                ->rawColumns(['prices','costPrices','action'])
+                ->make(true);
+        }
+
+        return view('products.index');
     }
 
     public function create()
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
+        Cache::forget("products_company_{$currentCompany->id}");
+
         $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $tags = ProductTag::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+
 
         return view('products.create', compact('categories', 'tags', 'salesunits', 'packageunits'));
     }
@@ -73,7 +152,7 @@ class ProductController extends Controller
 
             $title = "new";
             $product = new Product;
-            $productdata = array();
+            $productdata = [];
             $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
             $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
             $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
@@ -102,6 +181,10 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
+        Cache::forget("products_company_{$currentCompany->id}");
 
         $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
         $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
@@ -153,6 +236,10 @@ class ProductController extends Controller
 
         $product->delete();
 
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
+        Cache::forget("products_company_{$currentCompany->id}");
+
         return back();
 
     }
@@ -160,6 +247,10 @@ class ProductController extends Controller
     public function massDestroy(MassDestroyProductRequest $request)
     {
         Product::whereIn('id', request('ids'))->delete();
+
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
+        Cache::forget("products_company_{$currentCompany->id}");
 
         return response(null, Response::HTTP_NO_CONTENT);
 
@@ -207,6 +298,10 @@ class ProductController extends Controller
         \Excel::import(new StockMasterImport,$request->import_file);
 
         DB::statement('UPDATE products SET Barcode = TRIM(Barcode)');
+        DB::statement('UPDATE products SET StockCode = TRIM(StockCode)');
+        DB::statement('UPDATE products SET SupplierID = TRIM(SupplierID)');
+        DB::statement('UPDATE products SET AltBarcode = TRIM(AltBarcode)');
+
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');

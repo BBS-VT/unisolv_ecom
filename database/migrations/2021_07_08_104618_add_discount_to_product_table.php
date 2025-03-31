@@ -14,7 +14,7 @@ class AddDiscountToProductTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->decimal('DiscountPercentage', 4, 4)->default('0.0000')->after('SellingPrice');
+            $table->decimal('DiscountPercentage', 18, 4)->default('0.0000')->after('SellingPrice');
         });
     }
 

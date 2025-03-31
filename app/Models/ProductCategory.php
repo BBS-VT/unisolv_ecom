@@ -27,13 +27,11 @@ class ProductCategory extends Model implements HasMedia
     ];
 
     protected $fillable = [
-        'StockGroupName',
         'ParentID',
-        'LastEditedBy',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'CategoryCode',
+        'StockGroupName',
         'status',
+        'LastEditedBy',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -56,6 +54,26 @@ class ProductCategory extends Model implements HasMedia
         }
 
         return $file;
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(ProductCategory::class, 'ParentID');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(ProductCategory::class, 'ParentID');
+    }
+
+    public function scopeMainCategories($query)
+    {
+        return $query->whereNull('ParentID');
+    }
+
+    public function scopeSubcategories($query, $parentCode)
+    {
+        return $query->where('ParentID', $parentCode);
     }
 
     public function products()

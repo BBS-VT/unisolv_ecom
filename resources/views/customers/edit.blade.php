@@ -35,6 +35,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('customers.update', [$customer->id]) }}"  enctype="multipart/form-data">
+                        @method('PATCH')
                         @csrf
                         <div class="row">
                             <div class="col-md-1">
@@ -106,12 +107,17 @@
                             <div class="col-md-3">
                                 <div class="form-group bootstrap-select-1">
                                     <label for="BillToCustomerID">{{ trans('cruds.customer.fields.billing') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
-                                        @foreach($billingCustomers as $id => $billingCustomer)
-                                            <option value="{{ $id }}">
-                                                    {{ $billingCustomer ?? '' }}
-                                            </option>
-                                        @endforeach
+                                    <select class="select2 form-control mb-3 {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
+                                        @if( $customer->BillToCustomerID !== 9999 )
+                                            @foreach($billingCustomers as $id => $billingCustomer)
+                                                <option value="{{ $id }}" {{ ($billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>
+                                            @endforeach
+                                        @else
+                                            <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
+                                            @foreach($billingCustomers as $id => $billingCustomer)
+                                                <option value="{{ $customer->acc_main }}" >{{ $billingCustomer }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @if($errors->has('BillToCustomerID'))
                                         <em class="invalid-feedback">
@@ -125,10 +131,10 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group bootstrap-select-1">
-                                    <label class="required" for="CustomerCategoryID">{{ trans('cruds.customer.fields.category') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{$errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" name="CustomerCategoryID">
+                                    <label class="required" for="CustomerCategoryID">{{ __('cruds.customer.fields.category') }} </label>
+                                    <select class="select2 form-control mb-3 {{$errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" name="CustomerCategoryID">
                                         @foreach($customerCategories as $id => $customerCategory)
-                                            <option value="{{ $id }}" {{ ($id == $customerCategory) ? 'selected' : '' }}>{{ $customerCategory }}</option>
+                                            <option value="{{ $id }}" {{ ($customerCategory == $customer->customerCategory->AccountType) ? 'selected' : '' }}>{{ $customerCategory }}</option>
                                         @endforeach
                                     </select>
                                     @if($errors->has('CustomerCategoryID'))
@@ -145,9 +151,16 @@
                                 <div class="form-group">
                                     <label for="BuyingGroupID">{{ trans('cruds.customer.fields.contract') }}</label>
                                     <select class="select2 form-control mb-3 custom-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
-                                        @foreach($buyingGroups as $id => $buyingGroup)
-                                            <option value="{{ $id }}" {{ ($id == $buyingGroup) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
-                                        @endforeach
+                                        @if( $customer->BuyingGroupID == 9999 )
+                                            <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
+                                            @foreach($buyingGroups as $id => $buyingGroup)
+                                                <option value="{{ $customer->buyingGroup->BuyingGroupName }}" >{{ $buyingGroup }}</option>
+                                            @endforeach
+                                        @else
+                                            @foreach($buyingGroups as $id => $buyingGroup)
+                                                <option value="{{ $id }}" {{ ($buyingGroup == $customer->buyingGroup->BuyingGroupName) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @if($errors->has('BuyingGroupID'))
                                         <em class="invalid-feedback">
@@ -162,10 +175,13 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="required" for="SalesRepID">{{ trans('cruds.customer.fields.salerep') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
-                                        @foreach($salesreps as $id => $salesrep)
-                                            <option value="{{ $id }}" {{ ($id == $salesrep) ? 'selected' : '' }}> {{ $salesrep }} </option>
-                                        @endforeach
+                                    <select class="select2 form-control mb-3 {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
+
+                                            @foreach($salesreps as $id => $salesrep)
+                                                <option value="{{ $id }}" {{ ($id == $customer->salesrep->RepCode) ? 'selected' : '' }}> {{ $salesrep }} </option>
+                                            @endforeach
+
+
                                     </select>
                                     @if($errors->has('SalesRepID'))
                                         <em class="invalid-feedback">
@@ -433,12 +449,12 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group {{ $errors->has('DeiveryRoute') ? 'has-error' : '' }}">
-                                                    <label for="DeiveryRoute">{{ trans('cruds.customer.fields.delivery') }}</label>
-                                                    <input type="text" id="DeiveryRoute" name="DeiveryRoute" class="form-control" value="{{ old('DeiveryRoute', isset($customer) ? $customer->DeiveryRoute : '') }}">
-                                                    @if($errors->has('DeiveryRoute'))
+                                                <div class="form-group {{ $errors->has('DeliveryRoute') ? 'has-error' : '' }}">
+                                                    <label for="DeliveryRoute">{{ trans('cruds.customer.fields.delivery') }}</label>
+                                                    <input type="text" id="DeliveryRoute" name="DeliveryRoute" class="form-control" value="{{ old('DeliveryRoute', isset($customer) ? $customer->DeliveryRoute : '') }}">
+                                                    @if($errors->has('DeliveryRoute'))
                                                         <p class="help-block">
-                                                            {{ $errors->first('DeiveryRoute') }}
+                                                            {{ $errors->first('DeliveryRoute') }}
                                                         </p>
                                                     @endif
                                                     <p class="helper-block">

@@ -2,59 +2,140 @@
 // _dropdown.scss
 // 
 
-.dropdown-menu{
-  box-shadow: 0 3px 12px $drop-shadow-color;
-  margin: 0;
-  .dropdown-item:hover, 
-  .dropdown-item:focus{
-    background-color: rgba($gray-100, .5);
-    color: $gray-900;
-  }
-}
-.dropdown-lg{
-  width: $dropdown-lg-width;
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: .255em;
+    font-size: var(--#{$prefix}font-md);
+    line-height: 15px;
+    content: "\F0140";
+    font-family: "Material Design Icons";
 }
 
-.ui-widget-content{
-  padding: 4px 0;
-  font-size: $font-size-base;
-  box-shadow: 0 3px 12px rgba($gray-300,.4);
-  border-color: $dropdown-border-color;
-  background-color: $dropdown-bg;
-  margin: 0;
-  .ui-menu-item {
-    padding: 6px 24px;
-    color: $gray-700;
-    &:hover,
-    &:focus, 
-    &.active,
-    &:active{
-      color: $gray-800;
-      text-decoration: none;
-      background-color: $gray-100;
+.dropdown-menu {
+    box-shadow: $box-shadow-lg;
+    animation-name: DropDownSlide;
+    animation-duration: .3s;
+    animation-fill-mode: both;
+    position: absolute;
+    z-index: 1000;
+
+    &.dropdown-megamenu {
+        padding: 20px;
+        left: 0 !important;
+        right: 0 !important;
     }
-  }
+
+    &[data-popper-placement="top-start"] {
+        animation-name: DropDownSlideDown;
+    }
 }
 
-.ui-widget.ui-widget-content{
-    border: 1px solid rgba($gray-200,.4);
-    z-index: 1111;
-    position: fixed;
-  }
-  
-  .ui-state-active, 
-  .ui-widget-content .ui-state-active, 
-  .ui-widget-header .ui-state-active, 
-  a.ui-button:active, 
-  .ui-button:active, 
-  .ui-button.ui-state-active:hover {
-    border: none;
-    color: $gray-800;
-    text-decoration: none;
-    background-color: transparent;
-  }
-  
-  .ui-menu .ui-state-focus, 
-  .ui-menu .ui-state-active {
-    margin: 0;
-  }
+@keyframes DropDownSlide {
+    100% {
+        margin-top: -1px;
+    }
+
+    0% {
+        margin-top: 8px;
+    }
+}
+
+@keyframes DropDownSlideDown {
+    100% {
+        margin-bottom: 0;
+    }
+
+    0% {
+        margin-bottom: 8px;
+    }
+}
+
+@media (min-width: 600px) {
+    .dropdown-menu-xl {
+        width: 420px;
+    }
+
+    .dropdown-menu-lg {
+        width: 320px;
+    }
+
+    .dropdown-menu-md {
+        width: 240px;
+    }
+}
+
+.dropdown-toggle-split {
+    border-left: none;
+
+    &::after {
+        margin-left: 0px;
+    }
+
+    &:before {
+        content: "";
+        position: absolute;
+        background-color: rgba($white, 0.12);
+        top: calc(#{$btn-border-width} * -1);
+        bottom: calc(#{$btn-border-width} * -1);
+        right: calc(#{$btn-border-width} * -1);
+        left: 0;
+        border-radius: 0 $btn-border-radius $btn-border-radius 0;
+    }
+}
+
+// Dropdown Mega Menu
+.dropdown-mega {
+    position: static !important;
+}
+
+// Dropdown size
+.dropdown-mega-menu-xl {
+    width: 38rem;
+}
+
+.dropdown-mega-menu-lg {
+    width: 26rem;
+}
+
+[dir="ltr"] {
+    .dropdown-menu-start {
+        --tb-position: end;
+    }
+
+    .dropdown-menu-end {
+        --tb-position: start;
+    }
+}
+
+// Custom Dropdown with Tabs
+.dropdown-head {
+    .nav-tabs-custom {
+        border: 0;
+
+        .nav-link {
+            color: var(--#{$prefix}secondary-color);
+
+            &.active {
+                background-color: var(--#{$prefix}dropdown-bg);
+            }
+
+            &:hover {
+                color: var(--#{$prefix}dark);
+            }
+        }
+    }
+}
+
+// card color variant
+@each $state in map-keys($theme-colors) {
+
+    .dropdownmenu-#{$state} {
+        .dropdown-item {
+
+            &:is(:focus, :hover, .active) {
+                background-color: var(--#{$prefix}#{$state}-bg-subtle);
+                color: var(--#{$prefix}#{$state});
+            }
+        }
+    }
+}

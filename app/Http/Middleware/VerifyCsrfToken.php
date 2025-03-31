@@ -16,5 +16,7 @@ class VerifyCsrfToken extends Middleware
         "update-category-status",
         "*/orders/deals",
         "*/ajax/products",
+        "*/ajax/customers",
+        "batch-receives/nextBatchNumber"
     ];
 }

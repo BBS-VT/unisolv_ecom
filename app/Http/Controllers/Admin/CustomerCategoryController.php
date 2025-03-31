@@ -1,18 +1,17 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCategory;
-use App\Http\Requests\MassDestroyCustomerCategoryRequest;
-use App\Http\Requests\StoreCustomerCategoryRequest;
-use App\Http\Requests\UpdateCustomerCategoryRequest;
-use Gate;
 use Illuminate\Http\Request;
+use App\Http\Requests\Settings\Customer\Store;
+use App\Http\Requests\Settings\Customer\Update;
 use Symfony\Component\HttpFoundation\Response;
+use Carbon\Carbon;
+use Gate;
 
-class CustomerCategoryController
+class CustomerCategoryController extends Controller
 {
 
     /**
@@ -20,37 +19,56 @@ class CustomerCategoryController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    /*public function index()
     {
         abort_if(Gate::denies('customer_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $customerCategories = CustomerCategory::all();
 
         return view('admin.customerCategory.index', compact('customerCategories'));
-    }
+    }*/
 
     /**
-     * Show the form for creating a new resource.
+     * Create a new Customer Category.
+     *
+     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         abort_if(Gate::denies('customer_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.customerCategory.create');
+        $customerCategory = new CustomerCategory();
+
+        if (!empty($request->old())) {
+            $customerCategory->fill($request->old());
+        }
+        return view('admin.settings.customer.category.create', compact('customerCategory'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store the Customer Category in the Database.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \App\Http\Requests\Settings\Customer\Store  $request
+     *
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function store(StoreCustomerCategoryRequest $request)
+    public function store(Store $request)
     {
-        $customerCategory = CustomerCategory::create($request->all());
+        $user = $request->user();
+        $currentCompany = auth()->user()->currentCompany();
 
-        return redirect()->route('admin.customer-category.index');
+        //echo "<pre>"; print_r($request); die;
+        $customerCategory = CustomerCategory::create([
+            'company_id'           => $currentCompany->id,
+            'AccountType'          => $request->accountType,
+            'CustomerCategoryName' => $request->customerCategoryname,
+            'LastEditedBy'         => auth()->user()->id,
+            'created_at'           => Carbon::now(),
+        ]);
+
+        session()->flash('alert-success', __('global.customer_category_added'));
+        return redirect()->route('settings.customer');
     }
 }

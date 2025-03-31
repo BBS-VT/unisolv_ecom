@@ -2,6 +2,11 @@
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     var company_currency = '4';
     var globalCustomer = 0;
+    var globalDiscount = 0;
+    var contractDiscount = 0;
+    var discountValidate;
+    var stockOnhand = 0
+
 
     $("#customer").select2({
         ajax: {
@@ -103,6 +108,7 @@
                 $(data.element).attr('data-taxes', JSON.stringify(data.taxes));
                 if(data.DiscountPercentage !== null) {
                     $(data.element).attr('data-discount', data.DiscountPercentage);
+                    contractDiscount = data.DiscountPercentage;
                 } else {
                     $(data.element).attr('data-discount', '0');
                 }
@@ -111,6 +117,16 @@
                 } else {
                     $(data.element).attr('data-price', data.price);
                 }
+                if(data.discount !== null) {
+                    globalDiscount = data.discount;
+                }
+
+                $(data.element).attr('data-price2', data.price2);
+                $(data.element).attr('data-price3', data.price3);
+                $(data.element).attr('data-avgcost', data.avgcost);
+                $(data.element).attr('data-lastcost', data.lastcost);
+
+                $(data.element).attr('data-stock', data.stock);
 
                 return data.text;
             }
@@ -122,6 +138,14 @@
             var taxesSelect = element.closest('tr').find('[name="taxes[]"]');
             var priceInput = element.closest('tr').find('.price_input');
             var discountInput = element.closest('tr').find('[name="discount[]"]');
+            var stockInput = element.closest('tr').find('[name="QuantityOnHand[]"]');
+
+            // Additional fields
+            var price1Display = element.closest('tr').find('.price1-display');
+            var price2Display = element.closest('tr').find('.price2-display');
+            var price3Display = element.closest('tr').find('.price3-display');
+            var avgCostDisplay = element.closest('tr').find('.avg-cost-display');
+            var lastCostDisplay = element.closest('tr').find('.last-cost-display');
 
             // Set selected taxes from product
             var taxIds = [];
@@ -132,8 +156,22 @@
             taxesSelect.val(taxIds);
             taxesSelect.trigger('change');
 
+            // Set product stock on hand
+            stockInput.val(selectedOption.data('stock'));
+
+            //var price2 = val(selectedOption.data('price2') || 0);
+            //var price3 = parseFloat(selectedOption.data('price3') || 0);
+            //var avgCost = parseFloat(selectedOption.data('avgcost') || 0);
+
+            price1Display.text(selectedOption.data('price'));
+            price2Display.text(selectedOption.data('price2'));
+            price3Display.text(selectedOption.data('price3'));
+            avgCostDisplay.text(selectedOption.data('avgcost'));
+            lastCostDisplay.text(selectedOption.data('lastcost'));
+
             // Set product discount if set
             discountInput.val(selectedOption.data('discount'));
+
 
             // Set product price for price input
             priceInput.val(selectedOption.data('price'));
@@ -166,6 +204,109 @@
             // price
             var price = Number(row.find('.price_input').unmask()) / 100;
 
+            // amount
+            var amount = (quantity * price);
+
+
+            // Calculate taxes
+            var totalTaxAmount = Number(0);
+            var selected_taxes = row.find('[name="taxes[]"]').find(':selected');
+            selected_taxes.each(function (index, tax) {
+                var percent = $(tax).data('percent');
+                var taxAmount = calculatePercent(percent, amount);
+                //console.log("taxAmount", taxAmount);
+                totalTaxAmount += Number(taxAmount);
+            });
+
+            // Add tax amount to Item Total
+            amount = Number(amount) + Number(totalTaxAmount) - Number(totalTaxAmount);
+
+            // discount
+            var discount = Number(row.find('[name="discount[]"]').val());
+
+            // calculate discount
+
+            //console.log("discount", discount);
+            //console.log("globalDiscount", globalDiscount);
+            //console.log("contractDiscount", contractDiscount);
+
+            if(!isNaN(discount) && discount != undefined && discount != 0) {
+                var discountAmount = calculatePercent(discount, amount);
+
+                    if (contractDiscount != undefined && contractDiscount !== 0) {
+
+                        amount = Number(amount) - Number(discountAmount);
+
+                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+
+                    } else if (globalDiscount > 0 && contractDiscount === undefined) {
+
+                        Number(row.find('[name="discount[]"]').removeAttr("readonly"));
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+
+                        amount = Number(amount) - Number(discountAmount);
+                    }
+
+                    else {
+
+                        amount = Number(amount) - Number(discountAmount);
+
+                        Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+
+                        $('#add_product_row').attr('disabled', false);
+                        $('#save_form_button').attr('disabled', false);
+                    }
+
+            } else if (discount == 0 && globalDiscount == 0.01)  {
+                var discountAmount = calculatePercent(discount, amount);
+
+                amount = Number(amount) - Number(discountAmount);
+
+                Number(row.find('[name="discount[]"]').attr("readonly", "true"));
+                $('#add_product_row').attr('disabled', false);
+                $('#save_form_button').attr('disabled', false);
+
+            } else {
+
+                Number(row.find('[name="discount[]"]').removeAttr("readonly"));
+                $('#add_product_row').attr('disabled', false);
+                $('#save_form_button').attr('disabled', false);
+            }
+
+            // Add Item Total to Sub Total
+            subTotal += Number(amount);
+
+            var amountPrice = Number(amount) ;
+            //console.log("subTotal", subTotal);
+
+            // Set price input value
+            row.find('.amount_price').val(amountPrice.toFixed(2));
+            row.find('.amount_price').focusout();
+        });
+
+        calculateTotalPrice(subTotal, taxes);
+    }
+
+    function calculateRowPriceNoContract() {
+        var subTotal = 0;
+        var taxes = {};
+
+        $('tbody tr').each(function(index, element) {
+            var row = $(element);
+
+            // If the row is template just continue
+            if(row.attr('id') === 'product_row_template') return;
+
+            // quantity
+            var quantity = Number(row.find('[name="quantity[]"]').val());
+            //console.log(quantity)
+
+            // price
+            var price = Number(row.find('.price_input').unmask()) / 100;
 
             // amount
             var amount = (quantity * price);
@@ -187,12 +328,12 @@
             // discount
             var discount = Number(row.find('[name="discount[]"]').val());
 
-            // caclualte discount
+            // calculate discount
+
             if(!isNaN(discount) && discount != undefined && discount != 0) {
                 var discountAmount = calculatePercent(discount, amount);
                 amount = Number(amount) - Number(discountAmount);
             }
-
             // Add Item Total to Sub Total
             subTotal += Number(amount);
 
@@ -282,7 +423,7 @@
         initializeTaxSelect2(tax_select);
 
         initializePriceListener();
-        calculateRowPrice();
+        //calculateRowPrice();
     }
 
     function removeRow(elem) {
@@ -296,5 +437,6 @@
             var product = row.find('[name="product[]"]')
         });
     }
+
 
 </script>

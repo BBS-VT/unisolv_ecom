@@ -25,7 +25,7 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
-   Route::get('/sales', 'DashboardController@sales')->name('salesHome');
+   Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
 
    // Customers
    Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
@@ -35,12 +35,16 @@ Route::group(['middleware' => ['auth']], function () {
    Route::get('customer-lookup', 'CustomersController@lookup')->name('customers.lookup');
    Route::get('generateStoreEan', 'CustomersController@generateStoreEan')->name('customers.storeid');
    Route::post('importBalances', 'CustomerBalanceController@importExcel')->name('importBalances');
+    Route::post('importCustomermaster', 'CustomersController@importExcel')->name('importCustomermaster');
 
    // Product Categories
     Route::delete('product-categories/destroy', 'ProductCategoryController@massDestroy')->name('product-categories.massDestroy');
     Route::post('product-categories/media', 'ProductCategoryController@storeMedia')->name('product-categories.storeMedia');
     Route::post('product-categories/ckmedia', 'ProductCategoryController@storeCKEditorImages')->name('product-categories.storeCKEditorImages');
     Route::post('update-category-status', 'ProductCategoryController@updateCategoryStatus');
+    Route::post('importCategories', 'ProductCategoryController@importExcel')->name('importProductCategories');
+    Route::post('product-categories/update/{id}', 'ProductCategoryController@update')->name('productCategories.update');
+    Route::post('product-categories/store', 'ProductCategoryController@store')->name('productCategories.store');
     Route::resource('product-categories', 'ProductCategoryController');
 
     // Product Tags
@@ -84,11 +88,14 @@ Route::group(['middleware' => ['auth']], function () {
     // Ajax requests
     Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
     Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
+    Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
 
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {
 
+    // landing page
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionController');
@@ -105,8 +112,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::delete('buying-group/destroy', 'BuyingGroupController@massDestroy')->name('buying-group.massDestroy');
     Route::resource('buying-group', 'BuyingGroupController');
 
-    // Customer Groups
-    Route::delete('customer-category/destroy', 'CustomerCategoryController@massDestroy')->name('customer-category.massDestroy');
+    // Customer Group
     Route::resource('customer-category', 'CustomerCategoryController');
 
     // Order Status
@@ -127,6 +133,10 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::get('/company', 'CompanyController@index')->name('company');
     Route::post('/company', 'CompanyController@update')->name('company.update');
 
+    // Settings>Order Settings
+    Route::get('/order', 'OrderController@index')->name('order');
+    Route::post('/order', 'OrderController@update')->name('order.update');
+
     // Settings>Preferences
     Route::get('/preferences', 'PreferenceController@index')->name('preferences');
     Route::post('/preferences', 'PreferenceController@update')->name('preferences.update');
@@ -135,6 +145,10 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::get('/product', 'ProductController@index')->name('product');
     Route::post('/product', 'ProductController@update')->name('product.update');
 
+    // Settings>Customer Settings
+    Route::get('/customer', 'CustomerController@index')->name('customer');
+    Route::post('/customer', 'CustomerController@update')->name('customer.update');
+
     // Settings>Tax Types
     Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');
     Route::get('/tax-types/create', 'TaxTypeController@create')->name('tax_types.create');
@@ -142,4 +156,11 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('tax_types.edit');
     Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('tax_types.update');
     Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('tax_types.delete');
+});
+
+Route::group(['prefix' => '/portal/{customer}', 'as' => 'customer_portal.', 'namespace' => 'CustomerPortal', 'middleware' => ['auth']], function () {
+   // Dashboard
+    Route::get('/', 'DashboardController@index');
+    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
 });

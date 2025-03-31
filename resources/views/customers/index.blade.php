@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
-@endpush
+@endsection
 
 @section('content')
 
@@ -47,14 +47,15 @@
                                         <i data-feather="upload" class="align-self-center icon-xs"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" data-toggle="modal" data-target="#importCustomermaster" href="#">
+                                            <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
+                                            {{ __('global.import') }} {{ __('cruds.customer.title') }}
+                                        </a>
                                         <a class="dropdown-item" data-toggle="modal" data-target="#importBalance" href="#">
                                             <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
-                                            {{ trans('global.import') }} {{ trans('cruds.customer.fields.balance') }}
+                                            {{ __('global.import') }} {{ __('cruds.customer.fields.balance') }}
                                         </a>
-<!--                                        <a class="dropdown-item" data-toggle="modal" data-target="#importStockmaster" href="#">
-                                            <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
-                                            {{ trans('global.import') }} {{ trans('cruds.product.title') }}
-                                        </a>-->
+
                                     </div>
                                 </li>
                             </ul>
@@ -67,11 +68,9 @@
                 <table id="datatable" class="table table-bordered dt-responsive" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead>
                         <tr>
-                            <th width="5"></th>
                             <th>{{ trans('cruds.customer.fields.account_code') }}</th>
                             <th>{{ trans('cruds.customer.fields.name') }}</th>
                             <th>{{ trans('cruds.customer.fields.main_contact') }}</th>
-                            <th>{{ trans('cruds.customer.fields.email') }}</th>
                             <th>{{ trans('cruds.customer.fields.phone') }}</th>
                             <th>{{ trans('cruds.customer.fields.vat_nr') }}</th>
 {{--                            <th>{{ trans('cruds.customer.fields.store_ean') }}</th>--}}
@@ -83,11 +82,42 @@
                     <tbody>
                     @foreach($customers as $key => $customer)
                         <tr data-entry-id="{{ $customer->id }}">
-                            <td></td>
-                            <td>{{ $customer->acc_main ?? '' }} {{ $customer->acc_sub ?? '' }}</td>
-                            <td>{{ $customer->CustomerName ?? '' }}</td>
-                            <td>{{ $customer->PrimaryContactID ?? '' }}</td>
-                            <td>{{ $customer->GeneralEmailAddress ?? '' }}</td>
+                            <td>
+                                @if($display_subaccount)
+                                    {{ $customer->acc_main ?? '' }} {{ $customer->acc_sub ?? '' }}
+                                @else
+                                    {{ $customer->acc_main ?? '' }}
+                                @endif
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="dripicons-card mr-1"></i> <a href="{{ route('customers.show', $customer->id) }}">
+                                            &nbsp;{{ $customer->CustomerName ?? '' }}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-1">
+                                    <small class="text-muted">
+                                        <i class="dripicons-location"></i>
+                                        {{ $customer->DeliveryAddressLine1 ?? '' }} {{ $customer->DeliveryCity ?? ''}}
+                                    </small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="dripicons-user mr-1 text-muted"></i>
+                                        <p class="text-muted mb-0">{{ $customer->PrimaryContactID ?? '' }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted">
+                                        <i class="dripicons-mail mr-1"></i>
+                                        {{ $customer->GeneralEmailAddress ?? '' }}
+                                    </small>
+                                </div>
+                            </td>
                             <td>{{ $customer->PhoneNumber ?? '' }}</td>
                             <td>{{ $customer->VatNr ?? '' }}</td>
 {{--                            <td>{{ $customer->StoreEAN ?? '' }}</td>--}}
@@ -165,6 +195,32 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="importCustomermaster" tabindex="-1" role="dialog" aria-labelledby="importCustomerLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <h6 class="modal-title m-0 text-white" id="importCustomerLabel">{{ __('global.import') }}
+                                    {{ __('cruds.customer.title') }}
+                                </h6>
+                                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"><i class="la la-times text-white"></i></span>
+                                </button>
+                            </div>
+                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                {{ csrf_field() }}
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-gradient-danger">Import File</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -172,43 +228,14 @@
 
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script>
         $(function () {
             let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
-            @can('client_delete')
-            let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-            let deleteButton = {
-                text: deleteButtonTrans,
-                url: "{{ route('customers.massDestroy') }}",
-                className: 'btn-danger',
-                action: function (e, dt, node, config) {
-                    var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-                        return $(entry).data('entry-id')
-                    });
-
-                    if (ids.length === 0) {
-                        alert('{{ trans('global.datatables.zero_selected') }}')
-
-                        return
-                    }
-
-                    if (confirm('{{ trans('global.areYouSure') }}')) {
-                        $.ajax({
-                            headers: {'x-csrf-token': _token},
-                            method: 'POST',
-                            url: config.url,
-                            data: { ids: ids, _method: 'DELETE' }})
-                            .done(function () { location.reload() })
-                    }
-                }
-            }
-            dtButtons.push(deleteButton)
-            @endcan
 
             $.extend(true, $.fn.dataTable.defaults,{
-                order: [[ 2, 'desc']],
+                order: [[ 1, 'desc']],
                 pageLength: 30,
             });
             $('.datatable-Customer:not(.ajaxTable)').DataTable({ buttons: dtButtons })
@@ -237,4 +264,4 @@
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
 
-@endpush
+@endsection

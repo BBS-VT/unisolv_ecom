@@ -18,7 +18,7 @@ class CreateProductCategoriesTable extends Migration
             $table->integer('ParentID')->default(0);
             $table->string('StockGroupName')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->bigInteger('LastEditedBy')->unsigned();
+            $table->bigInteger('LastEditedBy')->unsigned()->nullable(false);
             $table->timestamps();
             $table->softDeletes();
 

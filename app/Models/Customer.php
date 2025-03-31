@@ -26,6 +26,7 @@ class Customer extends Model
     protected $fillable = [
         'acc_main',
         'acc_sub',
+        'acc_code',
         'company_id',
         'CustomerName',
         'BillToCustomerID',
@@ -40,6 +41,7 @@ class Customer extends Model
         'StandardDiscountPercentage',
         'IsStatementSent',
         'IsOnCreditHold',
+        'PriceIndicator',
         'PaymentDays',
         'PhoneNumber',
         'FaxNumber',
@@ -84,12 +86,12 @@ class Customer extends Model
 
     public function customerCategory()
     {
-        return $this->belongsTo(CustomerCategory::class);
+        return $this->belongsTo(CustomerCategory::class, 'CustomerCategoryID', 'AccountType');
     }
 
     public function buyingGroup()
     {
-        return $this->belongsTo(BuyingGroup::class);
+        return $this->belongsTo(BuyingGroup::class, 'BuyingGroupID', 'BuyingGroupName');
     }
 
     public function primaryContact()
@@ -132,6 +134,12 @@ class Customer extends Model
         return $this->hasOne(CustomerBalance::class, 'AccMain', 'acc_main');
     }
 
+    public function customerSubBalance()
+    {
+        return $this->hasOne(CustomerBalance::class, 'AccCode', 'acc_code');
+
+    }
+
     /**
      * Define Relation with Company Model
      *
@@ -144,7 +152,7 @@ class Customer extends Model
 
     public function currency()
     {
-        return $this->belongsTo(Currency::class);
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
 
     public function getCurrencyCodeAttribute()

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@push('style')
-    <link href="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-
-@endpush
+@section('style')
+    <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
+@endsection
 
 @section('content')
     <div class="row">
@@ -27,10 +27,26 @@
                         <div class="col-auto align-self-center">
 
                             @can('product_category_create')
-                                <a href="{{ route("product-categories.create") }}" class="btn btn-sm btn-outline-primary">
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#productCategoryModal">
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ trans('global.add') }} {{ trans('cruds.productCategory.title_singular') }}
-                                </a>
+                                </button>
+                            @endcan
+                            @can('productCategory_import')
+                                <ul class="list-unstyled float-right mb-0">
+                                    <li class="dropdown">
+                                        <a href="#" class="btn btn-sm btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
+                                           data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                            <i data-feather="upload" class="align-self-center icon-xs"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" data-toggle="modal" data-target="#importCategorymaster" href="#">
+                                                <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
+                                                {{ trans('global.import') }} {{ trans('cruds.productCategory.title') }}
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
                             @endcan
                         </div>
                     </div>
@@ -39,9 +55,9 @@
                     <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                         <tr>
-                            <th width="10"></th>
-                            <th>{{ trans('cruds.productCategory.fields.id') }}</th>
-                            <th>{{ trans('cruds.productCategory.fields.name') }}</th>
+                            <th>{{ __('cruds.productCategory.fields.category_code') }}</th>
+                            <th>{{ __('cruds.productCategory.fields.name') }}</th>
+                            <th>{{ __('Main Department') }}</th>
                             <th>{{ trans('cruds.productCategory.fields.status') }}</th>
                             <th width="150">&nbsp;</th>
                         </tr>
@@ -50,9 +66,9 @@
                         <tbody>
                         @foreach($productCategories as $key => $productCategory)
                             <tr data-entry-id="{{ $productCategory->id }}">
-                                <td></td>
-                                <td>{{ $productCategory->id ?? '' }}</td>
+                                <td>{{ $productCategory->CategoryCode ?? '' }}</td>
                                 <td>{{ $productCategory->StockGroupName ?? '' }}</td>
+                                <td>{{ optional($productCategory->parent)->StockGroupName }}</td>
                                 <td>
                                     @if($productCategory->status==1)
                                         <a class="updateCategoryStatus" id="category-{{ $productCategory->id }}" category_id="{{ $productCategory->id }}"
@@ -66,21 +82,14 @@
                                         </a>
                                     @endif
                                 <td>
-                                    @can('product_category_show')
-                                        <a href="{{ route('product-categories.show', $productCategory->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.view') }} {{ trans('cruds.productCategory.title_singular') }}"
-                                           data-placement="top">
-                                            <i class="las dripicons-preview text-info font-18" >
-                                            </i>
-                                        </a>
-                                        &nbsp;
-                                    @endcan
                                     @can('customer_edit')
-                                        <a href="{{ route('product-categories.edit', $productCategory->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.edit') }} {{ trans('cruds.productCategory.title_singular') }}"
-                                           data-placement="top">
+                                        <button class="btn btn-sm btn-primary-outline edit-category"
+                                                data-id="{{ $productCategory->id }}"
+                                                data-category-code="{{ $productCategory->CategoryCode }}"
+                                                data-stock-group-name="{{ $productCategory->StockGroupName }}"
+                                                data-parent-id="{{ $productCategory->ParentID }}">
                                             <i class="las dripicons-document-edit text-info font-18"></i>
-                                        </a>
+                                        </button>
                                     @endcan
                                     @can('customer_delete')
                                         <form action="{{ route('product-categories.destroy', $productCategory->id) }}" method="POST"
@@ -105,65 +114,186 @@
         </div>
     </div>
 
+    <div class="modal fade" id="importCategorymaster" tabindex="-1" role="dialog" aria-labelledby="importCategorymaster" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h6 class="modal-title m-0 text-white" id="importCategorymasterLabel">{{ trans('global.import') }} {{ trans('cruds.productCategory.title') }}</h6>
+                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-times text-white"></i></span>
+                    </button>
+                </div>
+                <form action="{{ route('importProductCategories') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                    {{ csrf_field() }}
+                    <div class="modal-body">
+                        <div class="row">
+                            <input type="file" id="input-file-now" name="csv_file" class="dropify">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-gradient-danger">Import File</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="productCategoryModal" tabindex="-1" aria-labelledby="productCategoryModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="categoryForm" method="POST" action="{{ route('productCategories.store') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productCategoryModalLabel">{{ __('Add/Edit')}} {{ __('cruds.productCategory.title_singular') }}</h5>
+                        <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true"><i class="la la-times"></i></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="categoryId">
+
+                        <div class="mb-3">
+                            <label for="categoryCode" class="form-label">{{ __('cruds.productCategory.fields.category_code') }}</label>
+                            <input type = "text" class="form-control" name="CategoryCode" id="categoryCode" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">{{ __('cruds.productCategory.fields.name') }}</label>
+                            <input type="text" class="form-control" id="categoryName" name="StockGroupName" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="parentCategory" class="form-label">{{ __('Main Department')}}</label>
+                            <select class="form-select select2" id="parentCategory" name="ParentID">
+                                <option value="">None</option>
+                                @foreach ($productCategories as $key => $productCategory)
+                                    <option value="{{ $productCategory->id }}">{{ $productCategory->StockGroupName }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('global.cancel')}}</button>
+                        <button type="submit" class="btn btn-danger">{{ __('global.save')}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
-@push('custom-scripts')
+@section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-category');
 
-<script>
-    $(function () {
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-        @can('product_category_delete')
-        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-        let deleteButton = {
-            text: deleteButtonTrans,
-            url: "{{ route('product-categories.massDestroy') }}",
-            className: 'btn-danger',
-            action: function (e, dt, node, config) {
-                var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-                    return $(entry).data('entry-id')
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const categoryId = this.dataset.id;
+                    const categoryCode = this.dataset.categoryCode;
+                    const stockGroupName = this.dataset.stockGroupName;
+                    const parentId = this.dataset.parentId;
+
+                    // Populate the modal fields
+                    document.getElementById('categoryId').value = categoryId;
+                    document.getElementById('categoryCode').value = categoryCode;
+                    document.getElementById('categoryName').value = stockGroupName;
+                    document.getElementById('parentCategory').value = parentId || '';
+
+                    // show the modal
+                    const modal = new bootstrap.Modal(document.getElementById('productCategoryModal'));
+                    modal.show();
                 });
-                if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected') }}')
-                    return
-                }
-                if (confirm('{{ trans('global.areYouSure') }}')) {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token},
-                        method: 'POST',
-                        url: config.url,
-                        data: { ids: ids, _method: 'DELETE' }})
-                        .done(function () { location.reload() })
-                }
-            }
-        }
-        dtButtons.push(deleteButton)
-        @endcan
-        $.extend(true, $.fn.dataTable.defaults, {
-            order: [[ 1, 'desc' ]],
-            pageLength: 25,
+            });
+
+            // Form submission with AJAX
+            const editCategoryForm = document.getElementById('categoryForm');
+            editCategoryForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const id = formData.get('id');
+
+                fetch(`/product-categories/update/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Category updated successfully');
+                            window.location.reload();
+                        } else {
+                            alert('Error updating category: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
         });
-        $('.datatable-ProductCategory:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-            $($.fn.dataTable.tables(true)).DataTable()
-                .columns.adjust();
+
+        document.getElementById('categoryForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/product-categories/store', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Category added successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Error adding category: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
-    })
-</script>
 
-    <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+        $(function () {
+            let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
-    <script src="{{ asset('/plugins/datatables/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/jszip.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.colVis.min.js') }}"></script>
 
-    <script src="{{ asset('/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('/pages/jquery.datatable.init.js') }}"></script>
+            $.extend(true, $.fn.dataTable.defaults,{
+                order: [[ 1, 'desc']],
+                pageLength: 30,
+            });
+            $('.datatable-Customer:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+                $($.fn.dataTable.tables(true)).DataTable()
+                    .columns.adjust();
+            });
+        })
+    </script>
 
-@endpush
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+    <script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/jszip.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/buttons.colVis.min.js') }}"></script>
+
+    <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('pages/jquery.datatable.init.js') }}"></script>
+    <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
+    <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
+
+@endsection

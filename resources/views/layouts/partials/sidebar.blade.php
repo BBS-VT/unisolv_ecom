@@ -22,13 +22,34 @@
             <li>
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Sales</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
-                    <li>
+                    <li class="nav-item">
+                        <a href="{{ route('orders.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Orders') }} </a>
+                        {{--<a href="{{ route('orders.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('customers.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Customers') }} </a>
+                        {{--<a href="{{ route('customers.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
+                    </li>
+                    @can('specialdeal_access')
+                    <li class="nav-item">
+                        <a href="{{ route('deals.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Contract Discounts') }} </a>
+                        {{--<a href="{{ route('deals.create') }}" class="sidebar-menu-action">
+                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                        </a>--}}
+
+                    </li>
+                    @endcan
+                    {{--<li>
                         <a href="javascript: void(0);"><i class="ti-control-record"></i>New <span class="menu-arrow left-has-menu"><i class="mdi mdi-chevron-right"></i></span></a>
                         <ul class="nav-second-level" aria-expanded="false">
-                            {{--<li><a href="apps-email-inbox.html">Quote</a></li> --}}
-                            {{--<li><a href="{{ route('orders.create.step.one') }}">Order</a></li>--}}
+                            --}}{{--<li><a href="apps-email-inbox.html">Quote</a></li> --}}{{--
+                            --}}{{--<li><a href="{{ route('orders.create.step.one') }}">Order</a></li>--}}{{--
                             <li><a href="{{ route('orders.create') }}">Order</a></li>
-                            {{-- <li><a href="apps-email-inbox.html">Invoice</a></li> --}}
+                            --}}{{-- <li><a href="apps-email-inbox.html">Invoice</a></li> --}}{{--
                             <li><a href="{{ route('customers.create') }}">Customer</a></li>
                         </ul>
                     </li>
@@ -40,17 +61,17 @@
                             @can('specialdeal_access')
                                 <li><a href="{{ route('deals.index') }}">Contract Discounts</a></li>
                             @endcan
-                            {{--<li><a href="apps-project-projects.html">Projects</a></li>
+                            --}}{{--<li><a href="apps-project-projects.html">Projects</a></li>
                             <li><a href="apps-project-board.html">Board</a></li>
                             <li><a href="apps-project-teams.html">Teams</a></li>
                             <li><a href="apps-project-files.html">Files</a></li>
-                            <li><a href="apps-new-project.html">New Project</a></li>--}}
+                            <li><a href="apps-new-project.html">New Project</a></li>--}}{{--
                         </ul>
-                    </li>
+                    </li> --}}
 
                 </ul>
             </li>
-
+            @can('purchase_management_access')
             <li>
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Purchasing</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
@@ -76,7 +97,8 @@
 
                 </ul>
             </li>
-
+            @endcan
+            @can('product_management_access')
             <li>
                 <a href="javascript: void(0);"><i data-feather="grid" class="align-self-center menu-icon"></i><span>Stock</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
                 <ul class="nav-second-level" aria-expanded="false">
@@ -104,7 +126,7 @@
 
                 </ul>
             </li>
-
+            @endcan
             {{-- <hr class="hr-dashed hr-menu">
            <li class="menu-label my-2">Components & Extra</li>--}}
 
@@ -121,7 +143,6 @@
                         <ul class="nav-second-level" aria-expanded="false">
                             <li><a href="{{ route('settings.company') }}">Company Settings</a></li>
                             <li><a href="{{ route('admin.buying-group.index') }}">Buying Groups</a></li>
-                            <li><a href="{{ route('admin.customer-category.index') }}">Customer Categories</a></li>
                             <li><a href="{{ route('admin.orderstatus.index') }}">Order Statuses</a></li>
                         </ul>
                     </li>

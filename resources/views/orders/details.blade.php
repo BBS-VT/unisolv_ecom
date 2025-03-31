@@ -15,7 +15,7 @@
                             <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm mr-1" height="24">
                                                                 <img src="assets/images/logo-dark.png" alt="logo-large" class="logo-lg logo-dark" height="20">
                                                                 <img src="assets/images/logo.png" alt="logo-large" class="logo-lg logo-light" height="20">-->
-                            <p class="mt-2 mb-0 text-muted">Quenera Distribution Pty (LTD)</p>
+                            <p class="mt-2 mb-0 text-muted">Viedgesville Wholesalers Pty (LTD)</p>
                         </div><!--end col-->
                         <div class="col-md-8">
 
@@ -23,22 +23,22 @@
                                 <li class="list-inline-item">
                                     <div class="pl-3">
                                         <i class="mdi mdi-web"></i>
-                                        <p class="text-muted mb-0">quenera@mjpress.co.za</p>
+                                        <p class="text-muted mb-0">admin@viedges.co.za</p>
                                         <p class="text-muted mb-0">www.qrstuvwxyz.com</p>
                                     </div>
                                 </li>
                                 <li class="list-inline-item">
                                     <div class="pl-3">
                                         <i class="mdi mdi-phone"></i>
-                                        <p class="text-muted mb-0">043 743 4557</p>
-                                        <p class="text-muted mb-0">043 743 4557</p>
+                                        <p class="text-muted mb-0">047 538 0017</p>
+                                        <p class="text-muted mb-0">047 538 0018</p>
                                     </div>
                                 </li>
                                 <li class="list-inline-item">
                                     <div class="pl-3">
                                         <i class="mdi mdi-map-marker"></i>
-                                        <p class="text-muted mb-0">1 Strelitzia St</p>
-                                        <p class="text-muted mb-0">Braelyn, East London, 5201</p>
+                                        <p class="text-muted mb-0">Coffee bay Road</p>
+                                        <p class="text-muted mb-0">Jojweni, 5201</p>
                                     </div>
                                 </li>
                             </ul>
@@ -79,7 +79,7 @@
                                 <strong class="font-14">Account:</strong>&nbsp; {{ $order->customer->acc_main }}<br>
                                 <strong class="font-14">Order Date :</strong> {{ $order->created_at->format('d/m/Y') }}<br>
                                 <strong class="font-14">Order Nr :</strong> {{ $order->OrderNumber }}<br>
-                                <strong class="font-14">Rep :</strong> {{ $order->customer->salesrep->RepCode }}<br>
+                                <strong class="font-14">Rep :</strong> @if(isset($order->customer->salesrep->RepCode)) {{ $order->customer->salesrep->RepCode }} @endif<br>
                             </div>
                         </div><!--end col-->
                     </div><!--end row-->
@@ -93,7 +93,8 @@
                                         <th>Stock Code</th>
                                         <th>Description</th>
                                         <th class="text-center">Qty</th>
-                                        <th class="text-right">U/Price(Ex)</th>
+                                        <th class="text-right">Price(Exc)</th>
+                                        <th class="text-right">Discount</th>
                                         <th class="text-right">Unit Tax</th>
                                         <th class="text-right">Net Price</th>
                                         <th class="text-right">Total(Incl)</th>
@@ -110,7 +111,8 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format(($key->total / $key->Quantity / 1.15) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ number_format($key->product->SellingPrice / 1.15, 2, ".", " ") }}</td>
+                                            <td class="text-right">{{ floatval($key->discount_val) }} %</td>
                                             <td class="text-right">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>
                                             <td class="text-right">{{ number_format($key->total / 100, 2, ".", " ") }}</td>
@@ -118,17 +120,17 @@
                                     @endforeach
 
                                     <tr >
-                                        <td colspan="5" class="border-0"></td>
+                                        <td colspan="6" class="border-0"></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>Sub Total</b></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->sub_total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr>
-                                        <th colspan="5" class="border-0"></th>
+                                        <th colspan="6" class="border-0"></th>
                                         <td class="border-0 font-14 text-dark text-right"><b>VAT @ 15%</b></td>
                                         <td class="border-0 font-14 text-dark text-right"><b>{{ number_format(($order->total * 0.15) / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr class="bg-black text-white">
-                                        <th colspan="5" class="border-0"></th>
+                                        <th colspan="6" class="border-0"></th>
                                         <td class="border-0 font-14 text-right"><b>Total</b></td>
                                         <td class="border-0 font-14 text-right"><b>{{ number_format($order->total / 100, 2, ".", " ") }}</b></td>
                                     </tr>

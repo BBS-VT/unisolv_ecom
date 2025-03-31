@@ -14,8 +14,9 @@ class CreateCustomerBalancesTable extends Migration
     public function up()
     {
         Schema::create('customer_balances', function (Blueprint $table) {
-            $table->string('AccMain', 11)->primary();
+            $table->string('AccMain', 11);
             $table->string('AccSub', 3)->default('000');
+            $table->string('AccCode', 15)->default('000-000');
             $table->decimal('AgedBalance1', 18,3)->default('0.000');
             $table->decimal('AgedBalance2', 18,3)->default('0.000');
             $table->decimal('AgedBalance3', 18,3)->default('0.000');
@@ -27,6 +28,7 @@ class CreateCustomerBalancesTable extends Migration
 
             $table->foreign('LastEditedBy')->references('id')->on('users');
             $table->foreign('AccMain')->references('acc_main')->on('customers');
+            $table->foreign('AccCode')->references('acc_code')->on('customers');
         });
     }
 

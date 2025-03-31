@@ -7,13 +7,13 @@
                 <input type="hidden" name="salesperson_id" value="{{ auth()->user()->RepCode }}" />
             @endif
                 <label for="order_number">{{ __('cruds.order.fields.number') }}</label>
-            <input type="text" name="order_number" class="form-control" value="{{ $order->order_number }}" readonly>
+            <input type="text" name="order_number" id="order_number" class="form-control" value="{{ $order->order_number }}" readonly>
         </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
-            <select id="customer" name="customer_id" data-toggle="select" class="form-control select2-hidden-accessible" data-select2-id="customer">
+            <label class="required" for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
+            <select id="customer" name="customer_id" data-toggle="select" class="select2 form-control js-customer" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->customer_id)
                     <option value="{{ $order->customer_id }}"
@@ -29,44 +29,49 @@
     <div class="col-md-2">
         <div class="form-group">
             <label class="required" for="reference_number">{{ __('cruds.order.fields.ponumber') }}</label>
-            <input type="text" name="reference_number"  class="form-control" required />
+            <input type="text" name="reference_number" id="reference_number" class="form-control" required />
         </div>
     </div>
     <div class="col-md-2">
         <div class="form-group">
             <label class="required" for="order_date">{{ __('cruds.order.fields.order_date') }}</label>
-            <input type="text" name="order_date"  class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
+            <input type="text" name="order_date" id="order_date" class="form-control" value="{{ date('Y-m-d') }}" required id="mdate" style="text-align: center" />
         </div>
     </div>
 </div>
 
 <div class="col-12 mt-5">
     <div class="table-responsive" data-toggle="lists">
-        <table class="table table-xl mb-0 thead-border-top-0 table-striped">
+        <table class="table table-xl mb-0 thead-border-top-0 table-striped" id="orderDetail">
             <thead>
                 <tr>
                     @if($tax_per_item and $discount_per_item)
-                        <th class="w-30">{{ __('global.products') }}</th>
-                        <th class="w-20">{{ __('global.taxes') }}</th>
-                        <th class="w-10">{{ __('global.quantity') }}</th>
-                        <th class="w-15">{{ __('global.price') }}</th>
-                        <th class="w-15">{{ __('global.discount') }}</th>
-                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                        <th >{{ __('global.products') }}</th>
+{{--                        <th class="d-none " style="visibility:hidden;">{{ __('global.taxes') }}</th>--}}
+                        <th></th>
+                        <th >{{ __('global.quantity') }}</th>
+                        <th >{{ __('global.stockOnhand') }}</th>
+                        <th >{{ __('global.price') }}</th>
+                        <th class="w-25">{{ __('global.discount') }}</th>
+                        <th class="text-end w-10">{{ __('global.total') }}</th>
                     @elseif($tax_per_item and !$discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-25">{{ __('global.taxes') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-15">{{ __('global.price') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and $discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
                         <th class="w-20">{{ __('global.discount') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and !$discount_per_item)
                         <th class="w-60">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
+                        <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
                         <th class="text-right w-10">{{ __('global.total') }}</th>
                     @endif
@@ -74,40 +79,57 @@
                 </tr>
             </thead>
             <tbody class="list" id="items">
-                <tr id="product_row_template" class="d-none">
-                    <td class="select-container">
-                        <select name="product[]" class="select2 form-control priceListener select-with-footer" required>
+                <tr id="product_row_template" class="d-none col-4 col-sm-4">
+                    <td width="40%" class="select-container">
+                        <select name="product[]" class="select2 form-control priceListener" required>
                             <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                         </select>
+                        <div class="mx-2 row mt-1">
+                            <div class="product-details d-flex justify-content-between align-items-center">
+                                @if($display_selling_prices == true)
+                                    <div class="me-4"><strong>Price 1:</strong> <span class="price1-display"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Price 2:</strong> <span class="price2-display text-muted"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Price 3:</strong> <span class="price3-display text-muted"></span>&nbsp;</div>
+                                @endif
+                                @if($display_cost_prices == true)
+                                    <div class="me-4"><strong>Avg Cost:</strong> <span class="avg-cost-display text-danger"></span>&nbsp;</div>
+                                    <div class="me-4"><strong>Last Cost:</strong> <span class="last-cost-display text-warning"></span>&nbsp;</div>
+                                @endif
+                            </div>
+                        </div>
                     </td>
                     @if($tax_per_item)
-                        <td class="select-container">
-                            <select name="taxes[]" multiple class="form-control priceListener">
+                        <td class="select-container d-none d-xl-block d-l-block" style="visibility:hidden;">
+                            <select name="taxes[]" type="hidden" multiple class="form-control priceListener">
                                 @foreach(get_tax_types_select2_array($currentCompany->id) as $option )
                                     <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}">{{ $option['text'] }}</option>
                                 @endforeach
                             </select>
                         </td>
                     @endif
-                    <td>
-                        <input name="quantity[]" type="number" class="form-control priceListener" value="1" required>
+                    <td class="col-sm-2">
+                        <input name="quantity[]" type="number" class=" form-control priceListener" value="1" required>
                     </td>
-                    <td>
-                        <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="0" readonly>
+                    <td class="col-sm-2">
+                        <input name="QuantityOnHand[]" type="number" class="form-control stock_input" value="" readonly>
+                    </td>
+                    <td class="col-sm-2">
+                        <input name="price[]" type="text" class="form-control price_input priceListener"
+                                autocomplete="off" value="0" >
                     </td>
                     @if($discount_per_item)
-                        <td>
-                            <div class="input-group input-group-merge">
-                                <input name="discount[]" type="number" class=" form-control form-control-prepended priceListener" value="0">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">%</div>
-                                </div>
+                        <td class="col-sm-4">
+                            <div class="input-group d-flex align-items-center">
+{{--                                <input name="discount[]" type="number" class="form-control form-control-prepended priceListener discountListener" id="chDiscount" onchange="validateDiscount(this.value)" value="">--}}
+                                <input name="discount[]" type="number" class="form-control priceListener discountListener" id="chDiscount" value="" style="min-width: 0;">
+                                <span class="input-group-text">% </span>
                             </div>
                         </td>
+
                     @endif
                     <td class="text-right">
                         <p class="mb-1">
-                            <input type="text" name="total[]" class=" price_input price-text amount_price" value="0" readonly>
+                            <input type="text" name="total[]" class="price_input text-right price-text amount_price" value="0" readonly>
                         </p>
                         <div class="tax_list"></div>
                     </td>
@@ -120,24 +142,25 @@
                 @if($order->items->count() > 0)
                     @foreach($order->items as $item)
                         <tr>
-                            <td class="select-container">
+                            <td class="select-container col-4 col-sm-4">
                                 <select name="product[]" class="form-control mb-3 priceListener select-with-footer" style="width: 100%; height:36px;" >
                                     <option value="">-- choose product --</option>
                                     @foreach ($products as $product)
-                                        <option value="{{ $item->product_id }}" selected="">
+                                        <option value="{{ $item->StockCode }}" selected="">
                                             {{ intval( ltrim( $product->StockCode, '0')) }} &nbsp;
-                                            {{ $product->StockItemName }} -
-                                            (R {{ !floatval($product->DiscountPercentage) ?
-                                                                ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
-                                                                : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
-                                            [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
+                                            {{ $product->StockItemName }}
                                         </option>
                                     @endforeach
                                 </select>
-
+                                <div class="row">
+                                    (R {{ !floatval($product->DiscountPercentage) ?
+                                                                ( !empty($product->UnitPrice) ? number_format($product->UnitPrice, 2) : number_format($product->SellingPrice, 2) )
+                                                                : number_format($product->SellingPrice - (($product->DiscountPercentage / 100) * $product->SellingPrice), 2) }})&nbsp;
+                                    [ {{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }} ]
+                                </div>
                             </td>
                             @if($tax_per_item)
-                                <td class="select-container">
+                                <td class="select-container d-none d-xl-block" style="visibility:hidden;">
                                     <select name="taxes[]" multiple class="form-control priceListener select-with-footer select2-hidden-accessible">
                                         @foreach(get_tax_types_select2_array($currentCompany->id) as $option)
                                             <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $item->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
@@ -145,27 +168,28 @@
                                     </select>
                                 </td>
                             @endif
-                            <td>
+                            <td class="col-sm-2">
                                 <input name="quantity[]" type="number" class="form-control priceListener" value="{{ $item->quantity }}" required>
                             </td>
-                            <td>
+                            <td class="col-sm-2">
+                                <input name="QuantityOnHand[]" type="number" class="form-control stock_input " value="{{ $item->QuantityOnHand }}" readonly>
+                            </td>
+                            <td class="col-sm-2">
                                 <input name="price[]" type="text" class="form-control price_input priceListener" autocomplete="off" value="{{ $item->price }}" readonly>
+
                             </td>
                             @if($discount_per_item)
-                                <td>
-                                    <div class="input-group input-group-merge">
-                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" value="{{ $item->discount_val }}">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                %
-                                            </div>
-                                        </div>
+                                <td class="col-sm-4">
+                                    <div class="input-group d-flex align-items-center">
+{{--                                        <input name="discount[]" type="number" class="form-control form-control-prepended priceListener" id="chDiscount" onchange="validateDiscount(this.value)" value="{{ $item->discount_val }}">--}}
+                                        <input name="discount[]" type="number" class="form-control priceListener" id="chDiscount" value="{{ $item->discount_val }}" style="min-width: 0;">
+                                        <span class="input-group-text">% </span>
                                     </div>
                                 </td>
                             @endif
                             <td class="text-right">
                                 <p class="mb-1">
-                                    <input type="text" name="total[]" class="price_input price-text amount_price" value="{{ $item->total }}" readonly>
+                                    <input type="text" name="total[]" class="col-sm-2 price_input text-right price-text amount_price" value="{{ $item->total }}" readonly>
                                 </p>
                                 <div class="tax_list"></div>
                             </td>
@@ -191,12 +215,12 @@
     <div class="col-md-5 mt-4 pr-4">
         <div class="form-group">
             <label for="notes">{{ __('global.notes') }}</label>
-            <textarea name="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
+            <textarea name="notes" id="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
         </div>
 
         <div class="form-group">
             <label for="private_notes">{{ __('global.private_notes') }}</label>
-            <textarea name="private_notes" class="form-control" rows="2">{{ $order->private_notes }}</textarea>
+            <textarea name="private_notes" id="private_notes" class="form-control" rows="2">{{ $order->private_notes }}</textarea>
         </div>
     </div>
 
@@ -262,7 +286,7 @@
             </div>
         </div>
         <div class="col-12 text-center float-right mt-3">
-            <button type="button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
+            <button type="button" id="save_form_button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
             <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>
     </div>

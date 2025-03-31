@@ -114,7 +114,7 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
-                                    <select class="select2 mb-3 select2-multiple {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple="multiple" required>
+                                    <select class="form-control select2 mb-3 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
                                         @foreach($roles as $id => $roles)
                                             <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || $user->roles->contains($id)) ? 'selected' : '' }}>{{ $roles }}</option>
                                         @endforeach

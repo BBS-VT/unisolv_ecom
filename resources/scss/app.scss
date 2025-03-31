@@ -1,75 +1,111 @@
 /*
-Template Name: Dastone - admin & Dashboard Template
-Author: Mannatthemes
-Version: 1.0.0
-File: App Css
+Template Name: Steex - Admin & Dashboard Template
+Author: Themesbrand
+Version: 1.4.0
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Main Css File
 */
 
 //Core files
-@import "../plugins/bootstrap/functions";
-@import "../plugins/bootstrap/variables";
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
 @import "variables";
-@import "/../plugins/bootstrap/mixins";
+@import "variables-dark";
+@import "./node_modules/bootstrap/scss/mixins";
 
+@import "theme/default";
+@import "theme/material";
+@import "theme/minimal";
+@import "theme/modern";
+@import "theme/creative";
+@import "theme/interaction";
 
 // Structure
-@import "structure/leftbar";
 @import "structure/topbar";
+@import "structure/page-head";
 @import "structure/footer";
-@import "structure/horizontal-nav";
-@import "structure/dark-sidenav";
+@import "structure/vertical";
+@import "structure/horizontal";
+@import "structure/two-column";
+@import "structure/layouts";
 
 // Components
+@import "components/avatar";
+@import "components/accordion";
+@import "components/helper";
+@import "components/preloader";
+@import "components/forms";
+@import "components/demos";
+@import "components/print";
+@import "components/ribbons";
+@import "components/toast";
+@import "components/scrollspy";
+
+// Bootstrap components
+@import "components/root";
 @import "components/reboot";
-@import "components/waves";
-@import "components/card";
-@import "components/nav";
+@import "components/alerts";
 @import "components/badge";
 @import "components/buttons";
+@import "components/breadcrumb";
+@import "components/card";
 @import "components/dropdown";
-@import "components/tables";
+@import "components/nav";
+@import "components/table";
+@import "components/modal";
+@import "components/pagination";
 @import "components/progress";
-@import "components/alert";
-@import "components/forms";
-@import "components/modals";
-@import "components/switch";
-@import "components/form-advanced";
-@import "components/form-validation";
-@import "components/form-wizard";
-@import "components/form-editor";
-@import "components/spinners";
-
-
+@import "components/popover";
+@import "components/type";
+@import "components/form-check";
+@import "components/form-control";
+@import "components/list-group";
+@import "components/tooltip";
+@import "components/colored-links";
 
 // Plugins
-@import "plugins/simplebar";
-@import "plugins/maps";
-@import "plugins/charts";
-@import "plugins/calendar";
-@import "plugins/rangeslider";
-@import "plugins/sweet-alert";
-@import "plugins/nastable";
-@import "plugins/prittify-code";
-@import "plugins/tippy";
-@import "plugins/fonts";
+@import "plugins/custom-scrollbar";
+@import "plugins/prismjs";
+@import "plugins/sweetalert2";
+@import "plugins/dropzone";
+@import "plugins/sortablejs";
+@import "plugins/swiper";
+@import "plugins/multijs";
+@import "plugins/colorpicker";
+@import "plugins/form-input-spin";
+@import "plugins/ckeditor";
+@import "plugins/gridjs";
+@import "plugins/listjs";
+@import "plugins/apexcharts";
+@import "plugins/echart";
+@import "plugins/google-map";
+@import "plugins/autocomplete";
+@import "plugins/vector-maps";
+@import "plugins/leaflet-maps";
+@import "plugins/fullcalendar";
+@import "plugins/emoji-picker";
+@import "plugins/datatables";
+@import "plugins/toastify";
+@import "plugins/flatpicker";
+@import "plugins/flag-input";
+@import "plugins/choices";
+@import "plugins/range-slider";
+@import "plugins/card";
 
+//Apps 
+@import "apps/email";
+@import "apps/chat";
+@import "apps/ecommerce";
+@import "apps/file-manager";
+@import "apps/learning";
+@import "apps/real_estate";
+@import "apps/invoice";
 
 // Pages
-@import "pages/avatar";
-@import "pages/general";
-@import "pages/background-color";
-@import "pages/analytics";
-@import "pages/ecommerce";
+@import "pages/authentication";
+@import "pages/dashboard";
+@import "pages/coming-soon";
 @import "pages/timeline";
-@import "pages/email";
-@import "pages/chat";
 @import "pages/profile";
-@import "pages/invoice";
-@import "pages/projects";
-@import "pages/files";
-@import "pages/check-radio";
 @import "pages/pricing";
-@import "pages/account-pages";
-@import "pages/ribbons";
-@import "pages/blog";
-@import "pages/faq";

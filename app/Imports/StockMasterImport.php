@@ -26,6 +26,23 @@ class StockMasterImport implements ToModel, WithStartRow
     {
         return new Product([
             'company_id'         => '1',
+            'StockItemName'      => $row[0],
+            'StockCode'          => $row[1],
+            'SupplierID'         => $row[3],
+            'TaxRateID'          => $row[4],
+            'Size'               => '1',
+            'PackSize'           => $row[5],
+            'Barcode'            => $row[6],
+            'AltBarcode'         => $row[7],
+            'AverageCostPrice'   => $row[8],
+            'SellingPrice'       => $row[9],
+            'SearchDetails'      => $row[10],
+            'DiscountPercentage' => $row[11],
+            'status'             => '1',
+            'LastEditedBy'       => Auth::user()->id,
+        ]);
+       /* return new Product([
+            'company_id'         => '1',
             'StockItemName'      => $row[1],
             'StockCode'          => $row[0],
             'SupplierID'         => $row[8],
@@ -33,12 +50,13 @@ class StockMasterImport implements ToModel, WithStartRow
             'Size'               => '1',
             'PackSize'           => $row[4],
             'Barcode'            => $row[11],
+            'AltBarcode'         => $row[13],
             'CostPrice'          => $row[24],
             'SellingPrice'       => $row[31],
             'SearchDetails'      => $row[30],
-            'DiscountPercentage' => $row[44],
+            'DiscountPercentage' => $row[45],
             'status'             => '1',
             'LastEditedBy'       => Auth::user()->id,
-        ]);
+        ]);*/
     }
 }

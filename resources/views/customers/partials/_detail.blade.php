@@ -81,8 +81,11 @@
                         <div class="text-right">
                             <div class="p-l-15 p-b-xs p-t-sm">
                                 <div class="font-light m-b-0 h3">
-{{--                                    {{ number_format($customer->customerBalance->AgedBalance1, 2, ".", " ") }}--}}
-                                    {{ !empty($customer->customerBalance->AgedBalance1) ? number_format($customer->customerBalance->AgedBalance1, 2, ".", " ") : '0.00' }}
+                                    @if($displaySubAccount == "1")
+                                        {{ !empty($customer->customerSubBalance->AgedBalance1) ? number_format($customer->customerSubBalance->AgedBalance1, 2, ".", " ") : '0.00' }}
+                                    @else
+                                        {{ !empty($customer->customerBalance->AgedBalance1) ? number_format($customer->customerBalance->AgedBalance1, 2, ".", " ") : '0.00' }}
+                                    @endif
                                 </div>
                                 <h4 class="semi-bold no-margin text-uppercase card-title">{{ trans('global.current') }}</h4>
                                 {{--<span class="mini-description ng-binding">0 Invoices</span>--}}
@@ -226,11 +229,14 @@
                         </tr>
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.salerep') }}</td>
-                            <td class="semi-bold">{{ $customer->salesrep->FullName ?? '' }}</td>
+                            <td class="semi-bold">{{ $customer->salesrep->PreferredName ?? '' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.contract') }}</td>
                             <td class="semi-bold">{{ $customer->BuyingGroupID ?? '' }}</td>
+                        </tr><tr>
+                            <td class="text-muted">{{ __('cruds.customer.fields.type') }}</td>
+                            <td class="semi-bold">{{ $customer->CustomerCategoryID ?? '' }}</td>
                         </tr>
                         </tbody>
                     </table>

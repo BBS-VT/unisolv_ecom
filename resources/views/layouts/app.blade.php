@@ -1,30 +1,27 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
 
 <head>
     <meta charset="utf-8" />
-    <title>{{ config('app.name', 'Unisolv CRM') }}</title>
+    <title> @yield('title') | {{ config('app.name', 'Unisolv') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="{{ URL::asset('images/favicon.ico') }}">
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}">
-
-    @stack('style')
-
+    @include('layouts.partials.head-css')
     <!-- App css -->
-    <link href="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    {{--<link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    @shared
     <link href="{{ URL::asset('css/metisMenu.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ URL::asset('plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
+--}}{{--    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />--}}{{--
     <link href="{{ URL::asset('css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('css/custom.css') }}" rel="stylesheet" type="text/css" />
+    @stack('style')
+    @shared--}}
 
 </head>
 
@@ -50,7 +47,7 @@
 <!-- end page-wrapper -->
 
 <!-- jQuery  -->
-<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+{{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ URL::asset('js/metisMenu.min.js') }}"></script>
 <script src="{{ URL::asset('js/waves.js') }}"></script>
@@ -70,7 +67,8 @@
 <script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/custom.js') }}"></script>
 
-@stack('custom-scripts')
+@stack('custom-scripts')--}}
+@include('layouts.partials.vendor-scripts')
 
 @include('layouts._flash')
 

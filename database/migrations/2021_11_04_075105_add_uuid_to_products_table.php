@@ -19,6 +19,10 @@ class AddUuidToProductsTable extends Migration
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
         });
+
+        Schema::table('package_types', function (Blueprint $table) {
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+        });
     }
 
     /**

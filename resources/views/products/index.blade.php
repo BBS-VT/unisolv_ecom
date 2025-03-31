@@ -1,11 +1,25 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
-@endpush
+    <style>
+        .dt-buttons {
+            margin: 0 auto; /* Center the buttons */
+        }
+
+        .dataTables_length {
+            float: left;
+        }
+
+        .dataTables_filter {
+            float: right;
+        }
+    </style>
+
+@endsection
 
 @section('content')
     <div class="row">
@@ -43,16 +57,12 @@
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ trans('global.add') }} {{ trans('cruds.product.title_singular') }}
                                 </a>
-                                <a href="{{ route("product-tags.create") }}" class="btn btn-sm btn-outline-primary">
-                                    <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
-                                    {{ trans('global.add') }} {{ trans('cruds.productTag.title_singular') }}
-                                </a>
                             @endcan
                             @can('product_import')
                                 <ul class="list-unstyled float-right mb-0">
                                     <li class="dropdown">
                                         <a href="#" class="btn btn-sm btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
-                                            data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                           data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
                                             <i data-feather="upload" class="align-self-center icon-xs"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
@@ -72,87 +82,20 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <table id="productsTable" class="table table-striped table-bordered dt-responsive" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
-                            <tr>
-                                <th width="10">&nbsp;</th>
-                                <th>{{ trans('cruds.product.fields.sku') }}</th>
-                                <th>{{ trans('cruds.product.fields.name') }} </th>
-                                <th>{{ trans('cruds.product.fields.barcode') }}</th>
-                                <th>{{ trans('cruds.product.fields.price') }}</th>
-                                <th>{{ trans('cruds.product.fields.category') }}</th>
-<!--                            <th>{{ trans('cruds.product.fields.tag') }}</th>-->
-                                <th>{{ trans('cruds.product.fields.quantity') }}</th>
-                                <th>{{ trans('cruds.product.fields.status') }}</th>
-                                <th>&nbsp;</th>
-                            </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>{{ trans('cruds.product.fields.sku') }}</th>
+                            <th>{{ trans('cruds.product.fields.name') }} </th>
+                            <th>{{ trans('cruds.product.fields.barcode') }}</th>
+                            <th>{{ __('Selling Price') }}</th>
+                            <th>{{ __('Cost') }}</th>
+                            <th>{{ trans('cruds.product.fields.quantity') }}</th>
+                            <th width="100px">Action</th>
+                        </tr>
                         </thead>
-                        <tbody>
-                        @foreach($products as $key => $product)
-                            <tr data-entry-id="{{ $product->id }}">
-                                <td></td>
-                                <td>{{ $product->StockCode ?? '' }}</td>
-                                <td>{{ $product->StockItemName ?? '' }}</td>
-                                <td>{{ $product->Barcode ?? '' }}</td>
-{{--                                <td>{{ $product->SellingPrice ?? '' }}</td>--}}
-                                <td>{{ number_format($product->SellingPrice, 2, '.', ' ') }}</td>
-                                <td>
-                                    @foreach($product->categories as $key => $item)
-                                        <span class="badge badge-info">{{ $item->StockGroupName }}</span>
-                                    @endforeach
-                                </td>
-<!--                                <td>
-                                    @foreach($product->tags as $key => $item)
-                                        <span class="badge badge-info">{{ $item->name }}</span>
-                                    @endforeach
-                                </td>-->
-                                <td>{{ $product->stockHolding->QuantityOnHand ?? '' }}</td>
-                                <td>
-                                    @if($product->status==1)
-                                        <a class="updateProductStatus" id="product-{{ $product->id }}" product_id="{{ $product->id }}"
-                                           href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Disable Product">
-                                            <span class="badge badge-success">Active</span>
-                                        </a>
-                                    @else
-                                        <a class="updateProductStatus" id="product-{{ $product->id }}" product_id="{{ $product->id }}"
-                                           href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Enable Product">
-                                            <span class="badge badge-danger">Inactive</span>
-                                        </a>
-                                    @endif
-                                </td>
-                                <td class="mx-auto">
-                                    @can('product_show')
-                                        <a href="{{ route('products.show', $product->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.view') }} {{ trans('cruds.product.title_singular') }}"
-                                           data-placement="top">
-                                            <i class="las dripicons-preview text-info font-18"></i>
-                                        </a>
-                                    @endcan
-                                    &nbsp;
-                                    @can('product_edit')
-                                        <a href="{{ route('products.edit', $product->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.edit') }} {{ trans('cruds.product.title_singular') }}"
-                                           data-placement="top">
-                                            <i class="las dripicons-document-edit text-info font-18"></i>
-                                        </a>
-                                    @endcan
-                                    &nbsp;
-                                    @can('product_delete')
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                                              onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                    data-toggle="tooltip" data-placement="top"
-                                                    title="{{ trans('global.delete') }} {{ trans('cruds.product.title_singular') }}">
-                                                <i class="dripicons-trash"></i>
-                                            </button>
-                                        </form>
-                                    @endcan
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
 
                     <div class="modal fade" id="importQuantities" tabindex="-1" role="dialog" aria-labelledby="importQuantitiesLabel" aria-hidden="true">
@@ -208,7 +151,7 @@
     </div>
 @endsection
 
-@push('custom-scripts')
+@section('script')
     <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
@@ -225,54 +168,105 @@
     <script src="{{ asset('/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('/pages/jquery.datatable.init.js') }}"></script>
 
+    <script>
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                },
+            });
+
+            $('#productsTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('products.index') }}",
+                columns: [
+                    {data:'id', name: 'id', visible: false},
+                    {data: 'StockCode', name: 'StockCode'},
+                    {data: 'StockItemName', name: 'StockItemName'},
+                    {data: null,
+                        render: data => data.Barcode + ' | ' + data.AltBarcode
+                    },
+                    {data:'prices', name: 'prices', orderable: false, searchable:false  },
+                    {data:'costPrices', name: 'costPrices', orderable: false, searchable:false },
+                    {data:'quantity_on_hand', name: 'quantity_on_hand', orderable: true, searchable:false },
+
+                    {data: 'action', name: 'action', orderable: false, searchable:false},
+                ],
+                dom: '<"row align-items-center"<"col-md-4"l><"col-md-4 text-center"B><"col-md-4 text-end"f>>rtip',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="fas fa-file-excel"></i>',
+                        className: 'btn btn-success',
+                        titleAttr: 'Export to Excel',
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: '<i class="fas fa-file-csv"></i>',
+                        className: 'btn btn-primary',
+                        titleAttr: 'Export to CSV',
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        className: 'btn btn-danger',
+                        titleAttr: 'Export to PDF',
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print"></i>',
+                        className: 'btn btn-info',
+                        titleAttr: 'Print Table',
+                    },
+                ],
+            });
+
+        });
+
+
+        $(document).on('click', '.delete-product', function () {
+            var productId = $(this).data('id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/products/' + productId,
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function (response) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            );
+                            $('.product_datatable').DataTable().ajax.reload();
+                        },
+                        error: function (response) {
+                            cSwal.fire(
+                                'Error!',
+                                'There was a problem deleting the product.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            })
+        })
+    </script>
+
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
-
-    <script>
-
-        $(function () {
-            let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-            @can('product_delete')
-            let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-            let deleteButton = {
-                text: deleteButtonTrans,
-                url: "{{ route('products.massDestroy') }}",
-                className: 'btn-danger',
-                action: function (e, dt, node, config) {
-                    var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-                        return $(entry).data('entry-id')
-                    });
-                    if (ids.length === 0) {
-                        alert('{{ trans('global.datatables.zero_selected') }}')
-                        return
-                    }
-                    if (confirm('{{ trans('global.areYouSure') }}')) {
-                        $.ajax({
-                            headers: {'x-csrf-token': _token},
-                            method: 'POST',
-                            url: config.url,
-                            data: { ids: ids, _method: 'DELETE' }})
-                            .done(function () { location.reload() })
-                    }
-                }
-            }
-            dtButtons.push(deleteButton)
-            @endcan
-
-            $.extend(true, $.fn.dataTable.defaults, {
-                order: [[ 1, 'desc' ]],
-                pageLength: 25,
-            });
-            $('.datatable:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-                $($.fn.dataTable.tables(true)).DataTable()
-                    .columns.adjust();
-            });
-        });
-    </script>
-@endpush
-
-
-
+@endsection
 
 

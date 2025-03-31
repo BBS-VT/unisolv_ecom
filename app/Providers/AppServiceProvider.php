@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Auth;
@@ -27,7 +29,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
-
+        Event::listen(MessageSending::class, function ($event) {
+            \Log::info('Mail Sending', ['data' => $event->data]);
+        });
 
     }
 }

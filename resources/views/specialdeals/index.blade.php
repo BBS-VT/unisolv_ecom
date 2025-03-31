@@ -69,11 +69,21 @@
                             <tr data-entry-id="{{ $deal->id }}">
                                 <td> </td>
                                 <td>
-                                    {{ $deal->DealDescription ?? '' }}
-                                    <span class="badge badge-secondary">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
-                                    <span class="badge badge-success">{{ $deal->customer->CustomerName ?? '' }}</span>
-                                    <span class="badge badge-danger">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
-                                    <span class="badge badge-warning">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
+                                    @if(!empty($deal->BuyinGroupID))
+                                        @foreach($deal->buyingGroup as $key => $group)
+                                            @foreach($group->customer as $entity)
+                                                {{ $group->BuyingGroupName }} -
+                                                <span class="badge badge-info">{{ $entity->CustomerName }}</span>
+                                            @endforeach
+                                        @endforeach
+                                    @else
+                                        {{ $deal->DealDescription ?? '' }}
+                                        <span class="badge badge-secondary">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
+                                        <span class="badge badge-success">{{ $deal->customer->CustomerName ?? '' }}</span>
+                                        <span class="badge badge-danger">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
+                                        <span class="badge badge-warning">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
+                                    @endif
+
                                 </td>
                                 <td> {{ $deal->StartDate ?? '' }} - {{ $deal->EndDate ?? '' }}</td>
                                 <td> {{ $deal->DiscountPercentage ?? $deal->DiscountAmount }} </td>
@@ -87,8 +97,8 @@
                                 </td>
                                 <td>
                                     @can('specialdeal_show')
-                                        <a href="{{ route('deals.show', $deal->id) }}" data-toggle="tooltip"
-                                           title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
+                                        <a href="javascript:void(0)" id="show_deal" data-url="{{ route('deals.show', $deal->id) }}"
+                                           data-toggle="tooltip" title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
                                            data-placement="top">
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
@@ -283,6 +293,9 @@
                             </div>
                         </div>
                     </div>
+
+                    @include('specialdeals.partials._show')
+
                 </div>
             </div>
         </div>
@@ -308,5 +321,26 @@
 
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '#show_deal', function () {
+                var dealURL = $(this).data('url');
+                $.get(dealURL, function (data) {
+                    $('#showDealModal').modal('show');
+                    $('#deal_id').val(data.id);
+                    $('#deal_name').val(data.DealDescription);
+                    $('#deal_customer').val(data.CustomerName);
+                    $('#deal_product').val(data.StockItemName);
+                    $('#deal_amount').val(data.DiscountAmount);
+                    $('#deal_percentage').val(data.DiscountPercentage);
+                    $('#deal_unit_price').val(data.UnitPrice);
+                    $('#deal_start_date').val(data.StartDate);
+                    $('#deal_end_date').val(data.EndDate);
+                })
+            })
+        })
+    </script>
 
 @endpush

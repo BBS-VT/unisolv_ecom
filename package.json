@@ -1,28 +1,31 @@
 {
     "private": true,
     "scripts": {
-        "dev": "npm run development",
-        "development": "mix",
-        "watch": "mix watch",
-        "watch-poll": "mix watch -- --watch-options-poll=1000",
-        "hot": "mix watch --hot",
-        "prod": "npm run production",
-        "production": "mix --production"
+        "clean": "rimraf public/build",
+        "dev": "vite",
+        "build": "npm run clean && vite build"
     },
     "devDependencies": {
-        "autoprefixer": "^9.6.0",
-        "axios": "^0.21",
-        "cssnano": "^4.1.10",
-        "cross-env": "^7.0.0",
-        "gulp": "^4.0.2",
-        "gulp-postcss": "^8.0.0",
-        "gulp-sass": "^4.0.2",
-        "gulp-sourcemaps": "^2.6.5",
-        "laravel-mix": "^6.0.6",
-        "lodash": "^4.17.19",
-        "postcss": "^8.1.14",
-        "resolve-url-loader": "^2.3.1",
-        "vue": "^2.5.17",
-        "vue-template-compiler": "^2.6.10"
+        "@popperjs/core": "^2.11.7",
+        "axios": "^1.1.2",
+        "bootstrap": "5.3.2",
+        "laravel-vite-plugin": "^0.7.2",
+        "sass": "^1.56.1",
+        "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "browser-sync": "^2.29.1",
+        "inputmask": "^5.0.9",
+        "laravel-echo": "^1.17.1",
+        "lodash": "^4.17.21",
+        "popper.js": "^1.16.1",
+        "postcss": "^8.4.23",
+        "postcss-import": "^15.1.0",
+        "pusher-js": "^8.4.0-rc2",
+        "resolve-url-loader": "^5.0.0",
+        "rimraf": "^5.0.5",
+        "rtlcss": "^4.1.0",
+        "sass-loader": "^13.2.2",
+        "vite-plugin-static-copy": "^0.14.0"
     }
 }

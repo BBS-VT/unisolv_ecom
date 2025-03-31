@@ -1,14 +1,16 @@
 /*
-Template Name: Dastone - admin & Dashboard Template
-Author: Mannatthemes
+Template Name: Steex - Admin & Dashboard Template
+Author: Themesbrand
+Version: 1.4.0
+Website: https://Themesbrand.com/
+Contact: Themesbrand@gmail.com
+File: Custom Bootstrap Css File
 */
 
-@import "../../../plugins/bootstrap/functions";
-@import "../../../plugins/bootstrap/variables";
+//Core files
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
 @import "variables";
-@import "../../../plugins/bootstrap/bootstrap.scss";
-
-
-// Components
-@import "components/card";
-@import "components/type";
+@import "variables-dark";
+@import "components/utilities";
+@import "./node_modules/bootstrap/scss/bootstrap";

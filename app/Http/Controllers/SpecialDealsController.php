@@ -58,6 +58,33 @@ class SpecialDealsController extends Controller
         return redirect()->route('deals.index');
     }
 
+    public function show($id)
+    {
+        abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $where = ['special_deals.id' => $id];
+
+        $deal = SpecialDeals::where($where)
+            ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
+            ->join('customers', 'customers.acc_main', '=', 'special_deals.CustomerID')
+            ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
+            ->first();
+
+        if ( is_null($deal)) {
+            $deal = SpecialDeals::where($where)
+                ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
+                ->join('customers', 'customers.BuyingGroupID', '=', 'special_deals.BuyingGroupID')
+                ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
+                ->get();
+
+                return response()->json($deal);
+
+        } else {
+            return response()->json($deal);
+        }
+
+    }
+
     /**
      * @return \Illuminate\Support\Collection
      */
@@ -68,6 +95,10 @@ class SpecialDealsController extends Controller
 
         \Excel::import(new SpecialDealsImport,$request->import_file);
 
+        DB::statement('UPDATE special_deals SET CustomerID = TRIM(CustomerID)');
+        DB::statement('UPDATE special_deals SET BuyingGroupID = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
+        DB::statement('UPDATE special_deals SET DealDescription = CustomerID WHERE CustomerID NOT REGEXP "^[0-9]+$"');
+        DB::statement('DELETE t1 FROM special_deals t1 INNER JOIN special_deals t2 WHERE t1.id < t2.id AND t1.StockItemID = t2.StockItemID AND t1.BuyingGroupID = t2.BuyingGroupID AND t1.BuyingGroupID != "" AND (DATE(t1.created_at) BETWEEN t1.StartDate AND t1.EndDate)');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         \Session::put('success', 'File imported successfully');
 
@@ -92,6 +123,7 @@ class SpecialDealsController extends Controller
         return back();
 
     }
+
 
 
 

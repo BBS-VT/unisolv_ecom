@@ -16,9 +16,9 @@ class CreateOrdersItemsTable extends Migration
         Schema::create('orders_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('OrderID');
-            $table->unsignedBigInteger('StockItem');
+            $table->string('StockItem', 20);
             $table->unsignedBigInteger('PackageTypeID')->nullable();
-            $table->unsignedBigInteger('Quantity');
+            $table->decimal('Quantity', 15,2);
             $table->decimal('UnitPrice', 18,3);
             $table->decimal('TaxRate', 18,3);
             $table->unsignedBigInteger('PickedQuantity')->nullable();
@@ -29,7 +29,7 @@ class CreateOrdersItemsTable extends Migration
             $table->foreign('OrderID')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('PackageTypeID')->references('id')->on('package_types');
             $table->foreign('LastEditedBy')->references('id')->on('users');
-            $table->foreign('StockItem')->references('id')->on('products');
+            $table->foreign('StockItem')->references('StockCode')->on('products');
         });
     }
 

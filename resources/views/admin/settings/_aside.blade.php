@@ -12,6 +12,12 @@
         </a>
     </li>
     <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.customer') }}" class="sidebar-menu-button {{ $tab == 'customers' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="users" ></i>
+            <span class="sidebar-menu-text">{{ __('global.customer_settings') }}</span>
+        </a>
+    </li>
+    <li class="sidebar-menu-item pt-1">
         <a href="{{ route('settings.tax_types') }}" class="sidebar-menu-button {{ $tab == 'tax_types' ? 'text-primary' : 'text-secondary' }}">
             <i data-feather="command" ></i>
             <span class="sidebar-menu-text">{{ __('global.tax_types') }}</span>
@@ -21,6 +27,12 @@
         <a href="{{ route('settings.product') }}" class="sidebar-menu-button {{ $tab == 'product' ? 'text-primary' : 'text-secondary' }}">
             <i data-feather="shopping-bag" ></i>
             <span class="sidebar-menu-text">{{ __('global.product_settings') }}</span>
+        </a>
+    </li>
+    <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.order') }}" class="sidebar-menu-button {{ $tab == 'order' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="settings" ></i>
+            <span class="sidebar-menu-text">{{ __('global.order_settings') }}</span>
         </a>
     </li>
 </ul>

@@ -111,13 +111,13 @@
                             <div class="col-md-2">
                                 <div class="form-check-inline my-2">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" name="IsSalesperson[]" id="IsSalesperson" data-parsley-multiple="groups" data-parsley-mincheck="2">
+                                        <input type="checkbox" class="custom-control-input" name="IsSalesperson" id="IsSalesperson" value="1" }}>
                                         <label class="custom-control-label" for="IsSalesperson">{{ trans('cruds.user.fields.salesrep') }}</label>
                                     </div>
                                 </div>
                                 <div class="form-check-inline my-2">
                                     <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" name=IsCustomer[]" id="IsCustomer" data-parsley-multiple="groups" data-parsley-mincheck="2">
+                                        <input type="checkbox" class="custom-control-input" name=IsCustomer" id="IsCustomer" value="1">
                                         <label class="custom-control-label" for="IsCustomer">{{ trans('cruds.user.fields.customer') }}</label>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                             <div class="form-group col-md-4">
                                 <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
 
-                                <select class="select2 mb-3 select2-multiple {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple="multiple" data-placeholder="Please Choose" required>
+                                <select class="form-control select2 mb-3 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
                                     @foreach($roles as $id => $roles)
                                         <option value="{{ $id }}" {{ in_array($id, old('roles', [])) ? 'selected' : '' }}>{{ $roles }}</option>
                                     @endforeach

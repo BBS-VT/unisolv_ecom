@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\Store;
 use App\Http\Requests\Order\Update;
 use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Customer;
-use App\Models\SpecialDeals;
 use DB;
 use Gate;
 use PDF;
@@ -20,13 +21,17 @@ use Mpociot\VatCalculator\Facades\VatCalculator;
 use Carbon\Carbon;
 use Spatie\ArrayToXml\ArrayToXml;
 use Session;
+use App\Mail\FulfillmentNotificationMail;
+use App\Mail\OrderConfirmationMail;
+use App\Notifications\NewOrderNotification;
+use Illuminate\Support\Facades\Notification;
 
 class OrdersController extends Controller
 {
     /**
      * Display Orders Page
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -38,15 +43,17 @@ class OrdersController extends Controller
         $currentCompany = $user->currentCompany();
 
         // Query Invoices by Company and Tab
-        if($request->tab == 'all') {
+        if ($request->tab == 'all') {
             $query = Order::findByCompany($currentCompany->id)->orderBy('created_at', 'desc');
             $tab = 'all';
-        } else if($request->tab == 'processed') {
-            $query = Order::findByCompany($currentCompany->id)->active()->orderBy('created_at', 'desc');
-            $tab = 'processed';
         } else {
-            $query = Order::findByCompany($currentCompany->id)->new()->orderBy('OrderNumber', 'desc');
-            $tab = 'new';
+            if ($request->tab == 'processed') {
+                $query = Order::findByCompany($currentCompany->id)->active()->orderBy('created_at', 'desc');
+                $tab = 'processed';
+            } else {
+                $query = Order::findByCompany($currentCompany->id)->new()->orderBy('OrderNumber', 'desc');
+                $tab = 'new';
+            }
         }
 
         // Apply Filters and Paginate
@@ -60,14 +67,14 @@ class OrdersController extends Controller
             ->appends(request()->query());
 
         //echo "<pre>"; print_r($orders); die;
-        return view ('orders.index', compact('orders', 'tab'));
+        return view('orders.index', compact('orders', 'tab'));
 
     }
 
     /**
      * Display form to create new Order
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -84,8 +91,9 @@ class OrdersController extends Controller
         // Get customers based on Sales Rep
         $salesrep = auth()->user();
 
-        if ($salesrep->IsSalesperson == '1'){
-            $customers = DB::table('customers')->where('SalesRepID', auth()->user()->RepCode)->pluck('CustomerName', 'acc_main')->prepend(trans('global.pleaseSelect'), '');
+        if ($salesrep->IsSalesperson == '1') {
+            $customers = DB::table('customers')->where('SalesRepID', auth()->user()->RepCode)->pluck('CustomerName',
+                'acc_main')->prepend(trans('global.pleaseSelect'), '');
         } else {
             $customers = Customer::all()->pluck('CustomerName', 'acc_main')->prepend(trans('global.pleaseSelect'), '');
         }
@@ -99,19 +107,26 @@ class OrdersController extends Controller
         $products = Product::all();
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
+        $display_selling_prices = (boolean) $currentCompany->getSetting('display_selling_prices');
+        $display_cost_prices = (boolean) $currentCompany->getSetting('display_cost_prices');
 
-        return view('orders.create', compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item', 'currentCompany'));
+        return view('orders.create',
+            compact('order', 'customers', 'products', 'tax_per_item', 'discount_per_item', 'currentCompany',
+                'display_selling_prices', 'display_cost_prices'));
     }
 
     /**
      * Store the Order in the Database
      *
-     * @param \App\Http\Requests\Order\Store $request
+     * @param  \App\Http\Requests\Order\Store  $request
      *
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
     public function store(Store $request)
     {
+        //echo "<pre>";
+        //print_r($request->all());
+        //die;
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
@@ -119,53 +134,53 @@ class OrdersController extends Controller
         $tax_per_item = (boolean) $currentCompany->getSetting('tax_per_item');
         $discount_per_item = (boolean) $currentCompany->getSetting('discount_per_item');
 
-        //dd($request);
-
         // Save Order to Database
         $order = Order::create([
-            'OrderDate'         => $request->order_date,
-            'OrderNumber'       => $request->order_number,
-            'CustomerPurchaseOrderNumber'   => $request->reference_number,
-            'CustomerID'        => $request->customer_id,
-            'company_id'        => $currentCompany->id,
-            'SalesPersonID'     => $request->salesperson_id,
-            'LastEditedBy'      => $request->salesperson_id,
-            'OrderStatusID'     => '1',
-            'Authorisation'     => '0',
-            'sub_total'         => $request->sub_total,
-            'discount_type'     => 'percent',
-            'discount_val'      => $request->total_discount ?? 0,
-            'total'             => $request->grand_total,
-            'Comments'          => $request->notes,
-            'InternalComments'  => $request->private_notes,
-            'tax_per_item'      => $tax_per_item,
+            'OrderDate' => $request->order_date,
+            'OrderNumber' => $request->order_number,
+            'CustomerPurchaseOrderNumber' => $request->reference_number,
+            'CustomerID' => $request->customer_id,
+            'company_id' => $currentCompany->id,
+            'SalesPersonID' => $request->salesperson_id,
+            'LastEditedBy' => $request->salesperson_id,
+            'OrderStatusID' => '1',
+            'Authorisation' => '0',
+            'sub_total' => $request->sub_total,
+            'discount_type' => 'percent',
+            'discount_val' => $request->total_discount ?? 0,
+            'total' => $request->grand_total,
+            'Comments' => $request->notes,
+            'InternalComments' => $request->private_notes,
+            'tax_per_item' => $tax_per_item,
             'discount_per_item' => $discount_per_item,
         ]);
 
         // Arrays of data for Order Items
-        $products   = $request->product;
+        $products = $request->product;
         $quantities = $request->quantity;
-        $taxes      = $request->taxes;
-        $prices     = $request->price;
-        $totals     = $request->total;
-        $discounts  = $request->discount;
+        $taxes = $request->taxes;
+        $prices = $request->price;
+        $totals = $request->total;
+        $discounts = $request->discount;
 
         // Add products (order items)
-        for ($i=0; $i < count($request->product); $i++) {
-            if (isset($request->quantity[$i]) && isset($request->price[$i])){
+        for ($i = 0; $i < count($request->product); $i++) {
+            if (isset($request->quantity[$i]) && isset($request->price[$i])) {
 
+                $stockItem = Product::find($request->product[$i]);
                 //OrdersItem::create([
                 $item = $order->items()->create([
-                    'OrderID'       => $request->order_number,
-                    'company_id'    => $currentCompany->id,
-                    'StockItem'     => $request->product[$i],
+                    'OrderID' => $request->order_number,
+                    'company_id' => $currentCompany->id,
+                    //'StockItem'         => $request->product[$i],
+                    'StockItem' => $stockItem->StockCode,
                     'discount_type' => 'percent',
-                    'discount_val'  => $request->discount[$i] ?? 0,
-                    'Quantity'      => $request->quantity[$i],
-                    'UnitPrice'     => $request->price[$i],
-                    //'TaxRate'      => $request->TaxRate[$i],
-                    'total'         => $request->total[$i],
-                    'LastEditedBy'  => $request->salesperson_id,
+                    'discount_val' => $request->discount[$i] ?? 0,
+                    'Quantity' => $request->quantity[$i],
+                    'UnitPrice' => $request->price[$i],
+                    'total' => $request->total[$i],
+                    'LastEditedBy' => $request->salesperson_id,
+                    'ContractDiscount' => '0',
                 ]);
 
                 if ($taxes && array_key_exists($i, $taxes)) {
@@ -175,18 +190,40 @@ class OrdersController extends Controller
                         ]);
                     }
                 }
+
+
             }
         }
-
 
         // If Order based taxes are given
         if ($request->has('total_taxes')) {
             foreach ($request->total_taxes as $tax) {
-                $order->taxes()-create([
+                $order->taxes() - create([
                     'tax_type_id' => $tax
                 ]);
             }
         }
+
+        // Fetch notification settings
+        $orderCustomerConfirmation = (boolean) $currentCompany->getSetting('order_customer_confirmation');
+        $orderFulfillmentNotification = (boolean) $currentCompany->getSetting('order_fulfillment_notification');
+        $fulfillmentEmail = $currentCompany->getSetting('fulfillment_mailbox');
+
+        // Send confirmation email to customer
+        if ($orderCustomerConfirmation && $order->customer->GeneralEmailAddress) {
+            Mail::to($order->customer->GeneralEmailAddress)->send(new OrderConfirmationMail($order));
+        }
+
+        // Notify fulfillment team
+        if ($orderFulfillmentNotification && $fulfillmentEmail) {
+            Mail::to($fulfillmentEmail)->send(new FulfillmentNotificationMail($order));
+        } else {
+            \Log::warning('Fulfillment mailbox not configured');
+        }
+        $fulfillmentTeam = User::whereHas('roles', function ($query) {
+            $query->where('title', 'Fulfillment');
+        })->get();
+        Notification::send($fulfillmentTeam, new NewOrderNotification($order));
 
         session()->flash('alert-success', __('global.order_added'));
         return redirect()->route('orders.index');
@@ -199,6 +236,7 @@ class OrdersController extends Controller
         $order->load('items');
         $order->load('customer');
 
+
         //$pdf = PDF::loadView('orders.show', compact('order'));
         //return $pdf->stream('pdfview.pdf');
 
@@ -206,30 +244,9 @@ class OrdersController extends Controller
     }
 
     /**
-     *
-     */
-    /*public function deals(Request $request)
-    {
-        /*if(!Request::ajax())
-        {
-            abort(404, 'Page not found.');
-        }*/
-        //Session::put($request->customer_id);
-        /*$matchCustomer = $request->customer_id;
-
-        $specialDeal = SpecialDeals::where('CustomerID', "=", $matchCustomer)
-            ->whereDate('StartDate', '<=', Carbon::today()->toDateString())
-            ->whereDate('EndDate', '>=', Carbon::today()->toDateString())
-            ->get('StockItemID')
-            ->pluck('StockItemID');
-
-        return Response::json($specialDeal);
-    }*/
-
-    /**
      * Delete an Order
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
     public function delete(Request $request)
@@ -255,10 +272,13 @@ class OrdersController extends Controller
     {
 
         Order::where('id', $order->id)
-            ->update(['LastEditedBy' => auth()->user()->id, 'OrderStatusID' => '2', 'updated_at' => Carbon::now()->toDateTimeString()]);
+            ->update([
+                'LastEditedBy' => auth()->user()->id, 'OrderStatusID' => '2',
+                'updated_at' => Carbon::now()->toDateTimeString()
+            ]);
 
         $document = new \DOMDocument("1.0", "UTF-8");
-        $document -> appendChild($document->createElement('OrderMessage'));
+        $document->appendChild($document->createElement('OrderMessage'));
 
         $rootTag = $document->documentElement;
         $headerTag = $rootTag->appendChild(
@@ -267,9 +287,12 @@ class OrdersController extends Controller
         $senderTag = $headerTag->appendChild(
             $document->createElement("Sender")
         );
+        /*$senderTag
+            ->appendChild($document->createElement("Identifier"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $senderTag
             ->appendChild($document->createElement("Identifier"))
-            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+            ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
 
         $receiverTag = $headerTag->appendChild(
             $document->createElement("Receiver")
@@ -289,7 +312,7 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode("3.2"));
         $identificationTag
             ->appendChild($document->createElement("InstanceIdentifier"))
-            ->appendChild($document->createTextNode($order->OrderNumber));
+            ->appendChild($document->createTextNode($order->CustomerPurchaseOrderNumber));
         $identificationTag
             ->appendChild($document->createElement("Type"))
             ->appendChild($document->createTextNode("Order"));
@@ -310,7 +333,7 @@ class OrdersController extends Controller
         $orderTag = $rootTag->appendChild(
             $document->createElement("order")
         );
-        $orderTag ->appendChild($document->createAttribute("xmlns"));
+        $orderTag->appendChild($document->createAttribute("xmlns"));
         $orderTag
             ->appendChild($document->createElement("creationDateTime"))
             ->appendChild($document->createTextNode($order->created_at));
@@ -326,20 +349,24 @@ class OrdersController extends Controller
         );
         $orderidentityTag
             ->appendChild($document->createElement("entityIdentification"))
-            ->appendChild($document->createTextNode("$order->CustomerPurchaseOrderNumber"));
+            ->appendChild($document->createTextNode($order->OrderNumber));
         $orderTag
             ->appendChild($document->createElement("orderTypeCode"))
             ->appendChild($document->createTextNode("220"));
 
         $orderTag
             ->appendChild($document->createElement("additionalOrderInstruction"))
-            ->appendChild($document->createTextNode(""));
+            ->appendChild($document->createTextNode(($order->CustomerPurchaseOrderNumber)));
         $orderbuyerTag = $orderTag->appendChild(
             $document->createElement("buyer")
         );
+        /*$orderbuyerTag
+            ->appendChild($document->createElement("gln"))
+            ->appendChild($document->createTextNode($order->customer->StoreEAN));*/
         $orderbuyerTag
             ->appendChild($document->createElement("gln"))
-            ->appendChild($document->createTextNode($order->customer->StoreEAN));
+            /*->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));*/
+            ->appendChild($document->createTextNode($order->customer->acc_main));
         $orderbuyerTag
             ->appendChild($document->createElement("additionalPartyIdentification"))
             ->appendChild($document->createTextNode($order->customer->acc_main));
@@ -374,38 +401,41 @@ class OrdersController extends Controller
 
             $orderlineitemTag
                 ->appendChild($document->createElement("netAmount"))
-                ->appendChild($document->createTextNode( number_format(($key->total / 1.15) / 100, 2, ".", " ")));
+                ->appendChild($document->createTextNode(number_format(($key->product->SellingPrice / 1.15), 2, ".",
+                    " ")));
 
             $orderlineitemTag
                 ->appendChild($document->createElement("netPrice"))
-                ->appendChild($document->createTextNode( number_format($key->total / 100, 2, ".", " " )));
+                ->appendChild($document->createTextNode(number_format($key->product->SellingPrice, 2, ".", " ")));
 
+            $orderlineitemTag
+                ->appendChild($document->createElement("discountPercentage"))
+                ->appendChild($document->createTextNode(bcdiv($key->discount_val, 1, 2)));
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountExcludingTaxes"))
-                ->appendChild($document->createTextNode( number_format((($key->total / $key->Quantity) / 1.15 ) / 100, 2, ".", " ")));
-
+                ->appendChild($document->createTextNode(number_format((($key->product->SellingPrice * $key->Quantity) / 1.15),
+                    2, ".", " ")));
             $orderlineitemTag
                 ->appendChild($document->createElement("monetaryAmountIncludingTaxes"))
-                ->appendChild($document->createTextNode( number_format( ($key->total / $key->Quantity) / 100, 2, ".", " ") ));
+                ->appendChild($document->createTextNode(number_format(($key->product->SellingPrice * $key->Quantity), 2,
+                    ".", " ")));
 
             $ordertradeitemTag = $orderlineitemTag->appendChild(
                 $document->createElement("transactionalTradeItem")
             );
-            /*$ordertradeitemTag
-                ->appendChild($document->createElement("gtin"))
-                ->appendChild($document->createTextNode($key->product->Barcode));*/
+
             $ordertradeitemTag
                 ->appendChild($document->createElement("gtin"))
-                ->appendChild($document->createTextNode( empty($key->product->Barcode) ? $key->product->StockCode : $key->product->Barcode ));
+                ->appendChild($document->createTextNode(empty($key->product->Barcode) ? $key->product->StockCode : $key->product->Barcode));
             $ordertradeitemTag
                 ->appendChild($document->createElement("additionalTradeItemIdentification"))
-                ->appendChild($document->createTextNode("" ));
+                ->appendChild($document->createTextNode(""));
             $ordertradeitemTag
                 ->appendChild($document->createElement("additionalTradeItemIdentification"))
-                ->appendChild($document->createTextNode($key->product->StockCode ));
+                ->appendChild($document->createTextNode($key->product->StockCode));
             $ordertradeitemTag
                 ->appendChild($document->createElement("additionalTradeItemIdentification"))
-                ->appendChild($document->createTextNode($key->product->StockItemName ));
+                ->appendChild($document->createTextNode($key->product->StockItemName));
             $ordertradeitemTag
                 ->appendChild($document->createElement("tradeItemDescription"))
                 ->appendChild($document->createTextNode($key->product->StockItemName));
@@ -444,9 +474,10 @@ class OrdersController extends Controller
             $orderlogisicalshipTag = $orderlogisicalinfoTag->appendChild(
                 $document->createElement("shipTo")
             );
+
             $orderlogisicalshipTag
                 ->appendChild($document->createElement("gln"))
-                ->appendChild($document->createTextNode($order->customer->StoreEAN));
+                ->appendChild($document->createTextNode($order->customer->acc_main.$order->customer->acc_sub));
             $orderlogisicalshipTag
                 ->appendChild($document->createElement("additionalPartyIdentification"))
                 ->appendChild($document->createTextNode($order->customer->acc_main));
@@ -481,7 +512,7 @@ class OrdersController extends Controller
                 ->appendChild($document->createTextNode('EA'));
         }
 
-        $document->formatOutput = TRUE;
+        $document->formatOutput = true;
         header('Content-type: "application/force-download"; charset="utf8"');
         header('Content-disposition: attachment; filename="Order'.$order->OrderNumber.'.SCO"');
         echo $document->saveXML();

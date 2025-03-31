@@ -784,6 +784,12 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => '2019-09-15 06:10:05',
                 'updated_at' => '2019-09-15 06:10:05',
             ],
+            [
+                'id'         => '130',
+                'title'      => 'productCategory_import',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
 
         ];
 

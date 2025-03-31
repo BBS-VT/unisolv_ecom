@@ -9,11 +9,13 @@ use App\Models\CustomerStatus;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Country;
+use App\Imports\CustomerMasterImport;
 use App\Http\Requests\MassDestroyCustomerRequest;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use Gate;
 use DateTime;
+use DB;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,13 +26,16 @@ class CustomersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('customer_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
         $customers = Customer::all();
+        $display_subaccount = (boolean) $currentCompany->getSetting('display_subaccount');
 
-        return view('customers.index', compact('customers'));
+        return view('customers.index', compact('customers', 'display_subaccount'));
     }
 
     /**
@@ -44,7 +49,7 @@ class CustomersController extends Controller
 
         $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id')->prepend(trans('global.pleaseSelect'), '');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         return view('customers.create', compact('salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
@@ -60,6 +65,11 @@ class CustomersController extends Controller
     {
         $customer = Customer::create($request->all());
 
+        $customer->billingCustomer()->sync($request->input('customer[BillToCustomerID]', []));
+        $customer->customerCategory()->sync($request->input('CustomerCategoryID', []));
+        $customer->buyingGroup()->sync($request->input('BuyingGroupID', []));
+        $customer->salesrep()->sync($request->input('SalesRepID', []));
+
         return redirect()->route('customers.index');
     }
 
@@ -73,25 +83,44 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('FullName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->get();
+        $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
+        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
 
-        $balance_bf = ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+        $displaySubAccount = $customer->company->getSetting('display_subaccount');
 
-        $overdue_balance = ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+        if ($displaySubAccount == '1') {
+            $balance_bf = ($customer->customerSubBalance->AgedBalance2 ?? '0.00') + ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
-        $balance_total = ($customer->customerBalance->AgedBalance1 ?? '0.00') + ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
-            ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+            $overdue_balance = ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
-        $customer->load('customerBalance', 'lastedited');
+            $balance_total = ($customer->customerSubBalance->AgedBalance1 ?? '0.00') + ($customer->customerSubBalance->AgedBalance2 ?? '0.00') + ($customer->customerSubBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerSubBalance->AgedBalance4 ?? '0.00') + ($customer->customerSubBalance->AgedBalance5 ?? '0.00') + ($customer->customerSubBalance->AgedBalance6 ?? '0.00');
 
+            $customer->load('customerSubBalance', 'lastedited');
+
+        } else {
+
+            $balance_bf = ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $overdue_balance = ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $balance_total = ($customer->customerBalance->AgedBalance1 ?? '0.00') + ($customer->customerBalance->AgedBalance2 ?? '0.00') + ($customer->customerBalance->AgedBalance3 ?? '0.00') +
+                ($customer->customerBalance->AgedBalance4 ?? '0.00') + ($customer->customerBalance->AgedBalance5 ?? '0.00') + ($customer->customerBalance->AgedBalance6 ?? '0.00');
+
+            $customer->load('customerBalance', 'lastedited');
+        }
+
+        //echo "<pre>"; print_r($customer); die;
         return view('customers.show', compact('customer', 'customerOrders', 'salesreps',
-            'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total'));
+            'billingCustomers', 'customerCategories', 'buyingGroups', 'balance_bf', 'overdue_balance', 'balance_total', 'displaySubAccount'));
+        //return response()->json($customer->customerBalance());
     }
 
     /**
@@ -104,14 +133,16 @@ class CustomersController extends Controller
     {
         abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $billingCustomers = Customer::all()->pluck('CustomerName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $customerCategories = CustomerCategory::all()->pluck('CustomerCategoryName', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $salesreps = User::where('IsSalesperson', 1)->pluck('PreferredName', 'Repcode');
+        $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
+        $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
+        $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
 
         $customer->load('salesrep', 'billingCustomer', 'customerCategory', 'buyingGroup');
 
-        return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers', 'customerCategories', 'buyingGroups'));
+        //echo "<pre>"; print_r($customer); die;
+        return view('customers.edit', compact( 'customer', 'salesreps', 'billingCustomers','customerCategories', 'buyingGroups'));
+        //return response()->json($salesreps);
     }
 
     /**
@@ -123,7 +154,12 @@ class CustomersController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
+        //echo "<pre>"; print_r($customer); die;
         $customer->update($request->all());
+        $customer->billingCustomer()->sync($request->input('billingCustomer', []));
+        $customer->customerCategory()->sync($request->input('customerCategory', []));
+        $customer->buyingGroups()->sync($request->input('buyingGroups', []));
+        $customer->salesrep()->sync($request->input('salesrep', []));
 
         return redirect()->route('customers.index');
     }
@@ -195,5 +231,32 @@ class CustomersController extends Controller
         //return $code;
         return response()->json($code, 200);
 
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function importExcel(Request $request)
+    {
+        abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        Customer::truncate();
+
+        \Excel::import(new CustomerMasterImport,$request->import_file);
+
+        DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
+        DB::statement('UPDATE customers SET acc_main = LPAD(acc_main, 6, "0")');
+        DB::statement('UPDATE customers SET acc_sub = "000" where acc_sub = "0"');
+        DB::statement('UPDATE customers SET acc_code = CONCAT(acc_main, "-", acc_sub)');
+        DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
+        DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
+//        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
+        DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        \Session::put('success', 'File imported successfully');
+
+        return back();
     }
 }

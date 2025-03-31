@@ -41,8 +41,7 @@ class OrdersItem extends Model
     protected $casts = [
         'UnitPrice'     => 'integer',
         'total'         => 'integer',
-        'Quantity'      => 'float',
-        'discount_val'  => 'integer',
+        'discount_val'  => 'float',
     ];
 
     public function order()
@@ -52,7 +51,7 @@ class OrdersItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'StockItem', 'id');
+        return $this->belongsTo(Product::class, 'StockItem', 'StockCode');
     }
 
     /**
