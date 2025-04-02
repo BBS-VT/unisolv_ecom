@@ -161,9 +161,11 @@
         <!-- Welcome Banner -->
         <div class="row">
             <div class="col-12">
-                <div class="welcome-card">
-                    <h2 class="mb-2">{{ __('Welcome back') }}, {{ $customer->CustomerName ?? 'Customer' }}!</h2>
-                    <p class="mb-0">{{ __('Here\'s an overview of your account and recent activities') }}</p>
+                <div class="page-title-box">
+                    <div class="welcome-card">
+                        <h2 class="mb-2">{{ __('Welcome back') }}, {{ $customer->CustomerName ?? 'Customer' }}!</h2>
+                        <p class="mb-0">{{ __('Here\'s an overview of your account and recent activities') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
