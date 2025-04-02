@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,7 @@ Route::get('/', function () {
     //return view('welcome');
 });
 Route::get('/catalog', 'HomeController@index')->name('catalog');
+Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.detail');
 //Auth::routes(['register' => false]);
 
 Route::group(['middleware' => ['auth','customer']], function () {

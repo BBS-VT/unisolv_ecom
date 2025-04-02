@@ -8,12 +8,12 @@
                     <div class="col-lg-5 mx-auto">
                         <div class="card">
                             <div class="card-body p-0 auth-header-box">
-                                <div class="text-center p-3">
+                                <div class="text-center pt-3">
                                     <a href="/" class="logo logo-admin">
-                                        <img src="{{ asset('images/logo-sm-dark.png') }}" height="50" alt="logo" class="auth-logo">
+                                        <img src="{{ asset('images/unisolv_light.png') }}" height="50" alt="logo" class="auth-logo">
                                     </a>
-                                    <h4 class="mt-3 mb-1 font-weight-semibold text-white font-18">Unisolv CRM</h4>
-                                    <p class="text-muted  mb-0">Sign in to continue to Unisolv CRM.</p>
+                                    <h4 class="mt-1 mb-2 font-weight-semibold text-white font-18">Business Management Software</h4>
+                                    <p class="text-muted  mb-1">Sign in to continue</p>
                                 </div>
                             </div>
                             <div class="card-body p-0">

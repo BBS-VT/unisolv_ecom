@@ -3,12 +3,9 @@
     <div class="brand">
         <a href="{{ route('home') }}" class="logo">
             <span>
-                <img src="{{ asset('images/logo-sm-dark.png') }}" alt="logo-small" class="logo-sm">
+                <img src="{{ asset('images/unisolv_light.png') }}" alt="logo-small" class="logo-sm">
             </span>
-            <span>
-                <img src="{{ asset('images/logo.png') }}" alt="logo-large" class="logo-lg logo-light">
-                <img src="{{ asset('images/logo-dark.png') }}" alt="logo-large" class="logo-lg logo-dark">
-            </span>
+
         </a>
     </div>
     <!--end logo-->

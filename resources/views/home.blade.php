@@ -2,7 +2,72 @@
 
 @section('css')
     <link href="{{ URL::asset('build/libs/nouislider/nouislider.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .product-card {
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-action {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover .product-action {
+            opacity: 1;
+        }
+        .product-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 48px;
+        }
+        .category-scroll-container {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #dee2e6 #f8f9fa; /* Firefox */
+        }
 
+        /* For Webkit browsers (Chrome, Safari) */
+        .category-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-thumb {
+            background-color: #dee2e6;
+            border-radius: 4px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-thumb:hover {
+            background-color: #ced4da;
+        }
+
+        .filter-list .active {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            border-radius: 4px;
+        }
+
+        .filter-list a:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 4px;
+        }
+    </style>
 @endsection
 @section('content')
     <div class="row">
@@ -29,18 +94,21 @@
                                 </button>
                             </h2>
                             <div id="collapseCategory" class="accordion-collapse collapse show" aria-labelledby="categoryAccordion" data-bs-parent="#categoryFilters">
-                                <div class="accordion-body">
-                                    <ul class="list-unstyled mb-0 filter-list">
-                                        <li>
+                                <div class="accordion-body p-0">
+                                    <div class="category-scroll-container" style="max-height: 250px; overflow-y: auto; padding: 1rem;">
+                                        <ul class="list-unstyled mb-0 filter-list">
                                             @foreach($categories as $category)
-                                                <a href="{{ route('catalog', ['category' => $category->id]) }}" class="d-flex py-1 align-items-center {{ request()->input('category') == $category->id ? ' active' : '' }}">
-                                                    <div class="flex-grow-1">
-                                                        <h5 class="fs-sm mb-0 listname">{{ $category->StockGroupName }}</h5>
-                                                    </div>
-                                                </a>
+                                                <li>
+                                                    <a href="{{ route('catalog', ['category' => $category->id]) }}"
+                                                       class="d-flex py-1 align-items-center {{ request()->input('category') == $category->id ? ' active' : '' }}">
+                                                        <div class="flex-grow-1">
+                                                            <h5 class="fs-sm mb-0 listname">{{ $category->StockGroupName }}</h5>
+                                                        </div>
+                                                    </a>
+                                                </li>
                                             @endforeach
-                                        </li>
-                                    </ul>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -79,22 +147,61 @@
             </div>
             <div class="row" id="product-grid">
                 @foreach($products as $product)
-                    <div class="col-md-4">
-                        <section class="panel">
-                            <div class="pro-img-box">
-                                <img class="card-img-top" src="{{ $product->photo ? $product->photo->thumbnail : 'https://via.placeholder.com/500x280&text=Image' }}" alt="">
-                                <a href="#"></a>
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card">
+                            <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                                <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/250x250/cccccc/000000.png&text=Image' }}"
+                                     alt="{{ $product->StockItemName }}"
+                                     class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                <div class="product-action">
+                                    <a href="{{ route('product.detail', $product->id) }}" class="btn btn-primary btn-sm">
+                                        <i class="ri-eye-line align-bottom"></i> View Details
+                                    </a>
+                                </div>
                             </div>
-
-                            <div class="panel-body text-center">
-                                <h4>
-                                    <a href="#" class="pro-title">{{ $product->StockItemName }}</a>
-                                </h4>
-                                <p class="card-text">{{ Str::limit($product->MarketingComments, 50) }}</p>
+                            <div class="card-body text-center">
+                                <h5 class="card-title mb-1">
+                                    <a href="{{ route('product.detail', $product->id) }}" class="text-dark text-decoration-none product-title">
+                                        {{ $product->StockItemName }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-2">{{ Str::limit($product->MarketingComments, 50) }}</p>
+                                @auth
+                                    <h5 class="mb-0 mt-3 text-primary">{{ $product->formatted_price }}</h5>
+                                @else
+                                    <a href="{{ route('login') }}">Login</a> to view price
+                                @endauth
                             </div>
-                        </section>
+                            <div class="card-footer bg-transparent text-center border-top-0 pb-3">
+                                <button type="button" class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ $product->id }}">
+                                    <i class="ri-shopping-cart-line align-bottom"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
+
+                {{--@foreach($products as $product)
+                <div class="col-xxl-3 col-lg-4 col-md-6">
+                    <div class="card ribbon-box ribbon-fill">
+                        <div class="card-body p-4 m-4">
+                            <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://placehold.co/300x200/000/?text=Image' }}" class="img-fluid" alt="">
+                        </div>
+                        <div class="card-body pt-0">
+                            <h5 class="fs-lg mb-3"> </h5>
+                            <a href="#">
+                                <h6 class="fs-md text-truncate">{{ $product->StockItemName }} </h6>
+                            </a>
+                            <a href="#!" class="text-decoration-underline text-muted mb-0">{{ $product->StockGroupName }}</a>
+                            <div class="mt-3 hstack gap-2">
+                                <a href="#!" class="btn btn-primary w-100"><i class="ph-eye me-1 align-middle"></i>{{ __('Detail') }}</a>
+                                <a href="#!" class="btn btn-secondary w-100"><i class="ph-shopping-cart me-1 align-middle"></i>{{ __('Add to Cart') }}</a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach--}}
             </div>
             <div class="row mb-4 align-items-center" id="pagination-element">
                 <div class="col-sm">
@@ -130,6 +237,5 @@
 @section('script')
     <script src="{{ URL::asset('build/libs/nouislider/nouislider.min.js') }}"></script>
     <script src="{{ URL::asset('build/libs/wnumb/wNumb.min.js') }}"></script>
-    <script src="{{ URL::asset('build/js/pages/ecommerce-product-grid-list.init.js') }}"></script>
-    <script src="{{ URL::asset('build/js/app.js') }}"></script>
+
 @endsection
