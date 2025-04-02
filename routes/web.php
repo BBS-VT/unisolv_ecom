@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerBalanceController;
+use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -32,7 +33,13 @@ Route::get('/catalog', 'HomeController@index')->name('catalog');
 
 Route::group(['middleware' => ['auth','customer']], function () {
     Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customers.dashboard');
+    Route::get('/profile', [CustomerProfileController::class, 'show'])->name('customer.profile');
+    Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
+    Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+    Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
 });
+
+
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
