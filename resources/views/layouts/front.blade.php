@@ -1,42 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="horizontal" data-sidebar="dark" data-sidebar-size="lg" data-preloader="disable" data-theme="material" data-topbar="dark" data-bs-theme="light">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <title>Unisolv CRM - Catalog</title>
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/shop-homepage.css') }}" rel="stylesheet">
-    @yield('head')
+
+    <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
+    @include('layouts.head-css')
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">Catalog</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
+    <div id="layout-wrapper">
+        @include('layouts.front.topbar')
+        @include('layouts.front.sidebar')
 
-                    </li>
-                </ul>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    @yield('content')
+                </div>
             </div>
+            @include('layouts.footer')
         </div>
-    </nav>
+    </div>
+    @include('layouts.vendor-scripts')
 
-    @yield('content')
-
-    <footer class="py-5 bg-dark">
-        <div class="container">
-             <p class="m-0 text-center text-white">Copyright &copy; Unisolv CRM {{ date('Y') }}</p>
-        </div>
-    </footer>
-
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 </body>
+
 </html>
