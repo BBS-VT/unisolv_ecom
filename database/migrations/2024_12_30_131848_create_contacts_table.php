@@ -15,13 +15,16 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreign('company_id')->constrained()->onDelete('cascade');
-            $table->foreign('customer_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('customer_id');
             $table->string('name');
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->boolean('is_primary')->default(false);
             $table->timestamps();
+
+            $table->foreign('company_id')->references('id')->on('companies');
+            $table->foreign('customer_id')->references('id')->on('customers');
 
         });
     }
