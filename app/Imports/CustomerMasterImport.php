@@ -117,6 +117,8 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                         'CountryID'            => '202',
                         'SalesRepID'           => $this->cleanValue($row[61]),
                         'LastEditedBy'         => Auth::check() ? Auth::id() : 1,
+                        'price_level'          => $row[63] ?? '1',
+                        'discount_allowed'     => $row[67] ?? 'Y',
                         'created_at'           => now(),
                         'updated_at'           => now(),
 

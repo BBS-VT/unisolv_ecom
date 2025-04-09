@@ -345,10 +345,10 @@ class DashboardController extends Controller
             ->where('orders.company_id', $currentCompany->id)
             ->whereBetween('orders.OrderDate', [$startDate, $endDate])
             ->select(
-                'product_categories.name',
+                'product_categories.StockGroupName',
                 DB::raw('SUM(order_items.quantity * order_items.price) as total_sales')
             )
-            ->groupBy('product_categories.name')
+            ->groupBy('product_categories.StockGroupName')
             ->orderBy('total_sales', 'desc')
             ->get()
             ->map(function ($item) {
