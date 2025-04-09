@@ -7,6 +7,7 @@ use App\Models\BuyingGroup;
 use App\Models\Customer;
 use App\Models\CustomerCategory;
 use App\Models\CustomerStatus;
+use App\Models\ImportJob;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Country;
@@ -17,6 +18,7 @@ use App\Http\Requests\UpdateCustomerRequest;
 use Gate;
 use DateTime;
 use DB;
+use Illuminate\Support\Facades\Session;
 use Log;
 use Storage;
 use Illuminate\Http\Request;
@@ -371,68 +373,42 @@ class CustomersController extends Controller
 
     }
 
-
-    /*public function importExcel(Request $request)
-    {
-        // Check user permission
-        abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $filePath = $request->file_path;
-        if (!$filePath || !Storage::exists($filePath)) {
-            return back()->withErrors(['error' => 'Uploaded file not found.']);
-        }
-
-        ImportCustomersJob::dispatch($filePath);
-
-        return response()->json(['message' => 'Import started successfully'], 200);
-    }*/
-
+    /**
+     * Import customers from Excel/CSV file
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function importExcel(Request $request)
     {
         // Check user permission
         abort_if(Gate::denies('customer_import'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        try {
+        // Validate the uploaded file
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+        ]);
 
-            // Validate that the file exists
-            Log::info("Import started");
-            $filePath = $request->file_path;
-            if (!$filePath || !Storage::exists($filePath)) {
-                return back()->withErrors(['error' => 'Uploaded file not found.']);
-            }
-            Log::info("File exists at path: {$filePath}");
+        // Store the file for processing
+        $filePath = $request->file('import_file')->store('temp');
 
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            Customer::truncate();
+        // Create an import job record to track progress
 
-            // Import the file
-            \Excel::import(new CustomerMasterImport, storage_path('app/'.$filePath));
-            Log::info("Import completed");
+        $filename = $request->file('import_file')->getClientOriginalName();
+        $importJob = ImportJob::create([
+            'filename' => $filename,
+            'total_rows' => 0, // Will be updated by the job
+            'processed_rows' => 0,
+            'status' => ImportJob::STATUS_PENDING,
+            'started_at' => now(),
+        ]);
 
-            // Perform post-import SQL updates
-            DB::statement('UPDATE customers SET acc_main = TRIM(acc_main)');
-            DB::statement('UPDATE customers SET acc_main = LPAD(acc_main, 6, "0")');
-            DB::statement('UPDATE customers SET acc_sub = "000" where acc_sub = "0"');
-            DB::statement('UPDATE customers SET acc_code = CONCAT(acc_main, "-", acc_sub)');
-            DB::statement('UPDATE customers SET BillToCustomerID = "9999" where BillToCustomerID is NULL');
-            DB::statement('UPDATE customers SET BuyingGroupID = NULL where BuyingGroupID  = ""');
-            //        DB::statement('UPDATE customers SET BuyingGroupID = "9999" where BuyingGroupID is NULL');
-            DB::statement('UPDATE customers SET SalesRepID = "9999" where SalesRepID is NULL');
+        // Dispatch the job to process the file
+        ImportCustomersJob::dispatch($filePath, $importJob->id);
 
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        Session::put('success', 'Customer import has started. You can monitor progress on the imports status page.');
+        Session::put('import_job_id', $importJob->id);
 
-            Storage::delete($filePath);
-
-            return response()->json(['message' => 'File imported successfully'], 200);
-
-        } catch (\Exception $e) {
-            // Set error message
-            //\Session::put('error', 'Error importing file: ' . $e->getMessage());
-            Log::error("Import failed: " . $e->getMessage());
-
-            return response()->json(['message' => 'Error importing file: ' . $e->getMessage()], 500);
-        }
-
-        //return back();
+        return back();
     }
 }

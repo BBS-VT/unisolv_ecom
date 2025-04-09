@@ -148,16 +148,15 @@
                                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                 </button>
                             </div>
-{{--                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">--}}
-                            <form id="uploadForm" class="form-horizontal"  enctype="multipart/form-data">
-                                {{ csrf_field() }}
+                            <form action="{{ route('importCustomermaster') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
+                                @csrf
                                 <div class="modal-body">
                                     <div class="row">
                                         <input type="file" id="fileUpload" name="import_file" class="dropify">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" id="importButton" class="btn btn-gradient-danger">Import File</button>
+                                    <button class="btn btn-gradient-danger">{{ __('Upload & Import') }}</button>
                                 </div>
                             </form>
                             <div id="progressIndicator" style="display:none;">
@@ -244,7 +243,7 @@
     <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
 {{--    <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>--}}
 
-    <script>
+    {{--<script>
         $(document).ready(function() {
             $('#fileUpload').dropify();
 
@@ -309,6 +308,6 @@
             });
 
         });
-    </script>
+    </script>--}}
 
 @endsection
