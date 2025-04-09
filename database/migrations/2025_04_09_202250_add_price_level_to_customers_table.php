@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('customers', function (Blueprint $table) {
             $table->unsignedTinyInteger('price_level')->default(1)->after('LastEditedBy')->comment('Price level of the customer');
+            $table->boolean('discount_allowed')->default(true)->after('price_level')->comment('Indicates if the customer is allowed to receive discounts');
         });
     }
 
@@ -26,7 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('customers', function (Blueprint $table) {
-            //
+            $table->dropColumn('discount_allowed');
+            $table->dropColumn('price_level');
         });
     }
 };

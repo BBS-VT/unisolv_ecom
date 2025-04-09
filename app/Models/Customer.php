@@ -61,6 +61,8 @@ class Customer extends Model
         'CountryID',
         'SalesRepID',
         'LastEditedBy',
+        'price_level',
+        'discount_allowed',
     ];
 
     public static function getNextCustomerNumber()
@@ -171,5 +173,15 @@ class Customer extends Model
     public function scopeFindByCompany($query, $company_id)
     {
         $query->where('company_id', $company_id);
+    }
+
+    public function getEffectivePriceLevelAttribute()
+    {
+        return in_array($this->price_level, [1, 2, 3, 4]) ? $this->price_level : 1;
+    }
+
+    public function shouldApplyContractDiscount(): bool
+    {
+        return $this->discount_allowed === true;
     }
 }
