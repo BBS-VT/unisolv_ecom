@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\ImportJob;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
     protected $importJobId;
     protected $totalRows = 0;
     protected $processedRows = 0;
+    protected $categoryCache = [];
 
     /**
      * @param int $importJobId
@@ -63,6 +65,8 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                 ImportJob::where('id', $this->importJobId)->update([
                     'total_rows' => $this->totalRows,
                 ]);
+
+                $this->preloadCategories();
             },
             AfterImport::class => function(AfterImport $event) {
                 // Mark as completed in the import tracker
@@ -80,19 +84,64 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
             },
         ];
     }
+
+    /**
+     * Preload categories into memory for faster access
+     */
+    protected function preloadCategories()
+    {
+        $categories = ProductCategory::all();
+        foreach ($categories as $category) {
+            $this->categoryCache[$category->CategoryCode] = $category->id;
+        }
+
+    }
+
+    /**
+     * Get category ID from category code using cache
+     *
+     * @param string $categoryCode
+     * @return int|null
+     */
+    protected function getCategoryId($categoryCode)
+    {
+        if (isset($this->categoryCache[$categoryCode])) {
+            return $this->categoryCache[$categoryCode];
+        }
+
+        $category = ProductCategory::where('CategoryCode', $categoryCode)->first();
+
+        if ($category) {
+            $this->categoryCache[$categoryCode] = $category->id;
+            return $category->id;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  Collection  $rows
+     * @return void
+     */
+
     public function collection(Collection $rows)
     {
         $chunks = $rows->chunk(250); // Further chunk for database insertion
+        $productIdMap = [];
 
         foreach ($chunks as $chunk) {
             $products = [];
+            $rowProductCodes = [];
+
+            $productCode = $row[0] ?? '';
+            $categoryCode = $row[2] ?? '';
 
             foreach ($chunk as $row) {
                 if (isset($row[0]) && $row[0]) { // Check for empty rows
                     $products[] = [
                         'company_id'         => '1',
                         'StockItemName'      => $row[1] ?? '',
-                        'StockCode'          => $row[0] ?? '',
+                        'StockCode'          => $productCode,
                         'SupplierID'         => $row[8] ?? '',
                         'TaxRateID'          => $row[7] ?? '',
                         'Size'               => '1',
@@ -112,12 +161,36 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                         'updated_at'         => now(),
                     ];
 
+                    if (!empty($categoryCode)) {
+                        $rowProductCodes[] = [
+                            'product_code' => $productCode,
+                            'category_code' => $categoryCode,
+                        ];
+                    }
+
                     $this->processedRows++;
                 }
             }
 
             if (!empty($products)) {
                 DB::table('products')->insert($products);
+
+                // Get ID's of inserted products
+                foreach ($rowProductCodes as $item) {
+                    $product = DB::table('products')->where('StockCode', $item['product_code'])->first();
+                    if ($product) {
+                        $categoryId = $this->getCategoryId($item['category_code']);
+
+                        if ($categoryId) {
+                            DB::table('product_product_category')->updateOrInsert(
+                                [
+                                    'product_id' => $product->id,
+                                    'product_category_id' => $categoryId,
+                                ],
+                            );
+                        }
+                    }
+                }
             }
 
             if ($this->processedRows % 1000 === 0) {

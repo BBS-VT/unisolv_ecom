@@ -15,6 +15,7 @@ class CreateProductCategoriesTable extends Migration
     {
         Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
+            $table->string('code', 4)->nullable()->unique();
             $table->integer('ParentID')->default(0);
             $table->string('StockGroupName')->nullable();
             $table->tinyInteger('status')->default(1);
@@ -22,7 +23,7 @@ class CreateProductCategoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['StockGroupName']);
+            $table->index(['StockGroupName', 'code']);
             $table->foreign('LastEditedBy')->references('id')->on('users');
         });
     }

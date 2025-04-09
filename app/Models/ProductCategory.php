@@ -59,11 +59,25 @@ class ProductCategory extends Model implements HasMedia
     public function parent()
     {
         return $this->belongsTo(ProductCategory::class, 'ParentID');
+        //$parentCode = $this->getParentCode();
+        //if (!$parentCode) {
+        //    return null;
+        //}
+        //return self::where('CategoryCode', $parentCode)->first();
     }
 
     public function children()
     {
         return $this->hasMany(ProductCategory::class, 'ParentID');
+        //if (strlen($this->CategoryCode) != 4 || substr($this->CategoryCode, 2) != '00') {
+        //    return collect([]);
+        //}
+
+        //$parentPrefix = substr($this->CategoryCode, 0, 2);
+        //return self::where('CategoryCode', 'like', $parentPrefix . '%')
+        //    ->where('CategoryCode', '!=', $this->CategoryCode)
+        //    ->orderBy('CategoryCode')
+        //    ->get();
     }
 
     public function scopeMainCategories($query)
@@ -84,6 +98,31 @@ class ProductCategory extends Model implements HasMedia
     public function specialdeals()
     {
         return $this->hasMany(SpecialDeals::class, 'StockGroupID');
+    }
+
+    public function getParentCode()
+    {
+        if (strlen($this->CategoryCode) !=4) {
+            return null;
+        }
+
+        $parentCode = substr($this->CategoryCode, 0, 2) . '00';
+
+        if ($this->CategoryCode == $parentCode) {
+            return null;
+        }
+
+        return $parentCode;
+    }
+
+    public function isParent()
+    {
+        return strlen($this->CategoryCode) == 4 && substr($this->CategoryCode, 2) == '00';
+    }
+
+    public function isChild()
+    {
+        return strlen($this->CategoryCode) == 4 && substr($this->CategoryCode, 2) != '00';
     }
 
 }
