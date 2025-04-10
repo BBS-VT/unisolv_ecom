@@ -89,36 +89,39 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
 
             foreach ($chunk as $row) {
                 if (isset($row[0]) && $row[0]) {
+
+                    $accountOpenedDate = $this->formatDate($row[19] ?? '');
+
                     $customers[] = [
                         'company_id'           => '1',
                         'currency_id'          => '4',
                         'acc_main'             => $row[0] ?? '',
                         'acc_sub'              => $row[1] ?? '',
                         'CustomerName'         => $row[2] ?? '',
-                        'CustomerCategoryID'   => $row[34] ?? '',
-                        'BuyingGroupID'        => $row[97] ?? '',
-                        'StoreEAN'             => $row[71] ?? '',
-                        'VatNr'                => $row[90] ?? '',
-                        'CreditLimit'          => $row[38] ?? '',
-                        'AccountOpenedDate'    => $row[52] ?? '',
-                        'PhoneNumber'          => $row[22] ?? '',
-                        'FaxNumber'            => $row[23] ?? '',
-                        'DeliveryRoute'        => $row[50] ?? '',
-                        'GeneralEmailAddress'  => $row[25] ?? '',
-                        'DeliveryAddressLine1' => $row[11] ?? '',
-                        'DeliveryAddressLine2' => $row[12] ?? '',
-                        'DeliveryCity'         => $row[13] ?? '',
-                        'DeliveryPostalCode'   => $row[15] ?? '',
-                        'PostalAddressLine1'   => $row[4] ?? '',
-                        'PostalAddressLine2'   => $row[5] ?? '',
-                        'PostalCity'           => $row[6] ?? '',
-                        'PostalPostalCode'     => $row[8] ?? '',
+                        'CustomerCategoryID'   => $this->cleanValue($row[17]),
+                        'BuyingGroupID'        => $this->cleanValue($row[25]),
+                        'StoreEAN'             => $row[4] ?? '',
+                        'VatNr'                => $row[112] ?? '',
+                        'CreditLimit'          => $this->cleanValue($row[18]),
+                        'AccountOpenedDate'    => $accountOpenedDate,
+                        'PhoneNumber'          => $row[7] ?? '',
+                        'FaxNumber'            => $row[9] ?? '',
+                        'DeliveryRoute'        => $row[5] ?? '',
+                        'GeneralEmailAddress'  => $row[10] ?? '',
+                        'DeliveryAddressLine1' => $row[33] ?? '',
+                        'DeliveryAddressLine2' => $row[34] ?? '',
+                        'DeliveryCity'         => $row[36] ?? '',
+                        'DeliveryPostalCode'   => $row[37] ?? '',
+                        'PostalAddressLine1'   => $row[26] ?? '',
+                        'PostalAddressLine2'   => $row[27] ?? '',
+                        'PostalCity'           => $row[28] ?? '',
+                        'PostalPostalCode'     => $row[30] ?? '',
                         'CustomerStatus'       => '1',
                         'CountryID'            => '202',
-                        'SalesRepID'           => $this->cleanValue($row[61]),
+                        'SalesRepID'           => $this->cleanValue($row[83]),
                         'LastEditedBy'         => Auth::check() ? Auth::id() : 1,
-                        'price_level'          => $row[63] ?? '1',
-                        'discount_allowed'     => $row[67] ?? 'Y',
+                        'price_level'          => $row[85] ?? '1',
+                        'discount_allowed'     => $row[89] ?? 'Y',
                         'created_at'           => now(),
                         'updated_at'           => now(),
 
@@ -149,5 +152,29 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
             return null;
         }
         return $value;
+    }
+
+    private function formatDate($date) {
+        if (empty($date) || trim($date) === '') {
+            return null;
+        }
+
+        try {
+            // Check if it's already in Y-m-d format
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                return $date;
+            }
+
+            // Try to parse the date
+            $timestamp = strtotime($date);
+            if ($timestamp === false) {
+                return null;
+            }
+
+            return date('Y-m-d', $timestamp);
+        } catch (\Exception $e) {
+            // If any error occurs during parsing, return NULL
+            return null;
+        }
     }
 }
