@@ -90,6 +90,12 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
             foreach ($chunk as $row) {
                 if (isset($row[0]) && $row[0]) {
 
+                    $discountAllowedRaw = $row[89] ?? '';
+                    $discountAllowed = $this->convertYNToBoolean($discountAllowedRaw);
+
+                    // Log the conversion for debugging
+                    Log::info("Discount Allowed: Converting '{$discountAllowedRaw}' to '{$discountAllowed}'");
+
                     $accountOpenedDate = $this->formatDate($row[19] ?? '');
 
                     $customers[] = [
@@ -121,7 +127,7 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                         'SalesRepID'           => $this->cleanValue($row[83]),
                         'LastEditedBy'         => Auth::check() ? Auth::id() : 1,
                         'price_level'          => $row[85] ?? '1',
-                        'discount_allowed'     => $row[89] ?? 'Y',
+                        'discount_allowed'     => (int)$discountAllowed,
                         'created_at'           => now(),
                         'updated_at'           => now(),
 
@@ -132,7 +138,21 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
             }
 
             if (!empty($customers)) {
-                DB::table('customers')->insert($customers);
+                try {
+                    DB::table('customers')->insert($customers);
+                } catch (\Exception $e) {
+                    Log::error('Import error: '.$e->getMessage());
+
+                    // Try inserting records one by one to identify problematic records
+                    foreach ($customers as $customerData) {
+                        try {
+                            DB::table('customers')->insert([$customerData]);
+                        } catch (\Exception $innerEx) {
+                            Log::error('Individual record error: '.$innerEx->getMessage());
+                            Log::error('Problematic data: '.json_encode($customerData));
+                        }
+                    }
+                }
             }
 
             if ($this->processedRows % 1000 === 0) {
@@ -176,5 +196,22 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
             // If any error occurs during parsing, return NULL
             return null;
         }
+    }
+
+    private function convertYNToBoolean($value)
+    {
+        Log::debug("convertYNToBoolean input: " . var_export($value, true));
+
+       if ($value === null || $value === '') {
+           return 0;
+       }
+
+       $upperValue = strtoupper(trim($value));
+
+       if ($upperValue === 'Y' || $upperValue === 'YES' || $upperValue === 'TRUE' || $upperValue === '1') {
+           return 1;
+       }
+
+       return 0;
     }
 }
