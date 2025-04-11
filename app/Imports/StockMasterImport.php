@@ -8,6 +8,7 @@ use App\Models\ProductCategory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithStartRow;
@@ -22,6 +23,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
     protected $totalRows = 0;
     protected $processedRows = 0;
     protected $categoryCache = [];
+    protected $errorRows = [];
 
     /**
      * @param int $importJobId
@@ -44,7 +46,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
      */
     public function chunkSize(): int
     {
-        return 1000;
+        return 500; // Reduced from 1000 to improve reliability
     }
 
     /**
@@ -66,13 +68,31 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                     'total_rows' => $this->totalRows,
                 ]);
 
+                // Pre-load categories into cache to improve performance
                 $this->preloadCategories();
+
+                Log::info("Starting product import with {$this->totalRows} rows");
             },
             AfterImport::class => function(AfterImport $event) {
                 // Mark as completed in the import tracker
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
                     $importJob->updateProgress($this->totalRows);
+
+                    // Add error information to notes if any
+                    if (!empty($this->errorRows)) {
+                        $errorSummary = "Errors occurred on " . count($this->errorRows) . " rows: ";
+                        $errorSummary .= implode(', ', array_slice($this->errorRows, 0, 10));
+
+                        if (count($this->errorRows) > 10) {
+                            $errorSummary .= " and " . (count($this->errorRows) - 10) . " more";
+                        }
+
+                        $importJob->notes = $errorSummary;
+                        $importJob->save();
+                    }
+
+                    Log::info("Product import completed. Processed {$this->processedRows} rows with " . count($this->errorRows) . " errors");
                 }
             },
             AfterSheet::class => function(AfterSheet $event) {
@@ -86,15 +106,17 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
     }
 
     /**
-     * Preload categories into memory for faster access
+     * Preload categories into memory to avoid repeated database lookups
      */
     protected function preloadCategories()
     {
+        // Get all categories and index them by category_code for quick lookups
         $categories = ProductCategory::all();
         foreach ($categories as $category) {
             $this->categoryCache[$category->CategoryCode] = $category->id;
         }
 
+        Log::info("Preloaded " . count($this->categoryCache) . " categories");
     }
 
     /**
@@ -105,13 +127,16 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
      */
     protected function getCategoryId($categoryCode)
     {
+        // Return from cache if exists
         if (isset($this->categoryCache[$categoryCode])) {
             return $this->categoryCache[$categoryCode];
         }
 
+        // If not in cache, try to find in database
         $category = ProductCategory::where('CategoryCode', $categoryCode)->first();
 
         if ($category) {
+            // Add to cache for future lookups
             $this->categoryCache[$categoryCode] = $category->id;
             return $category->id;
         }
@@ -120,74 +145,168 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
     }
 
     /**
-     * @param  Collection  $rows
-     * @return void
+     * Clean and validate value
+     *
+     * @param mixed $value
+     * @param string $fieldName
+     * @param bool $required
+     * @return mixed
      */
+    protected function sanitizeValue($value, $fieldName = '', $required = false)
+    {
+        // Trim whitespace if string
+        if (is_string($value)) {
+            $value = trim($value);
+        }
+
+        // Handle empty values
+        if ($value === null || $value === '') {
+            return $required ? 0 : null; // Return default value if required
+        }
+
+        // Special handling for TaxRateID field
+        if ($fieldName === 'TaxRateID' && ($value === null || $value === '' || $value === ' ')) {
+            // Force default tax ID value instead of letting it be null
+            Log::warning("Empty TaxRateID found, using default value 1");
+            return 1;
+        }
+
+        return $value;
+    }
 
     public function collection(Collection $rows)
     {
+        Log::info("Processing chunk of " . count($rows) . " rows. Current progress: {$this->processedRows}/{$this->totalRows}");
+
         $chunks = $rows->chunk(250); // Further chunk for database insertion
-        $productIdMap = [];
 
-        foreach ($chunks as $chunk) {
+        foreach ($chunks as $chunkIndex => $chunk) {
             $products = [];
-            $rowProductCodes = [];
+            $rowProductCodes = []; // To keep track of product codes in this chunk
 
-            $productCode = $row[0] ?? '';
-            $categoryCode = $row[2] ?? '';
+            foreach ($chunk as $rowIndex => $row) {
+                $rowNumber = $this->processedRows + $rowIndex + 1;
 
-            foreach ($chunk as $row) {
-                if (isset($row[0]) && $row[0]) { // Check for empty rows
-                    $products[] = [
-                        'company_id'         => '1',
-                        'StockItemName'      => $row[1] ?? '',
-                        'StockCode'          => $productCode,
-                        'SupplierID'         => $row[8] ?? '',
-                        'TaxRateID'          => $row[7] ?? '',
-                        'Size'               => '1',
-                        'PackSize'           => $row[4] ?? '0',
-                        'Barcode'            => $row[11] ?? '',
-                        'AltBarcode'         => $row[13] ?? '',
-                        'AverageCostPrice'   => $row[24] ?? 0,
-                        'SellingPrice'       => $row[31] ?? 0,
-                        'SellingPrice2'      => $row[32] ?? 0,
-                        'SellingPrice3'      => $row[33] ?? 0,
-                        'SellingPrice4'      => $row[34] ?? 0,
-                        'SearchDetails'      => $row[30] ?? '',
-                        'DiscountPercentage' => $row[44] ?? 0,
-                        'status'             => '1',
-                        'LastEditedBy'       => Auth::check() ? Auth::id() : 1,
-                        'created_at'         => now(),
-                        'updated_at'         => now(),
-                    ];
+                try {
+                    if (isset($row[0]) && $row[0]) { // Check for empty rows
+                        $productCode = $row[0] ?? '';
+                        $categoryCode = $row[2] ?? ''; // Get category code from column 2
 
-                    if (!empty($categoryCode)) {
-                        $rowProductCodes[] = [
-                            'product_code' => $productCode,
-                            'category_code' => $categoryCode,
+                        // Log the row we're processing if it's around the problem area
+                        if ($rowNumber >= 13240 && $rowNumber <= 13260) {
+                            Log::info("Processing row {$rowNumber}", [
+                                'StockCode' => $productCode,
+                                'TaxRateID' => $row[7] ?? 'NULL',
+                                'Raw row' => json_encode($row)
+                            ]);
+                        }
+
+                        // Special handling for TaxRateID
+                        $taxRateID = $this->sanitizeValue($row[7] ?? null, 'TaxRateID', true);
+
+                        $products[] = [
+                            'company_id'         => '1',
+                            'StockItemName'      => $row[1] ?? '',
+                            'StockCode'          => $productCode,
+                            'SupplierID'         => $this->sanitizeValue($row[8]),
+                            'TaxRateID'          => $taxRateID,
+                            'Size'               => '1',
+                            'PackSize'           => $this->sanitizeValue($row[4], 'PackSize', false) ?? '0',
+                            'Barcode'            => $this->sanitizeValue($row[11]),
+                            'AltBarcode'         => $this->sanitizeValue($row[13]),
+                            'AverageCostPrice'   => $this->sanitizeValue($row[24], 'AverageCostPrice', false) ?? 0,
+                            'SellingPrice'       => $this->sanitizeValue($row[31], 'SellingPrice', false) ?? 0,
+                            'SellingPrice2'      => $this->sanitizeValue($row[32], 'SellingPrice2', false) ?? 0,
+                            'SellingPrice3'      => $this->sanitizeValue($row[33], 'SellingPrice3', false) ?? 0,
+                            'SellingPrice4'      => $this->sanitizeValue($row[34], 'SellingPrice4', false) ?? 0,
+                            'SearchDetails'      => $this->sanitizeValue($row[30]),
+                            'DiscountPercentage' => $this->sanitizeValue($row[44], 'DiscountPercentage', false) ?? 0,
+                            'status'             => '1',
+                            'LastEditedBy'       => Auth::check() ? Auth::id() : 1,
+                            'created_at'         => now(),
+                            'updated_at'         => now(),
                         ];
-                    }
 
-                    $this->processedRows++;
+                        // Store product code and category code for pivot table insertion
+                        if (!empty($categoryCode)) {
+                            $rowProductCodes[] = [
+                                'product_code' => $productCode,
+                                'category_code' => $categoryCode,
+                                'row_number' => $rowNumber
+                            ];
+                        }
+
+                        $this->processedRows++;
+                    }
+                } catch (\Exception $e) {
+                    $this->errorRows[] = $rowNumber;
+                    Log::error("Error processing row {$rowNumber}: " . $e->getMessage(), [
+                        'row_data' => $row ? json_encode($row) : 'NULL',
+                        'trace' => $e->getTraceAsString()
+                    ]);
                 }
             }
 
             if (!empty($products)) {
-                DB::table('products')->insert($products);
+                try {
+                    // Insert products
+                    DB::table('products')->insert($products);
 
-                // Get ID's of inserted products
-                foreach ($rowProductCodes as $item) {
-                    $product = DB::table('products')->where('StockCode', $item['product_code'])->first();
-                    if ($product) {
-                        $categoryId = $this->getCategoryId($item['category_code']);
+                    // Get IDs of inserted products for pivot table
+                    foreach ($rowProductCodes as $item) {
+                        try {
+                            $product = DB::table('products')->where('StockCode', $item['product_code'])->first();
+                            if ($product) {
+                                $categoryId = $this->getCategoryId($item['category_code']);
 
-                        if ($categoryId) {
-                            DB::table('product_product_category')->updateOrInsert(
-                                [
-                                    'product_id' => $product->id,
-                                    'product_category_id' => $categoryId,
-                                ],
-                            );
+                                if ($categoryId) {
+                                    // Insert into pivot table
+                                    DB::table('product_product_category')->updateOrInsert(
+                                        [
+                                            'product_id' => $product->id,
+                                            'product_category_id' => $categoryId
+                                        ],
+                                    );
+                                } else {
+                                    Log::warning("Category not found: {$item['category_code']} for product: {$item['product_code']} (row {$item['row_number']})");
+                                }
+                            } else {
+                                Log::warning("Product not found after insert: {$item['product_code']} (row {$item['row_number']})");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("Error linking product to category: " . $e->getMessage(), [
+                                'product_code' => $item['product_code'],
+                                'category_code' => $item['category_code'],
+                                'row_number' => $item['row_number']
+                            ]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log the entire chunk if there's an error
+                    $this->errorRows = array_merge($this->errorRows, range(
+                        $this->processedRows - count($products) + 1,
+                        $this->processedRows
+                    ));
+
+                    Log::error("Error inserting product chunk (#{$chunkIndex}): " . $e->getMessage(), [
+                        'error' => $e->getMessage(),
+                        'first_item' => !empty($products) ? json_encode($products[0]) : 'NULL',
+                        'total_items' => count($products)
+                    ]);
+
+                    // Try inserting one by one to identify problematic records
+                    if (count($products) <= 50) { // Only try individual inserts for smaller chunks
+                        Log::info("Attempting individual inserts for chunk #{$chunkIndex}");
+
+                        foreach ($products as $index => $product) {
+                            try {
+                                DB::table('products')->insert([$product]);
+                            } catch (\Exception $ex) {
+                                Log::error("Error inserting individual product: " . $ex->getMessage(), [
+                                    'product_code' => $product['StockCode'],
+                                    'error' => $ex->getMessage()
+                                ]);
+                            }
                         }
                     }
                 }
@@ -197,9 +316,9 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
                     $importJob->updateProgress($this->processedRows);
+                    Log::info("Updated progress: {$this->processedRows}/{$this->totalRows}");
                 }
             }
         }
     }
-
 }
