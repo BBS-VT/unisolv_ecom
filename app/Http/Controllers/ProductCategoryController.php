@@ -156,23 +156,87 @@ class ProductCategoryController extends Controller
     public function importExcel(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:2048',
+            'csv_file' => 'required|file|mimes:csv,txt|max:20480',
         ]);
 
         $file = $request->file('csv_file');
 
+        \Log::info('Import file received', [
+            'file_name' => $file->getClientOriginalName(),
+            'file_size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+            'extension' => $file->getClientOriginalExtension(),
+        ]);
+
         // Check extension and MIME type
-        if ($file->getClientOriginalExtension() !== 'csv') {
-            return back()->with('error', 'The uploaded file must have a .csv extension.');
+        $validMimeTypes = [
+            'text/csv',
+            'text/plain',
+            'application/csv',
+            'application/vnd.ms-excel',
+            'text/comma-separated-values',
+            'text/x-comma-separated-values',
+        ];
+
+        if (!in_array($file->getMimeType(), $validMimeTypes) && $file->getClientOriginalExtension() !== 'csv') {
+            \Log::warning('Invalid file type', ['mime_type' => $file->getMimeType()]);
+            return back()->with('error', 'The uploaded file must be a CSV file.');
         }
 
         try {
+            // Read first few lines of the file to debug content
+            $fileHandle = fopen($file->getPathname(), 'r');
+            $sampleLines = [];
+            for ($i = 0; $i < 5; $i++) {
+                $line = fgets($fileHandle);
+                if ($line === false) break;
+                $sampleLines[] = $line;
+            }
+            fclose($fileHandle);
+
+            \Log::info('File sample content', ['sample_lines' => $sampleLines]);
+
             // Import categories with explicit file type
             $userId = Auth::id();
-            Excel::import(new ProductCategoryImport($userId), $file->getPathname(), null, ExcelType::CSV);
-            return back()->with('success', 'Categories imported successfully.');
-        } catch (\Exception $e) {
-            \Log::error('Error during import', ['message' => $e->getMessage()]);
+            $import = new ProductCategoryImport($userId);
+            $import->import($file, null, \Maatwebsite\Excel\Excel::CSV);
+
+            // Get import statistics
+            $stats = $import->getStats();
+            \Log::info('Import completed', $stats);
+
+            // Return appropriate message based on stats
+            if ($stats['successful_imports'] > 0) {
+                return back()->with('success', "Categories imported successfully ({$stats['successful_imports']} of {$stats['total_rows']} rows processed).");
+            } else {
+                return back()->with('warning', "Import completed, but no categories were imported. Please check the log for details.");
+            }
+        }
+        catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            \Log::error('Validation error during import', [
+                'errors' => $e->failures(),
+                'message' => $e->getMessage()
+            ]);
+
+            // Get the first few validation errors to show the user
+            $failures = $e->failures();
+            $errorMessages = [];
+
+            foreach (array_slice($failures, 0, 3) as $failure) {
+                $errorMessages[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+            }
+
+            if (count($failures) > 3) {
+                $errorMessages[] = "... and " . (count($failures) - 3) . " more errors.";
+            }
+
+            return back()->with('error', 'Validation errors: ' . implode(', ', $errorMessages));
+        }
+        catch (\Exception $e) {
+            \Log::error('Error during import', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->with('error', 'Error during import: ' . $e->getMessage());
         }
 

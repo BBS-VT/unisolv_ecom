@@ -339,14 +339,14 @@ class DashboardController extends Controller
         }
 
         // Sales by category data
-        $categoryData = OrdersItem::join('orders', 'order_items.order_id', '=', 'orders.id')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
+        $categoryData = OrdersItem::join('orders', 'orders_items.OrderI', '=', 'orders.id')
+            ->join('products', 'orders_items.StockItem', '=', 'products.StockCode')
             ->join('product_categories', 'products.category_id', '=', 'product_categories.id')
             ->where('orders.company_id', $currentCompany->id)
             ->whereBetween('orders.OrderDate', [$startDate, $endDate])
             ->select(
                 'product_categories.StockGroupName',
-                DB::raw('SUM(order_items.quantity * order_items.price) as total_sales')
+                DB::raw('SUM(orders_items.Quantity * orders_items.UnitPrice) as total_sales')
             )
             ->groupBy('product_categories.StockGroupName')
             ->orderBy('total_sales', 'desc')

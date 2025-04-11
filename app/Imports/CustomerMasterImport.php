@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Events\AfterSheet;
-
+use Illuminate\Support\Facades\Log;
 
 class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartRow, WithEvents
 {
@@ -89,12 +89,12 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
 
             foreach ($chunk as $row) {
                 if (isset($row[0]) && $row[0]) {
-
+                    // Debug the value before conversion
                     $discountAllowedRaw = $row[89] ?? '';
                     $discountAllowed = $this->convertYNToBoolean($discountAllowedRaw);
 
                     // Log the conversion for debugging
-                    Log::info("Discount Allowed: Converting '{$discountAllowedRaw}' to '{$discountAllowed}'");
+                    //Log::info("Discount Allowed: Converting '{$discountAllowedRaw}' to '{$discountAllowed}'");
 
                     $accountOpenedDate = $this->formatDate($row[19] ?? '');
 
@@ -130,7 +130,6 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                         'discount_allowed'     => (int)$discountAllowed,
                         'created_at'           => now(),
                         'updated_at'           => now(),
-
                     ];
 
                     $this->processedRows++;
@@ -141,15 +140,14 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                 try {
                     DB::table('customers')->insert($customers);
                 } catch (\Exception $e) {
-                    Log::error('Import error: '.$e->getMessage());
+                    Log::error('Import error: ' . $e->getMessage());
 
-                    // Try inserting records one by one to identify problematic records
                     foreach ($customers as $customerData) {
                         try {
                             DB::table('customers')->insert([$customerData]);
                         } catch (\Exception $innerEx) {
-                            Log::error('Individual record error: '.$innerEx->getMessage());
-                            Log::error('Problematic data: '.json_encode($customerData));
+                            Log::error('Individual record error: ' . $innerEx->getMessage());
+                            Log::error('Problematic data: ' . json_encode($customerData));
                         }
                     }
                 }
@@ -163,7 +161,6 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                 }
             }
         }
-
     }
 
     private function cleanValue($value) {
@@ -198,20 +195,20 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
         }
     }
 
-    private function convertYNToBoolean($value)
-    {
-        Log::debug("convertYNToBoolean input: " . var_export($value, true));
+    private function convertYNToBoolean($value) {
+        // Log the input for debugging
+        //Log::debug("convertYNToBoolean input: " . var_export($value, true));
 
-       if ($value === null || $value === '') {
-           return 0;
-       }
+        if ($value === null || $value === '') {
+            return 0;
+        }
 
-       $upperValue = strtoupper(trim($value));
+        $upperValue = strtoupper(trim((string)$value));
 
-       if ($upperValue === 'Y' || $upperValue === 'YES' || $upperValue === 'TRUE' || $upperValue === '1') {
-           return 1;
-       }
+        if ($upperValue === 'Y' || $upperValue === 'YES' || $upperValue === 'TRUE' || $upperValue === '1') {
+            return 1;
+        }
 
-       return 0;
+        return 0;
     }
 }
