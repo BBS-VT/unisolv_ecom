@@ -24,6 +24,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
     protected $processedRows = 0;
     protected $categoryCache = [];
     protected $errorRows = [];
+    protected $importedProductCodes = []; // Track already imported product codes
 
     /**
      * @param int $importJobId
@@ -46,7 +47,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
      */
     public function chunkSize(): int
     {
-        return 500; // Reduced from 1000 to improve reliability
+        return 500;
     }
 
     /**
@@ -70,6 +71,9 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
 
                 // Pre-load categories into cache to improve performance
                 $this->preloadCategories();
+
+                // Pre-load existing product codes to prevent duplicates
+                $this->preloadExistingProducts();
 
                 Log::info("Starting product import with {$this->totalRows} rows");
             },
@@ -103,6 +107,20 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                 }
             },
         ];
+    }
+
+    /**
+     * Preload existing products to avoid duplicates
+     */
+    protected function preloadExistingProducts()
+    {
+        // Get all existing product codes
+        $existingProducts = DB::table('products')->select('StockCode')->get();
+        foreach ($existingProducts as $product) {
+            $this->importedProductCodes[$product->StockCode] = true;
+        }
+
+        Log::info("Preloaded " . count($this->importedProductCodes) . " existing product codes");
     }
 
     /**
@@ -183,23 +201,31 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
         foreach ($chunks as $chunkIndex => $chunk) {
             $products = [];
             $rowProductCodes = []; // To keep track of product codes in this chunk
+            $newProductCodes = []; // Track new product codes in this chunk
 
             foreach ($chunk as $rowIndex => $row) {
                 $rowNumber = $this->processedRows + $rowIndex + 1;
 
                 try {
                     if (isset($row[0]) && $row[0]) { // Check for empty rows
-                        $productCode = $row[0] ?? '';
-                        $categoryCode = $row[2] ?? ''; // Get category code from column 2
+                        $productCode = trim($row[0] ?? '');
+                        $categoryCode = trim($row[2] ?? ''); // Get category code from column 2
 
-                        // Log the row we're processing if it's around the problem area
-                        if ($rowNumber >= 13240 && $rowNumber <= 13260) {
-                            Log::info("Processing row {$rowNumber}", [
-                                'StockCode' => $productCode,
-                                'TaxRateID' => $row[7] ?? 'NULL',
-                                'Raw row' => json_encode($row)
-                            ]);
+                        // Skip if we've already imported this product code in this import job
+                        // or if it already exists in the database
+                        if (isset($this->importedProductCodes[$productCode])) {
+                            Log::info("Skipping duplicate product code: {$productCode} (row {$rowNumber})");
+                            continue;
                         }
+
+                        // Skip if we've already processed this product code in this chunk
+                        if (isset($newProductCodes[$productCode])) {
+                            Log::info("Skipping duplicate product code within chunk: {$productCode} (row {$rowNumber})");
+                            continue;
+                        }
+
+                        // Mark as processed
+                        $newProductCodes[$productCode] = true;
 
                         // Special handling for TaxRateID
                         $taxRateID = $this->sanitizeValue($row[7] ?? null, 'TaxRateID', true);
@@ -249,8 +275,33 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
 
             if (!empty($products)) {
                 try {
-                    // Insert products
-                    DB::table('products')->insert($products);
+                    // Use updateOrInsert to prevent duplicates
+                    foreach ($products as $product) {
+                        $stockCode = $product['StockCode'];
+
+                        try {
+                            // Check if product already exists
+                            $existingProduct = DB::table('products')
+                                ->where('StockCode', $stockCode)
+                                ->first();
+
+                            if ($existingProduct) {
+                                // Update existing product
+                                DB::table('products')
+                                    ->where('StockCode', $stockCode)
+                                    ->update(array_diff_key($product, ['created_at' => true])); // Don't update created_at
+                            } else {
+                                // Insert new product
+                                DB::table('products')->insert($product);
+                            }
+
+                            // Mark as imported
+                            $this->importedProductCodes[$stockCode] = true;
+
+                        } catch (\Exception $e) {
+                            Log::error("Error inserting/updating product {$stockCode}: " . $e->getMessage());
+                        }
+                    }
 
                     // Get IDs of inserted products for pivot table
                     foreach ($rowProductCodes as $item) {
@@ -265,7 +316,7 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                                         [
                                             'product_id' => $product->id,
                                             'product_category_id' => $categoryId
-                                        ],
+                                        ]
                                     );
                                 } else {
                                     Log::warning("Category not found: {$item['category_code']} for product: {$item['product_code']} (row {$item['row_number']})");
@@ -293,26 +344,10 @@ class StockMasterImport implements ToCollection, WithChunkReading, WithStartRow,
                         'first_item' => !empty($products) ? json_encode($products[0]) : 'NULL',
                         'total_items' => count($products)
                     ]);
-
-                    // Try inserting one by one to identify problematic records
-                    if (count($products) <= 50) { // Only try individual inserts for smaller chunks
-                        Log::info("Attempting individual inserts for chunk #{$chunkIndex}");
-
-                        foreach ($products as $index => $product) {
-                            try {
-                                DB::table('products')->insert([$product]);
-                            } catch (\Exception $ex) {
-                                Log::error("Error inserting individual product: " . $ex->getMessage(), [
-                                    'product_code' => $product['StockCode'],
-                                    'error' => $ex->getMessage()
-                                ]);
-                            }
-                        }
-                    }
                 }
             }
 
-            if ($this->processedRows % 1000 === 0) {
+            if ($this->processedRows % 500 === 0) {
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
                     $importJob->updateProgress($this->processedRows);
