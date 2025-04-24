@@ -8,14 +8,16 @@
                 </button>
             </div>
             <form action="{{ route('admin.imports.process') }}" class="form-horizontal" method="post" enctype="multipart/form-data">
-                {{ csrf_field() }}
+                @csrf
                 <div class="modal-body">
-                    <div class="row">
-                        <input type="file" id="input-file-now" name="import_file" class="dropify">
+                    <div class="form-group">
+                        <label for="import_file">{{ __('Select CSV File') }}</label>
+                        <input type="file" id="fileUpload" name="import_file" class="dropify">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-gradient-danger">Import File</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                    <button class="btn btn-gradient-danger">{{ __('Upload & Import') }}</button>
                 </div>
             </form>
         </div>

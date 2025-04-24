@@ -17,6 +17,7 @@ use App\Models\ProductTag;
 use Cache;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
@@ -351,24 +352,42 @@ class ProductController extends Controller
             'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000'
         ]);
 
+        if (!$request->hasFile('import_file')) {
+            return back()->withErrors(['message' => 'No file was uploaded']);
+        }
+
+        $file = $request->file('import_file');
+        if (!$file->isValid()) {
+            return back()->withErrors(['message' => 'File upload failed: ' . $file->getErrorMessage()]);
+        }
+
         // Store the file for processing
-        $path = $request->file('import_file')->store('temp');
-        $filename = $request->file('import_file')->getClientOriginalName();
+        try {
+            $filePath = $file->store('temp');
+            $filename = $file->getClientOriginalName();
 
-        $importJob = ImportJob::create([
-            'filename' => $filename,
-            'total_rows' => 0, // Will be updated by the job
-            'processed_rows' => 0,
-            'status' => ImportJob::STATUS_PENDING,
-            'started_at' => now(),
-        ]);
+            // Debug
+            \Log::info('File stored at: ' . $filePath);
+            \Log::info('Original Filename: ' . $filename);
 
-        ProcessCsvImport::dispatch($path, $importJob->id);
+            $importJob = ImportJob::create([
+                'filename' => $filename,
+                'total_rows' => 0,
+                'processed_rows' => 0,
+                'status' => ImportJob::STATUS_PENDING,
+                'started_at' => now(),
+            ]);
 
-        Session::put('success', 'File upload successful. Import is being processed in the background.');
-        Session::put('import_job_id', $importJob->id);
+            ProcessCsvImport::dispatch($filePath, $importJob->id);
 
-        return back();
+            Session::put('success', 'File upload successful. Import is being processed in the background.');
+            Session::put('import_job_id', $importJob->id);
+
+            return back();
+        } catch (\Exception $e) {
+            \Log::error('File upload error: ' . $e->getMessage());
+            return back()->withErrors(['message' => 'Error uploading file: ' . $e->getMessage()]);
+        }
     }
 
     public function checkImportProgress($importJobId)

@@ -87,7 +87,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('update-product-status', 'ProductController@updateProductStatus');
     Route::resource('products', 'ProductController');
     Route::post('importQuantities', 'StockItemHoldingsController@importExcel')->name('importQuantities');
-    Route::post('importStockmaster', 'ProductController@importExcel')->name('importStockmaster');
+    //Route::post('importStockmaster', 'ProductController@importExcel')->name('importStockmaster');
     //Route::match(['get', 'post'], 'products/maintain/{id?}', 'ProductController@maintain')->name('products.maintain');
     Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
 

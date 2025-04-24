@@ -7,7 +7,7 @@
     <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
     <style>
         .dt-buttons {
-            margin: 0 auto; /* Center the buttons */
+            margin: 0 auto;
         }
 
         .dataTables_length {
