@@ -172,9 +172,10 @@ class DashboardController extends Controller
             ->get();
 
         // Sales by product category (for pie chart)
-        /*$salesByCategory = OrdersItem::join('orders', 'orders_items.OrderID', '=', 'orders.id')
+        $salesByCategory = OrdersItem::join('orders', 'orders_items.OrderID', '=', 'orders.id')
             ->join('products', 'orders_items.StockItem', '=', 'products.StockCode')
-            ->join('product_categories', 'products.category_id', '=', 'product_categories.id')
+            ->join('product_product_category', 'products.id', '=', 'product_product_category.product_id')
+            ->join('product_categories', 'product_product_category.product_category_id', '=', 'product_categories.id')
             ->where('orders.company_id', $currentCompany->id)
             ->whereBetween('orders.OrderDate', [$startDate, $endDate])
             ->select(
@@ -183,7 +184,7 @@ class DashboardController extends Controller
             )
             ->groupBy('product_categories.StockGroupName')
             ->orderBy('total_sales', 'desc')
-            ->get();*/
+            ->get();
 
         // Revenue trend (last 6 months for sparkline chart)
         $revenueTrend = [];
@@ -339,7 +340,7 @@ class DashboardController extends Controller
         }
 
         // Sales by category data
-        $categoryData = OrdersItem::join('orders', 'orders_items.OrderI', '=', 'orders.id')
+        $categoryData = OrdersItem::join('orders', 'orders_items.OrderID', '=', 'orders.id')
             ->join('products', 'orders_items.StockItem', '=', 'products.StockCode')
             ->join('product_categories', 'products.category_id', '=', 'product_categories.id')
             ->where('orders.company_id', $currentCompany->id)
