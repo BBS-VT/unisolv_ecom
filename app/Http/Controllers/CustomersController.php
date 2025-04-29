@@ -412,4 +412,19 @@ class CustomersController extends Controller
 
         return back();
     }
+
+    public function updatePricing(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'price_level' => 'required|integer|min:1|max:4',
+            'discount_allowed' => 'nullable|boolean',
+        ]);
+
+        $customer->price_level = $validated['price_level'];
+        $customer->discount_allowed = $request->has('discount_allowed') ? 1 : 0;
+        $customer->save();
+
+        return redirect()->route('customers.show', $customer->id)
+            ->with('success', __('global.pricing_settings_updated'));
+    }
 }

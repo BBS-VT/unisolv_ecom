@@ -207,6 +207,7 @@
                         </div>
                     </div>
                 </div>
+                @include('customers.partials._pricing_settings')
             </div>
             <div class="col-lg-5  stretch-card">
                 <div class="card">
@@ -263,6 +264,7 @@
                 <div class="modal fade bd-example-modal-lg" id="displayBalance" tabindex="-1" role="dialog" aria-labelledby="displayBalanceLabel" aria-hidden="true">
                     @include('customers.partials._balance')
                 </div>
+
             </div>
         </div>
     </div>
