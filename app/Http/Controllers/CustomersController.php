@@ -203,6 +203,7 @@ class CustomersController extends Controller
     public function store(StoreCustomerRequest $request)
     {
         $customer = Customer::create($request->all());
+        $customer->discount_allowed = $request->has('discount_allowed') ? 0 : 1;
 
         $customer->billingCustomer()->sync($request->input('customer[BillToCustomerID]', []));
         $customer->customerCategory()->sync($request->input('CustomerCategoryID', []));

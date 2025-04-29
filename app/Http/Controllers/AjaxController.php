@@ -50,10 +50,10 @@ class AjaxController extends Controller
         $response = collect();
         foreach($customers as $customer){
             $response->push([
-                "id"    => $customer->acc_main,
+                "id"    => $customer->acc_code,
                 "text"  => $customer->CustomerName,
                 "currency" => $customer->currency,
-                "default_price" => $customer->PriceIndicator ?? '1'
+                "default_price" => $customer->price_level ?? '1'
             ]);
         }
 
@@ -75,7 +75,7 @@ class AjaxController extends Controller
         $dealDate = Carbon::today()->toDateString();
         $search = $request->search;
 
-        $customer = Customer::where('acc_main', '=', $matchCustomer)->first();
+        $customer = Customer::where('acc_code', '=', $matchCustomer)->first();
         $discountAllowed = $customer->discount_allowed ?? false;
 
         $specialDeal = [];

@@ -463,6 +463,41 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="price_level">{{ __('cruds.customer.fields.price_level') }}</label>
+                                                    <select class="form-control" id="price_level"
+                                                            name="price_level">
+                                                        <option
+                                                            value="1" {{ old('price_level', $customer->price_level) == '1' ? 'selected' : '' }}>
+                                                            1
+                                                        </option>
+                                                        <option
+                                                            value="2" {{ old('price_level', $customer->price_level) == '2' ? 'selected' : '' }}>
+                                                            2
+                                                        </option>
+                                                        <option
+                                                            value="3" {{ old('price_level', $customer->price_level) == '3' ? 'selected' : '' }}>
+                                                            3
+                                                        </option>
+                                                        <option
+                                                            value="4" {{ old('price_level', $customer->price_level) == '4' ? 'selected' : '' }}>
+                                                            4
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="discount_allowed">{{ __('cruds.customer.fields.discount_allowed') }}</label>
+                                                    <div class="d-flex align-items-center custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input" id="discount_allowed" name="discount_allowed" value="0" {{ old('discount_allowed', $customer->discount_allowed) == '0' ? 'checked' : '' }}>
+                                                        <label class="custom-control-label" for="discount_allowed">{{ __('global.allow_discounts') }}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -7,7 +7,11 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="text-muted">{{ trans('global.account') }}</div>
-                        <h4 class="bold no-margin">{{ $customer->acc_main }} {{ ($customer->acc_sub == 0) ? '' : $customer->acc_sub }}</h4>
+                        @if($displaySubAccount)
+                            <h4 class="bold no-margin">{{ $customer->acc_main }} - {{ $customer->acc_sub }}</h4>
+                        @else
+                            <h4 class="bold no-margin">{{ $customer->acc_main }} </h4>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <div class="text-muted">{{ trans('cruds.customer.fields.opened_date') }}</div>
@@ -234,9 +238,24 @@
                         <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.contract') }}</td>
                             <td class="semi-bold">{{ $customer->BuyingGroupID ?? '' }}</td>
-                        </tr><tr>
+                        </tr>
+                        <tr>
                             <td class="text-muted">{{ __('cruds.customer.fields.type') }}</td>
                             <td class="semi-bold">{{ $customer->CustomerCategoryID ?? '' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{{ __('cruds.customer.fields.price_level') }}</td>
+                            <td class="semi-bold">{{ $customer->price_level ?? '1' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">{{ __('cruds.customer.fields.discount_allowed') }}</td>
+                            <td class="semi-bold">
+                                @if($customer->discount_allowed == 0)
+                                    <span class="badge badge-soft-success">{{ __('global.yes') }}</span>
+                                @else
+                                    <span class="badge badge-soft-danger">{{ __('global.no') }}</span>
+                                @endif
+                            </td>
                         </tr>
                         </tbody>
                     </table>

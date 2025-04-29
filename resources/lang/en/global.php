@@ -9,6 +9,7 @@ return [
     'active'                               => 'Active',
     'all'                                  => 'All',
     'all_orders'                           => 'All Orders',
+    'allow_discounts'                      => 'Discount Allowed',
     'account'                              => 'Account',
     'accountMain'                          => 'Main Account',
     'allRightsReserved'                    => 'All rights reserved.',
