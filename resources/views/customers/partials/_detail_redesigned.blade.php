@@ -78,6 +78,71 @@
                 <div class="card address-card mb-4">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
+                            <i data-feather="map-pin" class="icon-xs me-1"></i> {{ __('global.postal_address') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_1') }}</td>
+                                <td class="py-1">{{ $customer->PostalAddressLine1 ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_2') }}</td>
+                                <td class="py-1">{{ $customer->PostalAddressLine2 ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.city') }}</td>
+                                <td class="py-1">{{ $customer->PostalCity ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.postal_code') }}</td>
+                                <td class="py-1">{{ $customer->PostalPostalCode ?? 'N/A' }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card address-card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">
+                            <i data-feather="truck" class="icon-xs me-1"></i> {{ __('global.delivery_address') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_1') }}</td>
+                                <td class="py-1">{{ $customer->DeliveryAddressLine1 ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_2') }}</td>
+                                <td class="py-1">{{ $customer->DeliveryAddressLine2 ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.city') }}</td>
+                                <td class="py-1">{{ $customer->DeliveryCity ?? 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted py-1">{{ __('cruds.customer.fields.postal_code') }}</td>
+                                <td class="py-1">{{ $customer->DeliveryPostalCode ?? 'N/A' }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Details Card -->
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">
                             <i data-feather="briefcase" class="icon-xs me-1"></i> {{ __('global.business_details') }}
                         </h5>
                     </div>
@@ -179,7 +244,7 @@
 </div>
 
 <!-- Pricing Settings Modal -->
-{{--@can('customer_edit')
+@can('customer_edit')
     <div class="modal fade" id="pricingSettingsModal" tabindex="-1" aria-labelledby="pricingSettingsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -221,6 +286,17 @@
                             </div>
                             <small class="form-text text-muted">{{ __('global.discount_allowed_help') }}</small>
                         </div>
+
+                        <div class="alert alert-warning">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i data-feather="alert-triangle" class="text-warning me-2"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0">{{ __('global.pricing_change_warning') }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal">
@@ -235,76 +311,4 @@
             </div>
         </div>
     </div>
-    @endcanather="map-pin" class="icon-xs me-1"></i> {{ __('global.postal_address') }}
-    </h5>
-    </div>
-    <div class="card-body">
-        <table class="table table-borderless">
-            <tbody>
-            <tr>
-                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_1') }}</td>
-                <td class="py-1">{{ $customer->DeliveryAddressLine1 ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td class="text-muted py-1">{{ __('cruds.customer.fields.address_2') }}</td>
-                <td class="py-1">{{ $customer->DeliveryAddressLine2 ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td class="text-muted py-1">{{ __('cruds.customer.fields.city') }}</td>
-                <td class="py-1">{{ $customer->DeliveryCity ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td class="text-muted py-1">{{ __('cruds.customer.fields.postal_code') }}</td>
-                <td class="py-1">{{ $customer->DeliveryPostalCode ?? 'N/A' }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
-    </div>--}}
-
-    <!-- Business Details Card -->
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header bg-light">
-                <h5 class="card-title mb-0">
-                    <i data-fe</td>
-                    <td class="py-1">{{ $customer->PostalAddressLine1 ?? 'N/A' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted py-1">{{ __('cruds.customer.fields.address_2') }}</td>
-                        <td class="py-1">{{ $customer->PostalAddressLine2 ?? 'N/A' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted py-1">{{ __('cruds.customer.fields.city') }}</td>
-                        <td class="py-1">{{ $customer->PostalCity ?? 'N/A' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted py-1">{{ __('cruds.customer.fields.postal_code') }}</td>
-                        <td class="py-1">{{ $customer->PostalPostalCode ?? 'N/A' }}</td>
-                    </tr>
-                    </tbody>
-                    </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card address-card mb-4">
-            <div class="card-header bg-light">
-                <h5 class="card-title mb-0">
-                    <i data-feather="truck" class="icon-xs me-1"></i> {{ __('global.delivery_address') }}
-                </h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tbody>
-                    <tr>
-                        <td class="text-muted py-1">{{ __('cruds.customer.fields.address_1') }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
+@endcan

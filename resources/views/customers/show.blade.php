@@ -399,41 +399,40 @@
         <div class="card">
             <div class="card-body p-0">
                 <ul class="nav nav-pills nav-border" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#details-tab" role="tab">
+                    <li class="nav-item waves-effect waves-light">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#details-tab" role="tab" aria-selected="true">
                             <i data-feather="info" class="icon-xs me-1"></i> {{ __('global.detail') }}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#contacts-tab" role="tab">
+                    <li class="nav-item waves-effect waves-light">
+                        <a class="nav-link" data-bs-toggle="tab" href="#contacts-tab" role="tab" aria-selected="false">
                             <i data-feather="users" class="icon-xs me-1"></i> {{ __('global.contacts') }}
+                            Profile
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#orders-tab" role="tab">
+                    <li class="nav-item waves-effect waves-light">
+                        <a class="nav-link" data-bs-toggle="tab" href="#orders-tab" role="tab" aria-selected="false">
                             <i data-feather="shopping-cart" class="icon-xs me-1"></i> {{ __('global.orders') }}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#pricing-tab" role="tab">
+                    <li class="nav-item waves-effect waves-light">
+                        <a class="nav-link" data-bs-toggle="tab" href="#pricing-tab" role="tab" aria-selected="false">
                             <i data-feather="tag" class="icon-xs me-1"></i> {{ __('global.pricing') }}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#notes-tab" role="tab">
+                    <li class="nav-item waves-effect waves-light">
+                        <a class="nav-link" data-bs-toggle="tab" href="#notes-tab" role="tab" aria-selected="false">
                             <i data-feather="file-text" class="icon-xs me-1"></i> {{ __('global.notes') }}
                         </a>
                     </li>
                 </ul>
 
+                <!-- Tab panes -->
                 <div class="tab-content">
-                    <!-- Details Tab -->
-                    <div class="tab-pane active" id="details-tab" role="tabpanel">
+                    <div class="tab-pane p-3 active" id="details-tab" role="tabpanel">
                         @include('customers.partials._detail_redesigned')
                     </div>
-
-                    <!-- Contacts Tab -->
-                    <div class="tab-pane" id="contacts-tab" role="tabpanel">
+                    <div class="tab-pane p-3" id="contacts-tab" role="tabpanel">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -454,19 +453,13 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Orders Tab -->
-                    <div class="tab-pane" id="orders-tab" role="tabpanel">
+                    <div class="tab-pane p-3" id="orders-tab" role="tabpanel">
                         @include('customers.partials._orders')
                     </div>
-
-                    <!-- Pricing Tab -->
-                    <div class="tab-pane" id="pricing-tab" role="tabpanel">
+                    <div class="tab-pane p-3" id="pricing-tab" role="tabpanel">
                         @include('customers.partials._pricing_settings_redesigned')
                     </div>
-
-                    <!-- Notes Tab -->
-                    <div class="tab-pane" id="notes-tab" role="tabpanel">
+                    <div class="tab-pane p-3" id="notes-tab" role="tabpanel">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -503,7 +496,7 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 
     <script>
