@@ -227,7 +227,7 @@ class CustomersController extends Controller
         $billingCustomers = Customer::all()->pluck('CustomerName', 'id');
         $customerCategories = CustomerCategory::all()->pluck('AccountType', 'id');
         $buyingGroups = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
-        $customerOrders = Order::where('CustomerID', $customer->acc_main)->get();
+        $customerOrders = Order::where('CustomerID', $customer->acc_code)->get();
         $contacts = $customer->contacts;
 
         $displaySubAccount = $customer->company->getSetting('display_subaccount');

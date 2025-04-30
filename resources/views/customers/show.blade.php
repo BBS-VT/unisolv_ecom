@@ -2,22 +2,71 @@
 
 @section('style')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <style>
+        /* Header Styles */
         .customer-header {
             position: relative;
-            border-radius: 10px;
+            border-radius: 0.5rem;
             background: linear-gradient(120deg, #f8f9fa 0%, #eef1f5 100%);
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
 
-        .customer-status {
+        .customer-info-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .customer-name-section {
+            margin-right: 1.5rem;
+        }
+
+        .customer-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #212529;
+        }
+
+        .customer-account {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            color: #495057;
+        }
+
+        .customer-account-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+
+        .customer-account-number {
+            font-weight: 500;
+        }
+
+        .customer-opened-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .customer-actions {
+            margin-left: auto;
+            display: flex;
+            align-content: end;
+            gap: 0.5rem;
+        }
+
+        .customer-status-badges {
             position: absolute;
             top: 1.5rem;
             right: 1.5rem;
         }
 
+        /* Cards Styles */
         .customer-info-card {
             height: 100%;
             transition: all 0.2s;
@@ -39,36 +88,16 @@
             margin-bottom: 0;
         }
 
-        .tab-content {
-            padding: 1.5rem;
-            background-color: #fff;
-            border: 1px solid rgba(0,0,0,.125);
-            border-top: none;
-            border-bottom-left-radius: 0.25rem;
-            border-bottom-right-radius: 0.25rem;
-        }
-
-        .nav-pills .nav-link {
-            border-radius: 0;
-            padding: 0.75rem 1.25rem;
-            font-weight: 500;
-        }
-
-        .nav-pills .nav-link.active {
-            background-color: #fff;
-            color: #3474eb;
-            border: 1px solid rgba(0,0,0,.125);
-            border-bottom: none;
-            margin-bottom: -1px;
-        }
-
+        /* Balance Cards */
         .balance-card {
             border-left: 4px solid;
             transition: all 0.2s;
+            height: 100%;
         }
 
         .balance-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
         }
 
         .balance-card.current {
@@ -87,10 +116,12 @@
             border-left-color: #28a745;
         }
 
+        /* Address Card */
         .address-card {
             height: 100%;
         }
 
+        /* Contact Styles */
         .customer-contact-icon {
             width: 40px;
             height: 40px;
@@ -124,6 +155,7 @@
             font-weight: 500;
         }
 
+        /* Badge Styles */
         .badge-soft-success {
             background-color: rgba(40, 167, 69, 0.1);
             color: #28a745;
@@ -148,6 +180,34 @@
             font-weight: 500;
         }
 
+        /* Tab Styles */
+        .tab-content {
+            padding: 1.5rem;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.125);
+            border-top: none;
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .nav-pills .nav-link {
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #fff;
+            color: #3474eb;
+            border: 1px solid rgba(0,0,0,.125);
+            border-bottom: none;
+            margin-bottom: -1px;
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        /* Price Level Styles */
         .price-level-selector {
             gap: 10px;
             display: flex;
@@ -224,6 +284,28 @@
             margin-top: 20px;
             text-align: right;
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .customer-actions {
+                margin-top: 1rem;
+                margin-left: 0;
+                flex-wrap: wrap;
+            }
+
+            .customer-actions .btn {
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .customer-status-badges {
+                position: static;
+                margin-top: 1rem;
+                display: flex;
+            }
+        }
     </style>
 @endsection
 
@@ -233,25 +315,31 @@
 
         <!-- Customer Header -->
         <div class="customer-header">
-            <div class="d-flex align-items-center">
-                <div>
-                    <div class="d-flex align-items-center">
-                        <h3 class="mb-0">{{ $customer->CustomerName }}</h3>
-                        <span class="ms-3 me-2">{{ __('global.account') }}:</span>
-                        <h5 class="mb-0">{{ $customer->acc_main }} {{ ($customer->acc_sub == 0) ? '' : $customer->acc_sub }}</h5>
+
+                <div class="customer-info-section">
+                    <div class="customer-name-section">
+                        <h3 class="customer-name">{{ $customer->CustomerName }}</h3>
+                        <p class="customer-account">
+                            <span class="customer-account-label">{{ __('global.account') }}:</span>
+                            <span
+                                class="customer-account-number">{{ $customer->acc_main }} {{ ($customer->acc_sub == 0) ? '' : $customer->acc_sub }}</span>
+                        </p>
+                        <p class="customer-opened-date pt-2">
+                            <i data-feather="calendar" class="icon-xxs me-1"></i>
+                            {{ __('cruds.customer.fields.opened_date') }}: {{ $customer->AccountOpenedDate }}
+                        </p>
                     </div>
-                    <p class="text-muted mb-0 mt-1">{{ __('cruds.customer.fields.opened_date') }}: {{ $customer->AccountOpenedDate }}</p>
                 </div>
 
-                <div class="ms-auto d-flex">
+                <div class="customer-actions">
                     @can('order_create')
-                        <a href="{{ route('orders.create') }}" class="btn btn-primary me-2">
+                        <a href="{{ route('orders.create') }}" class="btn btn-primary">
                             <i data-feather="plus-circle" class="icon-xs me-1"></i> {{ __('global.new_order') }}
                         </a>
                     @endcan
 
                     @can('customer_edit')
-                        <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-outline-danger me-2">
+                        <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-outline-danger">
                             <i data-feather="edit" class="icon-xs me-1"></i> {{ __('global.edit') }}
                         </a>
                     @endcan
@@ -260,10 +348,8 @@
                         <i data-feather="arrow-left" class="icon-xs me-1"></i> {{ __('global.back_to_list') }}
                     </a>
                 </div>
-            </div>
 
-            <div class="customer-status">
-                <div class="d-flex">
+                <div class="customer-status-badges">
                     @if($customer->CustomerStatus==1)
                         <span class="badge badge-soft-success px-3 py-2 me-2">{{ __('global.active') }}</span>
                     @else
@@ -274,13 +360,13 @@
                         <span class="badge badge-soft-warning px-3 py-2">{{ __('global.credit_hold') }}</span>
                     @endif
                 </div>
-            </div>
+
         </div>
 
         <!-- Balance Summary Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card balance-card bf h-100">
+                <div class="card balance-card bf">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
@@ -297,7 +383,7 @@
                                     <i data-feather="info" class="icon-xs"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="#">{{ __('global.total_outstanding_balance_bf_info') }}</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">{{ __('global.total_outstanding_balance_bf_info') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -306,7 +392,7 @@
             </div>
 
             <div class="col-md-3">
-                <div class="card balance-card current h-100">
+                <div class="card balance-card current">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
@@ -329,7 +415,7 @@
                                     <i data-feather="info" class="icon-xs"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="#">{{ __('global.current_balance_info') }}</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">{{ __('global.current_balance_info') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -338,7 +424,7 @@
             </div>
 
             <div class="col-md-3">
-                <div class="card balance-card overdue h-100">
+                <div class="card balance-card overdue">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
@@ -355,7 +441,7 @@
                                     <i data-feather="info" class="icon-xs"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="#">{{ __('global.overdue_balance_info') }}</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">{{ __('global.overdue_balance_info') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -364,7 +450,7 @@
             </div>
 
             <div class="col-md-3">
-                <div class="card balance-card paid h-100">
+                <div class="card balance-card paid">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
@@ -381,12 +467,12 @@
                                     <i data-feather="info" class="icon-xs"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="#">{{ __('global.last_paid_info') }}</a>
+                                    <a class="dropdown-item" href="javascript:void(0);">{{ __('global.last_paid_info') }}</a>
                                 </div>
                             </div>
                         </div>
                         <div class="text-end mt-2">
-                            <a href="#" data-toggle="modal" data-target="#displayBalance" class="text-primary">
+                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#displayBalance" class="text-primary">
                                 <small>{{ __('global.view') }} {{ __('global.detail_balance') }} <i data-feather="chevron-right" class="icon-xxs"></i></small>
                             </a>
                         </div>
@@ -398,41 +484,42 @@
         <!-- Main Content Tabs -->
         <div class="card">
             <div class="card-body p-0">
-                <ul class="nav nav-pills nav-border" role="tablist">
-                    <li class="nav-item waves-effect waves-light">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#details-tab" role="tab" aria-selected="true">
+                <ul class="nav nav-pills nav-border" id="customerTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="details-tab" data-bs-toggle="tab" href="#details-tab-pane" role="tab" aria-controls="details-tab-pane" aria-selected="true">
                             <i data-feather="info" class="icon-xs me-1"></i> {{ __('global.detail') }}
                         </a>
                     </li>
-                    <li class="nav-item waves-effect waves-light">
-                        <a class="nav-link" data-bs-toggle="tab" href="#contacts-tab" role="tab" aria-selected="false">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="contacts-tab" data-bs-toggle="tab" href="#contacts-tab-pane" role="tab" aria-controls="contacts-tab-pane" aria-selected="false">
                             <i data-feather="users" class="icon-xs me-1"></i> {{ __('global.contacts') }}
-                            Profile
                         </a>
                     </li>
-                    <li class="nav-item waves-effect waves-light">
-                        <a class="nav-link" data-bs-toggle="tab" href="#orders-tab" role="tab" aria-selected="false">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders-tab-pane" role="tab" aria-controls="orders-tab-pane" aria-selected="false">
                             <i data-feather="shopping-cart" class="icon-xs me-1"></i> {{ __('global.orders') }}
                         </a>
                     </li>
-                    <li class="nav-item waves-effect waves-light">
-                        <a class="nav-link" data-bs-toggle="tab" href="#pricing-tab" role="tab" aria-selected="false">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="pricing-tab" data-bs-toggle="tab" href="#pricing-tab-pane" role="tab" aria-controls="pricing-tab-pane" aria-selected="false">
                             <i data-feather="tag" class="icon-xs me-1"></i> {{ __('global.pricing') }}
                         </a>
                     </li>
-                    <li class="nav-item waves-effect waves-light">
-                        <a class="nav-link" data-bs-toggle="tab" href="#notes-tab" role="tab" aria-selected="false">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="notes-tab" data-bs-toggle="tab" href="#notes-tab-pane" role="tab" aria-controls="notes-tab-pane" aria-selected="false">
                             <i data-feather="file-text" class="icon-xs me-1"></i> {{ __('global.notes') }}
                         </a>
                     </li>
                 </ul>
 
-                <!-- Tab panes -->
-                <div class="tab-content">
-                    <div class="tab-pane p-3 active" id="details-tab" role="tabpanel">
+                <div class="tab-content" id="customerTabContent">
+                    <!-- Details Tab -->
+                    <div class="tab-pane fade show active" id="details-tab-pane" role="tabpanel" aria-labelledby="details-tab" tabindex="0">
                         @include('customers.partials._detail_redesigned')
                     </div>
-                    <div class="tab-pane p-3" id="contacts-tab" role="tabpanel">
+
+                    <!-- Contacts Tab -->
+                    <div class="tab-pane fade" id="contacts-tab-pane" role="tabpanel" aria-labelledby="contacts-tab" tabindex="0">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -453,13 +540,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane p-3" id="orders-tab" role="tabpanel">
+
+                    <!-- Orders Tab -->
+                    <div class="tab-pane fade" id="orders-tab-pane" role="tabpanel" aria-labelledby="orders-tab" tabindex="0">
                         @include('customers.partials._orders')
                     </div>
-                    <div class="tab-pane p-3" id="pricing-tab" role="tabpanel">
+
+                    <!-- Pricing Tab -->
+                    <div class="tab-pane fade" id="pricing-tab-pane" role="tabpanel" aria-labelledby="pricing-tab" tabindex="0">
                         @include('customers.partials._pricing_settings_redesigned')
                     </div>
-                    <div class="tab-pane p-3" id="notes-tab" role="tabpanel">
+
+                    <!-- Notes Tab -->
+                    <div class="tab-pane fade" id="notes-tab-pane" role="tabpanel" aria-labelledby="notes-tab" tabindex="0">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -490,17 +583,19 @@
     </div>
 
     <!-- Balance Details Modal -->
-    <div class="modal fade" id="displayBalance" tabindex="-1" role="dialog" aria-labelledby="displayBalanceLabel" aria-hidden="true">
+    <div class="modal fade" id="displayBalance" tabindex="-1" aria-labelledby="displayBalanceLabel" aria-hidden="true">
         @include('customers.partials._balance_redesigned')
     </div>
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/3.3.4/jquery.inputmask.bundle.min.js"></script>
 
     <script>
         $(document).ready(function(){
+            // Initialize phone input mask
             $('.phone').inputmask('999 999 9999');
 
             // Price level selector
@@ -516,21 +611,17 @@
             }
 
             // Bootstrap 5 tooltip initialization
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
-            // Bootstrap 5 tab initialization via JavaScript
-            var triggerTabList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'))
-            triggerTabList.forEach(function (triggerEl) {
-                var tabTrigger = new bootstrap.Tab(triggerEl)
+            // Info dropdowns in balance cards
+            $('.dropdown-toggle').dropdown();
 
-                triggerEl.addEventListener('click', function (event) {
-                    event.preventDefault()
-                    tabTrigger.show()
-                })
-            })
+            // Modal trigger adjustment for Bootstrap 5
+            $('[data-bs-toggle="modal"]').on('click', function() {
+                var targetModal = $(this).data('bs-target');
+                $(targetModal).modal('show');
+            });
         });
     </script>
 @endsection

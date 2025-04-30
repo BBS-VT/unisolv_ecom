@@ -31,7 +31,7 @@
                             <td> </td>
                             <td> {{ $order->OrderNumber ?? '' }} </td>
                             <td> {{ $order->customer->CustomerName ?? '' }} </td>
-                            <td> {{ $order->salesperson->FullName ?? '' }} </td>
+                            <td> {{ $order->salesperson->PreferredName ?? '' }} </td>
                             <td> {{ $order->CustomerPurchaseOrderNumber ?? '' }}</td>
                             <td> {{ $order->created_at ?? '' }} </td>
                             <td>

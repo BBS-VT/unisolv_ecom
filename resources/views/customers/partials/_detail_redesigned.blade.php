@@ -139,7 +139,7 @@
             </div>
 
             <!-- Business Details Card -->
-            <div class="col-md-12">
+            <div class="col-md-12 mt-2">
                 <div class="card mb-4">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
