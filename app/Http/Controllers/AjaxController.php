@@ -75,7 +75,7 @@ class AjaxController extends Controller
         $dealDate = Carbon::today()->toDateString();
         $search = $request->search;
 
-        $customer = Customer::where('acc_code', '=', $matchCustomer)->first();
+        $customer = Customer::where('acc_code', '=', $matchCustomer)->firstOrFail();
         $discountAllowed = $customer->discount_allowed ?? false;
 
         $specialDeal = [];
@@ -102,8 +102,8 @@ class AjaxController extends Controller
         // Base query with common fields
         $baseQuery = function($query) use ($discountAllowed, $matchCustomer, $dealDate, $customer) {
             $query->select('products.id AS id', 'products.StockItemName AS text', 'products.StockCode',
-                'products.SellingPrice AS price', 'products.SellingPrice2 AS price2',
-                'products.SellingPrice3 AS price3', 'products.SellingPrice4 AS price4',
+                'products.SellingPrice AS SellingPrice', 'products.SellingPrice2 AS SellingPrice2',
+                'products.SellingPrice3 AS SellingPrice3', 'products.SellingPrice4 AS SellingPrice4',
                 'products.AverageCostPrice AS avgcost', 'products.DiscountPercentage AS discount',
                 'stock_item_holdings.QuantityOnHand as stock', 'stock_item_holdings.LastCostPrice AS lastcost');
 

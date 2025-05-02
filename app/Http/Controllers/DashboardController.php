@@ -272,7 +272,7 @@ class DashboardController extends Controller
                 ->whereYear('OrderDate', Carbon::now()->year)
                 ->select(
                     DB::raw('MONTH(OrderDate) as label'),
-                    DB::raw('SUM(total) as value')
+                    DB::raw('(SUM(total) / 100) as value')
                 )
                 ->groupBy(DB::raw('MONTH(OrderDate)'))
                 ->orderBy('label')
@@ -290,7 +290,7 @@ class DashboardController extends Controller
                 ->whereBetween('OrderDate', [$startDate, $endDate])
                 ->select(
                     DB::raw('DAY(OrderDate) as label'),
-                    DB::raw('SUM(total) as value')
+                    DB::raw('(SUM(total) / 100) as value')
                 )
                 ->groupBy(DB::raw('DAY(OrderDate)'))
                 ->orderBy('label')
@@ -308,7 +308,7 @@ class DashboardController extends Controller
                 ->select(
                     DB::raw('DAYOFWEEK(OrderDate) as day_of_week'),
                     DB::raw('DATE(OrderDate) as date'),
-                    DB::raw('SUM(total) as value')
+                    DB::raw('(SUM(total) / 100) as value')
                 )
                 ->groupBy('day_of_week', 'date')
                 ->orderBy('date')
@@ -326,7 +326,7 @@ class DashboardController extends Controller
                 ->whereDate('OrderDate', $startDate)
                 ->select(
                     DB::raw('HOUR(OrderDate) as label'),
-                    DB::raw('SUM(total) as value')
+                    DB::raw('(SUM(total) / 100) as value')
                 )
                 ->groupBy(DB::raw('HOUR(OrderDate)'))
                 ->orderBy('label')
@@ -371,14 +371,14 @@ class DashboardController extends Controller
     private function getTopCustomers($currentCompany, $startDate, $endDate)
     {
         return DB::table('orders')
-            ->join('customers', 'orders.CustomerID', '=', 'customers.id')
+            ->join('customers', 'orders.CustomerID', '=', 'customers.acc_code')
             ->select(
                 'customers.id',
                 'customers.CustomerName',
                 'customers.acc_main',
                 DB::raw('COUNT(DISTINCT orders.id) as order_count'),
-                DB::raw('SUM(orders.total) as total_spent'),
-                DB::raw('SUM(orders.total) / COUNT(DISTINCT orders.id) as avg_order_value')
+                DB::raw('(SUM(orders.total) / 100) as total_spent'),
+                DB::raw('(SUM(orders.total) /100) / COUNT(DISTINCT orders.id) as avg_order_value')
             )
             ->where('orders.company_id', $currentCompany->id)
             ->whereBetween('orders.OrderDate', [$startDate, $endDate])
@@ -393,7 +393,7 @@ class DashboardController extends Controller
      */
     private function getProductReorderRates($currentCompany, $startDate, $endDate)
     {
-        /*$reorderRateQuery = "
+        $reorderRateQuery = "
             SELECT
                 p.id,
                 p.StockItemName,
@@ -417,7 +417,7 @@ class DashboardController extends Controller
             ORDER BY
                 reorder_ratio DESC
             LIMIT 5
-        ";*/
+        ";
         $reorderRateQuery = Order::all();
 
         //return DB::select($reorderRateQuery, [

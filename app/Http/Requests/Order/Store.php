@@ -19,13 +19,20 @@ class Store extends FormRequest
 
     public function rules()
     {
-        if (is_array($this->product)) {
-            // Make sure the lenght of product array is the same with other attributes of arrays
-            $max_lenght = count($this->product);
+
+        return [
+            'order_number' => 'required|unique:orders,OrderNumber',
+            'order_date' => 'required|date',
+            'customer_id' => 'required|exists:customers,acc_code',
+        ];
+
+        /*if (is_array($this->product)) {
+            // Make sure the length of product array is the same with other attributes of arrays
+            $max_length = count($this->product);
             return [
                 'order_number' => 'required|unique:orders,OrderNumber',
                 'order_date' => 'required|date',
-                'customer_id' => 'required|exists:customers,acc_main',
+                'customer_id' => 'required|exists:customers,acc_code',
                 'sub_total' => 'required',
                 'grand_total' => 'required',
                 'notes' => 'nullable|string',
@@ -33,29 +40,29 @@ class Store extends FormRequest
 
                 'total_taxes' => 'sometimes|array|min:0',
 
-                'product' => 'required|array|max:'.$max_lenght,
+                'product' => 'required|array|max:'.$max_length,
                 'product.*' => 'required',
 
-                'quantity' => 'required|array|max:'.$max_lenght,
+                'quantity' => 'required|array|max:'.$max_length,
                 'quantity.*' => 'required|numeric|min:0',
 
-                'price' => 'required|array|max:'.$max_lenght,
+                'price' => 'required|array|max:'.$max_length,
                 'price.*' => 'required',
 
-                'total' => 'required|array|max:'.$max_lenght,
+                'total' => 'required|array|max:'.$max_length,
                 'total.*' => 'required',
 
-                'taxes' => 'sometimes|required|array|max:'.$max_lenght,
+                'taxes' => 'sometimes|required|array|max:'.$max_length,
                 'taxes.*' => 'sometimes|required|array',
 
-                'discount' => 'sometimes|required|array|max:'.$max_lenght,
+                'discount' => 'sometimes|required|array|max:'.$max_length,
                 'discount.*' => 'sometimes|required',
             ];
         }
 
         return [
             'product' => 'required|array',
-        ];
+        ];*/
     }
 
     /**

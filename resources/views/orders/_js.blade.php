@@ -112,17 +112,17 @@
                 } else {
                     $(data.element).attr('data-discount', '0');
                 }
-                if(data.UnitPrice !== null && data.UnitPrice > 0) {
-                    $(data.element).attr('data-price', data.UnitPrice);
+                if(data.final_price !== null && data.final_price > 0) {
+                    $(data.element).attr('data-price', data.final_price);
                 } else {
-                    $(data.element).attr('data-price', data.price);
+                    $(data.element).attr('data-price', data.SellingPrice);
                 }
                 if(data.discount !== null) {
                     globalDiscount = data.discount;
                 }
 
-                $(data.element).attr('data-price2', data.price2);
-                $(data.element).attr('data-price3', data.price3);
+                $(data.element).attr('data-price2', data.SellingPrice2);
+                $(data.element).attr('data-price3', data.SellingPrice3);
                 $(data.element).attr('data-avgcost', data.avgcost);
                 $(data.element).attr('data-lastcost', data.lastcost);
 

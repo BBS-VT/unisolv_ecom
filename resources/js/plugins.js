@@ -1,11 +1,4 @@
-/*
-Template Name: Steex - Admin & Dashboard Template
-Author: Themesbrand
-Version: 1.4.0
-Website: https://Themesbrand.com/
-Contact: Themesbrand@gmail.com
-File: Common Plugins Js File
-*/
+
 
 //Common plugins
 if (document.querySelectorAll("[toast-list]"))

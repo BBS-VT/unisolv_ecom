@@ -124,9 +124,7 @@ class OrdersController extends Controller
      */
     public function store(Store $request)
     {
-        //echo "<pre>";
-        //print_r($request->all());
-        //die;
+        //dd($request);
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
