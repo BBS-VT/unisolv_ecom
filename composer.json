@@ -10,7 +10,6 @@
     "require": {
         "php": "^8.0",
         "barryvdh/laravel-dompdf": "^2",
-        "binarytorch/larecipe": "^2.6",
         "cknow/laravel-money": "^7.2",
         "coderello/laravel-shared-data": "^4.0.0",
         "cviebrock/eloquent-sluggable": "^9.0.0",
@@ -55,7 +54,8 @@
     },
     "autoload": {
         "files": [
-            "app/Helpers/helpers.php"
+            "app/Helpers/helpers.php",
+            "app/Helpers/Features.php"
         ],
         "psr-4": {
             "App\\": "app/",

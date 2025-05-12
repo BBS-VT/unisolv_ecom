@@ -7,7 +7,7 @@ use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\OrderController;
 use App\Http\Controllers\Shop\AccountController;
-use App\Helpers\Features;
+
 
 
     Route::get('/', [ShopHomeController::class, 'index'])->name('home');

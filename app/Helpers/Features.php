@@ -52,6 +52,7 @@ class Features
     public static function ecommerceEnabled(): bool
     {
         return (bool) self::getSetting('b2b_ecommerce_enabled', false);
+
     }
 
     /**

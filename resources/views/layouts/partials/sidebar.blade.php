@@ -164,7 +164,7 @@
                     <span class="badge badge-soft-success menu-arrow">New</span></a>
             </li>
             <li>
-                <a href="{{ route('shop.home') }}"><i data-feather="book-open" class="align-self-center menu-icon"></i><span>Documentation</span>
+                <a href="#"><i data-feather="book-open" class="align-self-center menu-icon"></i><span>Documentation</span>
                     <span class="badge badge-soft-success menu-arrow">New</span></a>
             </li>
         </ul>

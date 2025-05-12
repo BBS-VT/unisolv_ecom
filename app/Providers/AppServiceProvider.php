@@ -17,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        if (config('app.enable_documentation', false)) {
+            $this->app->register(\BinaryTorch\LaRecipe\LaRecipeServiceProvider::class);
+        }
     }
 
     /**
