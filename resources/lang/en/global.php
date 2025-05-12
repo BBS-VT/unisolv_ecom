@@ -27,6 +27,7 @@ return [
     'details'                               => 'Details',
     'downloadFile'                         => 'Download file',
     'edit'                                 => 'Edit',
+    'ecommerce_settings'                   => 'Ecommerce Settings',
     'email'                                => 'Email',
     'emailInstructions'                    => 'Enter your Email and instructions will be sent to you!',
     'emailVerificationSuccess'             => 'User email verified successfully',

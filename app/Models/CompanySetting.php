@@ -90,6 +90,42 @@ class CompanySetting extends Model
         'payment_to_template' => '<p class="mb-0"><strong>{customer.name}</strong></p><p class="mb-0">{customer.billing.address_1}</p><p class="mb-0">{customer.billing.address_2}</p><p class="mb-0">{customer.billing.city}, {customer.billing.state}</p><p class="mb-0">{customer.billing.country}</p><p class="mb-0">{customer.billing.phone}</p><p class="mb-0">VAT: {customer.vat_number}</p>',
         'payment_ships_to_template' => '<p class="mb-0">{customer.shipping.address_1}</p><p class="mb-0">{customer.shipping.address_2}</p><p class="mb-0">{customer.shipping.city}, {customer.shipping.state}</p><p class="mb-0">{customer.shipping.country}</p><p class="mb-0">{customer.shipping.phone}</p>',
         'invoice_show_payments_on_pdf' => true,
+
+        // E-commerce Features
+        'b2b_ecommerce_enabled' => false,
+        'ecommerce_guest_checkout' => false,
+        'ecommerce_public_prices' => false,
+        'ecommerce_backorders' => false,
+        'ecommerce_require_approval' => true,
+        'ecommerce_show_stock' => true,
+        'ecommerce_allow_partial_delivery' => false,
+        'ecommerce_min_order_amount' => 0,
+        'ecommerce_order_confirmation_email' => true,
+        'ecommerce_fulfillment_notification' => false,
+
+        // E-commerce Display Settings
+        'ecommerce_products_per_page' => 24,
+        'ecommerce_currency_display' => 'before', // before or after amount
+        'ecommerce_show_tax_inclusive' => true,
+        'ecommerce_allow_price_override' => false,
+        'ecommerce_show_product_images' => true,
+
+        // E-commerce Customer Settings
+        'ecommerce_new_customer_requires_approval' => true,
+        'ecommerce_customer_can_view_orders' => true,
+        'ecommerce_customer_can_download_invoices' => true,
+        'ecommerce_customer_can_view_statements' => false,
+
+        // E-commerce Shipping
+        'ecommerce_shipping_enabled' => false,
+        'ecommerce_shipping_calculation' => 'flat', // flat, weight, zone
+        'ecommerce_flat_shipping_rate' => 0,
+        'ecommerce_free_shipping_threshold' => 0,
+
+        // E-commerce Payment
+        'ecommerce_payment_terms' => 'account', // account, cod, prepaid
+        'ecommerce_allow_credit_card' => false,
+        'ecommerce_allow_eft' => true,
     ];
 
     /**

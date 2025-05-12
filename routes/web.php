@@ -29,8 +29,9 @@ Route::get('/', function () {
     return view('auth.login');
     //return view('welcome');
 });
-Route::get('/catalog', 'HomeController@index')->name('catalog');
-Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.detail');
+
+//Route::get('/catalog', 'HomeController@index')->name('catalog');
+//Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.detail');
 //Auth::routes(['register' => false]);
 
 Route::group(['middleware' => ['auth','customer']], function () {
@@ -40,8 +41,6 @@ Route::group(['middleware' => ['auth','customer']], function () {
     Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
     Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])->name('customer.profile.password');
 });
-
-
 
 Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard', 'DashboardController@index')->name('home');
@@ -187,6 +186,10 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     // Settings>Customer Settings
     Route::get('/customer', 'CustomerController@index')->name('customer');
     Route::post('/customer', 'CustomerController@update')->name('customer.update');
+
+    // Settings>Ecommerce Settings
+    Route::get('/ecommerce', 'EcommerceSettingsController@index')->name('ecommerce');
+    Route::post('/ecommerce', 'EcommerceSettingsController@update')->name('ecommerce.update');
 
     // Settings>Tax Types
     Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');

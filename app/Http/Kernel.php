@@ -78,5 +78,6 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'dashboard' => \App\Http\Middleware\Dashboard::class,
         'customer' => \App\Http\Middleware\Customer::class,
+        'ecommerce' => \App\Http\Middleware\EcommerceEnabled::class,
     ];
 }

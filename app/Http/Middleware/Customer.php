@@ -18,7 +18,7 @@ class Customer
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->IsCustomer == 1) {
-            //return redirect()->route('customer.dashboard');
+            return redirect()->route('shop.home');
             return $next($request);
         }
 

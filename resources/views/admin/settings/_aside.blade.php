@@ -35,4 +35,10 @@
             <span class="sidebar-menu-text">{{ __('global.order_settings') }}</span>
         </a>
     </li>
+    <li class="sidebar-menu-item pt-1">
+        <a href="{{ route('settings.ecommerce') }}" class="sidebar-menu-button {{ $tab == 'ecommerce' ? 'text-primary' : 'text-secondary' }}">
+            <i data-feather="shopping-cart" ></i>
+            <span class="sidebar-menu-text">{{ __('global.ecommerce_settings') }}</span>
+        </a>
+    </li>
 </ul>
