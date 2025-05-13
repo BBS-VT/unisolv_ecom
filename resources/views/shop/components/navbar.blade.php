@@ -22,25 +22,29 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ request()->routeIs('shop.products.*') ? 'active' : '' }}"
-                        href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-box me-1"></i>{{ __('Products') }}
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('shop.products.*') || request()->routeIs('shop.categories.*') ? 'active' : '' }}"
+                       href="#" id="productsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-box me-1"></i> Products
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+                    <ul class="dropdown-menu dropdown-menu-scrollable" aria-labelledby="productsDropdown">
                         <li>
                             <a class="dropdown-item" href="{{ route('shop.products.index') }}">
-                                <i class="fas fa-list me-1"></i>{{ __('All Products') }}
+                                <i class="fas fa-th me-2"></i> All Products
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
-                        @foreach(\App\Models\ProductCategory::withCount('products')->having('products_count', '>', 0)->get() as $category)
-                            <li>
-                                <a class="dropdown-item" href="{{ route('shop.categories.show', $category->slug ?? $category->id) }}">
-                                    {{ $category->StockGroupName }}
-                                    <span class="badge bg-secondary ms-1">{{ $category->products_count }}</span>
-                                </a>
-                            </li>
-                        @endforeach
+                        <li class="dropdown-header text-muted">Categories</li>
+                        <div class="category-scroll-container">
+                            @foreach(\App\Models\ProductCategory::withCount('products')->having('products_count', '>', 0)->orderBy('StockGroupName')->get() as $category)
+                                <li>
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                       href="{{ route('shop.categories.show', $category->slug ?? $category->id) }}">
+                                        <span>{{ $category->StockGroupName }}</span>
+                                        <span class="badge bg-secondary rounded-pill ms-2">{{ $category->products_count }}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </div>
                     </ul>
                 </li>
                 @auth

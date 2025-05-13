@@ -77,6 +77,50 @@
         .category-card:hover .category-icon i {
             color: #0056b3 !important;
         }
+
+        .dropdown-menu-scrollable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .category-scroll-container {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        /* Custom scrollbar for the category dropdown */
+        .category-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-thumb {
+            background: #dee2e6;
+            border-radius: 3px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #ced4da;
+        }
+
+        /* For Firefox */
+        .category-scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #dee2e6 #f8f9fa;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+        }
+
+        .dropdown-header {
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+        }
     </style>
 @endsection
 @section('content')
