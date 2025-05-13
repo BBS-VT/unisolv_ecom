@@ -90,6 +90,7 @@ class CompanySetting extends Model
         'payment_to_template' => '<p class="mb-0"><strong>{customer.name}</strong></p><p class="mb-0">{customer.billing.address_1}</p><p class="mb-0">{customer.billing.address_2}</p><p class="mb-0">{customer.billing.city}, {customer.billing.state}</p><p class="mb-0">{customer.billing.country}</p><p class="mb-0">{customer.billing.phone}</p><p class="mb-0">VAT: {customer.vat_number}</p>',
         'payment_ships_to_template' => '<p class="mb-0">{customer.shipping.address_1}</p><p class="mb-0">{customer.shipping.address_2}</p><p class="mb-0">{customer.shipping.city}, {customer.shipping.state}</p><p class="mb-0">{customer.shipping.country}</p><p class="mb-0">{customer.shipping.phone}</p>',
         'invoice_show_payments_on_pdf' => true,
+        'shop_announcement' => '',
 
         // E-commerce Features
         'b2b_ecommerce_enabled' => false,

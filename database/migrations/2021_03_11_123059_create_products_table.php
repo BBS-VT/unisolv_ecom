@@ -33,6 +33,7 @@ class CreateProductsTable extends Migration
             $table->longText('MarketingComments')->nullable();
             $table->string('SearchDetails')->nullable();
             $table->tinyInteger('status')->default(1);
+            $table->boolean('is_featured')->default(false);
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
             $table->softDeletes();

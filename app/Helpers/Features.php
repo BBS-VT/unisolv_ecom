@@ -4,6 +4,8 @@ namespace App\Helpers;
 
 use App\Models\CompanySetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class Features
 {
@@ -12,7 +14,10 @@ class Features
      */
     private static function getCompanyId(): ?int
     {
-        return auth()->user()?->currentCompany()?->id;
+        $currentCompany = 1;
+
+        return $currentCompany;
+
     }
 
     /**
@@ -51,8 +56,9 @@ class Features
      */
     public static function ecommerceEnabled(): bool
     {
-        return (bool) self::getSetting('b2b_ecommerce_enabled', false);
+        $enabled = (bool) self::getSetting('b2b_ecommerce_enabled', false);
 
+        return $enabled;
     }
 
     /**

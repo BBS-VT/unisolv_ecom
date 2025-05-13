@@ -51,6 +51,7 @@ class Product extends Model implements HasMedia
         'MarketingComments',
         'SearchDetails',
         'status',
+        'is_featured',
         'LastEditedBy',
         'created_at',
         'updated_at',

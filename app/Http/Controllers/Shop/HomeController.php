@@ -5,39 +5,39 @@ namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Illuminate\Http\Request;
+use App\Helpers\Features;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = ProductCategory::orderBy('StockGroupName')->get();
+        $categories = ProductCategory::withCount(['products' => function ($query) {
+            $query->where('status', true);
+            }])
+            ->where('status', true)
+            ->having('products_count', '>', 0)
+            ->orderBy('products_count', 'desc')
+            ->take(8)
+            ->get();
 
-        $query = Product::query();
+        $featuredProductsQuery = Product::query()
+            ->where('status', true)
+            ->where(function($query) {
+                $query->where('is_featured', true)
+                    ->orWhereHas('categories', function($q) {
+                        $q->where('is_featured', true);
+                });
+            });
 
-        // Apply filters based on request parameters
-        if ($request->has('category') && $request->category) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('id', $request->category);
+        if (\App\Models\CompanySetting::getSetting('ecommerce_show_stock', auth()->user()?->currentCompany()?->id) == false) {
+            $featuredProductsQuery->whereHas('stockHolding', function($query) {
+                $query->where('QuantityOnHand', '>', 0);
             });
         }
 
-        if ($request->has('min_price') && $request->has('max_price')) {
-            $query->whereBetween('SellingPrice', [$request->min_price, $request->max_price]);
-        }
+        $featuredProducts = $featuredProductsQuery->take(8)->get();
 
-        if ($request->has('search') && $request->search) {
-            $query->where('StockItemName', 'like', '%' . $request->search . '%')
-                ->orWhere('MarketingComments', 'like', '%' . $request->search . '%');
-        }
-
-        $products = $query->with('categories')
-            ->orderBy('StockItemName')
-            ->paginate(9);
-
-        foreach ($products as $product) {
-            $product->formatted_price = number_format($product->UnitPrice, 2);
-        }
-
-        return view('home', compact('categories', 'products'));
+        return view('shop.home.index', compact('categories', 'featuredProducts'));
     }
 }

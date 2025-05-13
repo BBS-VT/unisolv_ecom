@@ -1,5 +1,5 @@
 <?php
-
+use App\Helpers\Features;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\Shop\ProductController;
@@ -8,11 +8,12 @@ use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\OrderController;
 use App\Http\Controllers\Shop\AccountController;
 
-
-
+if (Features::ecommerceEnabled()) {
     Route::get('/', [ShopHomeController::class, 'index'])->name('home');
+    Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+    Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
-    // Product browing
+    // Product browsing
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/categories/{category:slug}', [ProductController::class, 'category'])->name('categories.show');
@@ -41,5 +42,7 @@ use App\Http\Controllers\Shop\AccountController;
             Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
             Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+            Route::get('/orders/draft', [OrderController::class, 'draft'])->name('orders.draft');
         });
     });
+}
