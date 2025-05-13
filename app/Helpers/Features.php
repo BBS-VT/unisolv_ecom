@@ -128,4 +128,13 @@ class Features
     {
         return (bool) self::getSetting('ecommerce_new_customer_requires_approval', true);
     }
+
+    /**
+     * Check if stock levels should be shown
+     */
+    public static function showStock(): bool
+    {
+        return self::ecommerceEnabled() &&
+            (bool) self::getSetting('ecommerce_show_stock', true);
+    }
 }

@@ -14,7 +14,7 @@ class ProductController extends Controller
     {
         $query = Product::query()
             ->where('status', true)
-            ->with(['taxType', 'stockHolding']);
+            ->with(['packageType', 'stockHolding']);
 
         if ($request->has('category')) {
             $query->whereHas('categories', function ($q) use ($request) {
@@ -40,7 +40,7 @@ class ProductController extends Controller
         }
 
         // Only show products with stock if required
-        if (\App\Models\CompanySetting::getSetting('show_out_of_stock', auth()->user()?->currentCompany()?->id) == false) {
+        if (\App\Models\CompanySetting::getSetting('ecommerce_show_stock', auth()->user()?->currentCompany()?->id) == false) {
             $query->whereHas('stockHolding', function($q) {
                 $q->where('QuantityOnHand', '>', 0);
             });
@@ -65,9 +65,9 @@ class ProductController extends Controller
         $products = $query->paginate(Features::productsPerPage());
 
         $categories = ProductCategory::withCount(['products' => function ($q) {
-            $q->where('active', true);
+            $q->where('status', true);
         }])
-            ->where('active', true)
+            ->where('status', true)
             ->having('products_count', '>', 0)
             ->orderBy('StockGroupName')
             ->get();
@@ -79,7 +79,7 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)
             ->orWhere('id', $slug)
-            ->with(['taxType', 'stockHolding', 'categories'])
+            ->with(['packageType', 'stockHolding', 'categories'])
             ->firstOrFail();
 
         $relatedProducts = Product::whereHas('categories', function($query) use ($product) {
@@ -101,11 +101,11 @@ class ProductController extends Controller
             ->firstOrFail();
 
         $query = Product::query()
-            ->where('active', true)
+            ->where('status', true)
             ->whereHas('categories', function($q) use ($category) {
                 $q->where('product_categories.id', $category->id);
             })
-            ->with(['taxType', 'stockHolding']);
+            ->with(['packageType', 'stockHolding']);
 
         // Apply filters (same as index method)
         if (request()->has('search')) {
@@ -125,7 +125,7 @@ class ProductController extends Controller
         }
 
         // Only show products with stock if required
-        if (\App\Models\CompanySetting::getSetting('show_out_of_stock', auth()->user()?->currentCompany()?->id) == false) {
+        if (\App\Models\CompanySetting::getSetting('ecommerce_show_stock', auth()->user()?->currentCompany()?->id) == false) {
             $query->whereHas('stockHolding', function($q) {
                 $q->where('QuantityOnHand', '>', 0);
             });
@@ -151,9 +151,9 @@ class ProductController extends Controller
 
         // Get all categories for the filter
         $categories = ProductCategory::withCount(['products' => function ($q) {
-            $q->where('active', true);
+            $q->where('status', true);
         }])
-            ->where('active', true)
+            ->where('status', true)
             ->having('products_count', '>', 0)
             ->orderBy('StockGroupName')
             ->get();

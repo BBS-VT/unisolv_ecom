@@ -8,6 +8,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use \DateTimeInterface;
+use Illuminate\Support\Str;
 
 class ProductCategory extends Model implements HasMedia
 {
@@ -30,13 +31,60 @@ class ProductCategory extends Model implements HasMedia
         'ParentID',
         'CategoryCode',
         'StockGroupName',
+        'slug',
         'status',
         'LastEditedBy',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            if (empty($category->slug)) {
+                $category->slug = Str::slug($category->StockGroupName);
+            }
+        });
+
+        static::updating(function ($category) {
+            if ($category->isDirty('StockGroupName') && !$category->isDirty('slug')) {
+                $category->slug = Str::slug($category->StockGroupName);
+            }
+        });
+    }
+
+    public function setSlugAttribute($value)
+    {
+        if (empty($value)) {
+            $value = Str::slug($this->StockGroupName);
+        }
+
+        $this->attributes['slug'] = $this->makeSlugUnique($value);
+    }
+
+    protected function makeSlugUnique($slug)
+    {
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
+
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('slug', $value)
+            ->orWhere('id', $value)
+            ->firstOrFail();
     }
 
     public function registerMediaConversions(Media $media = null) : void
