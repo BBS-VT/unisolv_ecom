@@ -10,6 +10,32 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    protected function getProductPricing($product)
+    {
+        $customer = auth()->user()?->customer;
+        $priceLevel = $customer->price_level ?? 1;
+
+        $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+        $basePrice = $product->SellingPrice;
+        $customerPrice = $priceLevel == 1 ? $basePrice : ($product->$priceField ?? $basePrice);
+
+        $discountPercentage = 0;
+        if ($priceLevel > 1 && $basePrice > 0 && $customerPrice < $basePrice) {
+            $discountPercentage = round((($basePrice - $customerPrice) / $basePrice) * 100);
+        }
+
+        $taxRate = $product->taxType ? $product->taxType->percent : 0;
+
+        return [
+            'price' => $customerPrice,
+            'base_price' => $basePrice,
+            'price_level' => $priceLevel,
+            'discount_percentage' => $discountPercentage,
+            'tax_rate' => $taxRate,
+            'price_ex_tax' => $customerPrice / (1 + ($taxRate / 100)),
+            'show_prices' => Features::publicPricesEnabled() || auth()->check(),
+        ];
+    }
     public function index(Request $request)
     {
         $query = Product::query()
