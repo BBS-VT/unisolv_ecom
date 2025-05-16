@@ -94,7 +94,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
-                                <a class="dropdown-item" href="{{ route('shop.account.dashboard') }}">
+                                <a class="dropdown-item" href="{{ route('shop.account.index') }}">
                                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                                 </a>
                             </li>
@@ -109,14 +109,10 @@
                                     <i class="fas fa-user-edit me-2"></i> Profile
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('shop.account.addresses') }}">
-                                    <i class="fas fa-map-marker-alt me-2"></i> Addresses
-                                </a>
-                            </li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                <a class="dropdown-item" href="{{ route('home') }}">
                                     <i class="fas fa-cogs me-2"></i> Admin Panel
                                 </a>
                             </li>

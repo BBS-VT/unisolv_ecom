@@ -48,7 +48,7 @@
                             </a>
                         </li>
                         <li class="mb-2">
-                            <a href="{{ route('shop.account.dashboard') }}" class="text-muted text-decoration-none">
+                            <a href="{{ route('shop.account.index') }}" class="text-muted text-decoration-none">
                                 <i class="fas fa-chevron-right me-1 small"></i> My Account
                             </a>
                         </li>

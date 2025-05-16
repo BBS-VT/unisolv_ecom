@@ -1,14 +1,4 @@
 
-@php
-    use App\Helpers\Features;
-    $customer = auth()->user()?->customer;
-    $priceLevel = $customer->price_level ?? 1;
-    $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
-    $price = $priceLevel == 1 ? $product->SellingPrice : ($product->$priceField ?? $product->SellingPrice);
-    $taxRate = $product->taxType ? $product->taxType->percent : 0;
-    $showPrices = Features::publicPricesEnabled() || auth()->check();
-@endphp
-
 <div class="card h-100 product-card">
     <div class="product-image-wrapper position-relative" style="height: 250px;">
         <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}"
@@ -16,7 +6,7 @@
              alt="{{ $product->StockItemName }}">
 
         {{-- Stock indicator --}}
-        @if(Features::showStock())
+        @if(\App\Helpers\Features::showStock())
             @if($product->stockHolding && $product->stockHolding->QuantityOnHand > 0)
                 <span class="position-absolute top-0 end-0 m-2 badge bg-success">
                     In Stock ({{ $product->stockHolding->QuantityOnHand }})
@@ -55,20 +45,20 @@
             </p>
         @endif
 
-        @if($showPrices)
+        @if($product->pricing['show_prices'])
             <div class="pricing-section mt-auto">
                 <h5 class="text-primary mb-0">
-                    {{ config('app.currency', 'R') }} {{ number_format($price, 2) }}
-                    @if($taxRate > 0)
+                    {{ config('app.currency', 'R') }} {{ number_format($product->pricing['price'], 2) }}
+                    @if($product->pricing['tax_rate'] > 0)
                         <small class="text-muted">incl. VAT</small>
                     @endif
                 </h5>
-                @if($priceLevel > 1 && $product->SellingPrice > 0)
+                @if($product->pricing['discount_percentage'] > 0)
                     <small class="text-muted text-decoration-line-through">
-                        {{ config('app.currency', 'R') }} {{ number_format($product->SellingPrice, 2) }}
+                        {{ config('app.currency', 'R') }} {{ number_format($product->pricing['base_price'], 2) }}
                     </small>
                     <span class="badge bg-danger ms-1">
-                        {{ round((($product->SellingPrice - $price) / $product->SellingPrice) * 100) }}% OFF
+                        {{ $product->pricing['discount_percentage'] }}% OFF
                     </span>
                 @endif
             </div>
@@ -88,7 +78,7 @@
                            name="quantity" value="1" min="1"
                            max="{{ $product->stockHolding ? $product->stockHolding->QuantityOnHand : 999 }}">
                     <button type="submit" class="btn btn-primary btn-sm"
-                        {{ (!Features::backordersEnabled() && (!$product->stockHolding || $product->stockHolding->QuantityOnHand <= 0)) ? 'disabled' : '' }}>
+                        {{ (!\App\Helpers\Features::backordersEnabled() && (!$product->stockHolding || $product->stockHolding->QuantityOnHand <= 0)) ? 'disabled' : '' }}>
                         <i class="fas fa-cart-plus me-1"></i> Add to Cart
                     </button>
                 </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -37,6 +38,7 @@ class Product extends Model implements HasMedia
         'TaxRateID',
         'Brand',
         'Size',
+        'slug',
         'LeadTimeDays',
         'Packsize',
         'Barcode',
@@ -71,6 +73,23 @@ class Product extends Model implements HasMedia
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->StockItemName);
+            }
+        });
+
+        static::updating(function ($product) {
+            if ($product->isDirty('StockItemName') && !$product->isDirty('slug')) {
+                $product->slug = Str::slug($product->StockItemName);
+            }
+        });
     }
 
     public function registerMediaConversions(Media $media = null) : void
@@ -146,6 +165,35 @@ class Product extends Model implements HasMedia
     public function scopeFindByCompany($query, $company_id)
     {
         $query->where('company_id', $company_id);
+    }
+
+    public function setSlugAttribute($value)
+    {
+        if (empty($value)) {
+            $value = Str::slug($this->StockItemName);
+        }
+
+        $this->attributes['slug'] = $this->makeSlugUnique($value);
+    }
+
+    protected function makeSlugUnique($slug)
+    {
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where('slug', $value)
+            ->orWhere('id', $value)
+            ->firstOrFail();
     }
 }
 

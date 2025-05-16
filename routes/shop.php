@@ -1,5 +1,6 @@
 <?php
 use App\Helpers\Features;
+use App\Http\Controllers\Shop\DraftOrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\Shop\ProductController;
@@ -43,6 +44,11 @@ if (Features::ecommerceEnabled()) {
             Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
             Route::get('/orders/draft', [OrderController::class, 'draft'])->name('orders.draft');
+            Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
+        });
+
+        Route::prefix('drafts')->name('drafts.')->group(function () {
+            Route::get('/', [DraftOrderController::class, 'index'])->name('index');
         });
     });
 }
