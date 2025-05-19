@@ -21,11 +21,12 @@ if (Features::ecommerceEnabled()) {
 
     // Cart functionality
     Route::prefix('cart')->name('cart.')->group(function () {
-        Route::get('/', [CartController::class, 'index'])->name('index');
-        Route::post('/add', [CartController::class, 'add'])->name('add');
-        Route::post('/update/{item}', [CartController::class, 'update'])->name('update');
-        Route::post('/remove/{item}', [CartController::class, 'remove'])->name('remove');
-        Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
+        Route::post('/add', [CartController::class, 'addToCart'])->name('add');
+        Route::get('/', [CartController::class, 'showCart'])->name('show');
+        Route::post('/update', [CartController::class, 'updateCart'])->name('update');
+        Route::post('/remove', [CartController::class, 'removeFromCart'])->name('remove');
+        Route::post('/clear', [CartController::class, 'clearCart'])->name('clear');
+        Route::get('/mini', [CartController::class, 'getMiniCart'])->name('mini');
     });
 
     // Protected routes
