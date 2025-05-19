@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\Features;
 
 class Customer
 {
@@ -18,8 +19,25 @@ class Customer
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check() && Auth::user()->IsCustomer == 1) {
-            return redirect()->route('shop.home');
-            return $next($request);
+
+            if (Features::ecommerceEnabled() && $request->has('redirect_to_shop')) {
+
+                return redirect()->route('shop.home');
+            }
+
+            $customerPortalRoute = 'customer_portal.dashboard';
+
+            try {
+                $customer = Auth::user()->customer;
+                if ($customer) {
+                    return redirect()->route($customerPortalRoute, ['customer' => $customer->id]);
+                }
+            } catch (\Exception $e) {
+
+            }
+
+            return redirect('/home')->with('error', 'Customer account not properly configured');
+
         }
 
         return redirect('/home')->with('error', 'You must be a Customer to access this page.');

@@ -79,5 +79,6 @@ class Kernel extends HttpKernel
         'dashboard' => \App\Http\Middleware\Dashboard::class,
         'customer' => \App\Http\Middleware\Customer::class,
         'ecommerce' => \App\Http\Middleware\EcommerceEnabled::class,
+        'redirect-to-shop' => \App\Http\Middleware\RedirectToShop::class,
     ];
 }

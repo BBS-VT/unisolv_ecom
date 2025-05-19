@@ -3,6 +3,7 @@
 
 namespace App\Http\Responses;
 
+use App\Helpers\Features;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
@@ -12,8 +13,11 @@ class LoginResponse implements LoginResponseContract
     public function toResponse($request)
     {
         $redirect = config('fortify.home');
-
         $authUser = auth()->user();
+
+        if ($authUser->IsCustomer == "1"  && Features::ecommerceEnabled() && $request->has('redirect_to_shop')) {
+            return redirect()->route('shop.home');
+        }
 
         if($authUser->IsSalesperson == '1') {
             $redirect = route('sales.dashboard');
@@ -22,10 +26,6 @@ class LoginResponse implements LoginResponseContract
         }
 
         return redirect($redirect);
-
-        //return $request->wantsJson()
-        //    ? response()->json(['two_factor' => false])
-        //    : redirect()->intended(config('fortify.home'));
 
     }
 }

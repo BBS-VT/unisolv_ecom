@@ -128,7 +128,7 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#shopLoginModal">
                             <i class="fas fa-sign-in-alt me-1"></i> Login
                         </a>
                     </li>

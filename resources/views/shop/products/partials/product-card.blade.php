@@ -64,7 +64,7 @@
             </div>
         @else
             <p class="text-muted mb-0 mt-auto">
-                <a href="{{ route('login') }}" class="text-primary">Login</a> to view prices
+                <a href="#" data-bs-toggle="modal" data-bs-target="#shopLoginModal" class="text-primary">Login</a> to view prices
             </p>
         @endif
     </div>
@@ -84,7 +84,7 @@
                 </div>
             </form>
         @else
-            <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-sm w-100">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#shopLoginModal" class="btn btn-outline-secondary btn-sm w-100">
                 <i class="fas fa-sign-in-alt me-1"></i> Login to Order
             </a>
         @endauth
