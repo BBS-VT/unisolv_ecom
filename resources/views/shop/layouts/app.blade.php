@@ -7,9 +7,15 @@
 
     <title>@yield('title', config('app.name', 'Laravel')) - Shop</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ URL::asset('shop/css/vendor.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('shop/style.css') }}" rel="stylesheet" type="text/css" />
+
 
     @stack('styles')
+    <script src="https://kit.fontawesome.com/bc0680dc86.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     @include('shop.components.navbar')
@@ -21,8 +27,7 @@
         @include('shop.components.footer')
 
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     @stack('scripts')
 
     @guest

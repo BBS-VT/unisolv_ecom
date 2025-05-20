@@ -10,7 +10,7 @@ use App\Http\Controllers\Shop\OrderController;
 use App\Http\Controllers\Shop\AccountController;
 
 if (Features::ecommerceEnabled()) {
-    Route::get('/', [ShopHomeController::class, 'index'])->name('home');
+    Route::get('/', [ShopHomeCoontroller::class, 'index'])->name('home');
     Route::get('/contact', [PageController::class, 'contact'])->name('contact');
     Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
