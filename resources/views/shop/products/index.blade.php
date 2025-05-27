@@ -3,59 +3,108 @@
 
 @section('title', 'All Products')
 
-@section('breadcrumbs')
-    <li class="breadcrumb-item active" aria-current="page">All Products</li>
-@endsection
-
 @section('content')
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Filters Sidebar -->
-            <div class="col-lg-3 mb-4">
-                @include('shop.products.partials.filters')
+
+    <nav aria-label="breadcrumb" class="amazon-breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('shop.home') }}">Home</a></li>
+            <li class="breadcrumb-item active">All Products</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 col-md-4">
+            @include('shop.products.partials.filters')
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9 col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-3 border rounded">
+                <div>
+                    <h5 class="mb-1">
+                        @if(request('search'))
+                            Results for "{{ request('search') }}"
+                        @else
+                            {{ __('All Products') }}
+                        @endif
+                    </h5>
+                    <p class="text-muted mb-0">Showing {{ $products->firstItem() ?? 0 }} - {{ $products->lastItem() ?? 0 }} of {{ $products->total() }} results</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Sort by:</span>
+                    <select class="form-select form-select-sm" id="sort-select" style="width:auto;">
+                        <option value="relevance" {{ request('sort') == 'relevance' ? 'selected' : '' }}>Featured</option>
+                        <option value="price_low_high" {{ request('sort') == 'price_low_high' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high_low" {{ request('sort') == 'price_high_low' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest Arrivals</option>
+                    </select>
+                </div>
             </div>
+
+            @if(request()->hasAny(['categories', 'price_range', 'availability', 'search']))
+                <div class="bg-white p-3 border rounded mb-3">
+                    <div class="d-flex flex-wrap align-items-center">
+                        <span class="me-2"><strong>{{ __('Applied filters:') }}</strong></span>
+                        @if(request('search'))
+                            <span class="badge bg-primary me-2 mb-1">
+                                Search: "{{ request('search') }}"
+                                <a href="{{ request()->fullUrlWithoutQuery('search') }}" class="text-white ms-1">x</a>
+                            </span>
+                        @endif
+
+                        @foreach(request('categories', []) as $categoryId)
+                            @php $category = $categories->find($categoryId) @endphp
+                            @if($category)
+                                <span class="badge bg-secondary me-2 mb-1">
+                                    {{ $category->StockGroupName }}
+                                     <a href="{{ request()->fullUrlWithoutQuery(['categories' => $categoryId]) }}" class="text-white ms-1">×</a>
+                                </span>
+                            @endif
+                        @endforeach
+
+                        @if(request('price_range'))
+                            <span class="badge bg-secondary me-2 mb-1">
+                                Price: ${{ str_replace('-', ' - ', request('price_range')) }}
+                                <a href="{{ request()->fullUrlWithoutQuery('price_range') }}" class="text-white ms-1">×</a>
+                            </span>
+                        @endif
+
+                        <a href="{{ route('shop.products.index') }}" class="btn btn-sm btn-outline-secondary ms-2">Clear All</a>
+                    </div>
+                </div>
+            @endif
 
             <!-- Products Grid -->
-            <div class="col-lg-9">
-                <!-- Header -->
-                <div class="row mb-4">
+            <div class="row g-3" id="products-container">
+                @forelse($products as $product)
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-3">
+                        @include('shop.products.partials.product-card', ['product' => $product])
+                    </div>
+                @empty
                     <div class="col-12">
-                        <h1 class="h2">All Products</h1>
-                        <p class="text-muted mb-0">
-                            Showing {{ $products->firstItem() ?? 0 }} - {{ $products->lastItem() ?? 0 }} of {{ $products->total() }} products
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Products Grid -->
-                <div class="row">
-                    @forelse($products as $product)
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            @include('shop.products.partials.product-card', ['product' => $product])
-                        </div>
-                    @empty
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-1"></i> No products found matching your criteria.
-                                <a href="{{ route('shop.products.index') }}" class="alert-link">Clear filters</a>
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
                             </div>
-                        </div>
-                    @endforelse
-                </div>
-
-                <!-- Pagination -->
-                @if($products->hasPages())
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="d-flex justify-content-center">
-                                {{ $products->appends(request()->query())->links() }}
-                            </div>
+                            <h3>{{ __('No products found matching your criteria.') }}</h3>
+                            <p class="text-muted">{{ __('Try adjusting your search or filter criteria') }}</p>
+                            <a href="{{ route('shop.products.index') }}" class="btn btn-amazon-primary">{{ __('Browse All
+                                Products') }}</a>
                         </div>
                     </div>
-                @endif
+                @endforelse
             </div>
+
+            <!-- Pagination -->
+            @if($products->hasPages())
+                <div class="d-flex justify-content-center mt-5">
+                    {{ $products->links('shop.components.pagination') }}
+                </div>
+            @endif
         </div>
     </div>
+
 @endsection
 
 @section('scripts')

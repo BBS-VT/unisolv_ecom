@@ -5,29 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'Laravel')) - Shop</title>
+    <title>@yield('title') - B2B Shop</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ URL::asset('shop/css/vendor.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amazon+Ember:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="{{ URL::asset('shop/style.css') }}" rel="stylesheet" type="text/css" />
 
-
     @stack('styles')
-    <script src="https://kit.fontawesome.com/bc0680dc86.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body>
     @include('shop.components.navbar')
 
-        <main>
+        <main class="amazon-main">
             @yield('content')
         </main>
 
         @include('shop.components.footer')
 
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-cart-check me-2"></i>
+                <strong class="me-auto">Cart Update</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                Item has been added to your cart.
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="miniCartOffcanvas" style="width: 400px;">
+        <div id="miniCartContent">
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+    <script>
+        $(document).ready(function() {
+            // Global search functionality
+            $('#globalSearch').on('keypress', function(e) {
+                if (e.which === 13) {
+                    const query = $(this).val();
+                    if (query.trim()) {
+                        window.location.href = '{{ route("shop.products.index") }}?search=' + encodeURIComponent(query);
+                    }
+                }
+            });
+
+            // Cart functionality
+            @include('shop.cart.cart-scripts')
+        });
+    </script>
     @stack('scripts')
 
     @guest
