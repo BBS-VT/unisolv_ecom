@@ -1,11 +1,72 @@
+<div class="amazon-product-card" onclick="window.locattion.href={{ route('shop.products.show', $product->id) }}">
+    <div class="position-relative">
+        <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}" class="amazon-product-image">
+        @if($product->is_new)
+            <span class="position-absolute top-0 start-0 badge bg-success">{{ __('New') }}</span>
+        @endif
 
-<div class="card h-100 product-card">
+        @if($product->discount_percentage > 0)
+            <span class="position-absolute top-0 end-0 badge bg-danger">
+                {{ $product->discount_percentage }}% OFF
+            </span>
+        @endif
+
+    </div>
+    <a href="{{ route('shop.products.show', $product->slug ?? $product->id) }}" class="amazon-product-title text-decoration-none">
+        {{ $product->StockItemName }}
+    </a>
+    @if(\App\Helpers\Features::publicPricesEnabled())
+        <div class="amazon-price mt-2">
+            @if($product->discount_price)
+                <span class="amazon-price-whole">${{ number_format($product->discount_price, 0) }}</span>
+                <span class="amazon-price-fraction">{{ sprintf('%02d', ($product->discount_price - floor($product->discount_price)) * 100) }}</span>
+                <span class="amazon-old-price">${{ number_format($product->price, 2) }}</span>
+            @else
+                <span class="amazon-price-whole">${{ number_format($product->price, 0) }}</span>
+                <span class="amazon-price-fraction">{{ sprintf('%02d', ($product->price - floor($product->price)) * 100) }}</span>
+            @endif
+        </div>
+    @else
+        <div class="text-muted mt-2">
+            <small>Login to see pricing</small>
+        </div>
+    @endif
+    <div class="mt-2">
+        @if(\App\Helpers\Features::showStock())
+            @if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
+                <small class="text-success">{{ __('In Stock') }}</small>
+            @elseif($product->stockHolding && $product->stockHolding->QuantityOnHand > 0)
+                <small class="text-warning">{{ __('Low Stock') }} ({{ $product->stockHolding->QuantityOnHand }})</small>
+            @elseif(\App\Helpers\Features::backordersEnabled())
+                <small class="text-info">{{('Available for Backorder')}}</small>
+            @else
+                <small class="text-danger">{{ __('Out of Stock') }}</small>
+            @endif
+        @endif
+    </div>
+    <div class="mt-3">
+        @if($product->stockHolding->QuantityOnHand > 0 || \App\Helpers\Features::backordersEnabled())
+            <button class="btn btn-amazon-primary btn-sm add-to-cart-btn w-100"
+                    data-product-id="{{ $product->id }}"
+                    onclick="event.stopPropagation();">
+                <i class="bi bi-cart-plus me-1"></i>{{ __('Add to Cart') }}
+            </button>
+        @else
+            <button class="btn btn-secondary btn-sm w-100" disabled>
+                {{ __('Out of Stock') }}
+            </button>
+        @endif
+    </div>
+</div>
+
+
+{{--<div class="card h-100 product-card">
     <div class="product-image-wrapper position-relative" style="height: 250px;">
         <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}"
              class="card-img-top h-100 object-fit-cover"
              alt="{{ $product->StockItemName }}">
 
-        {{-- Stock indicator --}}
+        --}}{{-- Stock indicator --}}{{--
         @if(\App\Helpers\Features::showStock())
             @if($product->stockHolding && $product->stockHolding->QuantityOnHand > 0)
                 <span class="position-absolute top-0 end-0 m-2 badge bg-success">
@@ -18,7 +79,7 @@
             @endif
         @endif
 
-        {{-- Quick view overlay --}}
+        --}}{{-- Quick view overlay --}}{{--
         <div class="product-overlay">
             <a href="{{ route('shop.products.show', $product->slug ?? $product->id) }}"
                class="btn btn-light btn-sm">
@@ -89,9 +150,9 @@
             </a>
         @endauth
     </div>
-</div>
+</div>--}}
 
-<style>
+{{--<style>
     .product-card {
         transition: all 0.3s ease;
         border: 1px solid #e3e3e3;
@@ -143,4 +204,4 @@
         border-top: 1px solid #e3e3e3;
         padding-top: 0.75rem;
     }
-</style>
+</style>--}}

@@ -109,6 +109,28 @@
 
 @section('scripts')
     <script>
+        $(document).ready(function() {
+            $('input[type="checkbox"], input[type="radio"]').change(function() {
+                applyFilters();
+            });
+
+            $('#sort-select').change(function() {
+                applyFilters();
+            });
+
+            $('#apply-price-range').click(function() {
+                const min=$('#price_min').val();
+                const max=$('#price_max').val();
+
+                if (min||max) {
+                    $('input[name="price_range"]').prop('checked', false);
+
+
+                }
+            })
+        })
+    </script>
+    {{--<script>
         document.addEventListener('DOMContentLoaded', function() {
             // Add to cart functionality
             document.querySelectorAll('.add-to-cart-form').forEach(form => {
@@ -168,5 +190,5 @@
                 });
             });
         });
-    </script>
+    </script>--}}
 @endsection
