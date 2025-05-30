@@ -110,25 +110,150 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Filter change handlers
             $('input[type="checkbox"], input[type="radio"]').change(function() {
                 applyFilters();
             });
 
+            // Sort change handler
             $('#sort-select').change(function() {
                 applyFilters();
             });
 
+            // Custom price range
             $('#apply-price-range').click(function() {
-                const min=$('#price_min').val();
-                const max=$('#price_max').val();
+                const min = $('#price_min').val();
+                const max = $('#price_max').val();
 
-                if (min||max) {
+                if (min || max) {
+                    // Clear radio buttons
                     $('input[name="price_range"]').prop('checked', false);
 
-
+                    // Apply custom range
+                    const currentUrl = new URL(window.location);
+                    currentUrl.searchParams.set('price_min', min || '0');
+                    currentUrl.searchParams.set('price_max', max || '999999');
+                    window.location.href = currentUrl.toString();
                 }
-            })
-        })
+            });
+
+            // Clear filters
+            $('#clear-filters').click(function() {
+                window.location.href = '{{ route("shop.products.index") }}';
+            });
+
+            // Add to cart functionality
+            $(document).on('click', '.add-to-cart-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productId = $(this).data('product-id');
+                const button = $(this);
+                const originalText = button.html();
+
+                // Show loading state
+                button.html('<i class="bi bi-hourglass-split me-1"></i>Adding...');
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '{{ route("shop.cart.add") }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        quantity: 1,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart badge
+                            $('.cart-badge').text(response.cart_count);
+
+                            // Show success state
+                            button.html('<i class="bi bi-check-circle me-1"></i>Added!');
+                            button.removeClass('btn-amazon-primary').addClass('btn-success');
+
+                            // Show toast notification
+                            showCartToast('Product added to cart successfully', 'success');
+
+                            // Reset button after 2 seconds
+                            setTimeout(function() {
+                                button.html(originalText);
+                                button.removeClass('btn-success').addClass('btn-amazon-primary');
+                                button.prop('disabled', false);
+                            }, 2000);
+                        }
+                    },
+                    error: function(xhr) {
+                        const response = xhr.responseJSON;
+                        showCartToast(response.message || 'Error adding product to cart', 'danger');
+
+                        // Reset button
+                        button.html(originalText);
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            function applyFilters() {
+                const currentUrl = new URL(window.location);
+
+                // Clear existing filter params
+                currentUrl.searchParams.delete('categories');
+                currentUrl.searchParams.delete('price_range');
+                currentUrl.searchParams.delete('availability');
+                currentUrl.searchParams.delete('sort');
+
+                // Add selected filters
+                const categories = [];
+                $('input[name="categories[]"]:checked').each(function() {
+                    categories.push($(this).val());
+                });
+                if (categories.length > 0) {
+                    currentUrl.searchParams.set('categories', categories.join(','));
+                }
+
+                const priceRange = $('input[name="price_range"]:checked').val();
+                if (priceRange) {
+                    currentUrl.searchParams.set('price_range', priceRange);
+                }
+
+                const availability = [];
+                $('input[name="availability[]"]:checked').each(function() {
+                    availability.push($(this).val());
+                });
+                if (availability.length > 0) {
+                    currentUrl.searchParams.set('availability', availability.join(','));
+                }
+
+                const sort = $('#sort-select').val();
+                if (sort && sort !== 'relevance') {
+                    currentUrl.searchParams.set('sort', sort);
+                }
+
+                // Navigate to new URL
+                window.location.href = currentUrl.toString();
+            }
+
+            function showCartToast(message, type = 'success') {
+                const toast = $('#cartToast');
+                const toastBody = toast.find('.toast-body');
+                const toastHeader = toast.find('.toast-header');
+
+                toastBody.text(message);
+
+                // Reset classes
+                toastHeader.removeClass('bg-success bg-danger text-white');
+
+                if (type === 'success') {
+                    toastHeader.addClass('bg-success text-white');
+                } else if (type === 'danger') {
+                    toastHeader.addClass('bg-danger text-white');
+                }
+
+                const bsToast = new bootstrap.Toast(toast[0]);
+                bsToast.show();
+            }
+        });
     </script>
     {{--<script>
         document.addEventListener('DOMContentLoaded', function() {
