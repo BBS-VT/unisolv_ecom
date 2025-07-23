@@ -47,6 +47,10 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\AuthGates::class,
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\RedirectToShop::class,
+            \App\Http\Middleware\EcommerceEnabled::class,
+            \App\Http\Middleware\Customer::class,
+            \App\Http\Middleware\LoadUserCart::class,
 
         ],
 

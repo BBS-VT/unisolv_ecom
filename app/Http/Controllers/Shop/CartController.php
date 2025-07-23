@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
 use App\Helpers\Features;
 use App\Models\Product;
+use App\Models\UserCart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -245,7 +246,13 @@ class CartController extends Controller
 
     private function syncCartToUser()
     {
-        // This is a placeholder
+        $user = Auth::user();
+        $cart = Session::get('cart', []);
+
+        UserCart::updateOrCreate(
+            ['user_id' => $user->id],
+            ['cart_data' => $cart]
+        );
     }
 
     public function getMiniCart()

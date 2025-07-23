@@ -21,22 +21,10 @@ class Customer
         if (Auth::check() && Auth::user()->IsCustomer == 1) {
 
             if (Features::ecommerceEnabled() && $request->has('redirect_to_shop')) {
-
                 return redirect()->route('shop.home');
             }
 
-            $customerPortalRoute = 'customer_portal.dashboard';
-
-            try {
-                $customer = Auth::user()->customer;
-                if ($customer) {
-                    return redirect()->route($customerPortalRoute, ['customer' => $customer->id]);
-                }
-            } catch (\Exception $e) {
-
-            }
-
-            return redirect('/home')->with('error', 'Customer account not properly configured');
+            return redirect()->route('customer_portal.dashboard');
 
         }
 
