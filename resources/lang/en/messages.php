@@ -6,5 +6,5 @@ return [
     'tax_per_item' => 'Enable this if you want to add Taxes to individual Invoice items. By default, taxes are added directly to the Invoice.',
     'display_subaccount' => 'Enable this if you want to display sub-account codes in Customer list table',
     'fulfillment_mailbox' => 'This is the email address where all order fulfillment notifications will be sent to. You can add multiple email addresses separated by comma.',
-    'shop_welcome_message' => 'Explore our wide range of products and enjoy a seamless shopping experience.'
+    'shop_welcome_message' => 'Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.'
 ];

@@ -121,14 +121,27 @@
             font-weight: 600;
             padding: 0.5rem 1rem;
         }
+
+        /* Price tier badge styles */
+        .price-tier-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .tier-retail { background-color: #e3f2fd; color: #1976d2; }
+        .tier-wholesale { background-color: #f3e5f5; color: #7b1fa2; }
+        .tier-special { background-color: #fff3e0; color: #f57c00; }
+        .tier-premium { background-color: #e8f5e8; color: #388e3c; }
     </style>
 @endsection
+
 @section('content')
     <section class="bg-light py-5">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="display-5 fw-bold fw-bold mb-3">{{ __('Welcome to our B2B Store') }}</h1>
+                    <h1 class="display-5 fw-bold mb-3">{{ __('Welcome to our B2B Store') }}</h1>
                     <p class="lead text-muted mb-4">
                         {{ __('messages.shop_welcome_message') }}
                     </p>
@@ -137,9 +150,22 @@
                             <i class="fas fa-shopping-bag me-2"></i> {{ __('Browse Products') }}
                         </a>
                         @guest
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg">
-                                <i class="fas fa-user-plus me-2"></i> {{ __('Log in') }}
-                            </a>
+                            <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="fas fa-user-plus me-2"></i> {{ __('Customer Login') }}
+                            </button>
+                        @else
+                            <div class="d-flex align-items-center">
+                                <span class="me-3">Welcome, <strong>{{ auth()->user()->PreferredName }}</strong></span>
+                                @php
+                                    $customer = auth()->user()->customer;
+                                    $priceLevel = $customer->price_level ?? 1;
+                                    $tierNames = [1 => 'Retail', 2 => 'Wholesale', 3 => 'Special', 4 => 'Premium'];
+                                    $tierClasses = [1 => 'tier-retail', 2 => 'tier-wholesale', 3 => 'tier-special', 4 => 'tier-premium'];
+                                @endphp
+                                {{--<span class="badge price-tier-badge {{ $tierClasses[$priceLevel] }}">
+                                    {{ $tierNames[$priceLevel] }} Pricing
+                                </span>--}}
+                            </div>
                         @endguest
                     </div>
                 </div>
@@ -286,6 +312,68 @@
         </div>
     </section>
 
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>Customer Login
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <div class="text-center mb-4">
+                        <p class="text-muted">Login to access your wholesale pricing and place orders</p>
+                    </div>
+
+                    <form id="loginForm" method="POST" action="{{ route('login') }}">
+                        @csrf
+                        <input type="hidden" name="redirect_to_shop" value="1">
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ old('email') }}" required autofocus>
+                            </div>
+                            <div class="invalid-feedback" id="email-error"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback" id="password-error"></div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="loginBtn">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Need an account? <a href="#" class="text-primary">Contact us for business registration</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -294,6 +382,71 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Password toggle functionality
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+
+            // Enhanced login form handling
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Clear previous errors
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
+                // Show loading state
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+
+                // Submit form via fetch for better error handling
+                fetch(loginForm.action, {
+                    method: 'POST',
+                    body: new FormData(loginForm),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Success - reload the page to show logged in state
+                            window.location.reload();
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        if (data && data.errors) {
+                            // Show validation errors
+                            Object.keys(data.errors).forEach(field => {
+                                const input = document.getElementById(field);
+                                const errorDiv = document.getElementById(field + '-error');
+                                if (input && errorDiv) {
+                                    input.classList.add('is-invalid');
+                                    errorDiv.textContent = data.errors[field][0];
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Login error:', error);
+                        alert('An error occurred during login. Please try again.');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+                    });
+            });
             // Add to cart functionality
             document.querySelectorAll('.add-to-cart').forEach(button => {
                 button.addEventListener('click', function() {

@@ -24,7 +24,9 @@ class Customer
                 return redirect()->route('shop.home');
             }
 
-            return redirect()->route('customer_portal.dashboard');
+            $customerId = Auth::user()->customer->id ?? null;
+
+            return redirect()->route('customer_portal.dashboard', ['customer' => $customerId]);
 
         }
 

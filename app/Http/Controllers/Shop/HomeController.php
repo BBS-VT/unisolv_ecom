@@ -39,5 +39,6 @@ class HomeController extends Controller
         $featuredProducts = $featuredProductsQuery->take(8)->get();
 
         return view('shop.home.index', compact('categories', 'featuredProducts'));
+
     }
 }

@@ -32,7 +32,7 @@
                 @else
                     <div class="dropdown me-3">
                         <a href="#" class="amazon-nav-item dropdown-toggle" data-bs-toggle="dropdown">
-                            <span class="nav-label">Hello, {{ Auth::user()->name }}</span>
+                            <span class="nav-label">Hello, {{ Auth::user()->PreferredName }}</span>
                             <span class="nav-title">Account & Lists</span>
                         </a>
                         <ul class="dropdown-menu">
