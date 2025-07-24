@@ -257,11 +257,11 @@
     </script>
     <script>
         window.cartRoutes = {
-            add: '{{ route("cart.add") }}',
-            remove: '{{ route("cart.remove") }}',
-            update: '{{ route("cart.update") }}',
-            mini: '{{ route("cart.mini") }}',
-            clear: '{{ route("cart.clear") }}'
+            add: '{{ route("shop.cart.add") }}',
+            remove: '{{ route("shop.cart.remove") }}',
+            update: '{{ route("shop.cart.update") }}',
+            mini: '{{ route("shop.cart.mini") }}',
+            clear: '{{ route("shop.cart.clear") }}'
         };
     </script>
     {{--<script>

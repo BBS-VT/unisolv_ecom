@@ -4,6 +4,7 @@ use App\Http\Controllers\Shop\DraftOrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\Shop\ProductController;
+use App\Http\Controllers\Shop\PageController;
 use App\Http\Controllers\Shop\CartController;
 use App\Http\Controllers\Shop\CheckoutController;
 use App\Http\Controllers\Shop\OrderController;
