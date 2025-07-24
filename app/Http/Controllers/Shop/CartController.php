@@ -73,6 +73,7 @@ class CartController extends Controller
 
         if (Auth::check()) {
             $this->syncCartToUser();
+            event(new CartUpdated(Auth::id(), $cart, 'add'));
         }
 
         return response()->json([
@@ -85,10 +86,18 @@ class CartController extends Controller
 
     public function showCart()
     {
+        $returnUrl = url()->previous();
+
+        if (strpos($returnUrl, '/cart') === false) {
+            Session::put('shopping_return_url', $returnUrl);
+        }
+
         $cart = Session::get('cart', []);
         $cartTotal = $this->getCartTotal();
+        $returnToShoppingUrl = Session::get('shopping_return_url', route('shop.products.index'));
 
-        return view('shop.cart.show', compact('cart', 'cartTotal'));
+        return view('shop.cart.show', compact('cart', 'cartTotal', 'returnToShoppingUrl'));
+
     }
 
     public function updateCart(Request $request)
@@ -135,6 +144,7 @@ class CartController extends Controller
         // If user is logged in, save cart to database
         if (Auth::check()) {
             $this->syncCartToUser();
+            event(new CartUpdated(Auth::id(), $cart, 'update'));
         }
 
         return response()->json([
@@ -175,6 +185,7 @@ class CartController extends Controller
         // If user is logged in, save cart to database
         if (Auth::check()) {
             $this->syncCartToUser();
+            event(new CartUpdated(Auth::id(), $cart, 'remove'));
         }
 
         return response()->json([
@@ -193,6 +204,7 @@ class CartController extends Controller
         // If user is logged in, clear cart in database
         if (Auth::check()) {
             $this->syncCartToUser();
+            event(new CartUpdated(Auth::id(), 'clear'));
         }
 
         return response()->json([
@@ -268,4 +280,6 @@ class CartController extends Controller
             'mini_cart_html' => view('shop.partials.mini-cart', compact('cart', 'cartTotal', 'cartCount'))->render()
         ]);
     }
+
+
 }

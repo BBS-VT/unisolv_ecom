@@ -9,7 +9,7 @@
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div class="table-responsive d-none d-md-block">
                                 <table class="table table-cart">
                                     <thead>
                                     <tr>
@@ -26,7 +26,9 @@
                                     </tr>
                                     </thead>
                                     <tbody id="cart-items">
-                                    @include('shop.cart.partials.cart-items')
+                                    <div class="d-md-none">
+                                        @include('shop.cart.partials.cart-items')
+                                    </div>
                                     </tbody>
                                 </table>
                             </div>

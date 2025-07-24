@@ -255,6 +255,15 @@
             }
         });
     </script>
+    <script>
+        window.cartRoutes = {
+            add: '{{ route("cart.add") }}',
+            remove: '{{ route("cart.remove") }}',
+            update: '{{ route("cart.update") }}',
+            mini: '{{ route("cart.mini") }}',
+            clear: '{{ route("cart.clear") }}'
+        };
+    </script>
     {{--<script>
         document.addEventListener('DOMContentLoaded', function() {
             // Add to cart functionality

@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = ProductCategory::withCount(['products' => function ($query) {
+        /*$categories = ProductCategory::withCount(['products' => function ($query) {
             $query->where('status', true);
             }])
             ->where('status', true)
@@ -36,7 +36,7 @@ class HomeController extends Controller
             });
         }
 
-        $featuredProducts = $featuredProductsQuery->take(8)->get();
+        $featuredProducts = $featuredProductsQuery->take(8)->get();*/
 
         return view('shop.home.index', compact('categories', 'featuredProducts'));
     }

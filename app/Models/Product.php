@@ -195,5 +195,23 @@ class Product extends Model implements HasMedia
             ->orWhere('id', $value)
             ->firstOrFail();
     }
+
+    public function hasEnoughStock($quantity)
+    {
+        if (Features::allowBackorders()) {
+            return true;
+        }
+
+        return $this->stock >= $quantity;
+    }
+
+    public function checkMinimumOrderQuantity($quantity)
+    {
+        if ($this->min_order_qty > 0) {
+            return $quantity >= $this->min_order_qty;
+        }
+
+        return true;
+    }
 }
 

@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('cleanup:temp-uploads')->daily();
+        $schedule->command('carts:identify-abandoned')->dailyAt('10:00');
     }
 
     /**
