@@ -1,4 +1,4 @@
-<div class="amazon-product-card" onclick="window.location.href='{{ route('shop.products.show', $product->slug ?? $product->id) }}'">
+<div class="amazon-product-card" data-product-url='{{ route('shop.products.show', $product->slug ?? $product->id) }}'">
     <div class="position-relative">
         <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}" class="amazon-product-image">
         @if($product->is_new)
@@ -83,9 +83,8 @@
         @auth
             @if($product->stockHolding->QuantityOnHand > 0 || \App\Helpers\Features::backordersEnabled())
                 <button class="btn btn-amazon-primary btn-sm add-to-cart-btn w-100"
-                        data-product-id="{{ $product->id }}"
-                        onclick="event.stopPropagation();">
-                    <i class="bi bi-cart-plus me-1"></i>{{ __('Add to Cart') }}
+                        data-product-id="{{ $product->id }}">
+                    <i class="bi bi-cart-plus me-1 "></i>{{ __('Add to Cart') }}
                 </button>
             @else
                 <button class="btn btn-secondary btn-sm w-100" disabled>

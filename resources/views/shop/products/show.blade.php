@@ -181,7 +181,7 @@
                     @auth
                         @if(($product->stockHolding && $product->stockHolding->QuantityOnHand > 0) || \App\Helpers\Features::backordersEnabled())
                             <div class="mb-4">
-                                <form id="add-to-cart-form">
+                                <form id="add-to-cart-form" onsubmit="return false;">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
 
@@ -201,7 +201,7 @@
                                     </div>
 
                                     <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-amazon-secondary btn-lg">
+                                        <button type="button" class="btn btn-amazon-secondary btn-lg add-to-cart-btn" data-product-id="{{ $product->id }}">
                                             <i class="bi bi-cart-plus me-2"></i>Add to Cart
                                         </button>
                                         <button type="button" class="btn btn-amazon-primary btn-lg">
@@ -388,8 +388,7 @@
                                         @auth
                                             <div class="mt-auto">
                                                 <button class="btn btn-amazon-primary btn-sm add-to-cart-btn w-100"
-                                                        data-product-id="{{ $relatedProduct->id }}"
-                                                        onclick="event.stopPropagation();">
+                                                        data-product-id="{{ $relatedProduct->id }}">
                                                     <i class="bi bi-cart-plus me-1"></i>Add to Cart
                                                 </button>
                                             </div>
@@ -485,7 +484,7 @@
     @endguest
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         $(document).ready(function() {
             // Track product view
@@ -504,58 +503,6 @@
                         $(this).val('10');
                     }
                 }
-            });
-
-            // Add to cart form submission
-            $('#add-to-cart-form').submit(function(e) {
-                e.preventDefault();
-
-                const productId = $('input[name="product_id"]').val();
-                const quantity = $('#product-quantity').val();
-                const button = $(this).find('button[type="submit"]');
-                const originalText = button.html();
-
-                // Show loading state
-                button.prop('disabled', true);
-                button.html('<i class="bi bi-hourglass-split me-2"></i>Adding to Cart...');
-
-                $.ajax({
-                    url: '{{ route("shop.cart.add") }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        quantity: quantity,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Update cart badge
-                            $('.cart-badge').text(response.cart_count);
-
-                            // Show success state
-                            button.html('<i class="bi bi-check-circle me-2"></i>Added to Cart!');
-                            button.removeClass('btn-amazon-secondary').addClass('btn-success');
-
-                            // Show success message
-                            showCartToast('Product added to cart successfully', 'success');
-
-                            // Reset button after 3 seconds
-                            setTimeout(function() {
-                                button.html(originalText);
-                                button.removeClass('btn-success').addClass('btn-amazon-secondary');
-                                button.prop('disabled', false);
-                            }, 3000);
-                        }
-                    },
-                    error: function(xhr) {
-                        const response = xhr.responseJSON;
-                        showCartToast(response.message || 'Error adding product to cart', 'danger');
-
-                        // Reset button
-                        button.html(originalText);
-                        button.prop('disabled', false);
-                    }
-                });
             });
 
             // Image gallery functionality
@@ -753,6 +700,94 @@
             // Make functions globally accessible
             window.showCartToast = showCartToast;
             window.trackProductView = trackProductView;
+
+            $(document).on('click', '.add-to-cart-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                console.log('Add to cart button clicked');
+
+                const productId = $(this).data('product-id');
+                const button = $(this);
+                const originalText = button.html();
+
+                console.log('Product ID:', productId);
+
+                if (!productId) {
+                    console.error('No product ID found');
+                    alert('Error: No product ID found');
+                    return;
+                }
+
+                // Show loading state
+                button.html('<i class="bi bi-hourglass-split me-1"></i>Adding...');
+                button.prop('disabled', true);
+
+                console.log('Making AJAX request to:', '{{ route("shop.cart.add") }}');
+
+                $.ajax({
+                    url: '{{ route("shop.cart.add") }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        quantity: 1,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    beforeSend: function() {
+                        console.log('AJAX request starting....')
+                    },
+                    success: function(response) {
+                        console.log('AJAX success:', response);
+
+                        if (response.success) {
+                            // Update cart badge
+                            $('.cart-badge').text(response.cart_count);
+
+                            // Show success state
+                            button.html('<i class="bi bi-check-circle me-1"></i>Added!');
+                            button.removeClass('btn-amazon-primary').addClass('btn-success');
+
+                            // Show toast notification
+                            showCartToast('Product added to cart successfully', 'success');
+
+                            // Reset button after 2 seconds
+                            setTimeout(function() {
+                                button.html(originalText);
+                                button.removeClass('btn-success').addClass('btn-amazon-primary');
+                                button.prop('disabled', false);
+                            }, 2000);
+                        } else {
+                            console.error('Server returned success=false:', response);
+                            alert('Error: ' + (response.message || 'Unknown error'));
+                            button.html(originalText);
+                            button.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText,
+                            error: error
+                        });
+
+                        let errorMessage = 'Error adding product to cart';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
+
+                        // Reset button
+                        button.html(originalText);
+                        button.prop('disabled', false);
+                    },
+                    complete: function() {
+                        console.log('AJAX request completed');
+                    }
+                });
+            });
         });
+
     </script>
-@endsection
+
+@endpush

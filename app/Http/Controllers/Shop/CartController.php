@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\Validator;
+use App\Events\CartUpdated;
 
 class CartController extends Controller
 {
@@ -18,70 +19,80 @@ class CartController extends Controller
      */
     public function addToCart(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'product_id' => 'required|integer|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        try {
+            $request->validate([
+                'product_id' => 'required|integer|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-            ], 422);
-        }
+            $product = Product::findOrFail($request->product_id);
+            $quantity = $request->quantity;
 
-        $product = Product::findOrFail($request->product_id);
-
-        // Check stock availability unless backorders are allowed
-        if (!Features::allowBackorders() && $product->stock < $request->quantity) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Not enough stock available.',
-            ], 422);
-        }
-
-        if (!Session::has('cart')) {
-            Session::put('cart', []);
-        }
-
-        $cart = Session::get('cart');
-
-        // Check if the product is already in the cart
-        $existingItem = false;
-        foreach ($cart as $key => $item) {
-            if ($item['product_id'] == $request->product_id) {
-                $cart[$key]['quantity'] += $request->quantity;
-                $existingItem = true;
-                break;
+            // Check stock availability unless backorders are allowed
+            if (!Features::backordersEnabled() && $product->stockHolding->QuantityOnHand < $request->quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not enough stock available.',
+                ], 422);
             }
+
+            if (!Session::has('cart')) {
+                Session::put('cart', []);
+            }
+
+            $cart = Session::get('cart');
+
+            // Check if the product is already in the cart
+            $existingItem = false;
+            foreach ($cart as $key => $item) {
+                if ($item['product_id'] == $request->product_id) {
+                    $cart[$key]['quantity'] += $request->quantity;
+                    $existingItem = true;
+                    break;
+                }
+            }
+
+            // If the product is not in the cart, add it
+            if (!$existingItem) {
+                $price = $this->getPriceForCustomer($product);
+
+                $cart[] = [
+                    'product_id' => $product->id,
+                    'name' => $product->StockItemName,
+                    'quantity' => $request->quantity,
+                    'price' => $price,
+                    'added_at' => now()->timestamp ,
+                ];
+            }
+
+            Session::put('cart', $cart);
+
+            if (Auth::check()) {
+                $this->syncCartToUser();
+                event(new CartUpdated(Auth::id(), $cart, 'add'));
+            }
+
+            $cartCount = $this->getCartCount();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Added to cart successfully.',
+                'cart_count' => $cartCount,
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->StockItemName,
+                    'quantity' => $quantity,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Add to cart error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add product to cart: ' . $e->getMessage(),
+            ], 500);
         }
 
-        // If the product is not in the cart, add it
-        if (!$existingItem) {
-            $price = $this->getPriceForCustomer($product);
-
-            $cart[] = [
-                'product_id' => $product->id,
-                'name' => $product->StockItemName,
-                'quantity' => $request->quantity,
-                'price' => $price,
-                'added_at' => now()->timestamp ,
-            ];
-        }
-
-        Session::put('cart', $cart);
-
-        if (Auth::check()) {
-            $this->syncCartToUser();
-            event(new CartUpdated(Auth::id(), $cart, 'add'));
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Product added to cart successfully.',
-            'cart_count' => $this->getCartCount(),
-            'cart_total' => $this->getCartTotal(),
-        ]);
     }
 
     public function showCart()

@@ -169,7 +169,7 @@
     </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         $(document).ready(function() {
             // Filter change handlers
@@ -204,18 +204,42 @@
                 window.location.href = '{{ route("shop.products.index") }}';
             });
 
+            // Handle product card clicks (but not buttons)
+            $(document).on('click', '.amazon-product-card', function(e) {
+                if ($(e.target).closest('button, a').length > 0) {
+                    return;
+                }
+
+                const productUrl = $(this).data('product-url');
+                if (productUrl) {
+                    window.location.href = productUrl;
+                }
+            });
+
             // Add to cart functionality
             $(document).on('click', '.add-to-cart-btn', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
+                console.log('Add to cart button clicked');
+
                 const productId = $(this).data('product-id');
                 const button = $(this);
                 const originalText = button.html();
 
+                console.log('Product ID:', productId);
+
+                if (!productId) {
+                    console.error('No product ID found');
+                    alert('Error: No product ID found');
+                    return;
+                }
+
                 // Show loading state
                 button.html('<i class="bi bi-hourglass-split me-1"></i>Adding...');
                 button.prop('disabled', true);
+
+                console.log('Making AJAX request to:', '{{ route("shop.cart.add") }}');
 
                 $.ajax({
                     url: '{{ route("shop.cart.add") }}',
@@ -225,7 +249,12 @@
                         quantity: 1,
                         _token: '{{ csrf_token() }}'
                     },
+                    beforeSend: function() {
+                        console.log('AJAX request starting....')
+                    },
                     success: function(response) {
+                        console.log('AJAX success:', response);
+
                         if (response.success) {
                             // Update cart badge
                             $('.cart-badge').text(response.cart_count);
@@ -243,15 +272,33 @@
                                 button.removeClass('btn-success').addClass('btn-amazon-primary');
                                 button.prop('disabled', false);
                             }, 2000);
+                        } else {
+                            console.error('Server returned success=false:', response);
+                            alert('Error: ' + (response.message || 'Unknown error'));
+                            button.html(originalText);
+                            button.prop('disabled', false);
                         }
                     },
-                    error: function(xhr) {
-                        const response = xhr.responseJSON;
-                        showCartToast(response.message || 'Error adding product to cart', 'danger');
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText,
+                            error: error
+                        });
+
+                        let errorMessage = 'Error adding product to cart';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
 
                         // Reset button
                         button.html(originalText);
                         button.prop('disabled', false);
+                    },
+                    complete: function() {
+                        console.log('AJAX request completed');
                     }
                 });
             });
@@ -396,65 +443,5 @@
             clear: '{{ route("shop.cart.clear") }}'
         };
     </script>
-    {{--<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add to cart functionality
-            document.querySelectorAll('.add-to-cart-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
 
-                    const productId = this.dataset.productId;
-                    const quantity = this.querySelector('input[name="quantity"]').value;
-                    const button = this.querySelector('button[type="submit"]');
-
-                    // Disable button during submission
-                    button.disabled = true;
-                    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Adding...';
-
-                    fetch('{{ route("shop.cart.add") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            quantity: quantity
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Update cart count in navbar
-                                document.querySelector('#cart-count').textContent = data.cartCount;
-
-                                // Reset button
-                                button.innerHTML = '<i class="fas fa-check me-1"></i> Added!';
-                                button.classList.remove('btn-primary');
-                                button.classList.add('btn-success');
-
-                                setTimeout(() => {
-                                    button.disabled = false;
-                                    button.innerHTML = '<i class="fas fa-cart-plus me-1"></i> Add to Cart';
-                                    button.classList.remove('btn-success');
-                                    button.classList.add('btn-primary');
-                                }, 2000);
-                            } else {
-                                // Show error
-                                alert(data.message || 'Error adding to cart');
-                                button.disabled = false;
-                                button.innerHTML = '<i class="fas fa-cart-plus me-1"></i> Add to Cart';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Error adding to cart');
-                            button.disabled = false;
-                            button.innerHTML = '<i class="fas fa-cart-plus me-1"></i> Add to Cart';
-                        });
-                });
-            });
-        });
-    </script>--}}
-@endsection
+@endpush

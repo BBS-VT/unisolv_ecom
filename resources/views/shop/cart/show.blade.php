@@ -15,11 +15,11 @@
                                     <tr>
                                         <th style="width: 100px;">Product</th>
                                         <th>Description</th>
-                                        @if(\App\Helpers\Features::showPrices())
+                                        @if(\App\Helpers\Features::publicPricesEnabled())
                                             <th class="text-end">Price</th>
                                         @endif
                                         <th style="width: 150px;">Quantity</th>
-                                        @if(\App\Helpers\Features::showPrices())
+                                        @if(\App\Helpers\Features::publicPricesEnabled())
                                             <th class="text-end">Total</th>
                                         @endif
                                         <th style="width: 50px;"></th>
@@ -51,7 +51,7 @@
                             <h5 class="mb-0">Order Summary</h5>
                         </div>
                         <div class="card-body">
-                            @if(\App\Helpers\Features::showPrices())
+                            @if(\App\Helpers\Features::publicPricesEnabled())
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Subtotal</span>
                                     <span>${{ number_format($cartTotal, 2) }}</span>
