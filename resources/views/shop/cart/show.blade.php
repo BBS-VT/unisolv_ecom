@@ -77,7 +77,7 @@
                                 <p class="text-center mb-4">Please log in to see pricing information.</p>
                             @endif
 
-                            <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg w-100">
+                            <a href="{{ route('shop.checkout.index') }}" class="btn btn-primary btn-lg w-100">
                                 Proceed to Checkout
                             </a>
                         </div>

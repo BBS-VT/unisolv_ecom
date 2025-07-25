@@ -4,13 +4,15 @@
     @endphp
     <tr>
         <td>
-            <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="img-fluid" style="max-height: 80px;">
+            <img src="{{ 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}" class="amazon-product-image">
+
+            {{--            <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="img-fluid" style="max-height: 80px;">--}}
         </td>
         <td>
             <h5>{{ $item['name'] }}</h5>
             <p class="text-muted small mb-0">SKU: {{ $item['product_id'] }}</p>
         </td>
-        @if(\App\Helpers\Features::showPrices())
+        @if(\App\Helpers\Features::publicPricesEnabled())
             <td class="text-end">${{ number_format($item['price'], 2) }}</td>
         @endif
         <td>
@@ -27,7 +29,7 @@
                 </button>
             </div>
         </td>
-        @if(\App\Helpers\Features::showPrices())
+        @if(\App\Helpers\Features::publicPricesEnabled())
             <td class="text-end">${{ number_format($itemTotal, 2) }}</td>
         @endif
         <td>
