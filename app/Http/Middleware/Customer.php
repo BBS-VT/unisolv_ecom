@@ -18,15 +18,22 @@ class Customer
      */
     public function handle(Request $request, Closure $next)
     {
+        if (Features::ecommerceEnabled()) {
+            if ($request->is('shop/*')) {
+                return $next($request);
+            }
+        }
+
         if (Auth::check() && Auth::user()->IsCustomer == 1) {
 
             if (Features::ecommerceEnabled() && $request->has('redirect_to_shop')) {
                 return redirect()->route('shop.home');
             }
-
-            $customerId = Auth::user()->customer->id ?? null;
-
-            return redirect()->route('customer_portal.dashboard', ['customer' => $customerId]);
+            else
+            {
+                $customerId = Auth::user()->customer->id ?? null;
+                return redirect()->route('customer_portal.dashboard', ['customer' => $customerId]);
+            }
 
         }
 

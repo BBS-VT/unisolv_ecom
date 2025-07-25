@@ -39,7 +39,15 @@
                             <li><a class="dropdown-item" href="{{ route('shop.account.index') }}">Your Account</a></li>
                             <li><a class="dropdown-item" href="{{ route('shop.account.orders.index') }}">Your Orders</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('logout') }}">Sign Out</a></li>
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                               onclick="event.preventDefault();
+                            document.getElementById('logout-form').submit();">
+                                <i data-feather="power" class="align-self-center icon-xs icon-dual mr-1"></i> {{ __('Logout') }}
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+{{--                            <li><a class="dropdown-item" href="{{ route('logout') }}">Sign Out</a></li>--}}
                         </ul>
                     </div>
                 @endguest

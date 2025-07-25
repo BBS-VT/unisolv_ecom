@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Shop;
 
+use App\Helpers\PricingHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -10,48 +11,130 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    protected function getProductPricing($product)
-    {
-        $customer = auth()->user()?->customer;
-        $priceLevel = $customer->price_level ?? 1;
-
-        $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
-        $basePrice = $product->SellingPrice;
-        $customerPrice = $priceLevel == 1 ? $basePrice : ($product->$priceField ?? $basePrice);
-
-        $discountPercentage = 0;
-        if ($priceLevel > 1 && $basePrice > 0 && $customerPrice < $basePrice) {
-            $discountPercentage = round((($basePrice - $customerPrice) / $basePrice) * 100);
-        }
-
-        $taxRate = $product->taxType ? $product->taxType->percent : 0;
-
-        return [
-            'price' => $customerPrice,
-            'base_price' => $basePrice,
-            'price_level' => $priceLevel,
-            'discount_percentage' => $discountPercentage,
-            'tax_rate' => $taxRate,
-            'price_ex_tax' => $customerPrice / (1 + ($taxRate / 100)),
-            'show_prices' => Features::publicPricesEnabled() || auth()->check(),
-        ];
-    }
     public function index(Request $request)
     {
         $query = Product::query()
             ->where('status', true)
             ->with(['packageType', 'stockHolding']);
 
-        $this->applyFilters($query, $request);
+        // Category filter
+        if ($request->has('categories') && !empty($request->categories)) {
+            $categoryIds = is_array($request->categories) ? $request->categories : explode(',', $request->categories);
+            $query->whereHas('categories', function($q) use ($categoryIds) {
+                $q->whereIn('product_categories.id', $categoryIds);
+            });
+        }
+
+        // Price filter
+        if ($request->has('price_range') && !empty($request->price_range)) {
+            $range = explode('-', $request->price_range);
+            $min = $range[0] ?? 0;
+            $max = $range[1] ?? null;
+
+            // Apply price filter based on customer's price level
+            $customer = auth()->user()?->customer;
+            $priceLevel = $customer->price_level ?? 1;
+            $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+
+            $query->where($priceField, '>=', $min);
+            if ($max) {
+                $query->where($priceField, '<=', $max);
+            }
+        }
+
+        // Custom price range
+        if (($request->has('price_min') && !empty($request->price_min)) ||
+            ($request->has('price_max') && !empty($request->price_max))) {
+
+            $customer = auth()->user()?->customer;
+            $priceLevel = $customer->price_level ?? 1;
+            $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+
+            if ($request->price_min) {
+                $query->where($priceField, '>=', $request->price_min);
+            }
+            if ($request->price_max) {
+                $query->where($priceField, '<=', $request->price_max);
+            }
+        }
+
+        // Availability filter
+        if ($request->has('availability') && !empty($request->availability)) {
+            $availability = is_array($request->availability) ? $request->availability : explode(',', $request->availability);
+
+            $query->where(function($q) use ($availability) {
+                foreach ($availability as $status) {
+                    switch ($status) {
+                        case 'in_stock':
+                            $q->orWhereHas('stockHolding', function($sq) {
+                                $sq->where('QuantityOnHand', '>', 10);
+                            });
+                            break;
+                        case 'low_stock':
+                            $q->orWhereHas('stockHolding', function($sq) {
+                                $sq->whereBetween('QuantityOnHand', [1, 10]);
+                            });
+                            break;
+                        case 'backorder':
+                            if (Features::backordersEnabled()) {
+                                $q->orWhereHas('stockHolding', function($sq) {
+                                    $sq->where('QuantityOnHand', '<=', 0);
+                                });
+                            }
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Search filter
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('StockItemName', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('StockCode', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('MarketingComments', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Sorting
+        switch ($request->get('sort', 'relevance')) {
+            case 'price_low_high':
+                $customer = auth()->user()?->customer;
+                $priceLevel = $customer->price_level ?? 1;
+                $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+                $query->orderBy($priceField, 'asc');
+                break;
+            case 'price_high_low':
+                $customer = auth()->user()?->customer;
+                $priceLevel = $customer->price_level ?? 1;
+                $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+                $query->orderBy($priceField, 'desc');
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('is_featured', 'desc')->orderBy('StockItemName', 'asc');
+        }
+
+        // Get categories for filter sidebar
+        $categories = ProductCategory::withCount(['products' => function ($q) {
+            $q->where('status', true);
+        }])
+            ->where('status', true)
+            ->having('products_count', '>', 0)
+            ->orderBy('StockGroupName', 'asc')
+            ->get();
 
         $products = $query->paginate(Features::productsPerPage());
 
         $products->getCollection()->transform(function ($product) {
-            $product->pricing = $this->getProductPricing($product);
+            $product->pricing = PricingHelper::getProductPricing($product);
             return $product;
         });
 
-        $categories = $this->getCategories();
+        //$categories = $this->getCategories();
 
         return view('shop.products.index', compact('products', 'categories'));
     }
@@ -64,7 +147,7 @@ class ProductController extends Controller
             ->firstOrFail();
 
         // Add pricing information to the product
-        $product->pricing = $this->getProductPricing($product);
+        $product->pricing = PricingHelper::getProductPricing($product);
 
         // Get related products
         $relatedProducts = Product::whereHas('categories', function($query) use ($product) {
@@ -77,7 +160,7 @@ class ProductController extends Controller
 
         // Add pricing to related products
         $relatedProducts->transform(function ($relatedProduct) {
-            $relatedProduct->pricing = $this->getProductPricing($relatedProduct);
+            $relatedProduct->pricing = PricingHelper::getProductPricing($relatedProduct);
             return $relatedProduct;
         });
 
@@ -103,7 +186,7 @@ class ProductController extends Controller
         $products = $query->paginate(Features::productsPerPage());
 
         $products->getCollection()->transform(function ($product) {
-            $product->pricing = $this->getProductPricing($product);
+            $product->pricing = PricingHelper::getProductPricing($product);
             return $product;
         });
 
@@ -182,5 +265,43 @@ class ProductController extends Controller
             ->having('products_count', '>', 0)
             ->orderBy('StockGroupName')
             ->get();
+    }
+
+    public function getRecentlyViewed(Request $request)
+    {
+        $productIds = $request->input('product_ids', []);
+
+        if (empty($productIds)) {
+            return response()->json(['products' => []]);
+        }
+
+        $products = Product::whereIn('id', $productIds)
+            ->where('status', true)
+            ->get()
+            ->map(function ($product) {
+                $pricing = PricingHelper::getProductPricing($product);
+
+                $priceHtml = '';
+                if ($pricing['show_prices']) {
+                    $price = $pricing['price'];
+                    $whole = floor($price);
+                    $fraction = sprintf('%02d', ($price - $whole) * 100);
+                    $priceHtml = sprintf(
+                        '<div class="amazon-price mt-2"><span class="amazon-price-whole">%s%s</span><span class="amazon-price-fraction">%s</span></div>',
+                        config('app.currency', 'R'),
+                        number_format($whole, 0),
+                        $fraction
+                    );
+                }
+                return [
+                    'id' => $product->id,
+                    'name' => $product->StockItemName,
+                    'url' => route('shop.products.show', $product->slug ?? $product->id),
+                    'image' => $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image',
+                    'price_html' => $priceHtml
+                ];
+            });
+
+        return response()->json(['products' => $products]);
     }
 }

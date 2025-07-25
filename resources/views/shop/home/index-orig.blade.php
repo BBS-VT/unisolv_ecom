@@ -143,27 +143,28 @@
                 <div class="col-lg-8">
                     <h1 class="display-5 fw-bold mb-3">{{ __('Welcome to our B2B Store') }}</h1>
                     <p class="lead text-muted mb-4">
-                        {{ __('Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.') }}
+                        {{ __('messages.shop_welcome_message') }}
                     </p>
                     <div class="d-flex gap-3">
                         <a href="{{ route('shop.products.index') }}" class="btn btn-primary btn-lg">
                             <i class="fas fa-shopping-bag me-2"></i> {{ __('Browse Products') }}
                         </a>
                         @guest
-                            <button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                <i class="fas fa-user me-2"></i> {{ __('Customer Login') }}
+                            <button class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="fas fa-user-plus me-2"></i> {{ __('Customer Login') }}
                             </button>
                         @else
                             <div class="d-flex align-items-center">
-                                <span class="me-3">Welcome, {{ auth()->user()->PreferredName }}!</span>
+                                <span class="me-3">Welcome, <strong>{{ auth()->user()->PreferredName }}</strong></span>
                                 @php
                                     $customer = auth()->user()->customer;
                                     $priceLevel = $customer->price_level ?? 1;
-
+                                    $tierNames = [1 => 'Retail', 2 => 'Wholesale', 3 => 'Special', 4 => 'Premium'];
+                                    $tierClasses = [1 => 'tier-retail', 2 => 'tier-wholesale', 3 => 'tier-special', 4 => 'tier-premium'];
                                 @endphp
-                                <span class="badge price-tier-badge {{ \App\Helpers\PricingHelper::getPriceTierClass($priceLevel) }}">
-                                    {{ \App\Helpers\PricingHelper::getPriceTierName($priceLevel) }} Pricing
-                                </span>
+                                {{--<span class="badge price-tier-badge {{ $tierClasses[$priceLevel] }}">
+                                    {{ $tierNames[$priceLevel] }} Pricing
+                                </span>--}}
                             </div>
                         @endguest
                     </div>
@@ -204,7 +205,6 @@
             </div>
         </div>
     </section>
-
     <section class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-5">Featured Products</h2>
@@ -232,30 +232,23 @@
                                 </h5>
                                 <p class="text-muted small">{{ Str::limit($product->MarketingComments, 60) }}</p>
 
-                                @if($product->pricing['show_prices'])
-                                    <div class="pricing mb-3">
-                                        <h5 class="text-primary mb-1">
-                                            {{ config('app.currency', 'R') }} {{ number_format($product->pricing['price'], 2) }}
-                                        </h5>
-                                        @if($product->pricing['discount_percentage'] > 0)
-                                            <small class="text-muted">
-                                                <s>{{ config('app.currency', 'R') }} {{ number_format($product->pricing['base_price'], 2) }}</s>
-                                                <span class="text-success ms-1">
-                                                    Save {{ $product->pricing['discount_percentage'] }}%
-                                                </span>
-                                            </small>
-                                        @elseif(auth()->guest())
-                                            <small class="text-info">
-                                                <i class="fas fa-info-circle me-1"></i>Login for wholesale pricing
-                                            </small>
+                                @if(\App\Helpers\Features::publicPricesEnabled() || auth()->check())
+                                    <h5 class="text-primary mb-3">
+                                        @if(auth()->check())
+                                            @php
+                                                $customer = auth()->user()->customer;
+                                                $priceLevel = $customer->price_level ?? 1;
+                                                $price = $priceLevel == 1 ? $product->SellingPrice : $product->{"SellingPrice{$priceLevel}"};
+                                            @endphp
+                                            {{ config('app.currency', 'R') }} {{ number_format($price, 2) }}
+                                        @else
+                                            {{ config('app.currency', 'R') }} {{ number_format($product->SellingPrice, 2) }}
                                         @endif
-                                    </div>
+                                    </h5>
                                 @else
-                                    <div class="pricing mb-3">
-                                        <p class="text-muted">
-                                            <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a> to view prices
-                                        </p>
-                                    </div>
+                                    <p class="text-muted">
+                                        <a href="{{ route('login') }}" class="text-primary">Login</a> to view prices
+                                    </p>
                                 @endif
                             </div>
                             <div class="card-footer bg-transparent">
@@ -265,10 +258,9 @@
                                         <i class="fas fa-cart-plus me-1"></i> Add to Cart
                                     </button>
                                 @else
-                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100"
-                                            data-bs-toggle="modal" data-bs-target="#loginModal">
+                                    <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-sm w-100">
                                         <i class="fas fa-sign-in-alt me-1"></i> Login to Order
-                                    </button>
+                                    </a>
                                 @endauth
                             </div>
                         </div>
@@ -277,7 +269,6 @@
             </div>
         </div>
     </section>
-
     <section class="py-5">
         <div class="container">
             <div class="row text-center">
@@ -295,8 +286,8 @@
                         <div class="feature-icon mb-3">
                             <i class="fas fa-tags fa-3x text-primary"></i>
                         </div>
-                        <h5>Wholesale Pricing</h5>
-                        <p class="text-muted">Competitive prices based on your customer tier</p>
+                        <h5>Bulk Pricing</h5>
+                        <p class="text-muted">Competitive prices for wholesale orders</p>
                     </div>
                 </div>
                 <div class="col-md-3 mb-4">
@@ -383,7 +374,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('script')
@@ -457,17 +447,12 @@
                         loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
                     });
             });
-
             // Add to cart functionality
             document.querySelectorAll('.add-to-cart').forEach(button => {
                 button.addEventListener('click', function() {
                     const productId = this.dataset.productId;
-                    const originalText = this.innerHTML;
 
-                    // Show loading state
-                    this.disabled = true;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Adding...';
-
+                    // Add AJAX call to add to cart
                     fetch('{{ route("shop.cart.add") }}', {
                         method: 'POST',
                         headers: {
@@ -482,32 +467,16 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Update cart count if element exists
-                                const cartCount = document.querySelector('#cart-count');
-                                if (cartCount) {
-                                    cartCount.textContent = data.cartCount;
-                                }
+                                // Update cart count
+                                document.querySelector('#cart-count').textContent = data.cartCount;
 
-                                // Show success state briefly
-                                this.innerHTML = '<i class="fas fa-check me-1"></i> Added!';
-                                this.classList.remove('btn-outline-primary');
-                                this.classList.add('btn-success');
-
-                                setTimeout(() => {
-                                    this.innerHTML = originalText;
-                                    this.classList.remove('btn-success');
-                                    this.classList.add('btn-outline-primary');
-                                    this.disabled = false;
-                                }, 2000);
-                            } else {
-                                throw new Error(data.message || 'Failed to add to cart');
+                                // Show success message TODO: use a toast library here
+                                alert('Product added to cart!');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Error adding to cart: ' + error.message);
-                            this.innerHTML = originalText;
-                            this.disabled = false;
+                            alert('Error adding to cart');
                         });
                 });
             });

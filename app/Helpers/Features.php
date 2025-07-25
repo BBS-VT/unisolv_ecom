@@ -97,13 +97,7 @@ class Features
             (bool) self::getSetting('ecommerce_require_approval', true);
     }
 
-    /**
-     * Check if Bootstrap 5 is enabled
-     */
-    public static function bootstrap5Enabled(): bool
-    {
-        return (bool) self::getSetting('bootstrap5_enabled', false);
-    }
+
 
     /**
      * Get minimum order amount

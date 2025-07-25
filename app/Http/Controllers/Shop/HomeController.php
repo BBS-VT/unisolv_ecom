@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
-use App\Helpers\Features;
+use App\Helpers\PricingHelper;
 
 class HomeController extends Controller
 {
@@ -37,6 +37,8 @@ class HomeController extends Controller
         }
 
         $featuredProducts = $featuredProductsQuery->take(8)->get();
+
+        $featuredProducts = PricingHelper::addPricingToProducts($featuredProducts);
 
         return view('shop.home.index', compact('categories', 'featuredProducts'));
 

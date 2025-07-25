@@ -22,6 +22,7 @@ if (Features::ecommerceEnabled()) {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/categories/{category:slug}', [ProductController::class, 'category'])->name('categories.show');
+    Route::get('/products/recently-viewed', [ProductController::class, 'getRecentlyViewed'])->name('products.recently-viewed');
 
     // Cart functionality
     Route::prefix('cart')->name('cart.')->group(function () {

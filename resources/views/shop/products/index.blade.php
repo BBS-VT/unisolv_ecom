@@ -105,6 +105,68 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>Customer Login
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <div class="text-center mb-4">
+                        <p class="text-muted">Login to access your wholesale pricing and place orders</p>
+                    </div>
+
+                    <form id="loginForm" method="POST" action="{{ route('login') }}">
+                        @csrf
+                        <input type="hidden" name="redirect_to_shop" value="1">
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ old('email') }}" required autofocus>
+                            </div>
+                            <div class="invalid-feedback" id="email-error"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback" id="password-error"></div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="loginBtn">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Need an account? <a href="#" class="text-primary">Contact us for business registration</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -252,6 +314,76 @@
 
                 const bsToast = new bootstrap.Toast(toast[0]);
                 bsToast.show();
+            }
+
+            // Password toggle functionality
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            if (togglePassword && password) {
+                togglePassword.addEventListener('click', function (e) {
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            }
+
+// Enhanced login form handling
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (loginForm && loginBtn) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // Clear previous errors
+                    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
+                    // Show loading state
+                    loginBtn.disabled = true;
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+
+                    // Submit form via fetch for better error handling
+                    fetch(loginForm.action, {
+                        method: 'POST',
+                        body: new FormData(loginForm),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // Success - reload the page to show logged in state
+                                window.location.reload();
+                            } else {
+                                return response.json();
+                            }
+                        })
+                        .then(data => {
+                            if (data && data.errors) {
+                                // Show validation errors
+                                Object.keys(data.errors).forEach(field => {
+                                    const input = document.getElementById(field);
+                                    const errorDiv = document.getElementById(field + '-error');
+                                    if (input && errorDiv) {
+                                        input.classList.add('is-invalid');
+                                        errorDiv.textContent = data.errors[field][0];
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Login error:', error);
+                            alert('An error occurred during login. Please try again.');
+                        })
+                        .finally(() => {
+                            // Reset button state
+                            loginBtn.disabled = false;
+                            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+                        });
+                });
             }
         });
     </script>
