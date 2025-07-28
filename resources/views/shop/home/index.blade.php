@@ -386,7 +386,7 @@
 
 @endsection
 
-@section('script')
+@push('scripts')
     <script src="{{ URL::asset('build/libs/nouislider/nouislider.min.js') }}"></script>
     <script src="{{ URL::asset('build/libs/wnumb/wNumb.min.js') }}"></script>
 
@@ -513,4 +513,4 @@
             });
         });
     </script>
-@endsection
+@endpush

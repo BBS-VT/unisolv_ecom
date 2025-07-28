@@ -1,6 +1,9 @@
 @extends('shop.layouts.app')
 
 @section('content')
+    {{--@php
+        dd($cart);
+    @endphp--}}
     <div class="container my-5">
         <h1 class="mb-4">Shopping Cart</h1>
 
@@ -15,26 +18,26 @@
                                     <tr>
                                         <th style="width: 100px;">Product</th>
                                         <th>Description</th>
-                                        @if(\App\Helpers\Features::publicPricesEnabled())
+                                        @auth()
                                             <th class="text-end">Price</th>
-                                        @endif
-                                        <th style="width: 150px;">Quantity</th>
-                                        @if(\App\Helpers\Features::publicPricesEnabled())
+                                            <th style="width: 150px;">Quantity</th>
                                             <th class="text-end">Total</th>
-                                        @endif
+                                        @else
+                                            <th style="width: 150px;">Quantity</th>
+                                        @endauth
                                         <th style="width: 50px;"></th>
                                     </tr>
                                     </thead>
                                     <tbody id="cart-items">
-                                    <div class="d-md-none">
                                         @include('shop.cart.partials.cart-items')
-                                    </div>
                                     </tbody>
                                 </table>
                             </div>
 
+                            @include('shop.cart.partials.mobile')
+
                             <div class="d-flex justify-content-between mt-4">
-                                <a href="{{ url()->previous() }}" class="btn btn-outline-primary">
+                                <a href="{{ route('shop.products.index') }}" class="btn btn-outline-primary">
                                     <i class="bi bi-arrow-left me-2"></i>Continue Shopping
                                 </a>
                                 <button class="btn btn-danger clear-cart-btn">
@@ -51,35 +54,81 @@
                             <h5 class="mb-0">Order Summary</h5>
                         </div>
                         <div class="card-body">
-                            @if(\App\Helpers\Features::publicPricesEnabled())
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Subtotal</span>
-                                    <span>${{ number_format($cartTotal, 2) }}</span>
-                                </div>
-
+                            @auth
                                 @php
-                                    $tax = $cartTotal * 0.1; // Assuming 10% tax - adjust as needed
-                                    $orderTotal = $cartTotal + $tax;
+                                    $subtotal = 0;
+                                    foreach($cart as $item) {
+                                        $product = \App\Models\Product::find($item['product_id']);
+
+                                        if (!$product) {
+                                            continue;
+                                        }
+                                        $pricing = \App\Helpers\PricingHelper::getProductPricing($product);
+                                        $subtotal += $pricing['price'] * $item['quantity'];
+                                    }
+                                    $taxRate = 0.15; // TODO: link to TAX model
+                                    $tax = $subtotal * $taxRate;
+                                    $orderTotal = $subtotal + $tax;
                                 @endphp
 
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Tax (10%)</span>
-                                    <span>${{ number_format($tax, 2) }}</span>
+                                    <span>Subtotal ({{ count($cart) }} {{ Str::plural('item', count($cart)) }}</span>
+                                    <span class="cart-subtotal">{{ \App\Helpers\PricingHelper::formatPrice($subtotal) }}</span>
+                                </div>
+
+                                @if(\App\Helpers\PricingHelper::hasWholesalePricing())
+                                    @php
+                                        $retailTotal = 0;
+                                        foreach($cart as $item) {
+                                            $retailTotal += $item['product']->SellingPrice * $item['quantity'];
+                                        }
+                                        $totalSavings = $retailTotal - $subtotal;
+                                    @endphp
+                                    @if($totalSavings > 0)
+                                        <div class="d-flex justify-content-between mb-2 text-success">
+                                            <span>{{ \App\Helpers\PricingHelper::getPriceTierName() }} Savings</span>
+                                            <span>-{{ \App\Helpers\PricingHelper::formatPrice($totalSavings) }}</span>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax ({{ number_format($taxRate * 100, 1) }}%)</span>
+                                    <span class="cart-tax">{{ \App\Helpers\PricingHelper::formatPrice($tax) }}</span>
                                 </div>
 
                                 <hr>
 
                                 <div class="d-flex justify-content-between mb-4">
                                     <strong>Order Total</strong>
-                                    <strong>${{ number_format($orderTotal, 2) }}</strong>
+                                    <strong class="cart-total">{{ \App\Helpers\PricingHelper::formatPrice($orderTotal) }}</strong>
                                 </div>
-                            @else
-                                <p class="text-center mb-4">Please log in to see pricing information.</p>
-                            @endif
 
-                            <a href="{{ route('shop.checkout.index') }}" class="btn btn-primary btn-lg w-100">
-                                Proceed to Checkout
-                            </a>
+                                <a href="{{ route('shop.checkout.index') }}" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+                                </a>
+                            @else
+                                <div class="text-center mb-4">
+                                    <i class="bi bi-info-circle text-primary mb-3" style="font-size: 2rem;"></i>
+                                    <h6>Login Required</h6>
+                                    <p class="text-muted mb-3">Please log in to see pricing and proceed to checkout.</p>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shopLoginModal">
+                                        <i class="bi bi-person me-2"></i>Login Now
+                                    </button>
+                                </div>
+                            @endauth
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="bi bi-truck me-2"></i>{{ __('Delivery Information') }}
+                            </h6>
+                            <ul class="list-unstyled small mb-0">
+                                <li class="mb-1"><i class="bi bi-clock text-info me-1"></i> Standard delivery: 2-3 business days</li>
+                                <li><i class="bi bi-shield-check text-primary me-1"></i> Secure payment processing</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -87,19 +136,19 @@
         @else
             <div class="text-center py-5">
                 <div class="mb-4">
-                    <i class="bi bi-cart-x" style="font-size: 5rem;"></i>
+                    <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
                 </div>
                 <h2>Your cart is empty</h2>
                 <p class="text-muted">Looks like you haven't added any products to your cart yet.</p>
                 <a href="{{ route('shop.products.index') }}" class="btn btn-primary mt-3">
-                    Start Shopping
+                    <i class="bi bi-bag me-2"></i> {{ __('Start Shopping') }}
                 </a>
             </div>
         @endif
     </div>
 
     <!-- Toast Notification for Cart Actions -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    {{--<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
         <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <i class="bi bi-cart-check me-2"></i>
@@ -110,16 +159,17 @@
                 Item has been added to your cart.
             </div>
         </div>
-    </div>
+    </div>--}}
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         $(document).ready(function() {
             // Update quantity
             $(document).on('change', '.cart-quantity', function() {
                 const productId = $(this).data('product-id');
                 const quantity = $(this).val();
+                const $row = $(`[data-product-id="${productId}"]`);
 
                 $.ajax({
                     url: '{{ route('shop.cart.update') }}',
@@ -131,14 +181,15 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('#cart-items').html(response.cart_html);
-                            updateCartSummary(response.cart_count, response.cart_total);
+                            $('.cart-badge').text(response.cart_count);
+
                             showToast('Cart updated successfully');
+                            location.reload();
                         }
                     },
                     error: function(xhr) {
                         const response = xhr.responseJSON;
-                        showToast(response.message, 'danger');
+                        showToast(response.message || 'Error updating cart', 'danger');
                         // Reset to previous quantity
                         location.reload();
                     }
@@ -149,31 +200,35 @@
             $(document).on('click', '.remove-from-cart', function() {
                 const productId = $(this).data('product-id');
 
-                $.ajax({
-                    url: '{{ route('shop.cart.remove') }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            if (response.cart_count > 0) {
-                                $('#cart-items').html(response.cart_html);
-                                updateCartSummary(response.cart_count, response.cart_total);
-                            } else {
-                                // Reload if cart is empty
-                                location.reload();
+                if (confirm('Remove this item from your cart?')) {
+                    $.ajax({
+                        url: '{{ route('shop.cart.remove') }}',
+                        type: 'POST',
+                        data: {
+                            product_id: productId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                showToast('Item removed from cart');
+
+                                setTimout(() => {
+                                    location.reload();
+                                }, 1000);
                             }
-                            showToast('Item removed from cart');
+                        },
+                        error: function(xhr) {
+                            const response = xhr.responseJSON;
+                            showToast(response.message || 'Error removing item', 'danger');
                         }
-                    }
-                });
+                    });
+                }
+
             });
 
             // Clear cart
             $(document).on('click', '.clear-cart-btn', function() {
-                if (confirm('Are you sure you want to clear your cart?')) {
+                if (confirm('Are you sure you want to clear your entire cart?')) {
                     $.ajax({
                         url: '{{ route('shop.cart.clear') }}',
                         type: 'POST',
@@ -182,40 +237,51 @@
                         },
                         success: function(response) {
                             if (response.success) {
-                                location.reload();
+                                showToast('Cart cleared');
+
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
                             }
+                        },
+                        error: function(xhr) {
+                            showToast('Error cleared cart', 'danger');
                         }
                     });
                 }
             });
 
-            // Helper function to update cart summary
-            function updateCartSummary(count, total) {
-                // Update the cart badge in navbar
-                $('.cart-badge').text(count);
-
-                // Update totals
-                const tax = total * 0.1; // Assuming 10% tax
-                const orderTotal = total + tax;
-
-                $('.cart-subtotal').text('$' + total.toFixed(2));
-                $('.cart-tax').text('$' + tax.toFixed(2));
-                $('.cart-total').text('$' + orderTotal.toFixed(2));
-            }
-
             // Show toast notification
             function showToast(message, type = 'success') {
-                $('#cartToast .toast-body').text(message);
+                const toastHtml = `
+                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header ${type === 'danger' ? 'bg-danger text-white' : 'bg-success text-white'}">
+                            <i class="bi bi-cart-check me-2"></i>
+                            <strong class="me-auto">Cart Update</strong>
+                            <button type="button" class="btn-close ${type === 'danger' ? 'btn-close-white' : 'btn-close-white'}" data-bs-dismiss="toast"></button>
+                        </div>
+                        <div class="toast-body">${message}</div>
+                    </div>
+                `;
 
-                if (type === 'danger') {
-                    $('#cartToast .toast-header').addClass('bg-danger text-white');
-                } else {
-                    $('#cartToast .toast-header').removeClass('bg-danger text-white');
+                // Create container if it doesn't exist
+                let container = $('.toast-container');
+                if (container.length === 0) {
+                    container = $('<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;"></div>');
+                    $('body').append(container);
                 }
 
-                const toast = new bootstrap.Toast(document.getElementById('cartToast'));
+                const $toast = $(toastHtml);
+                container.append($toast);
+
+                const toast = new bootstrap.Toast($toast[0]);
                 toast.show();
+
+                // Remove toast element after it's hidden
+                $toast[0].addEventListener('hidden.bs.toast', () => {
+                    $toast.remove();
+                });
             }
         });
     </script>
-@endsection
+@endpush
