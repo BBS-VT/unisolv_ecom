@@ -135,10 +135,10 @@ class CartController extends Controller
                 } else {
                     // Check stock before updating
                     $product = Product::find($request->product_id);
-                    if (!Features::allowBackorders() && $product->stock < $request->quantity) {
+                    if (!Features::backordersEnabled() && $product->stockHolding->QuantityOnHand < $request->quantity) {
                         return response()->json([
                             'success' => false,
-                            'message' => "Sorry, we only have {$product->stock} items in stock."
+                            'message' => "Sorry, we only have {$product->stockHolding->QuantityOnHand} items in stock."
                         ], 422);
                     }
 
@@ -163,7 +163,7 @@ class CartController extends Controller
             'message' => 'Cart updated successfully',
             'cart_count' => $this->getCartCount(),
             'cart_total' => $this->getCartTotal(),
-            'cart_html' => view('shop.partials.cart-items', compact('cart'))->render()
+            'cart_html' => view('shop.cart.partials.cart-items', compact('cart'))->render()
         ]);
     }
 
@@ -204,7 +204,7 @@ class CartController extends Controller
             'message' => 'Item removed from cart',
             'cart_count' => $this->getCartCount(),
             'cart_total' => $this->getCartTotal(),
-            'cart_html' => view('shop.partials.cart-items', compact('cart'))->render()
+            'cart_html' => view('shop.cart.partials.cart-items', compact('cart'))->render()
         ]);
     }
 
@@ -215,7 +215,7 @@ class CartController extends Controller
         // If user is logged in, clear cart in database
         if (Auth::check()) {
             $this->syncCartToUser();
-            event(new CartUpdated(Auth::id(), 'clear'));
+            event(new CartUpdated(Auth::id(), [], 'clear'));
         }
 
         return response()->json([

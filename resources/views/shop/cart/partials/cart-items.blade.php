@@ -2,7 +2,7 @@
     @php
         $product = \App\Models\Product::find($item['product_id']);
         $pricing = $pricing = \App\Helpers\PricingHelper::getProductPricing($product);
-        $itemTotal = $item['price'] * $item['quantity'];
+        $itemTotal = $pricing['price'] * $item['quantity'];
     @endphp
     <tr data-product-id="{{ $product->id }}">
         <td>
@@ -31,26 +31,21 @@
             </td>
         @endauth
         <td>
-            <select class="form-select cart-quantity" data-product-id="{{ $product->id }}">
-                @for($i = 1; $i <= 20; $i++)
-                    <option value="{{ $i }}" {{ $i == $item['quantity'] ? 'selected' : '' }}>{{ $i }}</option>
-                @endfor
-            </select>
-        </td>
-        {{--<td>
-            <div class="input-group">
-                <button class="btn btn-outline-secondary btn-sm" type="button"
-                        onclick="document.getElementById('qty-{{ $item['product_id'] }}').stepDown(); $(document.getElementById('qty-{{ $item['product_id'] }}')).change();">
+            <div class="input-group" style="width: 120px;">
+                <button class="btn btn-outline-secondary btn-sm qty-decrease" type="button" data-product-id="{{ $product->id }}">
                     <i class="bi bi-dash"></i>
                 </button>
-                <input type="number" class="form-control text-center cart-quantity" id="qty-{{ $item['product_id'] }}"
-                       value="{{ $item['quantity'] }}" min="1" data-product-id="{{ $item['product_id'] }}">
-                <button class="btn btn-outline-secondary btn-sm" type="button"
-                        onclick="document.getElementById('qty-{{ $item['product_id'] }}').stepUp(); $(document.getElementById('qty-{{ $item['product_id'] }}')).change();">
+                <input type="number" class="form-control form-control-sm text-center cart-quantity-input"
+                       value="{{ $item['quantity'] }}"
+                       min="1"
+                       max="999"
+                       data-product-id="{{ $product->id }}"
+                       data-original-value="{{ $item['quantity'] }}">
+                <button class="btn btn-outline-secondary btn-sm qty-increase" type="button" data-product-id="{{ $product->id }}">
                     <i class="bi bi-plus"></i>
                 </button>
             </div>
-        </td>--}}
+        </td>
         @auth()
             <td class="text-end">
                 <strong class="item-total">{{ \App\Helpers\PricingHelper::formatPrice($itemTotal) }}</strong>

@@ -26,11 +26,20 @@
                         </div>
                     @endauth
                     <div class="d-flex justify-content-between align-items-center mt-2">
-                        <select class="form-select cart-quantity" data-product-id="{{ $product->id }}" style="width: auto;">
-                            @for($i = 1; $i <= 20; $i++)
-                                <option value="{{ $i }}" {{ $i == $item['quantity'] ? 'selected' : '' }}>{{ $i }}</option>
-                            @endfor
-                        </select>
+                        <div class="input-group" style="width: 120px;">
+                            <button class="btn btn-outline-secondary btn-sm qty-decrease" type="button" data-product-id="{{ $product->id }}">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" class="form-control form-control-sm text-center cart-quantity-input"
+                                   value="{{ $item['quantity'] }}"
+                                   min="1"
+                                   max="999"
+                                   data-product-id="{{ $product->id }}"
+                                   data-original-value="{{ $item['quantity'] }}">
+                            <button class="btn btn-outline-secondary btn-sm qty-increase" type="button" data-product-id="{{ $product->id }}">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
                         @auth
                             <strong class="item-total">{{ \App\Helpers\PricingHelper::formatPrice($itemTotal) }}</strong>
                         @endauth

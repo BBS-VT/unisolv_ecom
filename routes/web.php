@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Features;
 use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\CustomersController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,10 +27,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('auth.login');
-    //return view('welcome');
-});
+if (Features::ecommerceEnabled()) {
+    Route::get('/', [ShopHomeController::class, 'index']);
+} else
+{
+    Route::get('/', function () {
+        return view('auth.login');
+
+    });
+}
 
 //Route::get('/catalog', 'HomeController@index')->name('catalog');
 //Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.detail');

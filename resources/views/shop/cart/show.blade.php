@@ -1,5 +1,27 @@
 @extends('shop.layouts.app')
 
+@section('styles')
+    <style>
+        .cart-quantity-input.updating {
+            background-color: #f8f9fa;
+            opacity: 0.7;
+        }
+
+        .input-group .btn {
+            border-color: #dee2e6;
+        }
+
+        .input-group .form-control {
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .input-group .btn:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+@endsection
+
 @section('content')
     {{--@php
         dd($cart);
@@ -146,55 +168,111 @@
             </div>
         @endif
     </div>
-
-    <!-- Toast Notification for Cart Actions -->
-    {{--<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="bi bi-cart-check me-2"></i>
-                <strong class="me-auto">Cart Update</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                Item has been added to your cart.
-            </div>
-        </div>
-    </div>--}}
 @endsection
 
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Update quantity
-            $(document).on('change', '.cart-quantity', function() {
+            // Increase quantity
+            $(document).on('click', '.qty-increase', function () {
                 const productId = $(this).data('product-id');
-                const quantity = $(this).val();
-                const $row = $(`[data-product-id="${productId}"]`);
+                const $input = $(`input[data-product-id="${productId}"]`);
+                const currentQty = parseInt($input.val()) || 1;
+                const newQty = currentQty + 1;
 
-                $.ajax({
-                    url: '{{ route('shop.cart.update') }}',
-                    type: 'POST',
-                    data: {
-                        product_id: productId,
-                        quantity: quantity,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('.cart-badge').text(response.cart_count);
-
-                            showToast('Cart updated successfully');
-                            location.reload();
-                        }
-                    },
-                    error: function(xhr) {
-                        const response = xhr.responseJSON;
-                        showToast(response.message || 'Error updating cart', 'danger');
-                        // Reset to previous quantity
-                        location.reload();
-                    }
-                });
+                if (newQty <= 999) {
+                    $input.val(newQty);
+                    updateCartQuantity(productId, newQty, $input);
+                }
             });
+
+            // Decrease quantity
+            $(document).on('click', '.qty-decrease', function() {
+                const productId = $(this).data('product-id');
+                const $input = $(`input[data-product-id="${productId}"]`);
+                const currentQty = parseInt($input.val()) || 1;
+                const newQty = currentQty - 1;
+
+                if (newQty >= 1) {
+                    $input.val(newQty);
+                    updateCartQuantity(productId, newQty, $input);
+                }
+            });
+
+            // Direct input change
+            $(document).on('change', '.cart-quantity-input', function() {
+                const productId = $(this).data('product-id');
+                const newQty = parseInt($(this).val()) || 1;
+
+                // Validate quantity
+                if (newQty < 1) {
+                    $(this).val(1);
+                    return;
+                }
+                if (newQty > 999) {
+                    $(this).val(999);
+                    return;
+                }
+
+                updateCartQuantity(productId, newQty, $(this));
+            });
+
+            // Debounced update function
+            let updateTimeout;
+            function updateCartQuantity(productId, quantity, $input) {
+                clearTimeout(updateTimeout);
+
+                // Show loading state
+                $input.addClass('updating');
+
+                updateTimeout = setTimeout(() => {
+                    $.ajax({
+                        url: '{{ route('shop.cart.update') }}',
+                        type: 'POST',
+                        data: {
+                            product_id: productId,
+                            quantity: quantity,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Update the cart count in navbar
+                                $('.cart-badge').text(response.cart_count);
+
+                                // Update original value
+                                $input.attr('data-original-value', quantity);
+                                $input.removeClass('updating');
+
+                                showToast('Cart updated successfully');
+
+                                // Reload the page to show updated totals
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
+                            }
+                        },
+                        error: function(xhr) {
+                            $input.removeClass('updating');
+
+                            let errorMessage = 'Error updating cart';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            } else if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                                // Handle validation errors
+                                const errors = Object.values(xhr.responseJSON.errors).flat();
+                                errorMessage = errors.join(', ');
+                            }
+
+                            console.error('Cart update error:', xhr.responseText);
+                            showToast(errorMessage, 'danger');
+
+                            // Reset to original value
+                            const originalValue = $input.attr('data-original-value');
+                            $input.val(originalValue);
+                        }
+                    });
+                }, 500); // Wait 500ms after user stops typing/clicking
+            }
 
             // Remove item from cart
             $(document).on('click', '.remove-from-cart', function() {
@@ -254,7 +332,7 @@
             // Show toast notification
             function showToast(message, type = 'success') {
                 const toastHtml = `
-                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="${type === 'danger' ? '8000' : '4000'}">
                         <div class="toast-header ${type === 'danger' ? 'bg-danger text-white' : 'bg-success text-white'}">
                             <i class="bi bi-cart-check me-2"></i>
                             <strong class="me-auto">Cart Update</strong>

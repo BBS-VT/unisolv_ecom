@@ -93,9 +93,9 @@ class CompanySetting extends Model
         'shop_announcement' => '',
 
         // E-commerce Features
-        'b2b_ecommerce_enabled' => false,
+        'b2b_ecommerce_enabled' => true,
         'ecommerce_guest_checkout' => false,
-        'ecommerce_public_prices' => false,
+        'ecommerce_public_prices' => true,
         'ecommerce_backorders' => false,
         'ecommerce_require_approval' => true,
         'ecommerce_show_stock' => true,
