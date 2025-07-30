@@ -78,6 +78,7 @@
                         <div class="card-body">
                             @auth
                                 @php
+                                    // TODO: display subtotal as excl VAT if wholesale pricing
                                     $subtotal = 0;
                                     foreach($cart as $item) {
                                         $product = \App\Models\Product::find($item['product_id']);
@@ -90,7 +91,8 @@
                                     }
                                     $taxRate = 0.15; // TODO: link to TAX model
                                     $tax = $subtotal * $taxRate;
-                                    $orderTotal = $subtotal + $tax;
+                                    // TODO: include VAT for wholesale pricing
+                                    $orderTotal = $subtotal;
                                 @endphp
 
                                 <div class="d-flex justify-content-between mb-2">
@@ -115,7 +117,7 @@
                                 @endif
 
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Tax ({{ number_format($taxRate * 100, 1) }}%)</span>
+                                    <span>{{ __('VAT (included)' )}}  ({{ number_format($taxRate * 100, 1) }}%)</span>
                                     <span class="cart-tax">{{ \App\Helpers\PricingHelper::formatPrice($tax) }}</span>
                                 </div>
 

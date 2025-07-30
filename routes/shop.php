@@ -40,7 +40,7 @@ if (Features::ecommerceEnabled()) {
         Route::prefix('checkout')->name('checkout.')->group(function () {
             Route::get('/', [CheckoutController::class, 'index'])->name('index');
             Route::post('/process', [CheckoutController::class, 'process'])->name('process');
-            Route::post('/success/{order}', [CheckoutController::class, 'success'])->name('success');
+            Route::get('/success/{order}', [CheckoutController::class, 'success'])->name('success');
         });
 
         // Customer account/profile

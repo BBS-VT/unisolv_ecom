@@ -44,6 +44,8 @@ class Order extends Model
         'DeliveryInstructions',
         'InternalComments',
         'PickingCompletedWhen',
+        'delivery_method',
+        'preferred_delivery_date',
         'LastEditedBy',
         'created_at',
         'updated_at',
@@ -62,6 +64,7 @@ class Order extends Model
         'discount_val' => 'integer',
         'tax_per_item' => 'boolean',
         'discount_per_item' => 'boolean',
+        'preferred_delivery_date' => 'date',
     ];
 
     /**
@@ -117,7 +120,7 @@ class Order extends Model
             // which will result in 1 being created
             $number = 0;
         } else {
-            //$number = explode("-", $lastOrder->OrderNumber);
+
             $number = $lastOrder->OrderNumber;
         }
 

@@ -10,7 +10,8 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        $user = User::create([
+        $user = User::create(
+            [
             'id'             => 1,
             'FullName'       => 'System User',
             'PreferredName'  => 'System',
@@ -19,7 +20,20 @@ class UsersTableSeeder extends Seeder
             'remember_token' => null,
             'created_at'     => '2021-03-02 06:09:29',
             'updated_at'     => '2021-03-02 06:09:29',
-        ]);
+            ],
+            [
+                'id'             => 2,
+                'FullName'       => 'E-commerce System',
+                'PreferredName'  => 'E-commerce System',
+                'email'          => 'ecommerce@unisolv.co.za',
+                'password'       => '$2y$10$kztlYEbwoRzWeMSO86DSCuNe3iJlY8T127Zkl3uGJXf1Y9TuUfSU.',
+                'IsSalesperson'  => 1,
+                'RepCode'        => 99,
+                'remember_token' => null,
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]
+        );
 
         $company = Company::create([
             'name' => 'Demonstration System',

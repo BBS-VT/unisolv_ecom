@@ -10,7 +10,7 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('CustomerID')->unsigned();
+            $table->string('CustomerID');
             $table->bigInteger('SalesPersonID')->unsigned();
             $table->bigInteger('PickedByPersonID')->unsigned()->nullable();
             $table->bigInteger('ContactPersonID')->unsigned()->nullable();
@@ -26,7 +26,7 @@ class CreateOrdersTable extends Migration
             $table->bigInteger('LastEditedBy')->unsigned();
             $table->timestamps();
 
-            $table->foreign('CustomerID')->references('id')->on('customers');
+            $table->foreign('CustomerID')->references('acc_code')->on('customers');
             $table->foreign('SalesPersonID')->references('id')->on('users');
             $table->foreign('PickedByPersonID')->references('id')->on('users');
             $table->foreign('ContactPersonID')->references('id')->on('users');

@@ -166,11 +166,10 @@ class OrdersController extends Controller
             if (isset($request->quantity[$i]) && isset($request->price[$i])) {
 
                 $stockItem = Product::find($request->product[$i]);
-                //OrdersItem::create([
+
                 $item = $order->items()->create([
                     'OrderID' => $request->order_number,
                     'company_id' => $currentCompany->id,
-                    //'StockItem'         => $request->product[$i],
                     'StockItem' => $stockItem->StockCode,
                     'discount_type' => 'percent',
                     'discount_val' => $request->discount[$i] ?? 0,
@@ -234,9 +233,7 @@ class OrdersController extends Controller
         $order->load('items');
         $order->load('customer');
 
-
-        //$pdf = PDF::loadView('orders.show', compact('order'));
-        //return $pdf->stream('pdfview.pdf');
+        //dd($order);
 
         return view('orders.details', compact('order'));
     }
