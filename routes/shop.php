@@ -48,9 +48,11 @@ if (Features::ecommerceEnabled()) {
             Route::get('/', [AccountController::class, 'index'])->name('index');
             Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
             Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+            Route::get('/orders/{order}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
             Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
             Route::get('/orders/draft', [OrderController::class, 'draft'])->name('orders.draft');
             Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
+            Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
         });
 
         Route::prefix('drafts')->name('drafts.')->group(function () {

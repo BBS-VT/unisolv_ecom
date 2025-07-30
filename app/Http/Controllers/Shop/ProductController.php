@@ -15,11 +15,6 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        \Log::info('Products page accessed', [
-            'cart_before' => Session::get('cart', []),
-            'user_id' => Auth::id(),
-            'route' => $request->getRequestUri()
-        ]);
 
         $query = Product::query()
             ->where('status', true)
@@ -142,9 +137,6 @@ class ProductController extends Controller
             return $product;
         });
 
-        \Log::info('Products page ending', [
-            'cart_after' => Session::get('cart', [])
-        ]);
 
         return view('shop.products.index', compact('products', 'categories'));
     }

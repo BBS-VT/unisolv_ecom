@@ -24,7 +24,8 @@
 
             <!-- Right Nav Items -->
             <div class="d-flex align-items-center">
-                @guest
+                @include('shop.components.partials.account_nav')
+                {{--@guest
                     <a href="#" class="amazon-nav-item me-3" data-bs-toggle="modal" data-bs-target="#loginModal">
                         <span class="nav-label">Hello, sign in</span>
                         <span class="nav-title">Account & Lists</span>
@@ -47,10 +48,10 @@
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
-{{--                            <li><a class="dropdown-item" href="{{ route('logout') }}">Sign Out</a></li>--}}
+--}}{{--                            <li><a class="dropdown-item" href="{{ route('logout') }}">Sign Out</a></li>--}}{{--
                         </ul>
                     </div>
-                @endguest
+                @endguest--}}
 
                 <a href="{{ route('shop.account.orders.index') }}" class="amazon-nav-item me-3">
                     <span class="nav-label">Returns</span>
