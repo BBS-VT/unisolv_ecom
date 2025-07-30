@@ -49,12 +49,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        console.log('jQuery loaded:', typeof $ !== 'undefined' ? 'YES' : 'NO');
-        if (typeof $ !== 'undefined') {
-            console.log('jQuery version:', $.fn.jquery);
-        }
-    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/bc0680dc86.js" crossorigin="anonymous"></script>
 

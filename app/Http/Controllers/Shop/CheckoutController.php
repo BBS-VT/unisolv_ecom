@@ -226,6 +226,15 @@ class CheckoutController extends Controller
 
             // Clear the cart
             Session::forget('cart');
+            if (Auth::check()) {
+                \App\Models\UserCart::where('user_id', Auth::id())->delete();
+            }
+            Session::put('order_just_completed', true);
+
+            \Log::info('Both session and database cart cleared', [
+                'user_id' => Auth::id(),
+                'order_id' => $order->id
+            ]);
 
             // Redirect to success page with appropriate message
             $successMessage = 'Your order has been placed successfully!';

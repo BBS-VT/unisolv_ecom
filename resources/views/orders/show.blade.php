@@ -15,7 +15,7 @@
 <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm mr-1" height="24">
                                     <img src="assets/images/logo-dark.png" alt="logo-large" class="logo-lg logo-dark" height="20">
                                     <img src="assets/images/logo.png" alt="logo-large" class="logo-lg logo-light" height="20">-->
-                                    <p class="mt-2 mb-0 text-muted">Viedgesville Wholesalers Pty (LTD)</p>
+                                    <p class="mt-2 mb-0 text-muted">Ngcwanguba Megasave</p>
                                 </div><!--end col-->
                                 <div class="col-md-8">
 
@@ -23,22 +23,22 @@
                                         <li class="list-inline-item">
                                             <div class="pl-3">
                                                 <i class="mdi mdi-web"></i>
-                                                <p class="text-muted mb-0">admin@viedges.co.za</p>
+                                                <p class="text-muted mb-0">admin@demo.co.za</p>
                                                 <p class="text-muted mb-0">www.qrstuvwxyz.com</p>
                                             </div>
                                         </li>
                                         <li class="list-inline-item">
                                             <div class="pl-3">
                                                 <i class="mdi mdi-phone"></i>
-                                                <p class="text-muted mb-0">043 743 4557</p>
-                                                <p class="text-muted mb-0">043 743 4557</p>
+                                                <p class="text-muted mb-0">043 726 9802</p>
+                                                <p class="text-muted mb-0">043 729 9802</p>
                                             </div>
                                         </li>
                                         <li class="list-inline-item">
                                             <div class="pl-3">
                                                 <i class="mdi mdi-map-marker"></i>
                                                 <p class="text-muted mb-0">Main Road</p>
-                                                <p class="text-muted mb-0">Viedgesville, 5102</p>
+                                                <p class="text-muted mb-0">Coffee Bay, 5102</p>
                                             </div>
                                         </li>
                                     </ul>

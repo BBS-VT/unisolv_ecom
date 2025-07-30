@@ -261,6 +261,7 @@ return [
     'orders'                               => 'Orders',
     'order_settings'                       => 'Order Settings',
     'overdue'                              => 'Overdue',
+    'on_hold'                              => 'On Hold',
     'new_password'                         => 'New password',
     'new_orders'                           => 'New Orders',
     'no_buying_groups_yet'                 => 'No Buying Groups yet',

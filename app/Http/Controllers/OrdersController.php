@@ -50,6 +50,9 @@ class OrdersController extends Controller
             if ($request->tab == 'processed') {
                 $query = Order::findByCompany($currentCompany->id)->active()->orderBy('created_at', 'desc');
                 $tab = 'processed';
+            } elseif ($request->tab == 'onhold') {
+                $query = Order::findByCompany($currentCompany->id)->onHold()->orderBy('created_at', 'desc');
+                $tab = 'onhold';
             } else {
                 $query = Order::findByCompany($currentCompany->id)->new()->orderBy('OrderNumber', 'desc');
                 $tab = 'new';

@@ -33,6 +33,9 @@
                                 <a href="{{ route('orders.index', 'processed') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
                                     {{ __('global.processed_orders') }}
                                 </a>
+                                <a href="{{ route('orders.index', 'onhold') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'onhold' ? 'active' : '' }}">
+                                    {{ __('global.on_hold') }}
+                                </a>
                                 <a href="{{ route('orders.index', 'all') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}">
                                     {{ __('global.all_orders') }}
                                 </a>

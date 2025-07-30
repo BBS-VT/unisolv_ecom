@@ -39,6 +39,7 @@
                             elseif ( $order->OrderStatusID == 2) { echo "badge-warning"; }
                             elseif ( $order->OrderStatusID == 3) { echo "badge-info"; }
                             elseif ( $order->OrderStatusID == 4) { echo "badge-success"; }
+                            elseif ( $order->OrderStatusID == 5) { echo "badge-secondary"; }
                             ?>"> {{ $order->orderstatus->name ?? '' }} </span>
 
                             {{--@if($order->Authorisation == 0 )

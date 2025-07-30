@@ -2,11 +2,120 @@
 
 @section('title', 'Order Confirmation')
 
+@push('styles')
+    <style>
+        /* Print-specific styles */
+        @media print {
+            /* Hide non-essential elements when printing */
+            .btn, .navbar, .breadcrumb, footer, .no-print {
+                display: none !important;
+            }
+
+            /* Optimize layout for printing */
+            .container {
+                max-width: none !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+
+            .card-header {
+                background-color: #f8f9fa !important;
+                border-bottom: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            /* Ensure good contrast for printing */
+            .text-muted {
+                color: #666 !important;
+            }
+
+            .text-success {
+                color: #000 !important;
+                font-weight: bold;
+            }
+
+            /* Page breaks */
+            .print-page-break {
+                page-break-before: always;
+            }
+
+            /* Company logo/header for print */
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+
+            .print-header h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .print-header p {
+                margin: 5px 0;
+                font-size: 12px;
+            }
+
+            /* Table styling for print */
+            .table th {
+                border-top: 2px solid #000 !important;
+                border-bottom: 1px solid #000 !important;
+                background-color: #f0f0f0 !important;
+            }
+
+            .table td {
+                border-bottom: 1px solid #ccc !important;
+            }
+
+            /* Hide screen-only content */
+            .d-print-none {
+                display: none !important;
+            }
+
+            /* Show print-only content */
+            .d-print-block {
+                display: block !important;
+            }
+
+            .d-print-inline {
+                display: inline !important;
+            }
+        }
+
+        /* Screen-only styles (hide print elements on screen) */
+        @media screen {
+            .d-print-none {
+                display: block;
+            }
+
+            .d-print-block,
+            .d-print-inline,
+            .print-header {
+                display: none !important;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
+    <div class="print-header">
+        <h1>{{ config('app.name') }}</h1>
+        <p>123 Business Street, Johannesburg, 2000, South Africa</p>
+        <p>Tel: +27 11 123 4567 | Email: orders@company.com | Web: {{ config('app.url') }}</p>
+        <h2 style="margin-top: 15px;">Order Confirmation</h2>
+    </div>
+
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="text-center mb-5">
+                <div class="text-center mb-5 d-print-none">
                     <div class="mb-4">
                         <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
                     </div>
@@ -16,17 +125,21 @@
                     </p>
                 </div>
 
+                <div class="d-print-block mb-3">
+                    <p><strong>{{ __('Printed: ') }}</strong> {{ now()->format('d M Y, H:i') }}</p>
+                </div>
+
                 <div class="card mb-4">
                     <div class="card-header bg-success text-white">
                         <h5 class="mb-0">
-                            <i class="bi bi-receipt me-2"></i>Order Details
+                            <i class="bi bi-receipt me-2"></i>{{ __('Order Details') }}
                         </h5>
                     </div>
 
                     <div class="card-body">
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <h6>Order Information</h6>
+                                <h6>{{ __('Order Information') }}</h6>
                                 <p class="mb-1"><strong>Order Number:</strong> #{{ $order->OrderNumber }}</p>
                                 <p class="mb-1"><strong>Order Date:</strong> {{ $order->OrderDate->format('d M Y, H:i') }}</p>
                                 <p class="mb-1"><strong>Status:</strong>
@@ -40,7 +153,7 @@
                                 <h6>Customer Information</h6>
                                 <p class="mb-1"><strong>Customer:</strong> {{ $order->customer->CustomerName }}</p>
                                 <p class="mb-1"><strong>Account:</strong> {{ $order->customer->acc_code }}</p>
-                                <p class="mb-1"><strong>Sales Rep:</strong> {{ $order->salesperson->name }}</p>
+                                <p class="mb-1"><strong>Sales Rep:</strong> {{ $order->salesperson->PreferredName }}</p>
                                 <p class="mb-1"><strong>Email:</strong> {{ $order->customer->GeneralEmailAddress }}</p>
                             </div>
                         </div>
@@ -81,8 +194,8 @@
                                         </td>
                                         <td><small class="text-muted">{{ $item->StockItem }}</small></td>
                                         <td class="text-center">{{ number_format($item->Quantity) }}</td>
-                                        <td class="text-end">{{ \App\Helpers\PricingHelper::formatPrice($item->UnitPrice) }}</td>
-                                        <td class="text-end">{{ \App\Helpers\PricingHelper::formatPrice($item->total) }}</td>
+                                        <td class="text-end">{{ \App\Helpers\PricingHelper::formatPrice($item->UnitPrice / 100) }}</td>
+                                        <td class="text-end">{{ \App\Helpers\PricingHelper::formatPrice($item->total / 100) }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -94,15 +207,15 @@
                                 <table class="table table-sm">
                                     <tr>
                                         <td><strong>Subtotal:</strong></td>
-                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice($order->sub_total) }}</strong></td>
+                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice($order->sub_total / 100)  }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td><strong>VAT (15%):</strong></td>
-                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice($order->total - $order->sub_total) }}</strong></td>
+                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice(($order->total / 100) - ($order->sub_total / 100)) }}</strong></td>
                                     </tr>
                                     <tr class="table-success">
                                         <td><strong>Total:</strong></td>
-                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice($order->total) }}</strong></td>
+                                        <td class="text-end"><strong>{{ \App\Helpers\PricingHelper::formatPrice($order->total / 100) }}</strong></td>
                                     </tr>
                                 </table>
                             </div>
@@ -167,14 +280,29 @@
                 </div>
 
                 <div class="row">
+                    {{--<div class="col-md-4 mb-3">
+                        <button type="button" class="btn btn-outline-secondary w-100" id="print-order">
+                            <i class="bi bi-printer me-2"></i>{{ __('Print Order') }}
+                        </button>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ route('shop.products.index') }}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-bag me-2"></i>{{ __('Continue Shopping') }}
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ route('shop.account.orders.show', $order->id) }}" class="btn btn-primary w-100">
+                            <i class="bi bi-eye me-2"></i>{{ __('View Order Details') }}
+                        </a>
+                    </div>--}}
                     <div class="col-md-6 mb-3">
                         <a href="{{ route('shop.products.index') }}" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-bag me-2"></i>Continue Shopping
+                            <i class="bi bi-bag me-2"></i>{{ __('Continue Shopping') }}
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
                         <a href="{{ route('shop.account.orders.show', $order->id) }}" class="btn btn-primary w-100">
-                            <i class="bi bi-eye me-2"></i>View Order Details
+                            <i class="bi bi-eye me-2"></i>{{ __('View Order Details') }}
                         </a>
                     </div>
                 </div>
@@ -214,17 +342,33 @@
         $(document).ready(function() {
             // Print order functionality
             $('#print-order').on('click', function() {
-                window.print();
+
+                if (confirm('This will open the print dialog. Continue?')) {
+
+                    setTimeout(function() {
+                        window.print();
+                    }, 100);
+                }
             });
 
-            // Track order success event (for analytics if needed)
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'purchase', {
-                    'transaction_id': '{{ $order->OrderNumber }}',
-                    'value': {{ $order->total }},
-                    'currency': 'ZAR'
-                });
+            if (typeof(Storage) !== "undefined") {
+                localStorage.removeItem('cart');
+                localStorage.removeItem('cartCount');
+                sessionStorage.removeItem('cart');
+                sessionStorage.removeItem('cartCount');
             }
+
+            $('.cart-badge').text('0');
+            document.cookie = "cart=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            $.get('{{ route("shop.cart.mini") }}', function(data) {
+                // This will sync the server cart state
+            }).fail(function() {
+                // If mini cart route doesn't exist, just update badge
+                $('.cart-badge').text('0');
+            });
+
+            console.log('Cart cleared on client side');
         });
     </script>
 @endpush

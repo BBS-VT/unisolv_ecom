@@ -19,6 +19,20 @@
         </div>
     @endif
 
+    @if($creditInfo['requires_approval'])
+        <div class="alert alert-warning mb-4">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Credit Approval Required</strong><br>
+            @if($creditInfo['on_hold'])
+                Your account is currently on credit hold. This order will require approval before processing.
+            @endif
+            @if($creditInfo['over_limit'])
+                This order exceeds your available credit limit by {{ \App\Helpers\PricingHelper::formatPrice($creditInfo['over_amount']) }}.
+                The order will be placed on hold pending credit approval.
+            @endif
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('shop.checkout.process') }}" id="checkout-form">
         @csrf
 
@@ -46,6 +60,24 @@
                                 </p>
                             </div>
                         </div>
+                        @if($creditInfo['credit_limit'] > 0)
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h6>Credit Information:</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <small><strong>Credit Limit:</strong> {{ \App\Helpers\PricingHelper::formatPrice($creditInfo['credit_limit']) }}</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small><strong>Available Credit:</strong> {{ \App\Helpers\PricingHelper::formatPrice($creditInfo['available_credit']) }}</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small><strong>This Order:</strong> {{ \App\Helpers\PricingHelper::formatPrice($creditInfo['order_total']) }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -53,17 +85,49 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-truck me-2"></i>Delivery Address
+                            <i class="bi bi-truck me-2"></i>{{ __('Delivery Options') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_delivery" value="delivery"
+                                        {{ old('delivery_method', 'delivery') == 'delivery' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="delivery_method_delivery">
+                                        <strong>{{ __('Delivery') }}</strong><br>
+                                        <small class="text-muted">{{ __('messages.delivery_method_deliver') }}</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_collection" value="collection"
+                                        {{ old('delivery_method') == 'collection' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="delivery_method_collection">
+                                        <strong>{{ __('Collection') }}</strong><br>
+                                        <small class="text-muted">{{ __('messages.delivery_method_pickup') }}</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4" id="delivery_address_section">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-geo-alt me-2"></i>{{ __('Delivery Address') }}
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="delivery_address_line1" class="form-label">Address Line 1 <span class="text-danger">*</span></label>
+                                    <label for="delivery_address_line1" class="form-label">{{ __('Address Line 1') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('delivery_address_line1') is-invalid @enderror"
                                            id="delivery_address_line1" name="delivery_address_line1"
-                                           value="{{ old('delivery_address_line1', $customer->DeliveryAddressLine1) }}" required>
+                                           value="{{ old('delivery_address_line1', $customer->DeliveryAddressLine1) }}">
                                     @error('delivery_address_line1')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -71,7 +135,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="delivery_address_line2" class="form-label">Address Line 2</label>
+                                    <label for="delivery_address_line2" class="form-label">{{ __('Address Line 2') }}</label>
                                     <input type="text" class="form-control @error('delivery_address_line2') is-invalid @enderror"
                                            id="delivery_address_line2" name="delivery_address_line2"
                                            value="{{ old('delivery_address_line2', $customer->DeliveryAddressLine2) }}">
@@ -84,10 +148,10 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="delivery_city" class="form-label">City <span class="text-danger">*</span></label>
+                                    <label for="delivery_city" class="form-label">{{ __('Town') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('delivery_city') is-invalid @enderror"
                                            id="delivery_city" name="delivery_city"
-                                           value="{{ old('delivery_city', $customer->DeliveryCity) }}" required>
+                                           value="{{ old('delivery_city', $customer->DeliveryCity) }}">
                                     @error('delivery_city')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -95,21 +159,70 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="delivery_postal_code" class="form-label">Postal Code <span class="text-danger">*</span></label>
+                                    <label for="delivery_postal_code" class="form-label">{{ __('Postal Code') }} <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('delivery_postal_code') is-invalid @enderror"
                                            id="delivery_postal_code" name="delivery_postal_code"
-                                           value="{{ old('delivery_postal_code', $customer->DeliveryPostalCode) }}" required>
+                                           value="{{ old('delivery_postal_code', $customer->DeliveryPostalCode) }}">
                                     @error('delivery_postal_code')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="preferred_delivery_date" class="form-label">{{ __('Preferred Delivery Date') }}</label>
+                                    <input type="date" class="form-control @error('preferred_delivery_date') is-invalid @enderror"
+                                           id="preferred_delivery_date" name="preferred_delivery_date"
+                                           value="{{ old('preferred_delivery_date') }}"
+                                           min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                                    @error('preferred_delivery_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">{{ __('messages.delivery_method_schedule') }}</small>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="update_delivery_address" name="update_delivery_address" value="1">
                             <label class="form-check-label" for="update_delivery_address">
-                                Update my default delivery address with these details
+                                {{ __('messages.delivery_address_update') }}
                             </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4" id="collection_info_section" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-building me-2"></i>Collection Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Collection Address:</h6>
+                                <address>
+                                    <strong>{{ config('app.name') }} Warehouse</strong><br>
+                                    123 Industrial Street<br>
+                                    Johannesburg, 2000<br>
+                                    South Africa
+                                </address>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Collection Hours:</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Monday - Friday:</strong> 8:00 AM - 4:30 PM</li>
+                                    <li><strong>Saturday:</strong> 8:00 AM - 12:00 PM</li>
+                                    <li><strong>Sunday:</strong> Closed</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>{{ __('Collection Instructions:') }}</strong><br>
+                            {{ __('messages.collection_instructions') }}
                         </div>
                     </div>
                 </div>
@@ -118,12 +231,12 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-clipboard-data me-2"></i>Order Details
+                            <i class="bi bi-clipboard-data me-2"></i>{{ __('Order Details') }}
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label for="customer_po_number" class="form-label">Purchase Order Number</label>
+                            <label for="customer_po_number" class="form-label">{{ __('Purchase Order Number') }}</label>
                             <input type="text" class="form-control @error('customer_po_number') is-invalid @enderror"
                                    id="customer_po_number" name="customer_po_number"
                                    value="{{ old('customer_po_number') }}"
@@ -133,7 +246,7 @@
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="notes" class="form-label">Order Notes</label>
+                            <label for="notes" class="form-label">{{ __('Order Notes') }}</label>
                             <textarea class="form-control @error('notes') is-invalid @enderror"
                                       id="notes" name="notes" rows="3"
                                       placeholder="Any special instructions or comments...">{{ old('notes') }}</textarea>
@@ -166,7 +279,7 @@
                 <div class="card sticky-top" style="top: 20px;">
                     <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="bi bi-receipt me-2"></i>Order Summary
+                            <i class="bi bi-receipt me-2"></i>{{ __('Order Summary') }}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -237,13 +350,22 @@
                             </a>
                         </div>
 
-                        <!-- Security Notice -->
+                        @if($creditInfo['requires_approval'])
+                            <div class="mt-3 text-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    {{ __('messages.credit_approval_required') }}
+                                </small>
+                            </div>
+                        @else
+
                         <div class="mt-3 text-center">
                             <small class="text-muted">
                                 <i class="bi bi-shield-check me-1"></i>
                                 Your order information is secure and encrypted
                             </small>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -256,6 +378,27 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+
+        // Show/hide sections based on delivery method
+        $('input[name="delivery_method"]').on('change', function() {
+            if ($(this).val() === 'delivery') {
+                $('#delivery_address_section').show();
+                $('#collection_info_section').hide();
+
+                // Make delivery fields required
+                $('#delivery_address_line1, #delivery_city, #delivery_postal_code').attr('required', true);
+            } else {
+                $('#delivery_address_section').hide();
+                $('#collection_info_section').show();
+
+                // Remove required from delivery fields
+                $('#delivery_address_line1, #delivery_city, #delivery_postal_code').removeAttr('required');
+            }
+        });
+
+        // Initialize on page load
+        $('input[name="delivery_method"]:checked').trigger('change');
+
         // Form submission
         $('#checkout-form').on('submit', function(e) {
             const $submitBtn = $('#place-order-btn');

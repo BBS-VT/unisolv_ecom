@@ -306,6 +306,17 @@ class Order extends Model
     }
 
     /**
+     * Scope a query to only return on-hold Orders
+     *
+     * @param \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOnhold($query)
+    {
+        $query->where('OrderStatusID', '5');
+    }
+
+    /**
      * Scope a query to only return Orders which has OrderDate
      * greater or equal then given date
      *

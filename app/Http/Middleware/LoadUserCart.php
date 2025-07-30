@@ -19,6 +19,12 @@ class LoadUserCart
      */
     public function handle(Request $request, Closure $next)
     {
+        // Don't restore cart if we just came from a successful checkout
+        if ($request->session()->has('order_just_completed')) {
+            $request->session()->forget('order_just_completed');
+            return $next($request);
+        }
+
         if (Auth::check()) {
             $user = Auth::user();
             $userCart = UserCart::where('user_id', $user->id)->first();

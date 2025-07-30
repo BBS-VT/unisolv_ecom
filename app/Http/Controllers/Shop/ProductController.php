@@ -8,11 +8,19 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Helpers\Features;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        \Log::info('Products page accessed', [
+            'cart_before' => Session::get('cart', []),
+            'user_id' => Auth::id(),
+            'route' => $request->getRequestUri()
+        ]);
+
         $query = Product::query()
             ->where('status', true)
             ->with(['packageType', 'stockHolding']);
@@ -134,7 +142,9 @@ class ProductController extends Controller
             return $product;
         });
 
-        //$categories = $this->getCategories();
+        \Log::info('Products page ending', [
+            'cart_after' => Session::get('cart', [])
+        ]);
 
         return view('shop.products.index', compact('products', 'categories'));
     }
