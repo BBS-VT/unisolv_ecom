@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Helpers\Features;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -54,6 +55,20 @@ class RouteServiceProvider extends ServiceProvider
                     ->name('shop.')
                     ->group(base_path('routes/shop.php'));
             }
+        });
+
+        Route::bind('order', function ($value) {
+            $order = Order::where('id', $value)
+                ->orWhere('OrderNumber', $value)
+                ->firstOrFail();
+
+            if (Auth::check() && Auth::user()->customer) {
+                if ($order->CustomerID === Auth::user()->customer->acc_code) {
+                    abort(403, 'You can only access your own orders.');
+                }
+            }
+
+            return $order;
         });
     }
 

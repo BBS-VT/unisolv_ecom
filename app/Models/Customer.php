@@ -184,4 +184,51 @@ class Customer extends Model
     {
         return $this->discount_allowed === true;
     }
+
+    public function getRecentOrders($limit = 5)
+    {
+        return $this->orders()
+            ->orderBy('OrderDate', 'desc')
+            ->take($limit)
+            ->get();
+    }
+
+    public function getTotalSpent($months = 12)
+    {
+        return $this->orders()
+            ->where('OrderDate', '>=', now()->subMonths($months))
+            ->where('OrderStatusID', '!=', 5) // Exclude cancelled orders
+            ->sum('total');
+    }
+
+    public function getOrderStats()
+    {
+        return [
+            'total' => $this->orders()->count(),
+            'new' => $this->orders()->where('OrderStatusID', 1)->count(),
+            'completed' => $this->orders()->where('OrderStatusID', 4)->count(),
+            'on_hold' => $this->orders()->where('OrderStatusID', 5)->count(),
+        ];
+    }
+
+    public function getFormattedCreditLimit(): string
+    {
+        return \App\Helpers\PricingHelper::formatPrice($this->CreditLimit );
+    }
+
+    public function getFullDeliveryAddress(): string
+    {
+        $address = $this->DeliveryAddressLine1;
+        if ($this->DeliveryAddressLine2) {
+            $address .= "\n" . $this->DeliveryAddressLine2;
+        }
+        $address .= "\n{$this->DeliveryCity}, {$this->DeliveryState} {$this->DeliveryPostCode}";
+
+        return $address;
+    }
+
+    public function isActive(): bool
+    {
+        return !$this->IsOnCreditHold;
+    }
 }

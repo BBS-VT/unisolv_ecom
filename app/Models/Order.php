@@ -90,6 +90,11 @@ class Order extends Model
         return $this->belongsTo(OrderStatus::class, 'OrderStatusID', 'id');
     }
 
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class, 'order_id', 'id')->orderBy('changed_at', 'desc');
+    }
+
     /**
      * Define Relation with Company Model
      *
@@ -142,78 +147,7 @@ class Order extends Model
         return (int) $total;
     }
 
-    /**
-     * Get the Total Percentage of Order Taxes
-     *
-     * @return array
-     */
-    public function getTotalPercentageOfTaxesWithNames()
-    {
-        $total = [];
-        foreach ($this->taxes as $tax) {
-            if (isset($total[$tax->tax_type->name])) {
-                $total[$tax->tax_type->name] += $tax->tax_type->percent;
-            } else {
-                $total[$tax->tax_type->name] = $tax->tax_type->percent;
-            }
-        }
 
-        return $total;
-    }
-
-    /**
-     *  Get the Items Sub Total by base price
-     *
-     * @return array
-     */
-    public function getItemsSubTotalByBasePrice()
-    {
-        $sub_total = 0;
-        foreach ($this->items as $item) {
-            $sub_total += $item->price;
-        }
-
-        return $sub_total;
-    }
-
-    /**
-     * Get the Total Percentage of Invoice Items taxes with tax names
-     *
-     * @return array
-     */
-    public function getItemsTotalPercentageOfTaxesWithNames()
-    {
-        $total = [];
-        foreach ($this->items as $item) {
-            foreach ($item->taxes as $tax) {
-                if (isset($total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'])) {
-                    $total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'] += ($tax->tax_type->percent / 100) * $item->price;
-                } else {
-                    $total[$tax->tax_type->name . ' (' . $tax->tax_type->percent . '%)'] = ($tax->tax_type->percent / 100) * $item->price;
-                }
-            }
-        }
-
-        return $total;
-    }
-
-    /**
-     * Get the Total Percentage of Invoice Items Taxes with Tax Names
-     *
-     * @return array
-     */
-    public function getItemsTotalDiscount()
-    {
-        $discount_amount = 0;
-        foreach ($this->items as $item) {
-            $price = $item->price;
-            foreach ($item->taxes as $tax) {
-                $price += ($tax->tax_type->percent / 100) * $item->price;
-            }
-            $discount_amount += ($item->discount_val / 100) * $price;
-        }
-        return $discount_amount;
-    }
 
     /**
      * Customized strpos helper function for excluding prefix
@@ -411,6 +345,74 @@ class Order extends Model
     public function getIsUrgentAttribute()
     {
         //return $this->priority == 'urgent' || $this->OrderDate && $this->ExpectedDeliveryDate->isToday();
+    }
+
+    public function getStatusName(): string
+    {
+        return match($this->OrderStatusID) {
+            1 => 'New',
+            2 => 'Downloaded',
+            3 => 'Delivery',
+            4 => 'Invoiced',
+            5 => 'On Hold',
+            default => 'Unknown'
+        };
+    }
+
+    public function getStatusBadgeClass(): string
+    {
+        return match($this->OrderStatusID) {
+            1 => 'bg-primary',
+            2 => 'bg-info',
+            3 => 'bg-warning',
+            4 => 'bg-success',
+            5 => 'bg-danger',
+            default => 'bg-secondary'
+        };
+    }
+
+    public function canBeCancelled(): bool
+    {
+        return $this->OrderStatusID === 1; // Only "New" orders can be cancelled
+    }
+
+    public function canBeReordered(): bool
+    {
+        return $this->orderItems()->exists();
+    }
+
+    public function getFormattedTotal(): string
+    {
+        return \App\Helpers\PricingHelper::formatPrice($this->total / 100);
+    }
+
+    public function getFormattedSubtotal(): string
+    {
+        return \App\Helpers\PricingHelper::formatPrice($this->sub_total / 100);
+    }
+
+    // Scopes for filtering
+    public function scopeForCustomer($query, $customerId)
+    {
+        return $query->where('CustomerID', $customerId);
+    }
+
+    public function scopeWithStatus($query, $statusId)
+    {
+        return $query->where('OrderStatusID', $statusId);
+    }
+
+    public function scopeRecent($query, $days = 30)
+    {
+        return $query->where('OrderDate', '>=', now()->subDays($days));
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('OrderNumber', 'like', "%{$search}%")
+                ->orWhere('CustomerPurchaseOrderNumber', 'like', "%{$search}%");
+        });
     }
 
 }
