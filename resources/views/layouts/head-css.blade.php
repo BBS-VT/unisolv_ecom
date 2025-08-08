@@ -12,4 +12,4 @@
 <link rel="stylesheet" href="{{ URL::asset('build/css/custom.min.css') }}" type="text/css" />
 
 <script src="{{ URL::asset('build/js/plugin.js') }}"></script>
-@yield('css')
+@stack('styles')
