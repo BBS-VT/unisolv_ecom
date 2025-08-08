@@ -264,7 +264,7 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'         => '43',
-                'title'      => 'customer_management_access',
+                'title'      => 'manage_customer',
                 'created_at' => '2019-09-15 06:10:05',
                 'updated_at' => '2019-09-15 06:10:05',
             ],
@@ -690,7 +690,7 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'         => '114',
-                'title'      => 'specialdeal_access',
+                'title'      => 'manage_contractDiscount',
                 'created_at' => '2019-09-21 15:35:20',
                 'updated_at' => '2019-09-21 15:35:20',
             ],

@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
-    <link href="{{ asset('/plugins/dropzone/basic.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('/plugins/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+@section('title', __('global.productManagement'))
+
+@section('css')
+    <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .column-content {
             background-color: #fff; /* Set background to white */
@@ -12,25 +12,26 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
         }
     </style>
-@endpush
+@endsection
 
 @section('content')
+
     <div class="mx-4">
         <div class="d-flex align-items-center mb-4">
             <div class="me-3">
-                <a href="{{ URL::previous() }}" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                    <i class="bi bi-arrow-left"></i>
+                <a href="{{ URL::previous() }}" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-between" style="width: 40px; height: 40px;">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
             </div>
             <div>
-                <small class="text-muted fs-6">{{ trans('global.back_to_list') }}</small>
-                <h2 class="mb-0">{{ trans('global.add') }} {{ trans('cruds.product.title_singular') }}</h2>
+                <small class="text-muted fs-6">{{ __('global.back_to_list') }}</small>
+                <h2 class="mb-0">{{ __('global.add') }} {{ __('cruds.product.title_singular') }}</h2>
             </div>
         </div>
         <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="row g-3">
-                <input type="hidden" name="LastEditedBy" id="LastEditedby" value="{{ auth()->user()->id }}">
+                <input type="hidden" name="LastEditedBy" value="{{ Auth::user()->id }}">
                 <div class="col-md-6">
                     <div class="column-content">
                         <h4>{{ __('Description') }}</h4>
@@ -39,12 +40,9 @@
                                 <div class="row">
                                     <div class="col-xxl-4 col-md-3">
                                         <div>
-                                            <label class="required"
-                                                  for="StockCode">{{ trans('cruds.product.fields.sku') }}</label>
-                                            <input
-                                                class="form-control {{ $errors->has('StockCode') ? 'is-invalid' : '' }}"
-                                                type="text" name="StockCode" id="StockCode"
-                                                value="{{ old('StockCode', '') }}" required>
+                                            <label class="required" for="StockCode">{{ __('cruds.product.fields.sku') }}</label>
+                                            <input class="form-control {{ $errors->has('StockCode') ? 'is-invalid' : ''  }}"
+                                                   type="text" name="StockCode" id="StockCode" value="{{ old('StockCode', '') }}" required>
                                             @if($errors->has('StockCode'))
                                                 <div class="invalid-feedback">
                                                     {{ $errors->first('StockCode') }}
@@ -84,7 +82,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <h4>{{ __('Department') }}</h4>
                         <div class="card border">
                             <div class="card-body">
@@ -92,9 +89,13 @@
                                     <div class="col-xxl-6 col-md-6">
                                         <div class="mb-3">
                                             <label for="categories">{{ __('cruds.product.fields.category') }}</label>
-                                            <select class="form-control mb-3 select2 {{ $errors->has('categories') ? 'is-invalid' : '' }}" name="categories[]" id="categories">
-                                                @foreach($categories as $id => $category)
-                                                    <option value="{{ $id }}" {{ in_array($id, old('categories', [])) ? 'selected' : '' }}>{{ $category }}</option>
+                                            <select class="form-control mb-3 select2 {{ $errors->has('categories') ? 'is-invalid' : '' }}"
+                                                    name="categories[]" id="categories">
+                                                <option value="">-- Select Category --</option>
+                                                @foreach($mainCategories as $id => $category)
+                                                    <option value="{{ $id }}" {{ in_array($id, old('categories', [])) ? 'selected' : '' }}>
+                                                        {{ $category }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @if($errors->has('categories'))
@@ -108,10 +109,9 @@
                                     <div class="col-xxl-6 col-md-6">
                                         <div class="mb-3">
                                             <label for="subCategories">{{ __('cruds.product.fields.subCategory') }}</label>
-                                            <select class="form-control mb-3 select2 {{ $errors->has('subCategories') ? 'is-invalid' : '' }}" name="subCategories[]" id="subCategories">
-                                                @foreach($categories as $id => $category)
-                                                    <option value="{{ $id }}" {{ in_array($id, old('categories', [])) ? 'selected' : '' }}>{{ $category }}</option>
-                                                @endforeach
+                                            <select class="form-control mb-3 select2 {{ $errors->has('subCategories') ? 'is-invalid' : '' }}"
+                                                    name="subCategories[]" id="subCategories">
+
                                             </select>
                                             @if($errors->has('subCategories'))
                                                 <div class="invalid-feedback">
@@ -145,7 +145,7 @@
                                                     value="{{ old('Barcode', '') }}">
                                                 <button type="button" id="generate-barcode" class="input-group-text btn btn-outline-secondary" data-bs-toggle="tooltip"
                                                         data-bs-placement="top" title="{{ __('Click to generate barcode') }}">
-                                                    <i class="ph-barcode"></i>
+                                                    <i class="bx bx-barcode"></i>
                                                 </button>
                                                 @if($errors->has('Barcode'))
                                                     <div class="invalid-feedback">
@@ -421,97 +421,104 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
-
-
             <div class="form-group">
-                <button class="btn btn-danger" type="submit">{{ trans('global.save') }}</button>
-                <a href="{{ route('products.index') }}" class="btn btn-secondary">{{ trans('global.cancel') }}</a>
+                <button class="btn btn-danger" type="submit">
+                    {{ __('global.save') }}
+                </button>
+                <a href="{{ route('products.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
             </div>
         </form>
     </div>
 
-
 @endsection
 
-@push('custom-scripts')
-    <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('/plugins/dropify/js/dropify.min.js') }}"></script>
-    <script src="{{ URL::asset('/pages/jquery.form-upload.init.js') }}"></script>
-    <script src="{{ URL::asset('/plugins/dropzone/dropzone.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
+@section('script')
+    <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js')}}"></script>
+    <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
+
 
     <script>
-        Dropzone.options.photoDropzone = {
-            url: '{{ route('products.storeMedia') }}',
-            maxFilesize: 2, // MB
-            acceptedFiles: '.jpeg,.jpg,.png,.gif',
-            maxFiles: 1,
-            addRemoveLinks: true,
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            params: {
-                size: 2,
-                width: 4096,
-                height: 4096
-            },
-            success: function (file, response) {
-                $('form').find('input[name="photo"]').remove()
-                $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
-            },
-            removedfile: function (file) {
-                file.previewElement.remove()
-                if (file.status !== 'error') {
+        $(document).ready(function() {
+            $('.select2').select2();
+
+            Dropzone.options.photoDropzone = {
+                url: '{{ route('products.storeMedia') }}',
+                maxFilesize: 2, // MB
+                acceptedFiles: '.jpeg,.jpg,.png,.gif',
+                maxFiles: 1,
+                addRemoveLinks: true,
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                params: {
+                    size: 2,
+                    width: 4096,
+                    height: 4096
+                },
+                success: function (file, response) {
                     $('form').find('input[name="photo"]').remove()
-                    this.options.maxFiles = this.options.maxFiles + 1
-                }
-            },
-            init: function () {
-                @if(isset($product) && $product->photo)
-                var file = {!! json_encode($product->photo) !!}
+                    $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
+                },
+                removedfile: function (file) {
+                    file.previewElement.remove()
+                    if (file.status !== 'error') {
+                        $('form').find('input[name="photo"]').remove()
+                        this.options.maxFiles = this.options.maxFiles + 1
+                    }
+                },
+                init: function () {
+                    @if(isset($product) && $product->photo)
+                    var file = {!! json_encode($product->photo) !!}
                     this.options.addedfile.call(this, file)
-                this.options.thumbnail.call(this, file, '{{ $product->photo->getUrl('thumb') }}')
-                file.previewElement.classList.add('dz-complete')
-                $('form').append('<input type="hidden" name="photo" value="' + file.file_name + '">')
-                this.options.maxFiles = this.options.maxFiles - 1
-                @endif
-            },
-            error: function (file, response) {
-                if ($.type(response) === 'string') {
-                    var message = response //dropzone sends it's own error messages in string
-                } else {
-                    var message = response.errors.file
+                    this.options.thumbnail.call(this, file, '{{ $product->photo->getUrl('thumb') }}')
+                    file.previewElement.classList.add('dz-complete')
+                    $('form').append('<input type="hidden" name="photo" value="' + file.file_name + '">')
+                    this.options.maxFiles = this.options.maxFiles - 1
+                    @endif
+                },
+                error: function (file, response) {
+                    if ($.type(response) === 'string') {
+                        var message = response //dropzone sends it's own error messages in string
+                    } else {
+                        var message = response.errors.file
+                    }
+                    file.previewElement.classList.add('dz-error')
+                    _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+                    _results = []
+                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                        node = _ref[_i]
+                        _results.push(node.textContent = message)
+                    }
+                    return _results
                 }
-                file.previewElement.classList.add('dz-error')
-                _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
-                _results = []
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    node = _ref[_i]
-                    _results.push(node.textContent = message)
-                }
-                return _results
             }
-        }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             // Barcode input mask
-            Inputmask("99-999-999-999-9").mask(document.getElementById('Barcode'));
+            Inputmask("9-99999-999999-9").mask(document.getElementById('Barcode'));
+            Inputmask("9-99999-999999-9").mask(document.getElementById('AltBarcode'));
 
             // Generate barcode
             document.getElementById('generate-barcode').addEventListener('click', function () {
                 const sku = document.getElementById('StockCode').value;
+
+                if (!sku || sku === '') {
+                    alert('Please provide a valid SKU');
+                    return;
+                }
 
                 let baseBarcode = '60';
 
                 if (sku.length === 10) {
                     baseBarcode+= sku;
                 } else {
-                    let validSku = sku.padStart(10, '');
-                    validSku = validSku.slice(0, 10);
+                    let validSku = sku;
                     while (validSku.length < 10) {
                         validSku += Math.floor(Math.random() * 10);
                     }
@@ -523,20 +530,72 @@
                 let fullBarcode = baseBarcode + checksum;
 
                 let formattedBarcode = `${fullBarcode.slice(0, 2)}-${fullBarcode.slice(2, 5)}-${fullBarcode.slice(5, 8)}-${fullBarcode.slice(8, 12)}-${fullBarcode.slice(12)}`;
-                document.getElementById('barcode').value = formattedBarcode;
+                document.getElementById('Barcode').value = formattedBarcode;
             });
 
-            function calculateEAN13Checksum(barcode) {
+            function calculateEAN13Checksum(baseBarcode) {
                 let sum = 0;
-                for (let i = 0; i < barcode.length; i++) {
-                    sum += i % 2 === 0 ? parseInt(barcode[i]) : parseInt(barcode[i]) * 3;
+                for (let i = 0; i < baseBarcode.length; i++) {
+                    sum += i % 2 === 0 ? parseInt(baseBarcode[i]) : parseInt(baseBarcode[i]) * 3;
                 }
-                return (10 - (sum % 10)) % 10; // Checksum calculation
+                return (10 - (sum % 10)) % 10;
             }
         });
+
+        $(document).ready(function() {
+            // Get all subcategories with their parent relationships
+            const allSubCategories = @json($subCategories);
+            console.log('Available subcategories:', allSubCategories);
+
+            // Initialize Select2 on both dropdowns
+            $('#categories').select2();
+            $('#subCategories').select2();
+
+            // Function to update subcategories based on selected category
+            function updateSubCategories() {
+                // Get selected category ID
+                const selectedCategoryId = parseInt($('#categories').val());
+                console.log('Selected category ID:', selectedCategoryId);
+
+                // Exit if no category selected or invalid ID
+                if (isNaN(selectedCategoryId)) {
+                    console.log('No valid category selected');
+                    // Clear the subcategory dropdown
+                    $('#subCategories').empty().append(new Option('-- Select Subcategory --', ''));
+                    $('#subCategories').trigger('change');
+                    return;
+                }
+
+                // Filter subcategories by selected main category
+                const filteredSubCategories = allSubCategories.filter(
+                    subCat => subCat.ParentID === selectedCategoryId
+                );
+
+                console.log('Filtered subcategories:', filteredSubCategories);
+
+                // Important: Destroy and recreate the Select2 to ensure proper rendering
+                $('#subCategories').select2('destroy');
+
+                // Clear existing options and add default
+                $('#subCategories').empty().append(new Option('-- Select Subcategory --', ''));
+
+                // Add filtered subcategories to select
+                filteredSubCategories.forEach(subCat => {
+                    $('#subCategories').append(new Option(subCat.StockGroupName, subCat.id));
+                });
+
+                // Reinitialize Select2
+                $('#subCategories').select2();
+            }
+
+            // Add event listener for category change
+            $('#categories').on('change', updateSubCategories);
+
+            // Initial call to populate subcategories based on any preselected category
+            updateSubCategories();
+        });
+
+
     </script>
 
-    <script src="{{ URL::asset('pages/jquery.forms-advanced.js') }}"></script>
-
-@endpush
-
+@endsection

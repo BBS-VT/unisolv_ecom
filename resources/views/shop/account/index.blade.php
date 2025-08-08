@@ -186,7 +186,7 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <strong>Credit Limit:</strong><br>
-                                <span class="h5 text-success">{{ \App\Helpers\PricingHelper::formatPrice($customer->CreditLimit / 100) }}</span>
+                                <span class="h5 text-success">{{ \App\Helpers\PricingHelper::formatPrice($customer->CreditLimit) }}</span>
                             </div>
 
                             @if($creditUtilization > 0)

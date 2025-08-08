@@ -173,15 +173,13 @@ class ProductController extends Controller
         $currentCompany = $user->currentCompany();
         Cache::forget("products_company_{$currentCompany->id}");
 
-        $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $mainCategories = ProductCategory::where('ParentID', 0 )->where('status', 1)->pluck('StockGroupName', 'id');
+        $subCategories = ProductCategory::where('ParentID', '>', 0)->where('status', 1)->get();
+
         $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $tags = ProductTag::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-
-
-        return view('products.create', compact('categories', 'tags', 'salesunits', 'packageunits'));
+        return view('products.create', compact('subCategories', 'mainCategories', 'salesunits', 'packageunits'));
     }
 
     public function store(StoreProductRequest $request)

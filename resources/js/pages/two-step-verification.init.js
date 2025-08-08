@@ -1,26 +1,32 @@
 /*
-Template Name: Steex - Admin & Dashboard Template
+Template Name: Skote - Admin & Dashboard Template
 Author: Themesbrand
-Website: https://Themesbrand.com/
-Contact: Themesbrand@gmail.com
-File: Two step verification Init Js File
+Website: https://themesbrand.com/
+Contact: themesbrand@gmail.com
+File: two step verification Init Js File
 */
 
-// move next
-function getInputElement(index) {
-    return document.getElementById('digit' + index + '-input');
+function moveToNext(elem, count){
+    if(elem.value.length > 0) {
+        $("#digit"+count+"-input").focus();
+    }
 }
-function moveToNext(index, event) {
-    const eventCode = event.which || event.keyCode;
-    const input = getInputElement(index);
-    if (input.value.length === 1) {
-        if (index !== 4) {
-            getInputElement(index + 1).focus();
-        } else {
-            input.blur();
+var count = 1;
+$(".two-step").keyup(function(e){
+    if(count == 0){
+        count = 1;
+    }
+    if(e.keyCode === 8){
+        if(count == 5){
+            count = 3;
+        }
+        $("#digit"+count+"-input").focus();
+        count--;
+    }else{
+        if(count > 0) {
+            count++;
+            $("#digit"+count+"-input").focus();
         }
     }
-    if (eventCode === 8 && index !== 1) {
-        getInputElement(index - 1).focus();
-    }
-}
+});
+

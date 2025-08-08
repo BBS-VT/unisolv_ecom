@@ -56,7 +56,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Credit Limit</label>
-                                    <input type="text" class="form-control" value="{{ \App\Helpers\PricingHelper::formatPrice($customer->CreditLimit / 100) }}" readonly>
+                                    <input type="text" class="form-control" value="{{ \App\Helpers\PricingHelper::formatPrice($customer->CreditLimit) }}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Price Level</label>

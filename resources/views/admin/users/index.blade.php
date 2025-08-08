@@ -1,13 +1,16 @@
 @extends('layouts.app')
 
-@push('style')
+@section('style')
     <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-
-@endpush
+    <link href="{{ asset('/plugins/dropify/css/dropify.min.css') }}" rel="stylesheet">
+@endsection
 
 @section('content')
+    @php
+    dd($users);
+    @endphp
     <div class="row">
         <div class="col-sm-12">
             <div class="page-title-box">
@@ -25,19 +28,15 @@
                             <h4 class="card-title">{{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}</h4>
                         </div>
                         <div class="col-auto align-self-center">
-                            <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-primary">
-                                <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
-                                {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
-                            </a>
-                            <a href="{{ route('admin.roles.create') }}" class="btn btn-sm btn-outline-primary">
-                                <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
-                                {{ trans('global.add') }} {{ trans('cruds.role.title_singular') }}
-                            </a>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#newUserModal"
+                                    class="btn btn-success btn-rounded waves-effect addContact-modal mb-2">
+                                <i class="mdi mdi-plus me-1"></i> {{ __('User') }}
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap " style="border-collapse: collapse; border-spacing: 0; width:100%">
+                    <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap " style="border-collapse: collapse; border-spacing: 0; width:100%">
                         <thead>
                         <tr>
                             <th width="5"></th>
@@ -101,39 +100,43 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newUserModalLabel">{{ __('Add User') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
-@push('custom-scripts')
+@section('script')
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 
-    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/jszip.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/pdfmake.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/vfs_fonts.js') }}"></script>
+<script src="{{ asset('plugins/datatables/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/buttons.print.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/buttons.colVis.min.js') }}"></script>
 
-    <script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/jszip.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/buttons.colVis.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('pages/jquery.datatable.init.js') }}"></script>
+<script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
+<script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
 
-    <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('pages/jquery.datatable.init.js') }}"></script>
+@endsection
 
-    <script>
-        $(document).ready(function () {
-            $('#datatable-buttons').DataTable({
-                dom: 'Bfrtip',
-                lengthMenu: [
-                    [ 10, 25, 50, -1 ],
-                    [ '10 rows', '25 rows', '50 rows', 'Show all']
-                ],
-                buttons: [
-                   'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength'
-                ],
-               "order": [[ 1, "asc" ]],
-            });
-        });
-    </script>
-@endpush
+
+
+

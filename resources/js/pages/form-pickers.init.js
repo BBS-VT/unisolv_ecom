@@ -256,17 +256,4 @@ if (formatColorPickr)
                 // Main components
                 preview: true,
                 opacity: true,
-                hue: true,
-
-                // Input / output Options
-                interaction: {
-                    hex: true,
-                    rgba: true,
-                    hsva: true,
-                    input: true,
-                    clear: true,
-                    save: true,
-                },
-            },
-        });
-    });
+                
