@@ -216,8 +216,8 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="form-group">
-                                        <label for="photo" hidden>{{ trans('cruds.product.fields.photo') }}</label>
-                                        <div class="dropzone {{ $errors->has('photo') ? 'is-invalid' : '' }}" id="photo-dropzone">
+                                        <label for="file" hidden>{{ trans('cruds.product.fields.photo') }}</label>
+                                        <div class="dropzone {{ $errors->has('file') ? 'is-invalid' : '' }}" id="photo-dropzone">
                                             <div class="fallback">
                                                 <input name="file" type="file" multiple="multiple">
                                             </div>
@@ -228,9 +228,9 @@
                                                 <h4>{{ __('Drop  images here or click upload') }}</h4>
                                             </div>
                                         </div>
-                                        @if($errors->has('photo'))
+                                        @if($errors->has('file'))
                                             <div class="invalid-feedback">
-                                                {{ $errors->first('photo') }}
+                                                {{ $errors->first('file') }}
                                             </div>
                                         @endif
                                         <span class="help-block">{{ trans('cruds.product.fields.photo_helper') }}</span>

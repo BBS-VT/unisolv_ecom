@@ -14,6 +14,7 @@ use App\Models\PackageType;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
+use App\Models\StockItemHoldings;
 use Cache;
 use Gate;
 use Illuminate\Http\Request;
@@ -184,20 +185,94 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->all());
-        $product->categories()->sync($request->input('categories', []));
-        $product->tags()->sync($request->input('tags', []));
+        //dd($request->all());
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
+        $productData = $request->all();
+        \Log::info('Product creation data:', $productData);
 
+        $cleanedBarcode = null;
+        $cleanedAltbarcode = null;
 
-        if ($request->input('photo', false)) {
-            $product->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+        if ($request->has('Barcode') && $request->input('Barcode') !== null) {
+            $barcode = $productData['Barcode'];
+            $cleanedBarcode = preg_replace('/[^0-9]/', '', $barcode); // Remove non-numeric characters
         }
 
-        if ($media = $request->input('ck-media', false)) {
-            Media::whereIn('id', $media)->update(['model_id' => $product->id]);
+        if ($request->has('AltBarCode') && $request->input('AltBarCode') !== null) {
+            $altBarcode = $productData['AltBarCode'];
+            $cleanedAltbarcode = preg_replace('/[^0-9]/', '', $altBarcode); // Remove non-numeric characters
         }
 
-        return redirect()->route('products.index');
+        try {
+            $product = Product::create([
+                'company_id'    => $currentCompany->id,
+                'StockCode'     => $productData['StockCode'],
+                'TaxRateID'     => $productData['TaxRateID'],
+                'StockItemName' => $productData['StockItemName'],
+                'Barcode'       => $cleanedBarcode,
+                'AltBarCode'    => $cleanedAltbarcode,
+                'SellingPrice'  => $productData['SellingPrice'],
+                'SellingPrice2' => $productData['SellingPrice2'] ?? 0,
+                'SellingPrice3' => $productData['SellingPrice3'] ?? 0,
+                'SellingPrice4' => $productData['SellingPrice4'] ?? 0,
+                'AverageCostPrice'   => $productData['AverageCostPrice'] ?? 0,
+                'DiscountPercentage' => $productData['DiscountPercentage'] ?? 0,
+                'MarketingComments'  => $productData['MarketingComments'] ?? null,
+                'Size'          => $productData['Size'] ?? null,
+                'Packsize'      => $productData['Packsize'] ?? null,
+                'status'        => 1,
+                'LastEditedBy'  => $user->id
+            ]);
+            \Log::info('Product created with ID:', [$product->id]);
+
+            // Create stock holding record
+            $stockHoldingData = [
+                'StockCode' => $product->StockCode,
+                'LastCostPrice' => $productData['LastCostPrice'] ?? 0,
+                'QuantityOnHand' => $productData['QuantityOnHand'] ?? 0,
+                'LastEditedBy' => $user->id,
+            ];
+
+            $stockHolding = StockItemHoldings::updateOrCreate(
+                ['StockCode' => $product->StockCode],
+                $stockHoldingData
+            );
+
+            \Log::info('Stock holding created/updated:', $stockHoldingData);
+
+        } catch (\Exception $e) {
+            \Log::error('Product creation failed:', [$e->getMessage()]);
+            return back()->withErrors(['error' => 'Failed to create product: ' . $e->getMessage()]);
+        }
+
+        if ($request->hasFile('file')) {
+            try {
+                $product->addMedia($request->file('file'))->toMediaCollection('photo');
+                \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+            } catch (\Exception $e) {
+                \Log::error('Photo upload failed: ' . $e->getMessage());
+            }
+        } else {
+            \Log::info('No file uploaded - checking for photo input');
+            if ($request->input('photo', false)) {
+                $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
+                if (file_exists($photoPath)) {
+                    $product->addMedia($photoPath)->toMediaCollection('photo');
+                    \Log::info('Photo from tmp uploaded: ' . $photoPath);
+                } else {
+                    \Log::error('Photo file not found: ' . $photoPath);
+                }
+            }
+        }
+
+        if ($request->has('subCategories') && !empty(array_filter($request->input('subCategories')))) {
+            $product->categories()->attach($request->input('subCategories', []));
+        } elseif ($request->has('categories')) {
+            $product->categories()->sync($request->input('categories'));
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully!');
 
     }
 
@@ -310,19 +385,6 @@ class ProductController extends Controller
         Cache::forget("products_company_{$currentCompany->id}");
 
         return response(null, Response::HTTP_NO_CONTENT);
-
-    }
-
-    public function storeCKEditorImages(Request $request)
-    {
-        abort_if(Gate::denies('product_create') && Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $model         = new Product();
-        $model->id     = $request->input('crud_id', 0);
-        $model->exists = true;
-        $media         = $model->addMediaFromRequest('upload')->toMediaCollection('ck-media', 'public');
-
-        return response()->json(['id' => $media->id, 'url' => $media->getUrl()], Response::HTTP_CREATED);
 
     }
 

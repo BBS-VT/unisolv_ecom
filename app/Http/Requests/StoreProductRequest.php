@@ -25,18 +25,10 @@ class StoreProductRequest extends FormRequest
                 'required'],
             'TaxRateID'     => [
                 'required'],
-            'CostPrice'     => [
-                'required'],
+
             'SellingPrice'  => [
                 'required'],
-            'categories.*' => [
-                'integer'],
-            'categories'   => [
-                'array'],
-            'tags.*'       => [
-                'integer'],
-            'tags'         => [
-                'array'],
+
         ];
 
     }
