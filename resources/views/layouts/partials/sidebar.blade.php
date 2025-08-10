@@ -120,6 +120,14 @@
 
                         </ul>
                     </li>
+                    <li>
+                        <a href="javascript: void(0);"><i class="ti-control-record"></i>{{ __('Promotions') }}<span class="menu-arrow left-has-menu"><i class="mdi mdi-chevron-right"></i></span></a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            <li><a href="{{ route('promotions.create') }}" key="t-promotions-new">{{ __('global.new') }} {{ __('Promotion') }}</a></li>
+                            <li><a href="{{ route('promotions.index') }}" key="t-promotions-view">{{ __('global.view') }} {{ __('Promotions') }}</a></li>
+                            <li><a href="{{ route('promotions.import') }}" key="t-promotions-import">{{ __('Import Promotions') }}</a></li>
+                        </ul>
+                    </li>
 
                 </ul>
             </li>

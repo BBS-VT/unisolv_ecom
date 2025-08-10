@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Support\Facades\Route;
@@ -97,6 +98,25 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::post('importStockmaster', 'ProductController@importExcel')->name('importStockmaster');
     //Route::match(['get', 'post'], 'products/maintain/{id?}', 'ProductController@maintain')->name('products.maintain');
     Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
+
+    // Promotions
+    Route::resource('promotions', PromotionController::class);
+    Route::prefix('promotions')->name('promotions.')->group(function () {
+        // Imports
+        Route::get('import', [PromotionController::class, 'showImport'])->name('import');
+        Route::post('import', [PromotionController::class, 'import'])->name('import.process');
+        Route::post('import/preview', [PromotionController::class, 'previewImport'])->name('import.preview');
+
+        // Bulk operations
+        Route::post('bulk-status', [PromotionController::class, 'bulkUpdateStatus'])->name('bulk-status');
+
+        Route::post('test-calculation', [PromotionController::class, 'testCalculation'])
+            ->name('test-calculation');
+        Route::get('statistics', [PromotionController::class, 'statistics'])
+            ->name('statistics');
+        Route::get('{promotion}/analytics', [PromotionController::class, 'analytics'])
+            ->name('analytics');
+    });
 
     // Orders
     Route::get('orders/create', 'OrdersController@create')->name('orders.create');

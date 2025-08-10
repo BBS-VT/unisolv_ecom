@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Console\Commands\ImportPromotionsCommand::class,
+        \App\Console\Commands\CleanupExpiredPromotionsCommand::class,
+        \App\Console\Commands\UpdatePromotionStatusCommand::class,
     ];
 
     /**
@@ -26,6 +28,19 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('cleanup:temp-uploads')->daily();
         $schedule->command('carts:identify-abandoned')->dailyAt('10:00');
+
+        // Update promotion statuses every hour
+        $schedule->command('promotions:update-status')
+            ->hourly()
+            ->withoutOverlapping()
+            ->runInBackground();
+
+        // Cleanup old expired promotions weekly
+        $schedule->command('promotions:cleanup --days=90')
+            ->weekly()
+            ->sundays()
+            ->at('02:00')
+            ->runInBackground();
     }
 
     /**

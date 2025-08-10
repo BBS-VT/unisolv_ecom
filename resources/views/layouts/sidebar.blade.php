@@ -32,6 +32,15 @@
                                     <li><a href="{{ url('/product-categories') }}" key="t-product-category">{{ __('global.view') }} {{ __('cruds.productCategory.title') }}</a></li>
                                 </ul>
                             </li>
+                            <li>
+                                <a href="javascript: void(0);" class="has-arrow" key="t-promotions">{{ __('Promotions') }} </a>
+                                <ul class="sub-menu" aria-expanded="true">
+                                    <li><a href="{{ route('promotions.create') }}" key="t-promotions-new">{{ __('global.new') }} {{ __('Promotion') }}</a></li>
+                                    <li><a href="{{ route('promotions.index') }}" key="t-promotions-view">{{ __('global.view') }} {{ __('Promotions') }}</a></li>
+                                    <li><a href="{{ route('promotions.import') }}" key="t-promotions-import">{{ __('Import Promotions') }}</a></li>
+                                    {{-- <li><a href="{{ route('promotions.featured') }}" key="t-promotions-featured" target="_blank">{{ __('Featured Deals') }} <i class="bx bx-link-external bx-xs"></i></a></li>--}}
+                                </ul>
+                            </li>
                             {{--<li>
                                 <a href="javascript: void(0);" class="has-arrow">{{ __('Stock Management') }}</a>
                                 <ul class="sub-menu" aria-expanded="true">
