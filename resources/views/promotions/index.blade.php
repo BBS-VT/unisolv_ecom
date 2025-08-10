@@ -291,7 +291,7 @@
                                     <td>
                                         @if($promotion->product)
                                             <div>
-                                                <strong>{{ Str::limit($promotion->product->ProductName, 30) }}</strong>
+                                                <strong>{{ Str::limit($promotion->product->StockItemName, 30) }}</strong>
                                                 <br>
                                                 <small class="text-muted">{{ $promotion->stock_code }}</small>
                                             </div>
