@@ -142,9 +142,9 @@
                     </div>
 
                     <div class="col-md-2">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status">
-                            <option value="">All Status</option>
+                        <label for="status" class="form-label ">Status</label>
+                        <select class="form-control" id="status_filter" name="status">
+                            <option value="">All Statuses</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                             <option value="scheduled" {{ request('status') === 'scheduled' ? 'selected' : '' }}>Scheduled</option>
@@ -474,7 +474,7 @@
         }
 
         // Auto-submit form on filter change
-        document.querySelectorAll('select[name="type"], select[name="status"], select[name="is_online_only"]').forEach(select => {
+        document.querySelectorAll('select[name="type"], select[name="status_filter"], select[name="is_online_only"]').forEach(select => {
             select.addEventListener('change', function() {
                 this.form.submit();
             });

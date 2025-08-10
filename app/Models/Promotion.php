@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 
 class Promotion extends Model
@@ -157,12 +157,12 @@ class Promotion extends Model
         return true;
     }
 
-    public function calculateDiscount($quantity, $originalPricePerItem, $customerTier = 1): array
+    public function calculateDiscount($quantity, $originalPrice, $customerTier = 1): array
     {
         if (!$this->isActive()) {
             return [
                 'applicable' => false,
-                'discounted_price' => $originalPricePerItem,
+                'discounted_price' => $originalPrice,
                 'savings_per_item' => 0,
                 'total_savings' => 0,
                 'bonus_quantity' => 0,
@@ -171,14 +171,14 @@ class Promotion extends Model
         }
 
         return match($this->type) {
-            'date_range' => $this->calculateDateRangeDiscount($quantity, $originalPricePerItem, $customerTier),
-            'bogo' => $this->calculateBogoDiscount($quantity, $originalPricePerItem),
-            'quantity_break' => $this->calculateQuantityBreakDiscount($quantity, $originalPricePerItem),
-            'bonus_quantity' => $this->calculateBonusQuantityDiscount($quantity, $originalPricePerItem),
-            'price_break' => $this->calculatePriceBreakDiscount($quantity, $originalPricePerItem, $customerTier),
+            'date_range' => $this->calculateDateRangeDiscount($quantity, $originalPrice, $customerTier),
+            'bogo' => $this->calculateBogoDiscount($quantity, $originalPrice),
+            'quantity_break' => $this->calculateQuantityBreakDiscount($quantity, $originalPrice),
+            'bonus_quantity' => $this->calculateBonusQuantityDiscount($quantity, $originalPrice),
+            'price_break' => $this->calculatePriceBreakDiscount($quantity, $originalPrice, $customerTier),
             default => [
                 'applicable' => false,
-                'discounted_price' => $originalPricePerItem,
+                'discounted_price' => $originalPrice,
                 'savings_per_item' => 0,
                 'total_savings' => 0,
                 'bonus_quantity' => 0,

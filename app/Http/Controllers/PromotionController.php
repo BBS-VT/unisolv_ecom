@@ -60,7 +60,7 @@ class PromotionController extends Controller
 
         $statistics = [
             'total' => Promotion::count(),
-            'active' => Promotion::active()->count(),
+            'active' => Promotion::where('status', 'active')->count(),
             'scheduled' => Promotion::where('status', 'scheduled')->count(),
             'expired' => Promotion::where('status', 'expired')->count(),
             'online_only' => Promotion::where('is_online_only', true)->count(),
@@ -127,8 +127,8 @@ class PromotionController extends Controller
 
     public function edit(Promotion $promotion): View
     {
-        $products = Product::select('StockCode', 'ProductName')
-            ->orderBy('ProductName')
+        $products = Product::select('StockCode', 'StockItemName')
+            ->orderBy('StockItemName')
             ->get();
 
         return view('promotions.edit', compact('promotion', 'products'));
@@ -385,7 +385,11 @@ class PromotionController extends Controller
                 ], 404);
             }
 
-            $originalPrice = $product->{"SalePrice{$request->customer_tier}"};
+            if ($request->customer_tier == 1)
+                $originalPrice = $product->{"SellingPrice"};
+            else {
+                $originalPrice = $product->{"SellingPrice{$request->customer_tier}"};
+            }
             $result = $promotion->calculateDiscount(
                 $request->quantity,
                 $originalPrice,
@@ -395,7 +399,7 @@ class PromotionController extends Controller
             return response()->json([
                 'success' => true,
                 'original_price' => $originalPrice,
-                'original_price_formatted' => '$' . number_format($originalPrice / 100, 2),
+                'original_price_formatted' => 'R' . number_format($originalPrice, 2),
                 'calculation' => $result
             ]);
 
