@@ -47,7 +47,7 @@ class PromotionController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('stock_code', 'like', "%{$search}%")
                     ->orWhereHas('product', function ($productQuery) use ($search) {
-                        $productQuery->where('ProductName', 'like', "%{$search}%");
+                        $productQuery->where('StockItemName', 'like', "%{$search}%");
                     });
             });
         }

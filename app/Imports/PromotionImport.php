@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -62,7 +61,7 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
      */
     protected function processRow(Collection $row, int $rowNumber): void
     {
-        // Map CSV columns
+        // Map CSV columns based on your actual structure
         $data = $this->mapRowData($row);
 
         // Validate the mapped data
@@ -110,58 +109,74 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
     }
 
     /**
-     * Map CSV row to standardized data array
+     * Map CSV row to standardized data array - FIXED for your actual CSV structure
      */
     protected function mapRowData(Collection $row): array
     {
-        // Convert collection to array for easier access
-        $rowArray = $row->toArray();
-
-        // Map based on your CSV column structure
+        // Based on your log data, these are the actual column names in your CSV
         return [
-            'location_code' => $this->getColumnValue($rowArray, 0, ''),
-            'location_name' => $this->getColumnValue($rowArray, 1, ''),
-            'stock_code' => $this->getColumnValue($rowArray, 6, ''),
-            'date_from' => $this->getColumnValue($rowArray, 9, ''),
-            'date_to' => $this->getColumnValue($rowArray, 10, ''),
-            'selling_price_1' => $this->getColumnValue($rowArray, 11, ''),
-            'selling_price_2' => $this->getColumnValue($rowArray, 12, ''),
-            'selling_price_3' => $this->getColumnValue($rowArray, 13, ''),
-            'selling_price_4' => $this->getColumnValue($rowArray, 14, ''),
-            'quantity_type' => $this->getColumnValue($rowArray, 32, 'F'),
-            'price_break_1' => $this->getColumnValue($rowArray, 33, ''),
-            'price_break_2' => $this->getColumnValue($rowArray, 34, ''),
-            'price_break_3' => $this->getColumnValue($rowArray, 35, ''),
-            'bonus_break_qty_1' => $this->getColumnValue($rowArray, 36, 0),
-            'bonus_quantity_1' => $this->getColumnValue($rowArray, 37, 0),
-            'bonus_discount_1' => $this->getColumnValue($rowArray, 38, 0),
-            'bonus_break_qty_2' => $this->getColumnValue($rowArray, 39, 0),
-            'bonus_quantity_2' => $this->getColumnValue($rowArray, 40, 0),
-            'bonus_discount_2' => $this->getColumnValue($rowArray, 41, 0),
-            'bonus_break_qty_3' => $this->getColumnValue($rowArray, 42, 0),
-            'bonus_quantity_3' => $this->getColumnValue($rowArray, 43, 0),
-            'bonus_discount_3' => $this->getColumnValue($rowArray, 44, 0),
-            'quantity_limit' => $this->getColumnValue($rowArray, 45, 0),
-            'bonus_inv_limit' => $this->getColumnValue($rowArray, 46, 0),
+            'location_code' => $this->getRowValue($row, 'location', ''),
+            'location_name' => $this->getRowValue($row, 'location_name', ''),
+            'stock_code' => $this->getRowValue($row, 'stock_code', ''),
+            'long_description' => $this->getRowValue($row, 'long_description', ''),
+            'date_from' => $this->getRowValue($row, 'date_from', ''),
+            'date_to' => $this->getRowValue($row, 'date_to', ''),
+            'selling_price_1' => $this->getRowValue($row, 'selling_price_1', 0),
+            'selling_price_2' => $this->getRowValue($row, 'selling_price_2', 0),
+            'selling_price_3' => $this->getRowValue($row, 'selling_price_3', 0),
+            'selling_price_4' => $this->getRowValue($row, 'selling_price_4', 0),
+            'fixedbreak_qty' => $this->getRowValue($row, 'fixedbreak_qty', 'F'),
+            'price_break_1' => $this->getRowValue($row, 'price_break_1', 0),
+            'price_break_2' => $this->getRowValue($row, 'price_break_2', 0),
+            'price_break_3' => $this->getRowValue($row, 'price_break_3', 0),
+            'bonus_break_qty_1' => $this->getRowValue($row, 'bonus_break_qty_1', 0),
+            'bonus_quantity_1' => $this->getRowValue($row, 'bonus_quantity_1', 0),
+            'bonus_discount_1' => $this->getRowValue($row, 'bonus_discount_1', 0),
+            'bonus_break_qty_2' => $this->getRowValue($row, 'bonus_break_qty_2', 0),
+            'bonus_quantity_2' => $this->getRowValue($row, 'bonus_quantity_2', 0),
+            'bonus_discount_2' => $this->getRowValue($row, 'bonus_discount_2', 0),
+            'bonus_break_qty_3' => $this->getRowValue($row, 'bonus_break_qty_3', 0),
+            'bonus_quantity_3' => $this->getRowValue($row, 'bonus_quantity_3', 0),
+            'bonus_discount_3' => $this->getRowValue($row, 'bonus_discount_3', 0),
+            'quantity_limit' => $this->getRowValue($row, 'quantity_limit', 0),
+            'bonus_1_inv_limit' => $this->getRowValue($row, 'bonus_1_inv_limit', 0),
         ];
     }
 
     /**
-     * Safely get column value with fallback
+     * Safely get row value using column name
      */
-    protected function getColumnValue(array $row, int $index, $default = null)
+    protected function getRowValue(Collection $row, string $columnName, $default = null)
     {
-        return isset($row[$index]) ? trim($row[$index]) : $default;
+        $value = $row->get($columnName, $default);
+
+        // Handle string values that need trimming
+        if (is_string($value)) {
+            $value = trim($value);
+            // Convert empty strings to null for numeric fields
+            if ($value === '' && is_numeric($default)) {
+                return $default;
+            }
+        }
+
+        return $value;
     }
 
     /**
-     * Validate row data
+     * Validate row data - UPDATED for correct field names
      */
     protected function validateRowData(array $data, int $rowNumber): void
     {
+        // Debug: Log what we're actually validating
+        Log::debug("Validating row {$rowNumber}", [
+            'stock_code' => $data['stock_code'],
+            'location_name' => $data['location_name'],
+            'data_keys' => array_keys($data)
+        ]);
+
         $validator = Validator::make($data, [
-            'stock_code' => 'required|string',
-            'location_name' => 'required|string',
+            'stock_code' => 'required|string|min:1',
+            'location_name' => 'required|string|min:1',
             'selling_price_1' => 'nullable|numeric|min:0',
             'selling_price_2' => 'nullable|numeric|min:0',
             'selling_price_3' => 'nullable|numeric|min:0',
@@ -169,12 +184,21 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
         ]);
 
         if ($validator->fails()) {
-            throw new Exception("Validation failed: " . implode(', ', $validator->errors()->all()));
+            $errors = $validator->errors()->all();
+            Log::error("Validation failed for row {$rowNumber}", [
+                'errors' => $errors,
+                'data' => $data
+            ]);
+            throw new Exception("Validation failed: " . implode(', ', $errors));
         }
 
         // Additional custom validations
-        if (empty($data['stock_code'])) {
-            throw new Exception("Stock Code is required");
+        if (empty($data['stock_code']) || trim($data['stock_code']) === '') {
+            throw new Exception("Stock Code is required and cannot be empty");
+        }
+
+        if (empty($data['location_name']) || trim($data['location_name']) === '') {
+            throw new Exception("Location Name is required and cannot be empty");
         }
 
         if (strlen($data['stock_code']) > 50) {
@@ -183,7 +207,7 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
     }
 
     /**
-     * Build promotion data array
+     * Build promotion data array - UPDATED for correct field names
      */
     protected function buildPromotionData(array $data, Product $product): array
     {
@@ -241,16 +265,17 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
         }
 
         // Generate promotion name
-        $name = "Imported: {$product->ProductName} - {$data['location_name']}";
+        $productName = $data['long_description'] ?: $product->ProductName;
+        $name = "Imported: {$productName} - {$data['location_name']}";
 
         return [
-            'name' => $name,
+            'name' => Str::limit($name, 255),
             'description' => "Imported from POS system for {$data['location_name']}",
             'type' => $type,
             'status' => 'active',
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
-            'location_code' => $data['location_code'],
+            'location_code' => (string)$data['location_code'],
             'location_name' => $data['location_name'],
             'is_online_only' => false,
             'is_imported' => true,
@@ -260,12 +285,12 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
             'sale_price_2' => $sellingPrice2 > 0 ? $sellingPrice2 : null,
             'sale_price_3' => $sellingPrice3 > 0 ? $sellingPrice3 : null,
             'sale_price_4' => $sellingPrice4 > 0 ? $sellingPrice4 : null,
-            'quantity_type' => strtolower(trim($data['quantity_type'])) === 'b' ? 'break' : 'fixed',
+            'quantity_type' => strtolower(trim($data['fixedbreak_qty'])) === 'b' ? 'break' : 'fixed',
             'min_quantity' => 1,
             'price_breaks' => !empty($priceBreaks) ? $priceBreaks : null,
             'bonus_breaks' => !empty($bonusBreaks) ? $bonusBreaks : null,
             'quantity_limit_per_customer' => intval($data['quantity_limit']) > 0 ? intval($data['quantity_limit']) : null,
-            'usage_limit_total' => intval($data['bonus_inv_limit']) > 0 ? intval($data['bonus_inv_limit']) : null,
+            'usage_limit_total' => intval($data['bonus_1_inv_limit']) > 0 ? intval($data['bonus_1_inv_limit']) : null,
             'import_batch_id' => $this->batchId,
             'last_imported_at' => now()
         ];
@@ -274,17 +299,26 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
     /**
      * Parse price string to cents
      */
-    protected function parsePriceToCents(?string $price): int
+    protected function parsePriceToCents($price): int
     {
         if (empty($price) || $price === '0' || $price === '0.00') {
             return 0;
         }
 
-        // Remove currency symbols and clean
-        $cleaned = preg_replace('/[^\d.-]/', '', $price);
-        $float = floatval($cleaned);
+        // Handle numeric values directly
+        if (is_numeric($price)) {
+            return intval(floatval($price) * 100);
+        }
 
-        return intval($float * 100);
+        // Handle string values
+        if (is_string($price)) {
+            // Remove currency symbols and clean
+            $cleaned = preg_replace('/[^\d.-]/', '', $price);
+            $float = floatval($cleaned);
+            return intval($float * 100);
+        }
+
+        return 0;
     }
 
     /**

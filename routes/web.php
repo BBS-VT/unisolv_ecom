@@ -100,12 +100,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
 
     // Promotions
-    Route::resource('promotions', PromotionController::class);
     Route::prefix('promotions')->name('promotions.')->group(function () {
         // Imports
         Route::get('import', [PromotionController::class, 'showImport'])->name('import');
         Route::post('import', [PromotionController::class, 'import'])->name('import.process');
         Route::post('import/preview', [PromotionController::class, 'previewImport'])->name('import.preview');
+        Route::get('download-template', [PromotionController::class, 'downloadTemplate'])
+            ->name('download-template');
 
         // Bulk operations
         Route::post('bulk-status', [PromotionController::class, 'bulkUpdateStatus'])->name('bulk-status');
@@ -117,6 +118,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('{promotion}/analytics', [PromotionController::class, 'analytics'])
             ->name('analytics');
     });
+    Route::resource('promotions', PromotionController::class);
 
     // Orders
     Route::get('orders/create', 'OrdersController@create')->name('orders.create');
