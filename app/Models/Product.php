@@ -102,6 +102,18 @@ class Product extends Model implements HasMedia
         return $this->belongsToMany(ProductCategory::class);
     }
 
+    public function mainCategories()
+    {
+        return $this->belongsToMany(ProductCategory::class)
+            ->where('ParentID', 0);
+    }
+
+    public function subCategories()
+    {
+        return $this->belongsToMany(ProductCategory::class)
+            ->where('ParentID', '>', 0);
+    }
+
     public function tags()
     {
         return $this->belongsToMany(ProductTag::class);

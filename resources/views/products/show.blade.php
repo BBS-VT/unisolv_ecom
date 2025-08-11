@@ -1,221 +1,385 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
-    <link href="{{ asset('/plugins/dropzone/basic.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('/plugins/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+@section('title', __('global.product_management'))
+
+@push('styles')
+    <style>
+        .column-content {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .product-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .product-info-item {
+            margin-bottom: 8px;
+        }
+        .product-info-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+        .product-stock-label {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .in-stock {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .low-stock {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .out-of-stock {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .barcode-display {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+    </style>
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="page-title-box">
-
+    <div class="mx-4">
+        <div class="d-flex align-items-center mb-4">
+            <div class="me-3">
+                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-between" style="width: 40px; height: 40px;">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="flex-grow-1">
+                <small class="text-muted fs-6">{{ __('global.back_to_list') }}</small>
+                <h2 class="mg-0">{{ $product->StockItemName }}</h2>
+                <span class="badge bg-primary fs-6">{{ __('Stock Code :') }} {{ $product->StockCode }}</span>
+            </div>
+            <div>
+                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary me-2">
+                    <i class="fas fa-edit me-1"></i> {{ __('global.edit') }}
+                </a>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="fas fa-trash me-1"></i> {{ __('global.delete') }}
+                </button>
             </div>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col">
-                            <h4 class="card-title">{{ trans('global.view') }} {{ trans('cruds.product.title_singular') }} -
-                                <span class="text-danger">{{ $product->StockItemName }} </span>
-                            </h4>
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <div class="column-content">
+                    <h4>{{ __('Product Information') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 col-xl-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.sku') }}</div>
+                                    <div>{{ $product->StockCode }}</div>
+                                </div>
+                                <div class="col-md-6 col-xl-8 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.name') }}</div>
+                                    <div class="fw-bold">{{ $product->StockItemName }}</div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12 product-info-item">
+                                    <div class="product-info-label">{{ __('Catalog and eCommerce Product Description') }}</div>
+                                    <div class="mt-1">
+                                        {!! $product->MarketingComments ? nl2br(e($product->MarketingComments)) : '<em class="text-muted">No description available</em>' !!}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto align-self-center">
-                            <a href="{{ URL::previous() }}" class="btn btn-sm btn-outline-primary">
-                                <i data-feather="arrow-left-circle" class="align-self-center icon-xs"></i>
-                                {{ trans('global.back_to_list') }}
-                            </a>
+                    </div>
+
+                    <h4>{{ __('Department') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.category') }}</div>
+                                    <div>
+                                        @if($product->mainCategories()->count())
+                                            @foreach($product->categories as $category)
+                                                @if($category)
+                                                    <span class="badge bg-info fs-6">{{ $category->StockGroupName ?? 'N/A' }}</span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <em class="text-muted">No category assigned</em>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-6 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.subCategory') }}</div>
+                                    <div>
+                                        @if($product->subCategories()->count() )
+                                            @foreach($product->subCategories as $subCategory)
+                                                @if($subCategory)
+                                                    <span class="badge bg-secondary fs-6">{{ $subCategory->StockGroupName ?? 'N/A' }}</span>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <em class="text-muted">No subcategory assigned</em>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>{{ __('Stock Details') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.quantity') }}</div>
+                                    <div class="d-flex align-items-center mt-1">
+                                        <span class="fs-5 me-2">{{ $product->Quantity }}</span>
+                                        @if($product->Quantity > 10)
+                                            <span class="product-stock-label in-stock">In Stock</span>
+                                        @elseif($product->Quantity > 0)
+                                            <span class="product-stock-label low-stock">Low Stock</span>
+                                        @else
+                                            <span class="product-stock-label out-of-stock">Out of Stock</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-md-6 product-info-item">
+                                            <div class="product-info-label">{{ __('cruds.product.fields.barcode') }}</div>
+                                            <div class="barcode-display mt-1">
+                                                {{ $product->Barcode ?? 'N/A' }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 product-info-item">
+                                            <div class="product-info-label">{{ __('cruds.product.fields.altbarcode') }}</div>
+                                            <div class="barcode-display mt-1">
+                                                {{ $product->AltBarcode ?? 'N/A' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>{{ __('Selling Type') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="d-flex gap-2 flex-wrap">
+                                {{--@if($product->InStore)
+                                    <span class="badge bg-success">In-store selling</span>
+                                @endif
+                                @if($product->Online)
+                                    <span class="badge bg-info">Online selling</span>
+                                @endif
+                                @if($product->InStore && $product->Online)
+                                    <span class="badge bg-primary">Available both in-store & online</span>
+                                @endif
+                                @if(!$product->InStore && !$product->Online)
+                                    <em class="text-muted">No selling type specified</em>
+                                @endif--}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>{{ __('Activity History') }}</h4>
+                    <div class="card border">
+                        <div class="card-body">
+                            <div class="timeline-container">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold">Created</span>
+                                            <small class="text-muted">{{ $product->created_at->format('M d, Y H:i') }}</small>
+                                        </div>
+                                        <div class="text-muted">By: {{ $product->CreatedBy ? $product->createdBy->name : 'System' }}</div>
+                                    </div>
+                                </div>
+
+                                @if($product->updated_at && $product->updated_at->ne($product->created_at))
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker bg-primary"></div>
+                                        <div class="timeline-content">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold">Last Updated</span>
+                                                <small class="text-muted">{{ $product->updated_at->format('M d, Y H:i') }}</small>
+                                            </div>
+                                            <div class="text-muted">By: {{ $product->LastEditedBy ? $product->lastEditedBy : 'System' }}</div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <form >
-                        <div class="row">
-                            <input type="hidden" name="LastEditedBy" id="LastEditedby" value="{{ auth()->user()->id }}">
-                            <div class="col-md-10">
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label class="required" for="StockCode">{{ trans('cruds.product.fields.sku') }}</label>
-                                            <input class="form-control" type="text" name="StockCode" id="StockCode" value="{{ $product->StockCode }}" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <div class="form-group">
-                                            <label class="required control-label" for="StockItemName">{{ trans('cruds.product.fields.name') }}</label>
-                                            <input class="form-control " type="text" name="StockItemName" id="StockItemName"
-                                                   value="{{ $product->StockItemName }}" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label for="categories">{{ trans('cruds.product.fields.category') }}</label>
-                                            <select class="form-control mb-3 select2 {{ $errors->has('categories') ? 'is-invalid' : '' }}"
-                                                    name="categories[]" id="categories" readonly>
-                                                @foreach($categories as $id => $category)
-                                                    <option value="{{ $id }}"
-                                                            @if($product->categories->contains('id', $id)) selected @endif>
-                                                        {{ $category }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @if($errors->has('categories'))
-                                                <div class="invalid-feedback">
-                                                    {{ $errors->first('categories') }}
-                                                </div>
-                                            @endif
-                                            <span class="help-block">{{ trans('cruds.product.fields.category_helper') }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label for="brands">{{ trans('cruds.product.fields.brand') }}</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label for="tags">{{ trans('cruds.product.fields.tag') }}</label>
-                                            <input class="form-control " type="text" name="tags" id="tags"
-                                                   value="" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="photo">{{ trans('cruds.product.fields.photo') }}</label>
-                                    <img class="card-img-top" src="{{ $product->photo ? $product->photo->thumbnail : 'https://via.placeholder.com/500x280&text=Image' }}" alt="">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-1">
-                                <div class="form-group">
-                                    <label for="BinLocation">{{ trans('cruds.product.fields.bin') }}</label>
-                                    <input class="form-control" type="text" name="BinLocation" id="BinLocation"
-                                           value="{{ !empty($product->stockHolding->BinLocation) ? $product->stockHolding->BinLocation : '' }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-sm-1">
-                                <div class="form-group">
-                                    <label for="Size">{{ trans('cruds.product.fields.size') }}</label>
-                                    <input class="form-control " type="text" name="Size" id="Size"
-                                           value="{{ $product->Size }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="salesunits">{{ trans('cruds.product.fields.units') }}</label>
-                                    <input class="form-control " type="text" name="salesunits" id="salesunit"
-                                           value="{{ $product->packageType->PackageTypeName ?? '' }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="Packsize">{{ trans('cruds.product.fields.packsize') }}</label>
-                                    <input class="form-control" type="text" name="Packsize" id="Packsize"
-                                           value="{{ $product->Packsize }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="Barcode">{{ trans('cruds.product.fields.barcode') }}</label>
-                                    <input class="form-control " type="text" name="Barcode" id="Barcode"
-                                           value="{{ $product->Barcode }}" readonly>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label for="AltBarcode">{{ trans('cruds.product.fields.altbarcode') }}</label>
-                                    <input class="form-control " type="text" name="AltBarcode" id="AltBarcode"
-                                           value="{{ $product->AltBarcode ?? '' }}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label for="TaxRateID">{{ trans('cruds.product.fields.vatid') }}</label>
-                                            <input class="form-control " type="text" name="TaxRateID"
-                                                   id="TaxRateID" value="{{ $product->TaxRateID }}" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                            <label class="required" for="CostPrice">{{ trans('cruds.product.fields.cost') }}</label>
-                                            <input class="form-control text-center " type="number" name="CostPrice" id="CostPrice"
-                                                   value="{{ number_format((float)$product->CostPrice, 2, '.', '') }}" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                            <label for="DiscountPercentage">{{ trans('cruds.product.fields.discount') }}</label>
-                                            <input id="DiscountPercentage" class="form-control text-center" type="text"
-                                                   name="DiscountPercentage" value="{{ $product->DiscountPercentage }}" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="form-group">
-                                            <label for="QuantityOnHand">{{ trans('cruds.product.fields.quantity') }}</label>
-                                            <input id="QuantityOnHand" class="form-control text-center{{ $errors->has('QuantityOnHand') ? 'is-invalid' : '' }}" type="text"
-                                                   name="QuantityOnHand" readonly
-                                                   value="{{ !empty($product->stockHolding->QuantityOnHand) ? $product->stockHolding->QuantityOnHand : '' }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label class="required" for="SellingPrice">{{ trans('cruds.product.fields.price') }}</label>
-                                            <input class="form-control " type="number" name="SellingPrice" id="SellingPrice"
-                                                   value="{{ number_format((float)$product->SellingPrice, 2, '.', '') }}" readonly>
+            </div>
 
-                                        </div>
-                                    </div>
+            <div class="col-md-6">
+                <div class="column-content">
+                    <h4>{{ __('Product Images') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            @if($product->photo)
+                                <img src="{{ $product->photo->getUrl() }}" alt="{{ $product->StockItemName }}" class="product-image">
+                            @else
+                                <div class="text-center p-5 bg-light">
+                                    <i class="fas fa-image fa-4x text-muted mb-3"></i>
+                                    <p class="mb-0 text-muted">No image available</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <h4>{{ __('Pricing') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.vatid') }}</div>
+                                    <div>{{ $product->TaxRateID }}</div>
+                                </div>
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.ave_cost') }}</div>
+                                    <div>{{ $product->AverageCostPrice }}</div>
+                                </div>
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.last_cost') }}</div>
+                                    <div>{{ $product->LastCostPrice }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="MarketingComments">{{ trans('cruds.product.fields.description') }}</label>
-                                    <textarea class="form-control {{ $errors->has('MarketingComments') ? 'is-invalid' : '' }}" name="MarketingComments"
-                                              id="MarketingComments" placeholder="Catalog and eCommerce Product Description">{{ $product->MarketingComments }}</textarea>
-                                    @if($errors->has('MarketingComments'))
-                                        <div class="invalid-feedback">
-                                            {{ $errors->first('MarketingComments') }}
-                                        </div>
-                                    @endif
-                                    <span class="help-block">{{ trans('cruds.product.fields.description_helper') }}</span>
+
+                            <div class="row mt-3">
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.discount') }}</div>
+                                    <div>{{ $product->DiscountPercentage ? $product->DiscountPercentage . '%' : 'N/A' }}</div>
+                                </div>
+                                <div class="col-md-8 product-info-item">
+                                    <div class="product-info-label">{{ __('Default Price (incl. VAT)') }}</div>
+                                    <div class="product-price">{{ number_format($product->SellingPrice, 2) }}</div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="card-title">{{ __('Additional Price Points') }}</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Price Level</th>
+                                        <th>Excl. VAT</th>
+                                        <th>Incl. VAT</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>Price 1</td>
+                                        <td></td>
+                                        <td>{{ number_format($product->SellingPrice, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price 2</td>
+                                        <td></td>
+                                        <td>{{ number_format($product->SellingPrice2, 2) ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price 3</td>
+                                        <td></td>
+                                        <td>{{ number_format($product->SellingPrice3, 2) ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price 4</td>
+                                        <td></td>
+                                        <td>{{ number_format($product->SellingPrice4, 2) ?? 'N/A' }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>{{ __('Packaging') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.size') }}</div>
+                                    <div>{{ $product->Size ?? 'N/A' }}</div>
+                                </div>
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.units') }}</div>
+                                    <div>
+                                        {{--@if($product->salesunits->count())
+                                            {{ $product->salesunits->first()->name }}
+                                        @else
+                                            <em class="text-muted">Not specified</em>
+                                        @endif--}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 product-info-item">
+                                    <div class="product-info-label">{{ __('cruds.product.fields.packsize') }}</div>
+                                    <div>{{ $product->Packsize ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    </form>
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">{{ __('global.delete_confirmation') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ __('global.delete_confirmation_text') }} <strong>{{ $product->StockItemName }}</strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('global.cancel') }}</button>
+                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display: inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">{{ __('global.delete') }}</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 @endsection
 
-@push('custom-scripts')
-    <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('/plugins/dropify/js/dropify.min.js') }}"></script>
-    <script src="{{ URL::asset('/pages/jquery.form-upload.init.js') }}"></script>
-    <script src="{{ URL::asset('/plugins/dropzone/dropzone.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
-
-
-    <script src="{{ URL::asset('pages/jquery.forms-advanced.js') }}"></script>
-
+@push('script')
+    <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js')}}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
 @endpush
-

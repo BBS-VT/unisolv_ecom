@@ -189,7 +189,7 @@ class ProductController extends Controller
         $user = $request->user();
         $currentCompany = $user->currentCompany();
         $productData = $request->all();
-        \Log::info('Product creation data:', $productData);
+        //\Log::info('Product creation data:', $productData);
 
         $cleanedBarcode = null;
         $cleanedAltbarcode = null;
@@ -224,7 +224,7 @@ class ProductController extends Controller
                 'status'        => 1,
                 'LastEditedBy'  => $user->id
             ]);
-            \Log::info('Product created with ID:', [$product->id]);
+            //\Log::info('Product created with ID:', [$product->id]);
 
             // Create stock holding record
             $stockHoldingData = [
@@ -239,7 +239,7 @@ class ProductController extends Controller
                 $stockHoldingData
             );
 
-            \Log::info('Stock holding created/updated:', $stockHoldingData);
+            //\Log::info('Stock holding created/updated:', $stockHoldingData);
 
         } catch (\Exception $e) {
             \Log::error('Product creation failed:', [$e->getMessage()]);
@@ -249,17 +249,17 @@ class ProductController extends Controller
         if ($request->hasFile('file')) {
             try {
                 $product->addMedia($request->file('file'))->toMediaCollection('photo');
-                \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+                //\Log::info('Photo uploaded successfully for product ID: ' . $product->id);
             } catch (\Exception $e) {
                 \Log::error('Photo upload failed: ' . $e->getMessage());
             }
         } else {
-            \Log::info('No file uploaded - checking for photo input');
+            //\Log::info('No file uploaded - checking for photo input');
             if ($request->input('photo', false)) {
                 $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
                 if (file_exists($photoPath)) {
                     $product->addMedia($photoPath)->toMediaCollection('photo');
-                    \Log::info('Photo from tmp uploaded: ' . $photoPath);
+                    //\Log::info('Photo from tmp uploaded: ' . $photoPath);
                 } else {
                     \Log::error('Photo file not found: ' . $photoPath);
                 }
@@ -318,30 +318,88 @@ class ProductController extends Controller
         $currentCompany = $user->currentCompany();
         Cache::forget("products_company_{$currentCompany->id}");
 
-        $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
-        $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
-        $tags = ProductTag::all()->pluck('name', 'id');
+        $mainCategories = ProductCategory::where('ParentID', 0 )->where('status', 1)->pluck('StockGroupName', 'id');
+        $subCategories = ProductCategory::where('ParentID', '>', 0)->where('status', 1)->get();
 
-        $product->load('categories', 'tags', 'packageType', 'stockHolding');
+        $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
+
+
+        $product->load('categories',  'packageType', 'stockHolding');
 
         //dd($product);
-        return view('products.edit', compact('categories', 'tags', 'product', 'packagetypes'));
+        return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->all());
-        $product->categories()->sync($request->input('categories', []));
-        $product->tags()->sync($request->input('tags', []));
-        //$product->packageType()->sync($request->input('packageType', []));
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
 
-        if ($request->input('photo', false)) {
-            if (!$product->photo || $request->input('photo') !== $product->photo->file_name) {
-                $product->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
+        $cleanedBarcode = null;
+        $cleanedAltbarcode = null;
+
+        if ($request->has('Barcode') && $request->input('Barcode') !== null) {
+            $barcode = $request->Barcode;
+            $cleanedBarcode = preg_replace('/[^0-9]/', '', $barcode); // Remove non-numeric characters
+        }
+
+        if ($request->has('AltBarCode') && $request->input('AltBarCode') !== null) {
+            $altBarcode = $request->AltBarCode;
+            $cleanedAltbarcode = preg_replace('/[^0-9]/', '', $altBarcode); // Remove non-numeric characters
+        }
+
+        $product->update([
+            'company_id'    => $currentCompany->id,
+            'StockCode'     => $request->StockCode,
+            'TaxRateID'     => $request->TaxRateID,
+            'StockItemName' => $request->StockItemName,
+            'Barcode'       => $cleanedBarcode,
+            'AltBarCode'    => $cleanedAltbarcode,
+            'SellingPrice'  => $request->SellingPrice,
+            'SellingPrice2' => $request->SellingPrice2 ?? 0,
+            'SellingPrice3' => $request->SellingPrice3 ?? 0,
+            'SellingPrice4' => $request->SellingPrice4 ?? 0,
+            'AverageCostPrice'   => $request->AverageCostPrice ?? 0,
+            'DiscountPercentage' => $request->DiscountPercentage ?? 0,
+            'MarketingComments'  => $request->MarketingComments ?? null,
+            'Size'          => $request->Size ?? null,
+            'Packsize'      => $request->Packsize ?? null,
+            'status'        => 1,
+            'LastEditedBy'  => $user->id
+        ]);
+
+
+        if ($product->stockHolding) {
+            $product->stockHolding->update([
+                'LastCostPrice' => $request->LastCostPrice ?? 0,
+                'QuantityOnHand' => $request->QuantityOnHand ?? 0,
+            ]);
+        }
+
+        if ($request->hasFile('file')) {
+            try {
+                $product->addMedia($request->file('file'))->toMediaCollection('photo');
+                //\Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+            } catch (\Exception $e) {
+                \Log::error('Photo upload failed: ' . $e->getMessage());
             }
+        } else {
+            //\Log::info('No file uploaded - checking for photo input');
+            if ($request->input('photo', false)) {
+                $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
+                if (file_exists($photoPath)) {
+                    $product->addMedia($photoPath)->toMediaCollection('photo');
+                    //\Log::info('Photo from tmp uploaded: ' . $photoPath);
+                } else {
+                    \Log::error('Photo file not found: ' . $photoPath);
+                }
+            }
+        }
 
-        } elseif ($product->photo) {
-            $product->photo->delete();
+        if ($request->has('subCategories') && !empty(array_filter($request->input('subCategories')))) {
+            $product->categories()->attach($request->input('subCategories', []));
+        } elseif ($request->has('categories')) {
+            $product->categories()->sync($request->input('categories'));
         }
 
         return redirect()->route('products.index');
@@ -352,6 +410,8 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $mainCategories = ProductCategory::where('ParentID', 0)->where('status', 1)->pluck('StockGroupName', 'id');
+        $subCategories = ProductCategory::where('ParentID', '>', 0)->where('status', 1)->get();
         $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
         $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
         $tags = ProductTag::all()->pluck('name', 'id');
@@ -359,7 +419,7 @@ class ProductController extends Controller
         $product->load('categories', 'tags', 'packageType', 'stockHolding');
 
         //dd($product);
-        return view('products.show', compact('product', 'categories', 'tags', 'packagetypes'));
+        return view('products.show', compact('product', 'categories', 'mainCategories', 'subCategories','tags', 'packagetypes'));
     }
 
     public function destroy(Product $product)
