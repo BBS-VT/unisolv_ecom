@@ -108,50 +108,82 @@ class ProductController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('barcodes', function ($product) {
-                    $primaryBarcode = $product->Barcode ? $product->Barcode : 'N/A';
-                    $alternateBarcode = $product->AltBarCode ? $product->AltBarCode : 'N/A';
+                    $primaryBarcode = $product->Barcode ? $product->Barcode : '<span class="text-muted">N/A</span>';
+                    $alternateBarcode = $product->AltBarCode ? $product->AltBarCode : '<span class="text-muted">N/A</span>';
 
                     return "
-                        <div>Barcode: {$primaryBarcode}</div>
-                        <div>Alt: {$alternateBarcode}</div>
+                        <div class='product-barcode mb-1'>Primary: {$primaryBarcode}</div>
+                        <div class='product-barcode'>Alt: {$alternateBarcode}</div>
                     ";
                 })
                 ->addColumn('prices', function ($product) {
-                    $currency = auth()->user()->currentCompany()->currency; // Fetch system-wide currency
+                    //$currency = auth()->user()->currentCompany()->currency()->symbol; // Fetch system-wide currency
+                    $currency = 'R';
 
-                    $sellingPrice1 = number_format($product->SellingPrice ?? 0, 2);
-                    $sellingPrice2 = number_format($product->SellingPrice2 ?? 0, 2);
-                    $sellingPrice3 = number_format($product->SellingPrice3 ?? 0, 2);
+                    $sellingPrice1 = $product->SellingPrice ? $currency . ' ' . number_format($product->SellingPrice, 2) : '<span class="text-muted">N/A</span>';
+                    $sellingPrice2 = $product->SellingPrice2 ? $currency . ' ' . number_format($product->SellingPrice2, 2) : '<span class="text-muted">N/A</span>';
+                    $sellingPrice3 = $product->SellingPrice3 ? $currency . ' ' . number_format($product->SellingPrice3, 2) : '<span class="text-muted">N/A</span>';
+                    $sellingPrice4 = $product->SellingPrice4 ? $currency . ' ' . number_format($product->SellingPrice4, 2) : '<span class="text-muted">N/A</span>';
 
                     return "
-                        <div>1: $sellingPrice1</div>
-                        <div>2: $sellingPrice2</div>
-                        <div>3: $sellingPrice3</div>
-                    ";
+                    <div><small class='text-muted'>Price 1:</small> <span class='fw-semibold'>{$sellingPrice1}</span></div>
+                    <div><small class='text-muted'>Price 2:</small> {$sellingPrice2}</div>
+                    <div><small class='text-muted'>Price 3:</small> {$sellingPrice3}</div>
+                    <div><small class='text-muted'>Price 4:</small> {$sellingPrice4}</div>
+                ";
                 })
                 ->addColumn('costPrices', function ($product) {
-                    $averageCostPrice = number_format($product->AverageCostPrice ?? 0, 2); // Format to 2 decimals
-                    $lastCostPrice = number_format($product->LastCostPrice ?? 0, 2);
+                    //$currency = auth()->user()->currentCompany()->currency()->symbol;
+                    $currency = 'R';
+                    $averageCostPrice = $product->AverageCostPrice ? $currency . ' ' . number_format($product->AverageCostPrice, 2) : '<span class="text-muted">N/A</span>';
+                    $lastCostPrice = $product->LastCostPrice ? $currency . ' ' . number_format($product->LastCostPrice, 2) : '<span class="text-muted">N/A</span>';
 
                     return "
-                        <div>Avg: $averageCostPrice</div>
-                        <div>Last: $lastCostPrice</div>
+                        <div><small class='text-muted'>Avg:</small> {$averageCostPrice}</div>
+                        <div><small class='text-muted'>Last:</small> {$lastCostPrice}</div>
                     ";
                 })
                 ->addColumn('quantity_on_hand', function ($product) {
-                    return $product->QuantityOnHand ?? 0;
+                    $quantity = $product->QuantityOnHand ?? 0;
+
+                    if ($quantity > 50) {
+                        $badge = '<span class="stock-badge stock-high">In Stock</span>';
+                    } elseif ($quantity > 10) {
+                        $badge = '<span class="stock-badge stock-medium">Low Stock</span>';
+                    } else {
+                        $badge = '<span class="stock-badge stock-low">Out of Stock</span>';
+                    }
+
+                    return "
+                        <div class='text-center'>
+                            <div class='fw-bold fs-5'>{$quantity}</div>
+                            <div class='mt-1'>{$badge}</div>
+                        </div>
+                    ";
                 })
                 ->addColumn('action', function ($product) {
-                    // Adding both 'View' and 'Edit' buttons
-                    $viewButton = '<a href="'.route('products.show',
-                            $product->id).'" class="btn btn-sm btn-outline-primary"><i class="dripicons-preview"></i></a>';
-                    $editButton = '<a href="'.route('products.edit',
-                            $product->id).'" class="btn btn-sm btn-outline-warning"><i class="dripicons-document-edit"></i></a>';
+                    $actions = '';
 
-                    // Delete button with SweetAlert trigger
-                    $deleteButton = '<a href="javascript:void(0)" data-id="'.$product->id.'" class="btn btn-sm btn-outline-danger delete-product"><i class="dripicons-trash"></i></a>';
+                    // View button
+                    $actions .= '<a href="'.route('products.show', $product->id).'" class="btn btn-sm btn-outline-primary btn-sm-custom me-1" data-bs-toggle="tooltip" title="View Product">
+                    <i class="fas fa-eye"></i>
+                 </a>';
 
-                    return $viewButton.' '.$editButton.' '.$deleteButton;
+                    // Edit button
+                    if (auth()->user()->can('product_edit')) {
+                        $actions .= '<a href="'.route('products.edit', $product->id).'" class="btn btn-sm btn-outline-warning btn-sm-custom me-1" data-bs-toggle="tooltip" title="Edit Product">
+                        <i class="fas fa-edit"></i>
+                     </a>';
+                    }
+
+                    // Delete button
+                    if (auth()->user()->can('product_delete')) {
+                        $actions .= '<button type="button" data-id="'.$product->id.'" data-name="'.htmlspecialchars($product->StockItemName).'" class="btn btn-sm btn-outline-danger btn-sm-custom delete-product" data-bs-toggle="tooltip" title="Delete Product">
+                        <i class="fas fa-trash"></i>
+                     </button>';
+                    }
+
+                    return '<div class="btn-group-actions">' . $actions . '</div>';
                 })
                 ->filterColumn('barcodes', function($query, $keyword) {
                     $query->where(function($q) use ($keyword) {

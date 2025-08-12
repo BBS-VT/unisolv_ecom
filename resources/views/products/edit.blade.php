@@ -4,7 +4,6 @@
 
 @push('styles')
     <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('build/libs/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .column-content {
             background-color: #fff; /* Set background to white */
@@ -450,8 +449,75 @@
 @push('scripts')
     <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js')}}"></script>
     <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
 
+    <script>
+        Dropzone.options.photoDropzone = {
+                url: '{{ route('products.storeMedia') }}',
+                maxFilesize: 5, // MB
+                acceptedFiles: '.jpeg,.jpg,.png,.gif',
+                maxFiles: 1,
+                addRemoveLinks: true,
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                params: {
+                    size: 2,
+                    width: 4096,
+                    height: 4096
+                },
+                success: function (file, response) {
+                    $('form').find('input[name="photo"]').remove()
+                    $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
+                },
+                removedfile: function (file) {
+                    file.previewElement.remove()
+                    if (file.status !== 'error') {
+                        $('form').find('input[name="photo"]').remove()
+                        this.options.maxFiles = this.options.maxFiles + 1
+                    }
+                },
+                init: function () {
+                    @if($product->photo)
+        // Create a mock file object
+        var mockFile = {
+            name: "{{ basename($product->photo->url) }}",
+                        size: {{ $product->photo->size ?? 100000 }},
+                        accepted: true,
+                        upload: { uuid: "{{ $product->photo->uuid ?? uniqid() }}" }
+                    };
+
+                    // Add file to dropzone
+                    this.options.addedfile.call(this, mockFile);
+
+                    // Set the thumbnail - use the same method as your view
+                    this.options.thumbnail.call(this, mockFile, "{{ $product->photo->thumbnail ?? $product->photo->url }}");
+
+                    // Mark as complete
+                    mockFile.previewElement.classList.add('dz-complete', 'dz-success');
+
+                    // Add hidden input
+                    $('form').append('<input type="hidden" name="photo" value="{{ basename($product->photo->url) }}">');
+
+                    this.options.maxFiles = this.options.maxFiles - 1;
+                    @endif
+        },
+        error: function (file, response) {
+            if ($.type(response) === 'string') {
+                var message = response //dropzone sends it's own error messages in string
+            } else {
+                var message = response.errors.file
+            }
+            file.previewElement.classList.add('dz-error')
+            _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+            _results = []
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                node = _ref[_i]
+                _results.push(node.textContent = message)
+            }
+            return _results
+        }
+    }
+    </script>
     <script>
         $(document).ready(function() {
             $('.select2').select2();
@@ -548,72 +614,6 @@
             // Call initialization
             initializeExclusivePrices();
 
-            Dropzone.options.photoDropzone = {
-                url: '{{ route('products.storeMedia') }}',
-                maxFilesize: 2, // MB
-                acceptedFiles: '.jpeg,.jpg,.png,.gif',
-                maxFiles: 1,
-                addRemoveLinks: true,
-                headers: {
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                },
-                params: {
-                    size: 2,
-                    width: 4096,
-                    height: 4096
-                },
-                success: function (file, response) {
-                    $('form').find('input[name="photo"]').remove()
-                    $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
-                },
-                removedfile: function (file) {
-                    file.previewElement.remove()
-                    if (file.status !== 'error') {
-                        $('form').find('input[name="photo"]').remove()
-                        this.options.maxFiles = this.options.maxFiles + 1
-                    }
-                },
-                init: function () {
-                    @if($product->photo)
-                    // Create a mock file object
-                    var mockFile = {
-                        name: "{{ basename($product->photo->url) }}",
-                        size: {{ $product->photo->size ?? 100000 }},
-                        accepted: true,
-                        upload: { uuid: "{{ $product->photo->uuid ?? uniqid() }}" }
-                    };
-
-                    // Add file to dropzone
-                    this.options.addedfile.call(this, mockFile);
-
-                    // Set the thumbnail - use the same method as your view
-                    this.options.thumbnail.call(this, mockFile, "{{ $product->photo->thumbnail ?? $product->photo->url }}");
-
-                    // Mark as complete
-                    mockFile.previewElement.classList.add('dz-complete', 'dz-success');
-
-                    // Add hidden input
-                    $('form').append('<input type="hidden" name="photo" value="{{ basename($product->photo->url) }}">');
-
-                    this.options.maxFiles = this.options.maxFiles - 1;
-                    @endif
-                },
-                error: function (file, response) {
-                    if ($.type(response) === 'string') {
-                        var message = response //dropzone sends it's own error messages in string
-                    } else {
-                        var message = response.errors.file
-                    }
-                    file.previewElement.classList.add('dz-error')
-                    _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
-                    _results = []
-                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                        node = _ref[_i]
-                        _results.push(node.textContent = message)
-                    }
-                    return _results
-                }
-            }
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -749,6 +749,3 @@
     </script>
 @endpush
 
-@push('script-bottom')
-    <script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script>
-@endpush

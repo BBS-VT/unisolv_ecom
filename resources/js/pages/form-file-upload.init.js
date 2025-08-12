@@ -1,11 +1,3 @@
-/*
-Template Name: Skote - Admin & Dashboard Template
-Author: Themesbrand
-Website: https://themesbrand.com/
-Contact: themesbrand@gmail.com
-File: Form file upload Js File
-*/
-
 // Dropzone
 var dropzonePreviewNode = document.querySelector("#dropzone-preview-list");
 dropzonePreviewNode.id = "";

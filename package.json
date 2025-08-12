@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "browser-sync": "^2.29.1",
-        "flatpickr": "^4.6.13",
+        "dropzone": "^6.0.0-beta.2",
         "inputmask": "^5.0.9",
         "laravel-echo": "^1.17.1",
         "lodash": "^4.17.21",
