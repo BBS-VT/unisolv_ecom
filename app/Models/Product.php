@@ -114,6 +114,7 @@ class Product extends Model implements HasMedia
             ->where('ParentID', '>', 0);
     }
 
+
     public function tags()
     {
         return $this->belongsToMany(ProductTag::class);
@@ -225,5 +226,40 @@ class Product extends Model implements HasMedia
 
         return true;
     }
+
+    public function getVatExclusivePrice($inclusivePrice)
+    {
+        if (!$inclusivePrice) return null;
+
+        $vatRate = $this->taxRate ? $this->taxRate->rate / 100 : 0.15;
+
+        return $inclusivePrice / (1 + $vatRate);
+    }
+
+    public function getSellingPriceExclAttribute()
+    {
+        return $this->getVatExclusivePrice($this->SellingPrice);
+    }
+
+    public function getSellingPrice2ExclAttribute()
+    {
+        return $this->getVatExclusivePrice($this->SellingPrice2);
+    }
+
+    public function getSellingPrice3ExclAttribute()
+    {
+        return $this->getVatExclusivePrice($this->SellingPrice3);
+    }
+
+    public function getSellingPrice4ExclAttribute()
+    {
+        return $this->getVatExclusivePrice($this->SellingPrice4);
+    }
+
+    public function getQuantityOnHandAttribute()
+    {
+        return $this->stockHolding ? $this->stockHolding->QuantityOnHand : 0;
+    }
+
 }
 

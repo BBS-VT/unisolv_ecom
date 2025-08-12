@@ -302,7 +302,7 @@
                                     <div class="col-xxl-2 col-md-2">
                                         <div>
                                             <label class="form-label" for="SellingPriceExcl">{{ __('Price 1 Excl') }}</label>
-                                            <input class="form-control" type="text" name="SellingPriceExcl" id="SellingPriceExcl" readonly>
+                                            <input class="form-control" type="number" name="SellingPriceExcl" id="SellingPriceExcl" step="0.01">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-md-2">
@@ -322,7 +322,7 @@
                                     <div class="col-xxl-2 col-md-2">
                                         <div>
                                             <label class="form-label" for="SellingPrice2Excl">{{ __('Price 2 Excl') }}</label>
-                                            <input class="form-control" type="text" name="SellingPrice2Excl" id="SellingPric2eExcl" readonly>
+                                            <input class="form-control" type="number" name="SellingPrice2Excl" id="SellingPrice2Excl" step="0.01">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-md-2">
@@ -342,7 +342,7 @@
                                     <div class="col-xxl-2 col-md-2">
                                         <div>
                                             <label class="form-label" for="SellingPrice3Excl">{{ __('Price 3 Excl') }}</label>
-                                            <input class="form-control" type="text" name="SellingPrice3Excl" id="SellingPrice3Excl" readonly>
+                                            <input class="form-control" type="number" name="SellingPrice3Excl" id="SellingPrice3Excl" step="0.01">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-md-2">
@@ -361,7 +361,7 @@
                                     <div class="col-xxl-2 col-md-2">
                                         <div>
                                             <label class="form-label" for="SellingPrice4Excl">{{ __('Price 4 Excl') }}</label>
-                                            <input class="form-control" type="text" name="SellingPrice4Excl" id="SellingPrice4Excl" readonly>
+                                            <input class="form-control" type="number" name="SellingPrice4Excl" id="SellingPrice4Excl" step="0.01">
                                         </div>
                                     </div>
                                     <div class="col-xxl-2 col-md-2">
@@ -456,6 +456,98 @@
         $(document).ready(function() {
             $('.select2').select2();
 
+            const VAT_RATE = 0.15;  //TODO: link to vat table and rate indicator
+
+            // Function to calculate exclusive price from inclusive
+            function calculateExclusivePrice(inclusivePrice) {
+                if (!inclusivePrice || inclusivePrice <= 0) return '';
+                return (inclusivePrice / (1 + VAT_RATE)).toFixed(2);
+            }
+
+            // Function to calculate inclusive price from exclusive
+            function calculateInclusivePrice(exclusivePrice) {
+                if (!exclusivePrice || exclusivePrice <= 0) return '';
+                return (exclusivePrice * (1 + VAT_RATE)).toFixed(2);
+            }
+
+            // Price 1 calculations
+            $('#SellingPrice').on('input change', function() {
+                const inclusivePrice = parseFloat($(this).val());
+                const exclusivePrice = calculateExclusivePrice(inclusivePrice);
+                $('#SellingPriceExcl').val(exclusivePrice);
+            });
+
+            $('#SellingPriceExcl').on('input change', function() {
+                const exclusivePrice = parseFloat($(this).val());
+                const inclusivePrice = calculateInclusivePrice(exclusivePrice);
+                $('#SellingPrice').val(inclusivePrice);
+            });
+
+            // Price 2 calculations
+            $('#SellingPrice2').on('input change', function() {
+                const inclusivePrice = parseFloat($(this).val());
+                const exclusivePrice = calculateExclusivePrice(inclusivePrice);
+                $('#SellingPrice2Excl').val(exclusivePrice);
+            });
+
+            $('#SellingPrice2Excl').on('input change', function() {
+                const exclusivePrice = parseFloat($(this).val());
+                const inclusivePrice = calculateInclusivePrice(exclusivePrice);
+                $('#SellingPrice2').val(inclusivePrice);
+            });
+
+            // Price 3 calculations
+            $('#SellingPrice3').on('input change', function() {
+                const inclusivePrice = parseFloat($(this).val());
+                const exclusivePrice = calculateExclusivePrice(inclusivePrice);
+                $('#SellingPrice3Excl').val(exclusivePrice);
+            });
+
+            $('#SellingPrice3Excl').on('input change', function() {
+                const exclusivePrice = parseFloat($(this).val());
+                const inclusivePrice = calculateInclusivePrice(exclusivePrice);
+                $('#SellingPrice3').val(inclusivePrice);
+            });
+
+            // Price 4 calculations
+            $('#SellingPrice4').on('input change', function() {
+                const inclusivePrice = parseFloat($(this).val());
+                const exclusivePrice = calculateExclusivePrice(inclusivePrice);
+                $('#SellingPrice4Excl').val(exclusivePrice);
+            });
+
+            $('#SellingPrice4Excl').on('input change', function() {
+                const exclusivePrice = parseFloat($(this).val());
+                const inclusivePrice = calculateInclusivePrice(exclusivePrice);
+                $('#SellingPrice4').val(inclusivePrice);
+            });
+
+            // Initialize exclusive prices on page load for existing values
+            function initializeExclusivePrices() {
+                // Price 1
+                if ($('#SellingPrice').val()) {
+                    $('#SellingPrice').trigger('change');
+                }
+
+                // Price 2
+                if ($('#SellingPrice2').val()) {
+                    $('#SellingPrice2').trigger('change');
+                }
+
+                // Price 3
+                if ($('#SellingPrice3').val()) {
+                    $('#SellingPrice3').trigger('change');
+                }
+
+                // Price 4
+                if ($('#SellingPrice4').val()) {
+                    $('#SellingPrice4').trigger('change');
+                }
+            }
+
+            // Call initialization
+            initializeExclusivePrices();
+
             Dropzone.options.photoDropzone = {
                 url: '{{ route('products.storeMedia') }}',
                 maxFilesize: 2, // MB
@@ -485,25 +577,24 @@
                     @if($product->photo)
                     // Create a mock file object
                     var mockFile = {
-                        name: "{{ $product->photo->file_name ?? 'product-image.jpg' }}",
-                        size: {{ $product->photo->size ?? 0 }},
-                        accepted: true
+                        name: "{{ basename($product->photo->url) }}",
+                        size: {{ $product->photo->size ?? 100000 }},
+                        accepted: true,
+                        upload: { uuid: "{{ $product->photo->uuid ?? uniqid() }}" }
                     };
 
-                    // Add the file to dropzone
+                    // Add file to dropzone
                     this.options.addedfile.call(this, mockFile);
 
-                    // Add the thumbnail using your product's thumbnail attribute
-                    this.options.thumbnail.call(this, mockFile, "{{ $product->photo->thumbnail }}");
+                    // Set the thumbnail - use the same method as your view
+                    this.options.thumbnail.call(this, mockFile, "{{ $product->photo->thumbnail ?? $product->photo->url }}");
 
                     // Mark as complete
-                    mockFile.previewElement.classList.add('dz-complete');
-                    mockFile.previewElement.classList.add('dz-success');
+                    mockFile.previewElement.classList.add('dz-complete', 'dz-success');
 
-                    // Add hidden input with the correct file name
-                    $('form').append('<input type="hidden" name="photo" value="{{ $product->photo->file_name ?? basename($product->photo->url) }}">');
+                    // Add hidden input
+                    $('form').append('<input type="hidden" name="photo" value="{{ basename($product->photo->url) }}">');
 
-                    // Decrease max files
                     this.options.maxFiles = this.options.maxFiles - 1;
                     @endif
                 },

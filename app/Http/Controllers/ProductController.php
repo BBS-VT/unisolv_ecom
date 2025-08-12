@@ -410,16 +410,15 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $mainCategories = ProductCategory::where('ParentID', 0)->where('status', 1)->pluck('StockGroupName', 'id');
-        $subCategories = ProductCategory::where('ParentID', '>', 0)->where('status', 1)->get();
-        $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
-        $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
-        $tags = ProductTag::all()->pluck('name', 'id');
+        $product->load('categories', 'mainCategories', 'subCategories', 'packageType', 'stockHolding');
 
-        $product->load('categories', 'tags', 'packageType', 'stockHolding');
+        $subCategoryParentIds = $product->subCategories->pluck('ParentID')->unique()->filter();
+        $parentCategories = ProductCategory::whereIn('id', $subCategoryParentIds)->get();
 
-        //dd($product);
-        return view('products.show', compact('product', 'categories', 'mainCategories', 'subCategories','tags', 'packagetypes'));
+        $allMainCategories = $parentCategories->unique('id');
+
+        //dd($parentCategories);
+        return view('products.show', compact('product', 'allMainCategories'));
     }
 
     public function destroy(Product $product)

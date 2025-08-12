@@ -357,6 +357,8 @@ return [
             'price2_helper'            => '',
             'price3'                   => 'Price 3',
             'price3_helper'            => '',
+            'price4'                  => 'Price 4',
+            'price4_helper'            => '',
             'quantity'                => 'On Hand Qty',
             'quantity_helper'         => '',
             'size'                    => 'Unit Size',

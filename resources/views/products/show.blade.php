@@ -58,6 +58,26 @@
 @endpush
 
 @section('content')
+    @php
+        // Get VAT rate - TODO: link to vat_types table
+        $vatRate = 0.15; // 15% VAT
+
+        // Function to calculate exclusive price
+        function calculateExclusivePrice($inclusivePrice, $vatRate) {
+            if (!$inclusivePrice) return null;
+            return $inclusivePrice / (1 + $vatRate);
+        }
+
+        // Calculate exclusive prices
+        $sellingPriceExcl = calculateExclusivePrice($product->SellingPrice, $vatRate);
+        $sellingPrice2Excl = calculateExclusivePrice($product->SellingPrice2, $vatRate);
+        $sellingPrice3Excl = calculateExclusivePrice($product->SellingPrice3, $vatRate);
+        $sellingPrice4Excl = calculateExclusivePrice($product->SellingPrice4, $vatRate);
+
+        //dd($product);
+    @endphp
+
+
     <div class="mx-4">
         <div class="d-flex align-items-center mb-4">
             <div class="me-3">
@@ -115,11 +135,12 @@
                                 <div class="col-md-6 product-info-item">
                                     <div class="product-info-label">{{ __('cruds.product.fields.category') }}</div>
                                     <div>
-                                        @if($product->mainCategories()->count())
-                                            @foreach($product->categories as $category)
-                                                @if($category)
-                                                    <span class="badge bg-info fs-6">{{ $category->StockGroupName ?? 'N/A' }}</span>
-                                                @endif
+                                        @php
+
+                                        @endphp
+                                        @if($allMainCategories->count())
+                                            @foreach($allMainCategories as $category)
+                                                <span class="badge bg-info fs-6">{{ $category->StockGroupName ?? 'N/A' }}</span>
                                             @endforeach
                                         @else
                                             <em class="text-muted">No category assigned</em>
@@ -151,10 +172,13 @@
                                 <div class="col-md-4 product-info-item">
                                     <div class="product-info-label">{{ __('cruds.product.fields.quantity') }}</div>
                                     <div class="d-flex align-items-center mt-1">
-                                        <span class="fs-5 me-2">{{ $product->Quantity }}</span>
-                                        @if($product->Quantity > 10)
+                                        @php
+                                            $quantity = $product->stockHolding ? $product->stockHolding->QuantityOnHand : 0;
+                                        @endphp
+                                        <span class="fs-5 me-2">{{ $quantity }}</span>
+                                        @if($quantity > 10)
                                             <span class="product-stock-label in-stock">In Stock</span>
-                                        @elseif($product->Quantity > 0)
+                                        @elseif($quantity > 0)
                                             <span class="product-stock-label low-stock">Low Stock</span>
                                         @else
                                             <span class="product-stock-label out-of-stock">Out of Stock</span>
@@ -260,11 +284,11 @@
                                 </div>
                                 <div class="col-md-4 product-info-item">
                                     <div class="product-info-label">{{ __('cruds.product.fields.ave_cost') }}</div>
-                                    <div>{{ $product->AverageCostPrice }}</div>
+                                    <div>{{ $product->AverageCostPrice ? 'R ' . number_format($product->AverageCostPrice, 2) : 'N/A' }}</div>
                                 </div>
                                 <div class="col-md-4 product-info-item">
                                     <div class="product-info-label">{{ __('cruds.product.fields.last_cost') }}</div>
-                                    <div>{{ $product->LastCostPrice }}</div>
+                                    <div>{{ $product->stockHolding ? 'R ' . number_format($product->stockHolding->LastCostPrice, 2) : 'N/A' }}</div>
                                 </div>
                             </div>
 
@@ -275,7 +299,7 @@
                                 </div>
                                 <div class="col-md-8 product-info-item">
                                     <div class="product-info-label">{{ __('Default Price (incl. VAT)') }}</div>
-                                    <div class="product-price">{{ number_format($product->SellingPrice, 2) }}</div>
+                                    <div class="product-price">{{ 'R '. number_format($product->SellingPrice, 2) }}</div>
                                 </div>
                             </div>
 
@@ -294,23 +318,23 @@
                                     <tbody>
                                     <tr>
                                         <td>Price 1</td>
-                                        <td></td>
-                                        <td>{{ number_format($product->SellingPrice, 2) }}</td>
+                                        <td>{{ $sellingPriceExcl ? 'R ' . number_format($sellingPriceExcl, 2) : 'N/A' }}</td>
+                                        <td>{{ $product->SellingPrice ? 'R ' . number_format($product->SellingPrice, 2) : 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Price 2</td>
-                                        <td></td>
-                                        <td>{{ number_format($product->SellingPrice2, 2) ?? 'N/A' }}</td>
+                                        <td>{{ $sellingPrice2Excl ? 'R ' . number_format($sellingPrice2Excl, 2) : 'N/A' }}</td>
+                                        <td>{{ $sellingPrice4Excl ? 'R ' . number_format($sellingPrice4Excl, 2) : 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Price 3</td>
-                                        <td></td>
-                                        <td>{{ number_format($product->SellingPrice3, 2) ?? 'N/A' }}</td>
+                                        <td>{{ $sellingPrice3Excl ? 'R ' . number_format($sellingPrice3Excl, 2) : 'N/A' }}</td>
+                                        <td>{{ $product->SellingPrice3 ? 'R ' . number_format($product->SellingPrice3, 2) : 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Price 4</td>
-                                        <td></td>
-                                        <td>{{ number_format($product->SellingPrice4, 2) ?? 'N/A' }}</td>
+                                        <td>{{ $sellingPrice4Excl ? 'R ' . number_format($sellingPrice4Excl, 2) : 'N/A' }}</td>
+                                        <td>{{ $product->SellingPrice4 ? 'R ' . number_format($product->SellingPrice4, 2) : 'N/A' }}</td>
                                     </tr>
                                     </tbody>
                                 </table>
