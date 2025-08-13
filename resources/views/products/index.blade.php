@@ -102,18 +102,9 @@
 
         <!-- Main Content -->
         <div class="column-content">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <h4 class="mb-0">{{ __('Product Inventory') }}</h4>
-                    <small class="text-muted">{{ __('Browse and manage your products') }}</small>
-                </div>
-                <div class="col-md-6 text-end">
-                    <div id="products-table_wrapper" class="d-inline-block"></div>
-                </div>
-            </div>
 
             <div class="table-card">
-                <div class="card-body p-0">
+                <div class="card-body p-2">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0" id="products-table">
                             <thead class="table-light">
@@ -163,7 +154,7 @@
                 },
             });
 
-            // Initialize DataTable with modern styling
+            // Initialize DataTable
             let productsTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,

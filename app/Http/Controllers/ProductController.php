@@ -55,6 +55,7 @@ class ProductController extends Controller
                         'products.SellingPrice',
                         'products.SellingPrice2',
                         'products.SellingPrice3',
+                        'products.SellingPrice4',
                         'products.AverageCostPrice'
                     ]);
 
@@ -146,9 +147,10 @@ class ProductController extends Controller
                 ->addColumn('quantity_on_hand', function ($product) {
                     $quantity = $product->QuantityOnHand ?? 0;
 
-                    if ($quantity > 50) {
+                    // Add stock level badge
+                    if ($quantity > 10) {
                         $badge = '<span class="stock-badge stock-high">In Stock</span>';
-                    } elseif ($quantity > 10) {
+                    } elseif ($quantity >= 1 && $quantity <= 10) {
                         $badge = '<span class="stock-badge stock-medium">Low Stock</span>';
                     } else {
                         $badge = '<span class="stock-badge stock-low">Out of Stock</span>';
@@ -191,7 +193,7 @@ class ProductController extends Controller
                             ->orWhere('products.AltBarCode', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['barcodes','prices','costPrices','action'])
+                ->rawColumns(['barcodes','prices','costPrices','quantity_on_hand', 'action'])
                 ->make(true);
         }
 
