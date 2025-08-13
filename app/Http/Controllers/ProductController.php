@@ -181,7 +181,7 @@ class ProductController extends Controller
 
                     // E-commerce view button (only if e-commerce is enabled)
                     if (Features::ecommerceEnabled()) {
-                        $shopUrl = route('shop.products.show', $product->slug ?? $product->id); // Adjust route as needed route('shop.products.show', $product->slug ?? $product->id)
+                        $shopUrl = route('shop.products.show', $product->slug ?? $product->id);
                         $actions .= '<a href="'.$shopUrl.'" target="_blank" class="btn btn-sm btn-outline-info btn-sm-custom me-1" data-bs-toggle="tooltip" title="View in Shop">
                         <i class="fas fa-shopping-cart"></i>
                      </a>';
