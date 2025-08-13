@@ -154,7 +154,7 @@
                 },
             });
 
-            // Initialize DataTable
+            // Initialize DataTable with modern styling
             let productsTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -265,7 +265,7 @@
                         });
 
                         $.ajax({
-                            url: `/products/${productId}`,
+                            url: "{{ route('products.destroy', ':id') }}".replace(':id', productId),
                             type: 'DELETE',
                             data: {
                                 "_token": "{{ csrf_token() }}"

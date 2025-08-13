@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Features;
 use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyProductRequest;
 use App\Http\Requests\StoreProductRequest;
@@ -168,13 +169,21 @@ class ProductController extends Controller
 
                     // View button
                     $actions .= '<a href="'.route('products.show', $product->id).'" class="btn btn-sm btn-outline-primary btn-sm-custom me-1" data-bs-toggle="tooltip" title="View Product">
-                    <i class="fas fa-eye"></i>
-                 </a>';
+                        <i class="fas fa-eye"></i>
+                    </a>';
 
                     // Edit button
                     if (auth()->user()->can('product_edit')) {
                         $actions .= '<a href="'.route('products.edit', $product->id).'" class="btn btn-sm btn-outline-warning btn-sm-custom me-1" data-bs-toggle="tooltip" title="Edit Product">
                         <i class="fas fa-edit"></i>
+                     </a>';
+                    }
+
+                    // E-commerce view button (only if e-commerce is enabled)
+                    if (Features::ecommerceEnabled()) {
+                        $shopUrl = route('shop.products.show', $product->slug ?? $product->id); // Adjust route as needed route('shop.products.show', $product->slug ?? $product->id)
+                        $actions .= '<a href="'.$shopUrl.'" target="_blank" class="btn btn-sm btn-outline-info btn-sm-custom me-1" data-bs-toggle="tooltip" title="View in Shop">
+                        <i class="fas fa-shopping-cart"></i>
                      </a>';
                     }
 

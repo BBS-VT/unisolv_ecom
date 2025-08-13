@@ -87,7 +87,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Products
     //Route::get('products', 'ProductController@index')->name('products.index');
-    Route::delete('products/{product}', 'ProductController@destroy')->name('products.destroy');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     //Route::get('products/show', 'ProductController@show')->name('products.show');
     Route::delete('products/destroy', 'ProductController@massDestroy')->name('products.massDestroy');
     Route::post('products/media','ProductController@storeMedia')->name('products.storeMedia');
