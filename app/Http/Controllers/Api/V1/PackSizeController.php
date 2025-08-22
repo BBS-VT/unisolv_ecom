@@ -43,7 +43,7 @@ class PackSizeController extends Controller
 
         $availability = $this->packSizeService->checkStockAvailability(
             $request->stock_code,
-            $request->quantity
+            $request->quantity,
         );
 
         return response()->json($availability);
@@ -131,7 +131,7 @@ class PackSizeController extends Controller
      */
     public function getPackSizeHierarchy(string $stockCode): JsonResponse
     {
-        $product = Product::where('stock_code', $stockCode)->first();
+        $product = Product::where('StockCode', $stockCode)->first();
 
         if (!$product) {
             return response()->json([
@@ -147,22 +147,22 @@ class PackSizeController extends Controller
 
         while ($current) {
             $hierarchy[] = [
-                'stock_code' => $current->stock_code,
-                'name' => $current->name,
-                'pack_size' => $current->pack_size,
+                'stock_code' => $current->StockCode,
+                'name' => $current->StockItemName,
+                'pack_size' => $current->Packsize,
                 'refer_code' => $current->refer_code,
-                'quantity' => $current->stockHolding?->quantity ?? 0,
+                'quantity' => $current->stockHolding?->QuantityOnHand ?? 0,
                 'price' => $current->effective_price,
                 'is_root' => !$current->refer_code,
             ];
 
             // Find the next smaller pack size that refers to current
-            $current = $family->where('refer_code', $current->stock_code)->first();
+            $current = $family->where('refer_code', $current->StockCode)->first();
         }
 
         return response()->json([
             'stock_code' => $stockCode,
-            'root_product' => $root->stock_code,
+            'root_product' => $root->StockCode,
             'hierarchy' => $hierarchy,
             'total_base_units' => $product->getTotalBaseUnitsAttribute()
         ]);

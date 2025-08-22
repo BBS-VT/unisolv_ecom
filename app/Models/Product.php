@@ -320,7 +320,7 @@ class Product extends Model implements HasMedia
 
         $this->packSizeFamily()->with('stockHolding')->get()->each(function($product) use (&$total) {
             if ($product->stockHolding) {
-                $total += $product->stockHolding->quantity * $product->Packsize;
+                $total += $product->stockHolding->QuantityOnHand * $product->Packsize;
             }
         });
 

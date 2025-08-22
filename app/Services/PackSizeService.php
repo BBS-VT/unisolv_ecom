@@ -51,7 +51,7 @@ class PackSizeService
                 return [
                     'StockCode' => $product->StockCode,
                     'name'      => $product->StockItemName,
-                    'pack_size' => $product->packSize,
+                    'pack_size' => $product->Packsize,
                     'available_quantity' => $product->stockHolding->QuantityOnHand ?? 0,
                     'selling_price' => $product->SellingPrice,
                     'cost_price'    => $product->stockHolding->LastCostPrice ?? 0,

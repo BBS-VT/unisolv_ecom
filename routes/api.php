@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\PackSizeController;
 
 
 /*
@@ -14,8 +15,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-/*Route::get('products','Api\V1\ProductController@index')->name('api.front.products');
-Route::get('categories', 'Api\V1\CategoriesController@index')->name('api.front.categories');*/
 
 Route::group(['prefix' => 'v1', 'namespace' => 'Api\V1\Admin\Auth'], function() {
     Route::post('login', 'AuthController@login');
