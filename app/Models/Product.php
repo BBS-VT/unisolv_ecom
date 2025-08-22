@@ -41,6 +41,7 @@ class Product extends Model implements HasMedia
         'slug',
         'LeadTimeDays',
         'Packsize',
+        'refer_code',
         'Barcode',
         'AltBarcode',
         'AverageCostPrice',
@@ -67,7 +68,9 @@ class Product extends Model implements HasMedia
      */
     protected $casts = [
         'CostPrice' => 'float',
-        'SellingPrice' => 'float'
+        'SellingPrice' => 'float',
+        'Packsize'  => 'integer',
+        'status' => 'boolean',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -168,6 +171,22 @@ class Product extends Model implements HasMedia
     }
 
     /**
+     * Get the referred product (parent/larger pack size)
+     */
+    public function referredProduct(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'refer_code', 'StockCode');
+    }
+
+    /**
+     * Get products that refer to this product (children/smaller pack sizes)
+     */
+    public function referringProducts(): HasMany
+    {
+        return $this->hasMany(Product::class, 'refer_code', 'StockCode');
+    }
+
+    /**
      * Scope a query to only include Products of a given company.
      *
      * @param \Illuminate\Database\Eloquent\Builder  $query
@@ -260,6 +279,113 @@ class Product extends Model implements HasMedia
     {
         return $this->stockHolding ? $this->stockHolding->QuantityOnHand : 0;
     }
+
+    public function packSizeFamily()
+    {
+        $root = $this->getRootProduct();
+
+        return Product::where(function($query) use ($root) {
+            $query->where('StockCode', $root->StockCode)
+                ->orWhere('refer_code', $root->StockCode);
+        })->orderBy('Packsize', 'desc');
+    }
+
+    public function getRootProduct(): Product
+    {
+        $current = $this;
+
+        while ($current->refer_code && $current->referringProduct) {
+            $current = $current->referringProduct;
+        }
+
+        return $current;
+    }
+
+    /**
+     * Get the base unit product (smallest pack size, usually singles)
+     */
+    public function getBaseUnitProduct(): Product
+    {
+        return $this->packSizeFamily()
+            ->orderBy('Packsize', 'asc')
+            ->first();
+    }
+
+    /**
+     * Calculate total available quantity in base units
+     */
+    public function getTotalBaseUnitsAttribute(): int
+    {
+        $total = 0;
+
+        $this->packSizeFamily()->with('stockHolding')->get()->each(function($product) use (&$total) {
+            if ($product->stockHolding) {
+                $total += $product->stockHolding->quantity * $product->Packsize;
+            }
+        });
+
+        return $total;
+    }
+
+    /**
+     * Check if enough stock is available across all pack sizes
+     */
+    public function hasStockForQuantity(int $requestedQuantity): bool
+    {
+        return $this->getTotalBaseUnitsAttribute() >= ($requestedQuantity * $this->Packsize);
+    }
+
+    /**
+     * Get available quantity for this specific pack size
+     */
+    public function getAvailablePacksAttribute(): int
+    {
+        if (!$this->stockHolding) {
+            return 0;
+        }
+
+        return $this->stockHolding->QuantityOnHand;
+    }
+
+    /**
+     * Calculate how many packs can be made from available base units
+     */
+    public function getMaxPacksFromBaseUnitsAttribute(): int
+    {
+        return intval($this->getTotalBaseUnitsAttribute() / $this->Packsize);
+    }
+
+    /**
+     * Scope to get products with their pack size families
+     */
+    public function scopeWithPackSizeFamily($query)
+    {
+        return $query->with([
+            'referredProduct',
+            'referringProducts',
+            'stockHolding'
+        ]);
+    }
+
+    /**
+     * Scope to get only root products (largest pack sizes)
+     */
+    public function scopeRootProducts($query)
+    {
+        return $query->whereNull('refer_code');
+    }
+
+    /**
+     * Scope to get products by pack size family
+     */
+    public function scopeInPackSizeFamily($query, string $stockCode)
+    {
+        return $query->where(function($q) use ($stockCode) {
+            $q->where('StockCode', $stockCode)
+                ->orWhere('refer_code', $stockCode);
+        });
+    }
+
 
 }
 

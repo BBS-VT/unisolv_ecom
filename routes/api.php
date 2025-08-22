@@ -40,6 +40,16 @@ Route::group(['prefix' => 'v1', 'as' => 'api.admin.', 'namespace' => 'Api\V1\Adm
 
     // Products
     Route::post('products/media', 'ProductApiController@storeMedia')->name('products.storeMedia');
+
+    // Products with pack size information
+    Route::get('/products/{stockCode}/pack-sizes', [PackSizeController::class, 'getPackSizeVariations']);
+    Route::get('/products/{stockCode}/pack-size-hierarchy', [PackSizeController::class, 'getPackSizeHierarchy']);
+
+    // Stock operations
+    Route::post('/stock/check-availability', [PackSizeController::class, 'checkStockAvailability']);
+    Route::post('/stock/allocation', [PackSizeController::class, 'calculateStockAllocation']);
+    Route::post('/stock/recommendations', [PackSizeController::class, 'getRecommendedPackSizes']);
+
     Route::apiResource('products', 'ProductApiController');
 
 });
