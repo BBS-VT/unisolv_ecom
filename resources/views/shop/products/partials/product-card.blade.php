@@ -1,13 +1,39 @@
-<div class="amazon-product-card" data-product-url='{{ route('shop.products.show', $product->slug ?? $product->id) }}'">
+{{-- Updated amazon-product-card with promotion integration --}}
+<div class="amazon-product-card" data-product-url='{{ route('shop.products.show', $product->slug ?? $product->id) }}'>
     <div class="position-relative">
         <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}" class="amazon-product-image">
         @if($product->is_new)
             <span class="position-absolute top-0 start-0 badge bg-success">{{ __('New') }}</span>
         @endif
 
-        @if(isset($product->pricing) && $product->pricing['discount_percentage'] > 0)
+        {{-- UPDATED PROMOTION BADGES --}}
+        @php
+            use App\Helpers\PricingHelper;
+            $priceData = PricingHelper::getProductPrice($product, 1);
+        @endphp
+
+        @if($priceData['has_promotion'])
+            <span class="position-absolute top-0 end-0 badge bg-danger">
+                @if($priceData['promotion']->type === 'bogo')
+                    BOGO
+                @elseif($priceData['savings'] > 0)
+                    @php
+                        $savingsPercent = $priceData['original_price'] > 0 ? round(($priceData['savings'] / $priceData['original_price']) * 100) : 0;
+                    @endphp
+                    {{ $savingsPercent }}% OFF
+                @else
+                    SPECIAL
+                @endif
+            </span>
+        @elseif(isset($product->pricing) && $product->pricing['discount_percentage'] > 0)
             <span class="position-absolute top-0 end-0 badge bg-danger">
                 {{ $product->pricing['discount_percentage'] }}% OFF
+            </span>
+        @endif
+
+        @if($product->is_featured)
+            <span class="position-absolute bottom-0 end-0 badge bg-warning text-dark">
+                FEATURED
             </span>
         @endif
 
@@ -22,18 +48,42 @@
         {{ $product->StockItemName }}
     </a>
 
+    {{-- UPDATED PRICING WITH PROMOTIONS --}}
     @if(isset($product->pricing))
         @if($product->pricing['show_prices'])
             <div class="amazon-price mt-2">
-                @php
-                    $price = $product->pricing['price'];
-                    $basePrice = $product->pricing['base_price'];
-                    $whole = floor($price);
-                    $fraction = sprintf('%02d', ($price - $whole) * 100);
-                @endphp
+                @if($priceData['has_promotion'] && $priceData['savings'] > 0)
+                    {{-- Promotion pricing --}}
+                    <div class="promotion-pricing">
+                        @php
+                            $discountedPrice = $priceData['discounted_price'] / 100;
+                            $originalPrice = $priceData['original_price'] / 100;
+                            $whole = floor($discountedPrice);
+                            $fraction = sprintf('%02d', ($discountedPrice - $whole) * 100);
+                        @endphp
 
-                @if($product->pricing['discount_percentage'] > 0)
-                    {{-- Customer gets a discount --}}
+                        <span class="amazon-price-whole text-danger">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                        <span class="amazon-price-fraction text-danger">{{ $fraction }}</span>
+                        <br>
+                        <span class="amazon-old-price text-muted text-decoration-line-through">
+                            {{ config('app.currency', 'R') }}{{ number_format($originalPrice, 2) }}
+                        </span>
+                        <small class="text-success ms-1">
+                            Save {{ $priceData['formatted']['savings'] }}
+                            @if($priceData['promotion']->type === 'bogo')
+                                (BOGO)
+                            @endif
+                        </small>
+                    </div>
+                @elseif(isset($product->pricing) && $product->pricing['discount_percentage'] > 0)
+                    {{-- Legacy pricing discount --}}
+                    @php
+                        $price = $product->pricing['price'];
+                        $basePrice = $product->pricing['base_price'];
+                        $whole = floor($price);
+                        $fraction = sprintf('%02d', ($price - $whole) * 100);
+                    @endphp
+
                     <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
                     <span class="amazon-price-fraction">{{ $fraction }}</span>
                     <br>
@@ -41,6 +91,11 @@
                     <small class="text-success ms-1">Save {{ $product->pricing['discount_percentage'] }}%</small>
                 @else
                     {{-- Regular pricing --}}
+                    @php
+                        $price = $product->pricing['price'];
+                        $whole = floor($price);
+                        $fraction = sprintf('%02d', ($price - $whole) * 100);
+                    @endphp
                     <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
                     <span class="amazon-price-fraction">{{ $fraction }}</span>
                     @if(auth()->guest())
@@ -60,8 +115,39 @@
     @else
         {{-- Fallback if pricing isn't loaded --}}
         <div class="amazon-price mt-2">
-            <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format(floor($product->SellingPrice), 0) }}</span>
-            <span class="amazon-price-fraction">{{ sprintf('%02d', ($product->SellingPrice - floor($product->SellingPrice)) * 100) }}</span>
+            @if($priceData['has_promotion'])
+                @php
+                    $discountedPrice = $priceData['discounted_price'] / 100;
+                    $originalPrice = $priceData['original_price'] / 100;
+                    $whole = floor($discountedPrice);
+                    $fraction = sprintf('%02d', ($discountedPrice - $whole) * 100);
+                @endphp
+                <span class="amazon-price-whole text-danger">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                <span class="amazon-price-fraction text-danger">{{ $fraction }}</span>
+                <br>
+                <span class="amazon-old-price text-muted text-decoration-line-through">
+                    {{ config('app.currency', 'R') }}{{ number_format($originalPrice, 2) }}
+                </span>
+            @else
+                <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format(floor($product->SellingPrice), 0) }}</span>
+                <span class="amazon-price-fraction">{{ sprintf('%02d', ($product->SellingPrice - floor($product->SellingPrice)) * 100) }}</span>
+            @endif
+        </div>
+    @endif
+
+    {{-- PROMOTION MESSAGE --}}
+    @if($priceData['has_promotion'])
+        <div class="promotion-message mt-1">
+            <small class="text-success">
+                <i class="fas fa-tag me-1"></i>
+                @if($priceData['promotion']->type === 'bogo')
+                    Buy {{ $priceData['promotion']->buy_quantity ?: 1 }}, Get {{ $priceData['promotion']->get_quantity ?: 1 }} Free!
+                @elseif($priceData['promotion']->type === 'quantity_break')
+                    Buy {{ $priceData['promotion']->min_quantity }}+ for discount
+                @else
+                    {{ $priceData['promotion']->name }}
+                @endif
+            </small>
         </div>
     @endif
 

@@ -62,13 +62,95 @@
                         </p>
                     @endif
 
+                    @php
+                        use App\Services\PromotionCalculationService;
+                        use App\Helpers\PricingHelper;
+
+                        $promotionService = app(PromotionCalculationService::class);
+                        $priceData = PricingHelper::getProductPrice($product, 1);
+                        $customerTier = auth()->user() ? (auth()->user()->price_level ?? 1) : 1;
+                    @endphp
+
+                    @if($priceData['has_promotion'])
+                        <div class="promotion-alert alert alert-success border-success mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-tag text-success me-2 fs-4"></i>
+                                <div>
+                                    <h6 class="mb-1 text-success">Special Promotion Active!</h6>
+                                    <p class="mb-0 small">
+                                        <strong>{{ $priceData['promotion']->name }}</strong>
+                                        @if($priceData['promotion']->ends_at)
+                                            <br><span class="text-muted">Valid until {{ $priceData['promotion']->ends_at->format('M j, Y g:i A') }}</span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <hr>
 
                     <!-- Pricing Section with PricingHelper -->
                     @if(isset($product->pricing))
                         @if($product->pricing['show_prices'])
                             <div class="mb-4">
-                                @if($product->pricing['discount_percentage'] > 0)
+                                @if($priceData['has_promotion'] && $priceData['savings'] > 0)
+                                    {{-- Promotion pricing --}}
+                                    <div class="promotion-pricing-section">
+                                        <div class="d-flex align-items-baseline mb-2">
+                                            <span class="text-muted me-2">Regular Price:</span>
+                                            <span class="text-decoration-line-through text-muted">
+                                                {{ $priceData['formatted']['original'] }}
+                                            </span>
+                                        </div>
+
+                                        <div class="amazon-price fs-1 mb-2">
+                                            @php
+                                                $discountedPrice = $priceData['discounted_price'] / 100;
+                                                $whole = floor($discountedPrice);
+                                                $fraction = sprintf('%02d', ($discountedPrice - $whole) * 100);
+                                            @endphp
+                                            <span class="amazon-price-whole text-danger">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                                            <span class="amazon-price-fraction text-danger">{{ $fraction }}</span>
+                                        </div>
+
+                                        <div class="promotion-savings mb-3">
+                                            <div class="text-success mb-2 fs-5">
+                                                <i class="fas fa-star me-1"></i>
+                                                You Save: {{ $priceData['formatted']['savings'] }}
+                                                @php
+                                                    $savingsPercent = $priceData['original_price'] > 0 ? round(($priceData['savings'] / $priceData['original_price']) * 100) : 0;
+                                                @endphp
+                                                ({{ $savingsPercent }}%)
+                                            </div>
+
+                                            {{-- Promotion details --}}
+                                            <div class="promotion-details alert alert-light border-warning">
+                                                @if($priceData['promotion']->type === 'bogo')
+                                                    <i class="fas fa-gift text-warning me-1"></i>
+                                                    <strong>Buy {{ $priceData['promotion']->buy_quantity ?: 1 }}, Get {{ $priceData['promotion']->get_quantity ?: 1 }} Free!</strong>
+                                                @elseif($priceData['promotion']->type === 'quantity_break')
+                                                    <i class="fas fa-boxes text-warning me-1"></i>
+                                                    <strong>Quantity Break:</strong> Buy {{ $priceData['promotion']->min_quantity }}+ items for this discount
+                                                @elseif($priceData['promotion']->type === 'date_range')
+                                                    <i class="fas fa-calendar text-warning me-1"></i>
+                                                    <strong>Limited Time Offer:</strong> Special pricing ends {{ $priceData['promotion']->ends_at->format('M j, Y') }}
+                                                @else
+                                                    <i class="fas fa-star text-warning me-1"></i>
+                                                    <strong>{{ $priceData['promotion']->description ?: 'Special promotion active' }}</strong>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        @if(auth()->user())
+                                            <div class="mb-2">
+                                                <span class="badge bg-primary">
+                                                    {{ \App\Helpers\PricingHelper::getPriceTierName($customerTier) }} Pricing + Promotion
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @elseif($product->pricing['discount_percentage'] > 0)
                                     {{-- Customer gets wholesale discount --}}
                                     <div class="d-flex align-items-baseline mb-2">
                                         <span class="text-muted me-2">List Price:</span>
@@ -132,17 +214,36 @@
                             </div>
                         @endif
                     @else
-                        {{-- Fallback if pricing not loaded --}}
+                        {{-- Fallback if pricing not loaded but check for promotions --}}
                         <div class="mb-4">
-                            <div class="amazon-price fs-2">
-                                @php
-                                    $price = $product->SellingPrice;
-                                    $whole = floor($price);
-                                    $fraction = sprintf('%02d', ($price - $whole) * 100);
-                                @endphp
-                                <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
-                                <span class="amazon-price-fraction">{{ $fraction }}</span>
-                            </div>
+                            @if($priceData['has_promotion'])
+                                <div class="amazon-price fs-1 mb-2">
+                                    @php
+                                        $discountedPrice = $priceData['discounted_price'] / 100;
+                                        $originalPrice = $priceData['original_price'] / 100;
+                                        $whole = floor($discountedPrice);
+                                        $fraction = sprintf('%02d', ($discountedPrice - $whole) * 100);
+                                    @endphp
+                                    <span class="amazon-price-whole text-danger">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                                    <span class="amazon-price-fraction text-danger">{{ $fraction }}</span>
+                                </div>
+                                <div class="text-muted text-decoration-line-through">
+                                    Was: {{ config('app.currency', 'R') }}{{ number_format($originalPrice, 2) }}
+                                </div>
+                                <div class="text-success">
+                                    You Save: {{ $priceData['formatted']['savings'] }}
+                                </div>
+                            @else
+                                <div class="amazon-price fs-2">
+                                    @php
+                                        $price = $product->SellingPrice;
+                                        $whole = floor($price);
+                                        $fraction = sprintf('%02d', ($price - $whole) * 100);
+                                    @endphp
+                                    <span class="amazon-price-whole">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                                    <span class="amazon-price-fraction">{{ $fraction }}</span>
+                                </div>
+                            @endif
                         </div>
                     @endif
 
@@ -175,6 +276,27 @@
                         </div>
                     </div>
 
+                    @if($priceData['has_promotion'])
+                        <div class="promotion-calculator mb-4 p-3 bg-light border rounded">
+                            <h6 class="mb-2">
+                                <i class="fas fa-calculator me-1"></i>
+                                Promotion Calculator
+                            </h6>
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label for="promo-quantity" class="form-label small">Test Quantity:</label>
+                                    <input type="number" class="form-control form-control-sm" id="promo-quantity"
+                                           value="1" min="1" max="999" onchange="calculatePromotion()">
+                                </div>
+                                <div class="col-md-8">
+                                    <div id="promo-result" class="small text-success">
+                                        <!-- Results will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <hr>
 
                     <!-- Add to Cart Section -->
@@ -198,6 +320,13 @@
                                                 @endif
                                             </select>
                                         </div>
+                                        @if($priceData['has_promotion'])
+                                            <div class="col-md-8">
+                                                <div id="quantity-promo-preview" class="small text-success">
+                                                    <!-- Quantity-based promotion preview -->
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="d-grid gap-2">
@@ -280,6 +409,13 @@
                                 Technical Details
                             </button>
                         </li>
+                        @if($priceData['has_promotion'])
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="promotion-tab" data-bs-toggle="tab" data-bs-target="#promotion-details" type="button" role="tab">
+                                    <i class="fas fa-tag me-1"></i>Promotion Details
+                                </button>
+                            </li>
+                        @endif
                     </ul>
 
                     <!-- Tab Content -->
@@ -344,6 +480,122 @@
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Promotion Details Tab -->
+                        @if($priceData['has_promotion'])
+                            <div class="tab-pane fade" id="promotion-details" role="tabpanel">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-tag text-success me-2"></i>
+                                    Active Promotion Details
+                                </h5>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="promotion-info">
+                                            <h6>{{ $priceData['promotion']->name }}</h6>
+                                            @if($priceData['promotion']->description)
+                                                <p class="text-muted">{{ $priceData['promotion']->description }}</p>
+                                            @endif
+
+                                            <div class="promotion-type-info mb-3 p-3 bg-light border rounded">
+                                                @if($priceData['promotion']->type === 'bogo')
+                                                    <h6 class="text-success"><i class="fas fa-gift me-1"></i> Buy One Get One Free</h6>
+                                                    <p>Buy {{ $priceData['promotion']->buy_quantity ?: 1 }} item(s) and get {{ $priceData['promotion']->get_quantity ?: 1 }} absolutely free!</p>
+                                                @elseif($priceData['promotion']->type === 'quantity_break')
+                                                    <h6 class="text-info"><i class="fas fa-boxes me-1"></i> Quantity Break Discount</h6>
+                                                    <p>Purchase {{ $priceData['promotion']->min_quantity }} or more items and save
+                                                        @if($priceData['promotion']->discount_percentage)
+                                                            {{ $priceData['promotion']->discount_percentage }}% on each item
+                                                        @elseif($priceData['promotion']->discount_amount)
+                                                            ${{ number_format($priceData['promotion']->discount_amount / 100, 2) }} on each item
+                                                        @endif
+                                                    </p>
+                                                @elseif($priceData['promotion']->type === 'price_break')
+                                                    <h6 class="text-primary"><i class="fas fa-layer-group me-1"></i> Volume Pricing</h6>
+                                                    @if($priceData['promotion']->price_breaks)
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Quantity</th>
+                                                                    <th>Price Each</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @foreach($priceData['promotion']->price_breaks as $break)
+                                                                    <tr>
+                                                                        <td>{{ $break['qty'] }}+</td>
+                                                                        <td>${{ number_format($break['price'] / 100, 2) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <h6 class="text-warning"><i class="fas fa-star me-1"></i> Special Offer</h6>
+                                                    <p>{{ ucwords(str_replace('_', ' ', $priceData['promotion']->type)) }} promotion active</p>
+                                                @endif
+                                            </div>
+
+                                            <div class="promotion-validity">
+                                                <h6 class="mb-2">Promotion Period</h6>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-calendar-start text-success me-1"></i>
+                                                    <strong>Started:</strong> {{ $priceData['promotion']->starts_at->format('M j, Y g:i A') }}
+                                                </p>
+                                                <p class="mb-1">
+                                                    <i class="fas fa-calendar-times text-danger me-1"></i>
+                                                    <strong>Ends:</strong> {{ $priceData['promotion']->ends_at->format('M j, Y g:i A') }}
+                                                </p>
+                                                <p class="text-muted small">
+                                                    Time remaining: {{ $priceData['promotion']->ends_at->diffForHumans() }}
+                                                </p>
+                                            </div>
+
+                                            @if($priceData['promotion']->usage_limit_total)
+                                                <div class="promotion-limits mt-3">
+                                                    <h6>Usage Limits</h6>
+                                                    @php
+                                                        $usagePercent = ($priceData['promotion']->usage_count / $priceData['promotion']->usage_limit_total) * 100;
+                                                    @endphp
+                                                    <div class="progress mb-2">
+                                                        <div class="progress-bar bg-{{ $usagePercent > 80 ? 'danger' : 'success' }}"
+                                                             style="width: {{ min($usagePercent, 100) }}%">
+                                                            {{ number_format($usagePercent, 1) }}%
+                                                        </div>
+                                                    </div>
+                                                    <p class="small text-muted">
+                                                        {{ $priceData['promotion']->usage_count }} / {{ $priceData['promotion']->usage_limit_total }} uses
+                                                        ({{ $priceData['promotion']->usage_limit_total - $priceData['promotion']->usage_count }} remaining)
+                                                    </p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="promotion-summary card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Your Savings</h6>
+                                                <div class="text-center">
+                                                    <div class="display-6 text-success">{{ $priceData['formatted']['savings'] }}</div>
+                                                    <p class="text-muted">per item</p>
+                                                </div>
+
+                                                @if($priceData['promotion']->is_online_only)
+                                                    <div class="alert alert-info alert-sm">
+                                                        <i class="fas fa-globe me-1"></i>
+                                                        <strong>Online Exclusive!</strong> This promotion is only available on our website.
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -489,6 +741,87 @@
         $(document).ready(function() {
             // Track product view
             trackProductView({{ $product->id }});
+
+            // Promotion related
+            @if($priceData['has_promotion'])
+            // Initialize promotion calculator
+            calculatePromotion();
+            updateQuantityPromotion();
+
+            // Real-time promotion calculation
+            window.calculatePromotion = function() {
+                const quantity = parseInt(document.getElementById('promo-quantity').value) || 1;
+
+                fetch('{{ route("admin.promotions.test-calculation") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        promotion_id: {{ $priceData['promotion']->id }},
+                        quantity: quantity,
+                        customer_tier: {{ $customerTier }}
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultDiv = document.getElementById('promo-result');
+                        if (data.success && data.calculation.applicable) {
+                            const calc = data.calculation;
+                            let message = `${quantity} items: `;
+                            message += `${(calc.discounted_price / 100).toFixed(2)} each `;
+                            message += `(Save ${(calc.total_savings / 100).toFixed(2)} total)`;
+
+                            if (calc.bonus_quantity > 0) {
+                                message += ` + ${calc.bonus_quantity} bonus items!`;
+                            }
+
+                            resultDiv.innerHTML = `<i class="fas fa-check-circle me-1"></i>${message}`;
+                        } else {
+                            resultDiv.innerHTML = `<i class="fas fa-info-circle me-1"></i>Quantity ${quantity}: No additional discount`;
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('promo-result').innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Unable to calculate';
+                    });
+            };
+
+            window.updateQuantityPromotion = function() {
+                const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
+                const previewDiv = document.getElementById('quantity-promo-preview');
+
+                if (!previewDiv) return;
+
+                // Update the promo calculator quantity to match
+                const promoQtyInput = document.getElementById('promo-quantity');
+                if (promoQtyInput) {
+                    promoQtyInput.value = quantity;
+                    calculatePromotion();
+                }
+
+                // Show promotion preview for selected quantity
+                @if($priceData['promotion']->type === 'bogo')
+                const buyQty = {{ $priceData['promotion']->buy_quantity ?: 1 }};
+                const getQty = {{ $priceData['promotion']->get_quantity ?: 1 }};
+                const sets = Math.floor(quantity / buyQty);
+                const bonusItems = sets * getQty;
+
+                if (bonusItems > 0) {
+                    previewDiv.innerHTML = `<i class="fas fa-gift me-1"></i>You'll get ${bonusItems} bonus item${bonusItems > 1 ? 's' : ''} free!`;
+                } else {
+                    previewDiv.innerHTML = `<i class="fas fa-info-circle me-1"></i>Buy ${buyQty} to get ${getQty} free`;
+                }
+                @elseif($priceData['promotion']->type === 'quantity_break')
+                const minQty = {{ $priceData['promotion']->min_quantity }};
+                if (quantity >= minQty) {
+                    previewDiv.innerHTML = `<i class="fas fa-check-circle me-1"></i>Quantity discount applies!`;
+                } else {
+                    previewDiv.innerHTML = `<i class="fas fa-info-circle me-1"></i>Buy ${minQty}+ for discount`;
+                }
+                @endif
+            };
+            @endif
 
             // Quantity selector with custom input
             $('#product-quantity').change(function() {
@@ -666,7 +999,7 @@
                     return;
                 }
 
-                // Load product data via AJAX (you'll need to create this endpoint)
+                // Load product data via AJAX
                 $.ajax({
                     url: '{{ route("shop.products.recently-viewed") }}',
                     type: 'POST',

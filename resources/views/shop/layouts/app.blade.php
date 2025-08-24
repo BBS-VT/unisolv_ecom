@@ -17,13 +17,13 @@
 
 </head>
 <body>
-    @include('shop.components.navbar')
+    @include('shop.layouts.components.navbar')
 
         <main class="amazon-main">
             @yield('content')
         </main>
 
-        @include('shop.components.footer')
+        @include('shop.layouts.components.footer')
 
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
         <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">

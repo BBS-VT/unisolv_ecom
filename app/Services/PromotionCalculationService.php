@@ -30,7 +30,7 @@ class PromotionCalculationService
 
         $originalPrice = $product->{"SalePrice{$customerTier}"};
 
-        $promotions = $this->getApplicablePromotions($stockCode, $customer, $customerTier);
+        $promotions = $this->getApplicablePromotions($stockCode, $customerTier, $customer);
 
         if ($promotions->isEmpty()) {
             return $this->noPromotionResult($stockCode, $quantity, $originalPrice);

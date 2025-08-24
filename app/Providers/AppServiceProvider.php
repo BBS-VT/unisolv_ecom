@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Helpers\PricingHelper;
+use App\Services\PromotionCalculationService;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -35,5 +37,8 @@ class AppServiceProvider extends ServiceProvider
             \Log::info('Mail Sending', ['data' => $event->data]);
         });
 
+        PricingHelper::setPromotionService(
+            $this->app->make(PromotionCalculationService::class)
+        );
     }
 }
