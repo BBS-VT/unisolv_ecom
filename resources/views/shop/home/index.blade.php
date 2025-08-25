@@ -252,9 +252,18 @@
                                     @else
 
                                     @endif
-                                    <a class="btn btn-xs btn-primary" href="#">
-                                        <span class="fas fa-cart-plus mr-2"></span> Add to cart
-                                    </a>
+                                    @auth
+                                        <button class="btn btn-xs btn-primary"
+                                                data-product-id="{{ $product->id }}">
+                                            <i class="fas fa-cart-plus mr-2"></i> Add to Cart
+                                        </button>
+                                    @else
+                                        <button type="button" class="btn btn-outline-secondary btn-xs"
+                                                data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <i class="fas fa-sign-in-alt mr-2"></i> Login to Order
+                                        </button>
+                                    @endauth
+
                                 </div>
                             </div>
                         </div>
