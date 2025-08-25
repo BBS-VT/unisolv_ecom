@@ -133,11 +133,13 @@
         .tier-wholesale { background-color: #f3e5f5; color: #7b1fa2; }
         .tier-special { background-color: #fff3e0; color: #f57c00; }
         .tier-premium { background-color: #e8f5e8; color: #388e3c; }
+
+
     </style>
 @endsection
 
 @section('content')
-    <section class="bg-light py-5">
+    {{--<section class="bg-light py-5">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
@@ -171,6 +173,29 @@
                 <div class="col-lg-4">
                     <img src="https://dummyimage.com/500x400/0066cc/ffffff.png&text=B2B+Store"
                          alt="B2B Store" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </section>--}}
+    <section class="banner-area py-5 animate__animated animate__fadeIn">
+        <div class="container h-100 banner-slider">
+            <div>
+                <div class="col-md-6">
+                    <h1 class="mt-5"><span>{{ __('Welcome to our B2B Store') }}</span></h1>
+                    <p class="mt-3 mb-4">{{ __('Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.') }}</p>
+                    <a href="{{ route('shop.products.index') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i> {{ __('Shop Now') }}
+                    </a>
+
+                    <div class="mt-5">
+                        <img src="assets/images/slide-smallimages.png" alt="" style="width: 200px;">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="rightimg-banner rightimg-banner1">
+                        <img src="https://ramadaplazachaofah.com/icon-hotel-in-phuket/" class="img-fluid shoes-img" alt="">
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,6 +233,36 @@
     <section class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-5">Featured Products</h2>
+
+            <div class="row">
+                @foreach($featuredProducts as $product)
+                    <div class="col-md-6 col-lg-3">
+                        <!-- card -->
+                        <div class="card border-light">
+                            <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=Product' }}" alt="{{ $product->StockItemName }}">
+                            <div class="card-footer border-top border-light p-4">
+                                <a href="{{ route('shop.products.show', $product->slug ?? $product->id) }}" class="h5">{{ $product->StockItemName }}</a>
+                                <h6 class="font-weight-light text-gray mt-2">{{ Str::limit($product->MarketingComments, 60) }}</h6>
+                                <div class="d-flex mt-3">
+
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    @if($product->pricing['show_prices'])
+                                        <span class="h5 mb-0 text-gray">$299.00</span>
+                                    @else
+
+                                    @endif
+                                    <a class="btn btn-xs btn-primary" href="#">
+                                        <span class="fas fa-cart-plus mr-2"></span> Add to cart
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- card -->
+                    </div>
+                @endforeach
+            </div>
+
             <div class="row">
                 @foreach($featuredProducts as $product)
                     <div class="col-md-6 col-lg-3 mb-4">
