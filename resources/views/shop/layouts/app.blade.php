@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.cdnfonts.com/css/amazon-ember" rel="stylesheet">
+    <link href="{{ URL::asset('shop/css/pixel.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('shop/style.css') }}" rel="stylesheet" type="text/css" />
 
     @stack('styles')
