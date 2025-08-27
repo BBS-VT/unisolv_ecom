@@ -2,30 +2,44 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <title>@yield('title') - B2B Shop</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('icons/themify/themify-icons.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('icons/flaticon/flaticon_mooncart.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/magnific-popup/magnific-popup.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('icons/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/swiper/swiper-bundle.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/lightgallery/dist/css/lightgallery.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/lightgallery/dist/css/lg-thumbnail.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/lightgallery/dist/css/lg-zoom.css') }}">
+    {{--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">--}}
     <link href="https://fonts.cdnfonts.com/css/amazon-ember" rel="stylesheet">
     <link href="{{ URL::asset('shop/css/pixel.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('shop/css/style.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('shop/style.css') }}" rel="stylesheet" type="text/css" />
 
     @stack('styles')
 
 </head>
 <body>
-    @include('shop.layouts.components.navbar')
+<div class="page-wrapper">
 
-        <main class="amazon-main">
-            @yield('content')
-        </main>
+    @include('shop.layouts.partials.header')
 
-        @include('shop.layouts.components.footer')
 
+    <div class="page-content bg-white amazon-main">
+        @yield('content')
+    </div>
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
         <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header bg-success text-white">
@@ -39,20 +53,47 @@
         </div>
     </div>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="miniCartOffcanvas" style="width: 400px;">
-        <div id="miniCartContent">
-            <div class="d-flex justify-content-center align-items-center h-100">
-                <div class="spinner-border text-warning" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('shop.layouts.partials.footer')
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <button class="scroltop" type="button"><i class="fas fa-arrow-up"></i></button>
+
+    @include('shop.layouts.partials.modals.minicart')
+    @stack('modals')
+
+</div>
+
+<script src="{{ asset('js/jquery.min.js') }}"></script>
+<script src="{{ asset('vendor/wow/wow.min.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
+<script src="{{ asset('vendor/bootstrap-touchspin/bootstrap-touchspin.js') }}"></script>
+<script src="{{ asset('vendor/magnific-popup/magnific-popup.js') }}"></script>
+<script src="{{ asset('vendor/counter/waypoints-min.js') }}"></script>
+<script src="{{ asset('vendor/counter/counterup.min.js') }}"></script>
+<script src="{{ asset('vendor/swiper/swiper-bundle.min.js') }}"></script>
+<script src="{{ asset('vendor/imagesloaded/imagesloaded.js') }}"></script>
+<script src="{{ asset('vendor/masonry/masonry-4.2.2.js') }}"></script>
+<script src="{{ asset('vendor/masonry/isotope.pkgd.min.js') }}"></script>
+<script src="{{ asset('vendor/countdown/jquery.countdown.js') }}"></script>
+<script src="{{ asset('js/dz.carousel.js') }}"></script>
+<script src="{{ asset('vendor/lightgallery/dist/lightgallery.min.js') }}"></script>
+<script src="{{ asset('vendor/lightgallery/dist/plugins/thumbnail/lg-thumbnail.min.js') }}"></script>
+<script src="{{ asset('vendor/lightgallery/dist/plugins/zoom/lg-zoom.min.js') }}"></script>
+<script src="{{ asset('js/dz.ajax.js') }}"></script>
+<script src="{{ asset('js/custom.js') }}"></script>
+
+    {{--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/bc0680dc86.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/bc0680dc86.js" crossorigin="anonymous"></script>--}}
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
 
     <script>
         $(document).ready(function() {
