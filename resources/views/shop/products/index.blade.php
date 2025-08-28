@@ -12,7 +12,7 @@
         </ol>
     </nav>
 
-    <div class="row">
+    <div class="row mx-1">
         <!-- Filters Sidebar -->
         <div class="col-lg-3 col-md-4">
             @include('shop.products.partials.filters')
