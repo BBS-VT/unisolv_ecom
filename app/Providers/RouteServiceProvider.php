@@ -7,6 +7,7 @@ use App\Helpers\Features;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,8 @@ class RouteServiceProvider extends ServiceProvider
                 if ($order->CustomerID === Auth::user()->customer->acc_code) {
                     abort(403, 'You can only access your own orders.');
                 }
+            } elseif (Auth::check() && Auth::user()->role != 'customer') {
+                return $order;
             }
 
             return $order;
