@@ -173,7 +173,7 @@ class Product extends Model implements HasMedia
     /**
      * Get the referred product (parent/larger pack size)
      */
-    public function referredProduct(): BelongsTo
+    public function referredProduct()
     {
         return $this->belongsTo(Product::class, 'refer_code', 'StockCode');
     }
@@ -181,7 +181,7 @@ class Product extends Model implements HasMedia
     /**
      * Get products that refer to this product (children/smaller pack sizes)
      */
-    public function referringProducts(): HasMany
+    public function referringProducts()
     {
         return $this->hasMany(Product::class, 'refer_code', 'StockCode');
     }

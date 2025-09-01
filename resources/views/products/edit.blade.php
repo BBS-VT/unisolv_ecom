@@ -10,6 +10,25 @@
             padding: 20px; /* Add some padding for spacing */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
         }
+        .pack-size-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pack-size-family-display .current {
+            background-color: #e3f2fd;
+        }
+
+        .pack-size-member {
+            font-size: 0.9rem;
+        }
+
+        .pack-size-chain {
+            font-size: 0.875rem;
+        }
     </style>
 @endpush
 
@@ -432,6 +451,121 @@
                             </div>
                         </div>
 
+                        <h4>{{ __('Pack Size Configuration') }}</h4>
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-xxl-6 col-md-6">
+                                        <div class="form-group">
+                                            <label for="refer_code">{{ __('Link to Pack Size') }}</label>
+                                            <select class="form-control select2 {{ $errors->has('refer_code') ? 'is-invalid' : '' }}"
+                                                    name="refer_code" id="refer_code">
+                                                @foreach($referProducts as $stockCode => $name)
+                                                    <option value="{{ $stockCode === '-- No Pack Size Link --' ? '' : $stockCode }}"
+                                                        {{ old('refer_code', $product->refer_code) === $stockCode ? 'selected' : '' }}>
+                                                        {{ $name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if($errors->has('refer_code'))
+                                                <div class="invalid-feedback">
+                                                    {{ $errors->first('refer_code') }}
+                                                </div>
+                                            @endif
+                                            <span class="help-block">{{ __('Select another product that this pack size refers to (e.g., singles refer to 6-packs)') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-3 col-md-3">
+                                        <div class="form-group">
+                                            <label for="Packsize" class="required">{{ __('Pack Size (Units)') }}</label>
+                                            <input class="form-control {{ $errors->has('Packsize') ? 'is-invalid' : '' }}"
+                                                   type="number" name="Packsize" id="Packsize"
+                                                   value="{{ old('Packsize', $product->Packsize ?? 1) }}" min="1" required>
+                                            @if($errors->has('Packsize'))
+                                                <div class="invalid-feedback">
+                                                    {{ $errors->first('Packsize') }}
+                                                </div>
+                                            @endif
+                                            <span class="help-block">{{ __('Number of base units in this pack (e.g., 1 for singles, 6 for 6-pack, 24 for case)') }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="form-label">{{ __('Pack Type') }}</label>
+                                            <div class="mt-2">
+                        <span id="pack-type-indicator" class="badge bg-info">
+                            {{ $product->refer_code ? __('Child Product') : __('Root Product') }}
+                        </span>
+                                            </div>
+                                            <span class="help-block">{{ __('Automatically determined based on refer code') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Current pack size family display -->
+                                @if($product->referredProduct || $product->referringProducts->count() > 0)
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <h6>{{ __('Current Pack Size Family') }}</h6>
+                                            <div class="pack-size-family-display">
+                                                @php
+                                                    $family = $product->packSizeFamily()->with('stockHolding')->get()->sortByDesc('pack_size');
+                                                @endphp
+
+                                                @foreach($family as $familyMember)
+                                                    <div class="pack-size-member {{ $familyMember->StockCode === $product->StockCode ? 'current' : '' }}">
+                                                        <div class="d-flex align-items-center justify-content-between p-2 border rounded mb-2">
+                                                            <div class="d-flex align-items-center">
+                                                                @if($familyMember->StockCode === $product->StockCode)
+                                                                    <i class="fas fa-arrow-right text-primary me-2"></i>
+                                                                    <strong class="text-primary">{{ $familyMember->StockItemName }}</strong>
+                                                                @else
+                                                                    <span class="me-2">{{ $familyMember->StockItemName }}</span>
+                                                                @endif
+
+                                                                <span class="badge bg-{{ $familyMember->StockCode === $product->StockCode ? 'primary' : 'secondary' }} ms-2">
+                                        {{ $familyMember->pack_size }} {{ $familyMember->pack_size == 1 ? 'unit' : 'units' }}
+                                    </span>
+                                                            </div>
+
+                                                            <div class="text-end">
+                                                                <small class="text-muted">{{ $familyMember->StockCode }}</small><br>
+                                                                <small class="text-muted">
+                                                                    Stock: {{ $familyMember->stockHolding?->QuantityOnHand ?? 0 }}
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            <h6 class="mb-2"><i class="fas fa-info-circle me-1"></i> Pack Size Configuration Guide</h6>
+                                            <ul class="mb-0 small">
+                                                <li><strong>Root Product:</strong> Leave "Link to Pack Size" empty for the largest pack size (e.g., case)</li>
+                                                <li><strong>Child Product:</strong> Select the larger pack size this refers to</li>
+                                                <li><strong>Pack Size:</strong> Enter how many base units are in this pack</li>
+                                                <li><strong>Example:</strong> Case (24 units) → 6-Pack (6 units) → Single (1 unit)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3" id="pack-size-preview" style="display: none;">
+                                    <div class="col-12">
+                                        <h6>{{ __('Updated Pack Size Chain Preview') }}</h6>
+                                        <div id="pack-size-chain" class="d-flex align-items-center flex-wrap">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -745,6 +879,87 @@
 
             // Initial call to populate subcategories based on any preselected category
             updateSubCategories();
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Initialize pack size functionality
+            initializePackSizeFields();
+
+            function initializePackSizeFields() {
+                // Update pack type indicator when refer_code changes
+                $('#refer_code').on('change', function() {
+                    updatePackTypeIndicator();
+                    updatePackSizePreview();
+                });
+
+                // Update preview when pack_size changes
+                $('#pack_size').on('input', function() {
+                    updatePackSizePreview();
+                });
+
+                // Initial update
+                updatePackTypeIndicator();
+                updatePackSizePreview();
+            }
+
+            function updatePackTypeIndicator() {
+                const referCode = $('#refer_code').val();
+                const indicator = $('#pack-type-indicator');
+
+                if (referCode && referCode !== '') {
+                    indicator.removeClass('bg-info').addClass('bg-success').text('Child Product');
+                } else {
+                    indicator.removeClass('bg-success').addClass('bg-info').text('Root Product');
+                }
+            }
+
+            function updatePackSizePreview() {
+                const referCode = $('#refer_code').val();
+                const packSize = $('#pack_size').val();
+                const currentProduct = $('#StockCode').val();
+                const currentName = $('#StockItemName').val();
+
+                if (!packSize) return;
+
+                const previewContainer = $('#pack-size-preview');
+                const chainContainer = $('#pack-size-chain');
+
+                // Only show preview if values have changed from original
+                const originalReferCode = '{{ $product->refer_code ?? "" }}';
+                const originalPackSize = '{{ $product->pack_size ?? 1 }}';
+
+                if (referCode !== originalReferCode || packSize != originalPackSize) {
+                    if (referCode && referCode !== '') {
+                        // This is a child product
+                        const referOption = $('#refer_code option:selected');
+                        const referName = referOption.text();
+
+                        chainContainer.html(`
+                    <div class="pack-size-item me-3">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary me-2">${referName}</span>
+                            <i class="fas fa-arrow-right me-2 text-muted"></i>
+                            <span class="badge bg-warning">${currentName} (${packSize} units) - UPDATED</span>
+                        </div>
+                    </div>
+                `);
+                        previewContainer.show();
+                    } else if (packSize && packSize > 1) {
+                        // This is a root product
+                        chainContainer.html(`
+                    <div class="pack-size-item">
+                        <span class="badge bg-warning">${currentName} (${packSize} units) - Root Product - UPDATED</span>
+                    </div>
+                `);
+                        previewContainer.show();
+                    } else {
+                        previewContainer.hide();
+                    }
+                } else {
+                    previewContainer.hide();
+                }
+            }
         });
     </script>
 @endpush

@@ -223,7 +223,13 @@ class ProductController extends Controller
         $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
         $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('products.create', compact('subCategories', 'mainCategories', 'salesunits', 'packageunits'));
+        $referProducts = Product::where('company_id', $currentCompany->id)
+            ->where('status', 1)
+            ->orderBy('StockItemName')
+            ->pluck('StockItemName', 'StockCode')
+            ->prepend('-- No Pack Size Link --', '');
+
+        return view('products.create', compact('subCategories', 'mainCategories', 'salesunits', 'packageunits', 'referProducts'));
     }
 
     public function store(StoreProductRequest $request)
@@ -232,7 +238,7 @@ class ProductController extends Controller
         $user = $request->user();
         $currentCompany = $user->currentCompany();
         $productData = $request->all();
-        //\Log::info('Product creation data:', $productData);
+
 
         $cleanedBarcode = null;
         $cleanedAltbarcode = null;
@@ -263,11 +269,11 @@ class ProductController extends Controller
                 'DiscountPercentage' => $productData['DiscountPercentage'] ?? 0,
                 'MarketingComments'  => $productData['MarketingComments'] ?? null,
                 'Size'          => $productData['Size'] ?? null,
-                'Packsize'      => $productData['Packsize'] ?? null,
+                'Packsize'      => $productData['Packsize'] ?? 1,
+                'refer_code'    => $productData['refer_code'] ?? null,
                 'status'        => 1,
                 'LastEditedBy'  => $user->id
             ]);
-            //\Log::info('Product created with ID:', [$product->id]);
 
             // Create stock holding record
             $stockHoldingData = [
@@ -282,7 +288,6 @@ class ProductController extends Controller
                 $stockHoldingData
             );
 
-            //\Log::info('Stock holding created/updated:', $stockHoldingData);
 
         } catch (\Exception $e) {
             \Log::error('Product creation failed:', [$e->getMessage()]);
@@ -292,17 +297,17 @@ class ProductController extends Controller
         if ($request->hasFile('file')) {
             try {
                 $product->addMedia($request->file('file'))->toMediaCollection('photo');
-                //\Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+
             } catch (\Exception $e) {
                 \Log::error('Photo upload failed: ' . $e->getMessage());
             }
         } else {
-            //\Log::info('No file uploaded - checking for photo input');
+
             if ($request->input('photo', false)) {
                 $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
                 if (file_exists($photoPath)) {
                     $product->addMedia($photoPath)->toMediaCollection('photo');
-                    //\Log::info('Photo from tmp uploaded: ' . $photoPath);
+
                 } else {
                     \Log::error('Photo file not found: ' . $photoPath);
                 }
@@ -319,40 +324,6 @@ class ProductController extends Controller
 
     }
 
-    public function maintain(Product $product, $id=null)
-    {
-        if ($id=="") {
-            // Add a Product
-            abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-            $title = "new";
-            $product = new Product;
-            $productdata = [];
-            $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
-            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
-            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-            $tags = ProductTag::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-
-        } else {
-            // Edit a Product
-            abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-            $title = "edit";
-            $productdata = Product::find($id);
-            $productdata = json_decode(json_encode($productdata), true);
-            $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
-            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id');
-            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id');
-            $tags = ProductTag::all()->pluck('name', 'id');
-
-            $product = Product::find($id);
-        }
-
-        return view('products.maintain', compact('categories', 'tags', 'salesunits', 'packageunits', 'title', 'product', 'productdata'));
-    }
-
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -366,11 +337,17 @@ class ProductController extends Controller
 
         $packagetypes = PackageType::all()->pluck('PackageTypeName', 'id');
 
+        $referProducts = Product::where('company_id', $currentCompany->id)
+            ->where('status', 1)
+            ->where('StockCode', '!=', $product->StockCode) // Exclude current product
+            ->orderBy('StockItemName')
+            ->pluck('StockItemName', 'StockCode')
+            ->prepend('-- No Pack Size Link --', '');
 
-        $product->load('categories',  'packageType', 'stockHolding');
+        $product->load('categories',  'packageType', 'stockHolding', 'referredProduct', 'referringProducts');
 
         //dd($product);
-        return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes'));
+        return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes', 'referProducts'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
@@ -406,7 +383,8 @@ class ProductController extends Controller
             'DiscountPercentage' => $request->DiscountPercentage ?? 0,
             'MarketingComments'  => $request->MarketingComments ?? null,
             'Size'          => $request->Size ?? null,
-            'Packsize'      => $request->Packsize ?? null,
+            'Packsize'      => $request->Packsize ?? 1,
+            'refer_code'    => $request->refer_code ?? null,
             'status'        => 1,
             'LastEditedBy'  => $user->id
         ]);
@@ -453,15 +431,20 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'mainCategories', 'subCategories', 'packageType', 'stockHolding');
+        $product->load('categories', 'mainCategories', 'subCategories', 'packageType', 'stockHolding', 'referredProduct', 'referringProducts');
 
         $subCategoryParentIds = $product->subCategories->pluck('ParentID')->unique()->filter();
         $parentCategories = ProductCategory::whereIn('id', $subCategoryParentIds)->get();
 
         $allMainCategories = $parentCategories->unique('id');
 
+        $packSizeFamily = collect();
+        if ($product->refer_code || $product->referringProducts->count() > 0) {
+            $packSizeFamily = $product->packSizeFamily()->with('stockHolding')->get();
+        }
+
         //dd($parentCategories);
-        return view('products.show', compact('product', 'allMainCategories'));
+        return view('products.show', compact('product', 'allMainCategories', 'packSizeFamily'));
     }
 
     public function destroy(Product $product)
@@ -489,6 +472,40 @@ class ProductController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
 
     }
+
+    /*public function maintain(Product $product, $id=null)
+    {
+        if ($id=="") {
+            // Add a Product
+            abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+            $title = "new";
+            $product = new Product;
+            $productdata = [];
+            $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
+            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
+            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+            $tags = ProductTag::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+
+        } else {
+            // Edit a Product
+            abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+            $title = "edit";
+            $productdata = Product::find($id);
+            $productdata = json_decode(json_encode($productdata), true);
+            $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
+            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id');
+            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id');
+            $tags = ProductTag::all()->pluck('name', 'id');
+
+            $product = Product::find($id);
+        }
+
+        return view('products.maintain', compact('categories', 'tags', 'salesunits', 'packageunits', 'title', 'product', 'productdata'));
+    }*/
 
     public function updateProductStatus(Request $request)
     {

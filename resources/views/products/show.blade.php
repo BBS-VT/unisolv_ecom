@@ -367,6 +367,161 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($product->refer_code || $product->referringProducts->count() > 0 || $product->Packsize)
+                        <h4>{{ __('Pack Size Information') }}</h4>
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 product-info-item">
+                                        <div class="product-info-label">{{ __('Pack Size') }}</div>
+                                        <div>
+                                            <span class="fs-5 fw-bold">{{ $product->Packsize ?? 1 }}</span>
+                                            <span class="text-muted">{{ ($product->Packsize ?? 1) == 1 ? 'unit' : 'units' }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 product-info-item">
+                                        <div class="product-info-label">{{ __('Pack Type') }}</div>
+                                        <div>
+                                            @if($product->Packsize)
+                                                <span class="badge bg-success">Child Product</span>
+                                            @else
+                                                <span class="badge bg-primary">Root Product</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 product-info-item">
+                                        <div class="product-info-label">{{ __('Refers To') }}</div>
+                                        <div>
+                                            @if($product->refer_code && $product->referredProduct)
+                                                <a href="{{ route('products.show', $product->referredProduct->id) }}" class="text-decoration-none">
+                                                    {{ $product->referredProduct->StockItemName }}
+                                                    <br><small class="text-muted">{{ $product->referredProduct->StockCode }}</small>
+                                                </a>
+                                            @else
+                                                <em class="text-muted">None</em>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($packSizeFamily->count() > 1)
+                                    <hr class="my-3">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h6 class="mb-3">{{ __('Pack Size Family') }}</h6>
+                                            <div class="pack-size-family-display">
+                                                @php
+                                                    $sortedFamily = $packSizeFamily->sortByDesc('pack_size');
+                                                    $totalBaseUnits = $sortedFamily->sum(function($member) {
+                                                        return ($member->stockHolding?->QuantityOnHand ?? 0) * $member->pack_size;
+                                                    });
+                                                @endphp
+
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        @foreach($sortedFamily as $index => $familyMember)
+                                                            <div class="pack-size-member {{ $familyMember->StockCode === $product->StockCode ? 'current-product' : '' }} mb-2">
+                                                                <div class="d-flex align-items-center justify-content-between p-3 border rounded">
+                                                                    <div class="d-flex align-items-center">
+                                                                        @if($familyMember->StockCode === $product->StockCode)
+                                                                            <i class="fas fa-arrow-right text-primary me-3"></i>
+                                                                        @else
+                                                                            <div class="me-5"></div>
+                                                                        @endif
+
+                                                                        <div>
+                                                                            @if($familyMember->StockCode === $product->StockCode)
+                                                                                <strong class="text-primary">{{ $familyMember->StockItemName }}</strong>
+                                                                            @else
+                                                                                <a href="{{ route('products.show', $familyMember->id) }}" class="text-decoration-none">
+                                                                                    {{ $familyMember->StockItemName }}
+                                                                                </a>
+                                                                            @endif
+
+                                                                            <div class="mt-1">
+                                                    <span class="badge bg-{{ $familyMember->StockCode === $product->StockCode ? 'primary' : 'secondary' }}">
+                                                        {{ $familyMember->pack_size }} {{ $familyMember->pack_size == 1 ? 'unit' : 'units' }}
+                                                    </span>
+
+                                                                                @php
+                                                                                    $quantity = $familyMember->stockHolding?->QuantityOnHand ?? 0;
+                                                                                    $price = $familyMember->SellingPrice ?? 0;
+                                                                                @endphp
+
+                                                                                @if($quantity > 0)
+                                                                                    <span class="badge bg-success ms-1">{{ $quantity }} in stock</span>
+                                                                                @else
+                                                                                    <span class="badge bg-danger ms-1">Out of stock</span>
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="text-end">
+                                                                        <div class="fw-bold">R {{ number_format($price, 2) }}</div>
+                                                                        <small class="text-muted">{{ $familyMember->StockCode }}</small>
+                                                                        @if($familyMember->pack_size > 1 && $price > 0)
+                                                                            <br><small class="text-muted">R {{ number_format($price / $familyMember->pack_size, 2) }} per unit</small>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            @if($index < $sortedFamily->count() - 1)
+                                                                <div class="text-center mb-2">
+                                                                    <i class="fas fa-arrow-down text-muted"></i>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="pack-size-summary p-3 bg-light rounded">
+                                                            <h6 class="mb-3">{{ __('Family Summary') }}</h6>
+
+                                                            <div class="summary-item mb-2">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ __('Total Products:') }}</span>
+                                                                    <strong>{{ $sortedFamily->count() }}</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="summary-item mb-2">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ __('Total Base Units:') }}</span>
+                                                                    <strong>{{ $totalBaseUnits }}</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="summary-item mb-3">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ __('Pack Sizes:') }}</span>
+                                                                    <strong>{{ $sortedFamily->pluck('pack_size')->sort()->values()->implode(', ') }}</strong>
+                                                                </div>
+                                                            </div>
+
+                                                            <hr>
+
+                                                            <h6 class="mb-2">{{ __('Quick Actions') }}</h6>
+                                                            <div class="d-grid gap-2">
+                                                                <button class="btn btn-sm btn-outline-primary" onclick="viewPackSizeReport('{{ $product->StockCode }}')">
+                                                                    <i class="fas fa-chart-bar me-1"></i> {{ __('View Report') }}
+                                                                </button>
+                                                                <button class="btn btn-sm btn-outline-success" onclick="checkStockAvailability('{{ $product->StockCode }}')">
+                                                                    <i class="fas fa-search me-1"></i> {{ __('Check Availability') }}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
