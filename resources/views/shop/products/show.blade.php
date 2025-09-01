@@ -2,6 +2,167 @@
 
 @section('title', $product->StockItemName. ' - ' . config('app.name'))
 
+<style>
+    .pack-size-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .pack-size-option {
+        position: relative;
+        border: 2px solid #e9ecef;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .pack-size-option:hover {
+        border-color: #007bff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .pack-size-option.selected {
+        border-color: #007bff;
+        background-color: #f8f9ff;
+    }
+
+    .pack-option-content {
+        padding: 1rem;
+        position: relative;
+    }
+
+    .pack-option-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+
+    .pack-size-badge {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .pack-price {
+        text-align: right;
+    }
+
+    .price-whole {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #dc3545;
+    }
+
+    .price-fraction {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #dc3545;
+        vertical-align: top;
+    }
+
+    .pack-name {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .unit-price {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .savings-badge {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+    }
+
+    .stock-info {
+        font-size: 0.8rem;
+    }
+
+    .stock-good { color: #28a745; }
+    .stock-low { color: #ffc107; }
+    .stock-backorder { color: #17a2b8; }
+    .stock-out { color: #dc3545; }
+
+    .pack-option-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 123, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .pack-size-option:hover .pack-option-overlay {
+        opacity: 1;
+    }
+
+    .pack-size-option.selected .pack-option-overlay {
+        display: none;
+    }
+
+    .overlay-content {
+        text-align: center;
+    }
+
+    .pack-comparison {
+        border-top: 1px solid #e9ecef;
+        padding-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .pack-size-selector {
+            grid-template-columns: 1fr;
+        }
+
+        .pack-option-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .pack-price {
+            margin-left: 0;
+            margin-top: 0.5rem;
+            text-align: left;
+        }
+    }
+
+    /* Update quantity selector to be pack-size aware */
+    .quantity-info {
+        background: #f8f9fa;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        margin-top: 0.5rem;
+    }
+
+    .total-units-display {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+</style>
+
 @section('content')
     <div class="container-fluid">
         <nav aria-label="breadcrumb" class="amazon-breadcrumb">
@@ -275,6 +436,158 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($packSizeFamily->count() > 1)
+                        <div class="mb-4">
+                            <h6 class="mb-3">
+                                <i class="fax fa-boxes me-2"></i>{{ __('Available Pack Sizes') }}
+                            </h6>
+                            <div class="pack-size-selector">
+                                @foreach($packSizeFamily as $packOption)
+                                    <div class="pack-size-option {{ $packOption->id === $product->id ? 'selected' : '' }}"
+                                         data-product-id="{{ $packOption->id }}"
+                                         data-pack-size="{{ $packOption->pack_size ?? 1 }}"
+                                         data-product-url="{{ route('shop.products.show', $packOption->slug ?? $packOption->id) }}">
+
+                                        <div class="pack-option-content">
+                                            <div class="pack-option-header">
+                                                <div class="pack-size-badge">
+                                                    {{ $packOption->pack_size ?? 1 }} {{ ($packOption->pack_size ?? 1) == 1 ? 'unit' : 'units' }}
+                                                </div>
+
+                                                @if($packOption->pricing && $packOption->pricing['show_prices'])
+                                                    <div class="pack-price">
+                                                        @php
+                                                            $price = $packOption->pricing['price'];
+                                                            $whole = floor($price);
+                                                            $fraction = sprintf('%02d', ($price - $whole) * 100);
+                                                        @endphp
+                                                        <span class="price-whole">{{ config('app.currency', 'R') }}{{ number_format($whole, 0) }}</span>
+                                                        <span class="price-fraction">{{ $fraction }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="pack-option-details">
+                                                <div class="pack-name">{{ $packOption->StockItemName }}</div>
+
+                                                @if($packOption->pricing && $packOption->pricing['show_prices'] && isset($packOption->unit_price))
+                                                    <div class="unit-price">
+                                                        {{ config('app.currency', 'R') }}{{ number_format($packOption->unit_price, 2) }} per unit
+
+                                                        @if(isset($packOption->savings_per_unit) && $packOption->savings_per_unit > 0)
+                                                            <span class="savings-badge">
+                                        Save {{ config('app.currency', 'R') }}{{ number_format($packOption->savings_per_unit, 2) }} per unit
+                                        ({{ $packOption->savings_percentage }}%)
+                                    </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+
+                                                <div class="stock-info">
+                                                    @if($packOption->stockHolding && $packOption->stockHolding->QuantityOnHand > 5)
+                                                        <span class="stock-good">
+                                    <i class="bi bi-check-circle me-1"></i>In Stock
+                                </span>
+                                                    @elseif($packOption->stockHolding && $packOption->stockHolding->QuantityOnHand > 0)
+                                                        <span class="stock-low">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>{{ $packOption->stockHolding->QuantityOnHand }} left
+                                </span>
+                                                    @elseif(\App\Helpers\Features::backordersEnabled())
+                                                        <span class="stock-backorder">
+                                    <i class="bi bi-clock me-1"></i>Available for backorder
+                                </span>
+                                                    @else
+                                                        <span class="stock-out">
+                                    <i class="bi bi-x-circle me-1"></i>Out of stock
+                                </span>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            @if($packOption->id !== $product->id)
+                                                <div class="pack-option-overlay">
+                                                    <div class="overlay-content">
+                                                        <button class="btn btn-sm btn-outline-primary switch-pack-btn">
+                                                            <i class="fas fa-exchange-alt me-1"></i>Switch to this size
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                            </div>
+
+                            <div class="pack-comparison mt-3">
+                                <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#packComparisonTable" aria-expanded="false">
+                                    <i class="fas fa-chart-bar me-1"></i>Compare pack sizes
+                                    <i class="fas fa-chevron-down ms-1"></i>
+                                </button>
+
+                                <div class="collapse mt-2" id="packComparisonTable">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>Pack Size</th>
+                                                <th>Total Price</th>
+                                                <th>Price per Unit</th>
+                                                <th>Savings per Unit</th>
+                                                <th>Total Savings</th>
+                                                <th>Stock</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            @foreach($packSizeFamily as $packOption)
+                                                @if($packOption->pricing && $packOption->pricing['show_prices'])
+                                                    <tr class="{{ $packOption->id === $product->id ? 'table-primary' : '' }}">
+                                                        <td>
+                                                            <strong>{{ $packOption->pack_size ?? 1 }} {{ ($packOption->pack_size ?? 1) == 1 ? 'unit' : 'units' }}</strong>
+                                                            @if($packOption->id === $product->id)
+                                                                <span class="badge bg-primary ms-1">Current</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ config('app.currency', 'R') }}{{ number_format($packOption->pricing['price'], 2) }}</td>
+                                                        <td>{{ config('app.currency', 'R') }}{{ number_format($packOption->unit_price ?? 0, 2) }}</td>
+                                                        <td>
+                                                            @if(isset($packOption->savings_per_unit) && $packOption->savings_per_unit > 0)
+                                                                <span class="text-success">
+                                                                    {{ config('app.currency', 'R') }}{{ number_format($packOption->savings_per_unit, 2) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if(isset($packOption->savings_per_unit) && $packOption->savings_per_unit > 0)
+                                                                <span class="text-success">
+                                                                    {{ config('app.currency', 'R') }}{{ number_format($packOption->savings_per_unit * ($packOption->pack_size ?? 1), 2) }}
+                                                                    <small>({{ $packOption->savings_percentage }}%)</small>
+                                                                </span>
+                                                            @else
+                                                                <span class="text-muted">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($packOption->stockHolding && $packOption->stockHolding->QuantityOnHand > 0)
+                                                                <span class="badge bg-success">{{ $packOption->stockHolding->QuantityOnHand }}</span>
+                                                            @else
+                                                                <span class="badge bg-danger">0</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     @if($priceData['has_promotion'])
                         <div class="promotion-calculator mb-4 p-3 bg-light border rounded">
@@ -742,6 +1055,8 @@
             // Track product view
             trackProductView({{ $product->id }});
 
+            const currentPackSize = {{ $product->pack_size ?? 1 }};
+
             // Promotion related
             @if($priceData['has_promotion'])
             // Initialize promotion calculator
@@ -1030,6 +1345,60 @@
                 });
             }
 
+            const currentPackSize = {{ $product->pack_size ?? 1 }};
+
+            // Update quantity selector to show total units
+            function updateTotalUnitsDisplay() {
+                const quantity = parseInt($('#product-quantity').val()) || 1;
+                const totalUnits = quantity * currentPackSize;
+
+                let unitsText = '';
+                if (currentPackSize > 1) {
+                    unitsText = `<div class="total-units-display">
+                <i class="fas fa-calculator me-1"></i>
+                Total units: ${totalUnits} (${quantity} × ${currentPackSize})
+            </div>`;
+                }
+
+                $('.quantity-info').remove(); // Remove existing
+                $('#product-quantity').parent().append('<div class="quantity-info">' + unitsText + '</div>');
+            }
+
+            // Handle pack size switching
+            $('.pack-size-option').on('click', function(e) {
+                if ($(this).hasClass('selected')) return;
+
+                e.preventDefault();
+                const productUrl = $(this).data('product-url');
+
+                if (!productUrl) {
+                    console.error('No product URL found');
+                    return;
+                }
+
+                const switchBtn = $(this).find('.switch-pack-btn');
+
+                // Show loading state
+                if (switchBtn.length) {
+                    switchBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Switching...');
+                }
+
+                // Redirect to the selected pack size product
+                window.location.href = productUrl;
+            });
+
+            // Handle quantity changes
+            $('#product-quantity').on('change', function() {
+                updateTotalUnitsDisplay();
+
+                @if(isset($priceData) && $priceData['has_promotion'])
+                updateQuantityPromotion();
+                @endif
+            });
+
+            // Initialize
+            updateTotalUnitsDisplay();
+
             // Make functions globally accessible
             window.showCartToast = showCartToast;
             window.trackProductView = trackProductView;
@@ -1120,7 +1489,134 @@
                 });
             });
         });
-
     </script>
+    <script>
+        $(document).ready(function() {
+            const currentPackSize = {{ $product->pack_size ?? 1 }};
+
+            // Update quantity selector to show total units
+            function updateTotalUnitsDisplay() {
+                const quantity = parseInt($('#product-quantity').val()) || 1;
+                const totalUnits = quantity * currentPackSize;
+
+                let unitsText = '';
+                if (currentPackSize > 1) {
+                    unitsText = `<div class="total-units-display">
+                <i class="fas fa-calculator me-1"></i>
+                Total units: ${totalUnits} (${quantity} × ${currentPackSize})
+            </div>`;
+                }
+
+                $('.quantity-info').remove(); // Remove existing
+                $('#product-quantity').parent().append('<div class="quantity-info">' + unitsText + '</div>');
+            }
+
+            // Handle pack size switching
+            $('.pack-size-option').on('click', function(e) {
+                if ($(this).hasClass('selected')) return;
+
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                const switchBtn = $(this).find('.switch-pack-btn');
+
+                if (!productId) {
+                    console.error('No product ID found');
+                    return;
+                }
+
+                // Show loading state
+                switchBtn.html('<i class="fas fa-spinner fa-spin me-1"></i>Switching...');
+
+                // Redirect to the selected pack size product
+                window.location.href = "{{ route('shop.products.switch-pack', ['productId' => '__PRODUCT_ID__']) }}".replace('__PRODUCT_ID__', productId);
+            });
+
+            // Handle quantity changes
+            $('#product-quantity').on('change', function() {
+                updateTotalUnitsDisplay();
+
+                @if($priceData['has_promotion'])
+                updateQuantityPromotion();
+                @endif
+            });
+
+            // Initialize
+            updateTotalUnitsDisplay();
+
+            // Update the add to cart functionality to be pack-size aware
+            $('.add-to-cart-btn').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productId = $(this).data('product-id');
+                const quantity = parseInt($('#product-quantity').val()) || 1;
+                const button = $(this);
+                const originalText = button.html();
+
+                if (!productId) {
+                    alert('Error: No product ID found');
+                    return;
+                }
+
+                // Show loading state
+                button.html('<i class="bi bi-hourglass-split me-1"></i>Adding...');
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '{{ route("shop.cart.add") }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        quantity: quantity,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart badge
+                            $('.cart-badge').text(response.cart_count);
+
+                            // Show success state
+                            button.html('<i class="bi bi-check-circle me-1"></i>Added!');
+                            button.removeClass('btn-amazon-primary').addClass('btn-success');
+
+                            // Calculate total units added
+                            const totalUnits = quantity * currentPackSize;
+                            let message = `Added ${quantity} pack${quantity > 1 ? 's' : ''}`;
+                            if (currentPackSize > 1) {
+                                message += ` (${totalUnits} total units)`;
+                            }
+                            message += ' to cart successfully';
+
+                            // Show toast notification
+                            showCartToast(message, 'success');
+
+                            // Reset button after 2 seconds
+                            setTimeout(function() {
+                                button.html(originalText);
+                                button.removeClass('btn-success').addClass('btn-amazon-primary');
+                                button.prop('disabled', false);
+                            }, 2000);
+                        } else {
+                            alert('Error: ' + (response.message || 'Unknown error'));
+                            button.html(originalText);
+                            button.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        let errorMessage = 'Error adding product to cart';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        alert(errorMessage);
+
+                        // Reset button
+                        button.html(originalText);
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+
 
 @endpush

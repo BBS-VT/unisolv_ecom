@@ -145,17 +145,60 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)
             ->orWhere('id', $slug)
-            ->with([ 'stockHolding', 'categories'])
+            ->with([ 'stockHolding', 'categories','referredProduct', 'referringProducts'])
             ->firstOrFail();
 
         // Add pricing information to the product
         $product->pricing = PricingHelper::getProductPricing($product);
 
+        // Get pack size family if this product is part of one
+        $packSizeFamily = collect();
+        $selectedPackSize = $product;
+
+        if ($product->refer_code || $product->referringProducts->count() > 0) {
+            // Get the complete pack size family
+            $packSizeFamily = $product->packSizeFamily()
+                ->with(['stockHolding'])
+                ->get()
+                ->sortByDesc('Packsize');
+
+            //dd($packSizeFamily);
+            // Add pricing information to each pack size
+            $packSizeFamily = $packSizeFamily->map(function ($packProduct) {
+                $packProduct->pricing = PricingHelper::getProductPricing($packProduct);
+                return $packProduct;
+            });
+
+            // Calculate unit prices for comparison
+            $packSizeFamily = $packSizeFamily->map(function ($packProduct) use ($packSizeFamily) {
+                if ($packProduct->pricing && $packProduct->pricing['show_prices'] && $packProduct->Packsize > 0) {
+                    $packProduct->unit_price = $packProduct->pricing['price'] / $packProduct->Packsize;
+                    $packProduct->savings_per_unit = null;
+
+                    // Calculate savings compared to the smallest pack size
+                    $baseUnit = $packSizeFamily->where('Packsize', 1)->first();
+                    if ($baseUnit && $baseUnit->pricing && $baseUnit->pricing['show_prices']) {
+                        $baseUnitPrice = $baseUnit->pricing['price'];
+                        $thisUnitPrice = $packProduct->unit_price;
+                        if ($thisUnitPrice < $baseUnitPrice) {
+                            $packProduct->savings_per_unit = $baseUnitPrice - $thisUnitPrice;
+                            $packProduct->savings_percentage = round((($baseUnitPrice - $thisUnitPrice) / $baseUnitPrice) * 100, 1);
+                        }
+                    }
+                }
+                return $packProduct;
+            });
+        }
+
+        // Get related products (excluding pack size family members)
+        $excludeIds = $packSizeFamily->pluck('id')->toArray();
+        $excludeIds[] = $product->id;
+
         // Get related products
         $relatedProducts = Product::whereHas('categories', function($query) use ($product) {
             $query->whereIn('id', $product->categories->pluck('id'));
         })
-            ->where('id', '!=', $product->id)
+            ->whereNotIn('id', $excludeIds)
             ->where('status', true)
             ->take(4)
             ->get();
@@ -166,7 +209,34 @@ class ProductController extends Controller
             return $relatedProduct;
         });
 
-        return view('shop.products.show', compact('product', 'relatedProducts'));
+        return view('shop.products.show', compact('product', 'relatedProducts', 'packSizeFamily', 'selectedPackSize'));
+    }
+
+    public function switchPack($productId)
+    {
+        $product = Product::findOrFail($productId);
+        return redirect()->route('shop.products.show', $product->slug ?? $product->id);
+    }
+
+    public function switchPackSize($productId)
+    {
+        $product = Product::with(['stockHolding'])->findOrFail($productId);
+        $product->pricing = PricingHelper::getProductPricing($product);
+
+        return response()->json([
+            'success' => true,
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->StockItemName,
+                'stock_code' => $product->StockCode,
+                'pack_size' => $product->Packsize ?? 1,
+                'stock_quantity' => $product->stockHolding?->QuantityOnHand ?? 0,
+                'pricing' => $product->pricing,
+                'weight' => $product->WeightPerUnit,
+                'dimensions' => $product->dimensions,
+                'url' => route('shop.products.show', $product->slug ?? $product->id)
+            ]
+        ]);
     }
 
     public function category($slug)

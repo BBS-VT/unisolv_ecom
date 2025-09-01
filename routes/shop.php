@@ -23,6 +23,10 @@ if (Features::ecommerceEnabled()) {
     Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/categories/{category:slug}', [ProductController::class, 'category'])->name('categories.show');
     Route::get('/products/recently-viewed', [ProductController::class, 'getRecentlyViewed'])->name('products.recently-viewed');
+    Route::get('/products/switch-pack/{productId}', [ProductController::class, 'switchPack'])->name('products.switch-pack');
+    Route::post('/products/pack-size/{productId}', [ProductController::class, 'switchPackSize'])
+        ->name('products.switch-pack-size');
+
 
     // Cart functionality
     Route::prefix('cart')->name('cart.')->group(function () {
