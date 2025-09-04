@@ -15,6 +15,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
+use App\Http\Controllers\Admin\Settings\ProductController as ProductSettingController;
+use App\Http\Controllers\Admin\LocationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -149,6 +151,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::delete('permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionController');
 
+    // locations
+    Route::group(['prefix' => 'locations', 'as' => 'locations.'], function () {
+        Route::get('/', [LocationController::class, 'index'])->name('index');
+        Route::get('/generate-code', [LocationController::class, 'generateCode'])->name('generate-code');
+        Route::get('/create', [LocationController::class, 'create'])->name('create');
+        Route::post('/', [LocationController::class, 'store'])->name('store');
+        Route::get('/{location}', [LocationController::class, 'show'])->name('show');
+        Route::get('/{location}/edit', [LocationController::class, 'edit'])->name('edit');
+        Route::put('/{location}', [LocationController::class, 'update'])->name('update');
+        Route::delete('/{location}', [LocationController::class, 'destroy'])->name('destroy');
+        Route::post('/{location}/toggle-status', [LocationController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/{location}/set-default', [LocationController::class, 'setDefault'])->name('set-default');
+    });
+
     // Roles
     Route::delete('roles/destroy', 'RoleController@massDestroy')->name('roles.massDestroy');
     Route::resource('roles', 'RoleController');
@@ -209,8 +225,8 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::post('/preferences', 'PreferenceController@update')->name('preferences.update');
 
     // Settings>Product Settings
-    Route::get('/product', 'ProductController@index')->name('product');
-    Route::post('/product', 'ProductController@update')->name('product.update');
+    Route::get('/product', [ProductSettingController::class, 'index'])->name('product');
+    Route::post('/product', [ProductSettingController::class, 'update'])->name('product.update');
 
     // Settings>Customer Settings
     Route::get('/customer', 'CustomerController@index')->name('customer');

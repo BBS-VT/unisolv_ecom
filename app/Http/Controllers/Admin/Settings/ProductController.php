@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use App\Models\PackageType;
 use Illuminate\Http\Request;
 use App\Http\Requests\Settings\Product\Update;
@@ -23,8 +24,11 @@ class ProductController extends Controller
 
         // Get Product Units by Company
         $product_units = PackageType::findByCompany($currentCompany->id)->paginate(5);
+        $locations = Location::orderBy('SortOrder')
+            ->orderBy('LocationCode')
+            ->get();
 
-        return view('admin.settings.product.index', compact('product_units', 'currentCompany'));
+        return view('admin.settings.product.index', compact('product_units', 'currentCompany', 'locations'));
     }
 
     /**

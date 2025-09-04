@@ -99,6 +99,7 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
 
                     $holdings[] = [
                         'StockCode'         => $stockCode,
+                        'LocationCode'      => $row[104] ?? '0000',
                         'QuantityOnHand'    => $row[10] ?? 0,
                         'BinLocation'       => $row[6] ?? '',
                         'LastCostPrice'     => $row[25] ?? 0,

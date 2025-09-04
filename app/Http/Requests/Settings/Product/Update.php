@@ -16,6 +16,7 @@ class Update extends FormRequest
         return [
             'discount_per_item' => 'required|boolean',
             'tax_per_item' => 'required|boolean',
+            'sales_locations' => 'required|boolean',
         ];
     }
 
