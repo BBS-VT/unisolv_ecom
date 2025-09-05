@@ -1,4 +1,3 @@
-{{-- Create Location Modal --}}
 <div class="modal fade" id="createLocationModal" tabindex="-1" role="dialog" aria-labelledby="createLocationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -6,11 +5,11 @@
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="createLocationModalLabel">
-                        <i data-feather="plus-circle" class="align-self-center icon-sm me-2"></i>
+                        <i class="bx bx-plus-circle align-self-center icon-sm me-2"></i>
                         {{ __('global.add') }} {{ __('global.location') }}
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+
                     </button>
                 </div>
                 <div class="modal-body">
@@ -25,7 +24,7 @@
                                            maxlength="10" required>
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary" onclick="generateLocationCode()" title="{{ __('global.generate_code') }}">
-                                            <i data-feather="refresh-cw" class="icon-xs"></i>
+                                            <i class="bx bx-refresh icon-xs"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -205,9 +204,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('global.cancel') }}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('global.cancel') }}</button>
                     <button type="submit" class="btn btn-primary">
-                        <i data-feather="save" class="align-self-center icon-xs me-1"></i>
+                        <i class="bx bx-save align-self-center icon-xs me-1"></i>
                         {{ __('global.create') }}
                     </button>
                 </div>

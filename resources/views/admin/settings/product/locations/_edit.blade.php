@@ -9,9 +9,7 @@
             <i data-feather="edit-2" class="align-self-center icon-sm me-2"></i>
             {{ __('global.edit') }} {{ __('global.location') }}: {{ $location->LocationName }}
         </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
     <div class="modal-body">
@@ -215,7 +213,7 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('global.cancel') }}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('global.cancel') }}</button>
         <button type="submit" class="btn btn-primary">
             <i data-feather="save" class="align-self-center icon-xs me-1"></i>
             {{ __('global.update') }}

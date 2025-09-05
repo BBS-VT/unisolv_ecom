@@ -70,7 +70,7 @@ class LocationController extends Controller
     {
         abort_if(Gate::denies('settings_edit'), 403);
 
-        return view('admin.settings.product.locations.edit', compact('location'));
+        return view('admin.settings.product.locations._edit', compact('location'));
     }
 
     public function update(UpdateLocationRequest $request, Location $location)

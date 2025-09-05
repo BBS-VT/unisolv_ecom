@@ -1,5 +1,3 @@
-{{-- resources/views/admin/settings/product/locations/_table.blade.php --}}
-
 <div class="table-responsive">
     <table class="table table-striped table-hover" id="locationsTable">
         <thead>
@@ -64,17 +62,17 @@
                 <td class="text-center">
                     <div class="btn-group btn-group-sm" role="group">
                         @can('settings_show')
-                            <a href="{{ route('admin.locations.show', $location->LocationCode) }}"
-                               class="btn btn-outline-primary btn-sm" title="{{ __('global.show') }}">
-                                <i data-feather="eye" class="icon-xs"></i>
-                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewLocationModal"
+                                    data-location-code="{{ $location->LocationCode }}" title="{{ __('global.show') }}">
+                                <i class="fa fa-eye icon-xs me-1"></i>
+                            </button>
                         @endcan
 
                         @can('settings_edit')
-                            <a href="{{ route('admin.locations.edit', $location->LocationCode) }}"
-                               class="btn btn-outline-success btn-sm" title="{{ __('global.edit') }}">
-                                <i data-feather="edit-2" class="icon-xs"></i>
-                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#editLocationModal"
+                                    data-location-code="{{ $location->LocationCode }}" title="{{ __('global.edit') }}">
+                                <i class="fa fa-edit icon-xs me-1"></i>
+                            </button>
                         @endcan
 
                         @can('settings_delete')
@@ -130,34 +128,6 @@
             }
         }
 
-        function viewLocation(locationCode) {
-            fetch(`/admin/locations/${locationCode}`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('viewLocationModalContent').innerHTML = html;
-                    $('#viewLocationModal').modal('show');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('{{ __("global.error_loading_data") }}');
-                });
-        }
-
-        function editLocation(locationCode) {
-            fetch(`/admin/locations/${locationCode}/edit`)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('editLocationModalContent').innerHTML = html;
-                    $('#editLocationModal').modal('show');
-                    // Reinitialize feather icons
-                    feather.replace();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('{{ __("global.error_loading_data") }}');
-                });
-        }
-
         function generateLocationCode() {
             fetch('/admin/locations/generate-code')
                 .then(response => response.json())
@@ -189,6 +159,56 @@
                     }
                 });
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // View Modal: Load on show
+            const viewModalEl = document.getElementById('viewLocationModal');
+            viewModalEl.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const code = button?.getAttribute('data-location-code');
+                const container = document.getElementById('viewLocationModalContent');
+                container.innerHTML = '<div class="p-4 text-center"><div class="spinner-border" role="status"></div></div>';
+
+                fetch(`/admin/locations/${encudeURIComponent(code)}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        if (windows.feather) feather.replace();
+                    })
+                    .catch(error => {
+                        container.innerHTML = `<div class="alert alert-danger">{{ __('global.error_loading_data') }}</div>`;
+                        console.error('Error:', error);
+                    });
+            });
+
+            viewModalEl.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('viewLocationModalContent').innerHTML = '';
+            });
+
+            // Edit modal: load on show
+            const editModalEl = document.getElementById('editLocationModal');
+            editModalEl.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const code = button?.getAttribute('data-location-code');
+                const container = document.getElementById('editLocationModalContent');
+                container.innerHTML = '<div class="p-4 text-center"><div class="spinner-border" role="status"></div></div>';
+
+                fetch(`/admin/locations/${encodeURIComponent(code)}/edit`)
+                    .then(r => r.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        if (window.feather) feather.replace();
+                    })
+                    .catch(() => {
+                        container.innerHTML = `<div class="alert alert-danger m-3">{{ __('global.error_loading_data') }}</div>`;
+                    });
+            });
+
+            editModalEl.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('editLocationModalContent').innerHTML = '';
+            });
         });
     </script>
 @endpush
