@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
-use App\Http\Requests\StoreLocationRequest;
-use App\Http\Requests\UpdateLocationRequest;
+use App\Models\StockItemHoldings;
+use App\Http\Requests\Settings\Location\StoreLocationRequest;
+use App\Http\Requests\Settings\Location\UpdateLocationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -63,7 +64,8 @@ class LocationController extends Controller
         $stockCount = $location->stockHoldings->count();
         $totalQuantity = $location->stockHoldings->sum('QuantityOnHand');
 
-        return view('admin.settings.product.locations.show', compact('location', 'stockCount', 'totalQuantity'));
+        //dd($location, $stockCount, $totalQuantity);
+        return view('admin.settings.product.locations._view', compact('location', 'stockCount', 'totalQuantity'));
     }
 
     public function edit(Location $location)
@@ -92,7 +94,7 @@ class LocationController extends Controller
         $location->update($validated);
 
         return redirect()
-            ->route('admin.settings.product', ['#locations'])
+            ->route('settings.product', ['#locations'])
             ->with('success', __('messages.location_updated_successfully', ['name' => $location->LocationName]));
     }
 

@@ -17,7 +17,7 @@
                 <td>
                     <strong>{{ $location->LocationCode }}</strong>
                     @if($location->IsDefault)
-                        <span class="badge badge-primary badge-sm ml-1">{{ __('global.default') }}</span>
+                        <span class="badge bg-primary ms-1">{{ __('global.default') }}</span>
                     @endif
                 </td>
                 <td>{{ $location->LocationName }}</td>
@@ -54,9 +54,9 @@
                 </td>
                 <td>
                     @if($location->IsActive)
-                        <span class="badge badge-success">{{ __('global.active') }}</span>
+                        <span class="badge bg-success">{{ __('global.active') }}</span>
                     @else
-                        <span class="badge badge-secondary">{{ __('global.inactive') }}</span>
+                        <span class="badge bg-secondary">{{ __('global.inactive') }}</span>
                     @endif
                 </td>
                 <td class="text-center">
@@ -171,11 +171,11 @@
                 const container = document.getElementById('viewLocationModalContent');
                 container.innerHTML = '<div class="p-4 text-center"><div class="spinner-border" role="status"></div></div>';
 
-                fetch(`/admin/locations/${encudeURIComponent(code)}`)
+                fetch(`/admin/locations/${encodeURIComponent(code)}`)
                     .then(response => response.text())
                     .then(html => {
                         container.innerHTML = html;
-                        if (windows.feather) feather.replace();
+                        if (window.feather) feather.replace();
                     })
                     .catch(error => {
                         container.innerHTML = `<div class="alert alert-danger">{{ __('global.error_loading_data') }}</div>`;
