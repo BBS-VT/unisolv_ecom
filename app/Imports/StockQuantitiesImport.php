@@ -99,12 +99,12 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
 
                     $holdings[] = [
                         'StockCode'         => $stockCode,
-                        'LocationCode'      => $row[104] ?? '0000',
+                        'LocationCode'      => $row[109] ?? '0000',
                         'QuantityOnHand'    => $row[10] ?? 0,
                         'BinLocation'       => $row[6] ?? '',
                         'LastCostPrice'     => $row[25] ?? 0,
                         'ReorderLevel'      => $row[16] ?? 0,
-                        'TargetStockLevel'  => $row[18] ?? 0,
+                        'TargetStockLevel'  => $row[17] ?? 0,
                         'LastEditedBy'      => Auth::check() ? Auth::id() : 1,
                         'created_at'        => now(),
                         'updated_at'        => now(),
