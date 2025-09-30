@@ -488,8 +488,8 @@ return [
         ],
     ],
     'taxType'             => [
-        'title'           => 'Taxes',
-        'title_singular'  => 'Tax',
+        'title'           => 'VAT',
+        'title_singular'  => 'VAT',
         'fields'         => [
             'name'        => 'Name',
             'percent'     => 'Percentage',

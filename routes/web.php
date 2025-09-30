@@ -242,7 +242,7 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     Route::post('/tax-types/create', 'TaxTypeController@store')->name('tax_types.store');
     Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('tax_types.edit');
     Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('tax_types.update');
-    Route::get('/tax-types/{tax_type}/delete', 'TaxTypeController@delete')->name('tax_types.delete');
+    Route::delete('/tax-types/{tax_type}/delete', 'TaxTypeController@destroy')->name('tax_types.destroy');
 });
 
 Route::group(['prefix' => '/portal/{customer}', 'as' => 'customer_portal.', 'namespace' => 'CustomerPortal', 'middleware' => ['auth']], function () {

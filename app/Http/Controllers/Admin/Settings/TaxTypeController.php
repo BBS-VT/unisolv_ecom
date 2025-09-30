@@ -85,13 +85,13 @@ class TaxTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit($id)
     {
         abort_if(Gate::denies('settings_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $tax_type = TaxType::findOrFail($request->tax_type);
+        $tax_type = TaxType::findOrFail($id);
 
-        return view('admin.settings.tax_type.edit', compact('tax_type'));
+        return view('admin.settings.tax_type._edit', compact('tax_type'));
     }
 
     /**
@@ -101,9 +101,9 @@ class TaxTypeController extends Controller
      *
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function update(Update $request)
+    public function update(Update $request, $id)
     {
-        $tax_type = TaxType::findOrFail($request->tax_type);
+        $tax_type = TaxType::findOrFail($id);
 
         // Update Tax Type in Database
         $tax_type->update([
@@ -112,8 +112,8 @@ class TaxTypeController extends Controller
             'description' => $request->description,
         ]);
 
-        session()->flash('alert-success', __('global.tax_type_updated'));
-        return redirect()->route('settings.tax_types');
+        return redirect()->route('settings.tax_types')
+            ->with('success', __('messages.tax_type_updated'));
     }
 
     /**
@@ -123,7 +123,7 @@ class TaxTypeController extends Controller
      *
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         abort_if(Gate::denies('settings_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 

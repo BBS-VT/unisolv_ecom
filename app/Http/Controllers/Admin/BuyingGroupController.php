@@ -34,18 +34,20 @@ class BuyingGroupController extends Controller
         return view('admin.settings.customer.buyingGroup.create', compact('buyingGroup'));
     }
 
-    public function store(StoreBuyingGroupRequest $request)
+    public function store(Request $request)
     {
         $buyingGroups = BuyingGroup::create($request->all());
 
         return redirect()->route('buying-group.index');
     }
 
-    public function edit(BuyingGroup $buyingGroup)
+    public function edit($id)
     {
         abort_if(Gate::denies('buying_group_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('buyingGroup.edit', compact('buyingGroup'));
+        $buyingGroup = BuyingGroup::findOrFail($id);
+        return view('settings.customer.buyingGroup._edit', compact('buyingGroup'));
+
     }
 
     public function update(UpdateBuyingGroupRequest $request, ProductTag $buyingGroup)

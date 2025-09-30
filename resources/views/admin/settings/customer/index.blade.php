@@ -1,80 +1,104 @@
-@extends('layouts.app', ['page' => 'settings'])
+@extends('layouts.master', ['page' => 'settings'])
 
-@section('title', __('global.customerSettings'))
+@section('title', __('global.customer_settings'))
 
 @section('content')
     <div class="row">
-        <div class="col-sm-12">
-            <div class="page-title-box">
-
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">{{ __('Settings') }}</h4>
+                <div class="page-title-right"></div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xl-2 col-sm-3">
-            @include('admin.settings._aside', ['tab' => 'customers'])
-        </div>
-        <div class="col-xl-10 col-sm-9">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col">
-                            <h4 class="card-title">{{ __('global.customer_settings') }}</h4>
-                        </div>
-                        <div class="col-auto align-self-center float-right">
 
+    <div class="d-xl-flex">
+        <div class="w-100">
+            <div class="d-md-flex">
+                <div class="card filemanager-sidebar me-md-2">
+                    <div class="card-body">
+                        <div class="d-flex flex-column h-100">
+                            <div class="mb-4">
+                                @include('admin.settings._aside', ['tab' => 'customers'])
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row no-gutters">
-                    <div class="col card-body bg-white">
-                        <ul class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" role="tab" href="#general" aria-selected="true">{{ __('global.general') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" role="tab" href="#category" aria-selected="true">{{ __('global.customer_category') }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" role="tab" href="#buyingGroup" aria-selected="true">{{ __('global.buying_group') }}</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane p3 active" id="general" role="tabpanel">
-                                <div class="col card-body bg-white">
+                <div class="w-100">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{{ __('global.customer_settings') }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs nav-tabs-custom nav-justified" id="customerSettingsTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab">
+                                        <i class="bx bx-cog me-1"></i>
+                                        {{ __('global.general') }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="category-tab" data-bs-toggle="tab" href="#category" role="tab">
+                                        <i class="bx bx-category me-1"></i>
+                                        {{ __('global.customer_category') }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="buyingGroup-tab" data-bs-toggle="tab" href="#buyingGroup" role="tab">
+                                        <i class="bx bx-group me-1"></i>
+                                        {{ __('global.buying_group') }}
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content mt-3">
+                                <!-- General Settings Tab -->
+                                <div class="tab-pane fade show active" id="general" role="tabpanel">
                                     <form action="{{ route('settings.customer.update') }}" method="POST">
                                         @include('layouts._form_errors')
                                         @csrf
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group">
-                                                    <label for="display_subaccount">{{ __('global.display_subaccount') }}</label><br>
-                                                    <div class="custom-control custom-checkbox custom-control-inline mr-1">
-                                                        <input type="checkbox" name="display_subaccount" id="display_subaccount" {{ $currentCompany->getSetting('display_subaccount') ? 'checked' : '' }}
-                                                        class="custom-control-input">
-                                                        <label class="custom-control-label" for="display_subaccount">{{ __('global.yes') }}</label>
+
+                                        <div class="card border">
+                                            <div class="card-header bg-light py-2">
+                                                <h6 class="mb-0">
+                                                    <i class="bx bx-cog me-1"></i>
+                                                    {{ __('global.general_settings') }}
+                                                </h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-group mb-0">
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input"
+                                                               id="display_subaccount" name="display_subaccount"
+                                                            {{ $currentCompany->getSetting('display_subaccount') ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="display_subaccount">
+                                                            <strong>{{ __('global.display_subaccount') }}</strong>
+                                                        </label>
                                                     </div>
-                                                    <label for="display_subaccount" class="mb-0">{{ __('global.yes') }}</label>
                                                     <small class="form-text text-muted">
                                                         {{ __('messages.display_subaccount') }}
                                                     </small>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group text-right">
-                                            <button type="submit" class="btn btn-danger">{{ __('global.update') }}</button>
+
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bx bx-save me-1"></i>
+                                                {{ __('global.update') }}
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
-                            </div>
-                            <div class="tab-pane p3" id="category" role="tabpanel">
-                                <div class="card">
+
+                                <!-- Customer Categories Tab -->
+                                <div class="tab-pane fade" id="category" role="tabpanel">
                                     @include('admin.settings.customer.category._table')
                                 </div>
-                            </div>
-                            <div class="tab-pane p3" id="buyingGroup" role="tabpanel">
-                                <div class="card">
+
+                                <!-- Buying Groups Tab -->
+                                <div class="tab-pane fade" id="buyingGroup" role="tabpanel">
                                     @include('admin.settings.customer.buyingGroup._table')
                                 </div>
                             </div>
@@ -84,12 +108,9 @@
             </div>
         </div>
     </div>
-@endsection
-@section('script')
-    <script>
-        $(document).ready(function () {
-            $('#nav-tab a[href="#{{ old('tab') }}"]').tab('show')
-        });
-    </script>
-@endsection
 
+    {{-- Include Modals --}}
+    @include('admin.settings.customer.category._modals')
+    @include('admin.settings.customer.buyingGroup._modals')
+
+@endsection
