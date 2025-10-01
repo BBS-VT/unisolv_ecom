@@ -21,6 +21,7 @@ class ProductController extends Controller
             ->forOnline()
             ->with(['packageType', 'stockHolding']);
 
+
         // Only show products with stock if backorders are disabled
         if (!Features::backordersEnabled()) {
             $query->whereHas('stockHolding', function ($q) {
@@ -147,7 +148,7 @@ class ProductController extends Controller
             return $product;
         });
 
-
+        //dd($products);
         return view('shop.products.index', compact('products', 'categories'));
     }
 
