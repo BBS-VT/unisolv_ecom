@@ -18,7 +18,17 @@ class ProductController extends Controller
 
         $query = Product::query()
             ->where('status', true)
+            ->forOnline()
             ->with(['packageType', 'stockHolding']);
+
+        // Only show products with stock if backorders are disabled
+        if (!Features::backordersEnabled()) {
+            $query->whereHas('stockHolding', function ($q) {
+                $q->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+                    ->groupBy('StockCode')
+                    ->havingRaw('total_quantity > 0');
+            });
+        }
 
         // Category filter
         if ($request->has('categories') && !empty($request->categories)) {

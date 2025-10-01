@@ -471,4 +471,9 @@ return [
     'no_alerts'                            => 'No alerts',
     'calendar'                             => 'Calendar',
     'messenger'                            => 'Messenger',
+    'selling_type'                          => 'Selling Type',
+    'instore_only'                          => 'In-Store Only',
+    'online_only'                           => 'Online Only',
+    'instore_and_online'                    => 'In-Store & Online',
+    'select_selling_type'                   => 'Select Selling Type',
 ];

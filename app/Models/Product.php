@@ -54,6 +54,7 @@ class Product extends Model implements HasMedia
         'MarketingComments',
         'SearchDetails',
         'status',
+        'SellingType',
         'is_featured',
         'LastEditedBy',
         'created_at',
@@ -72,6 +73,10 @@ class Product extends Model implements HasMedia
         'Packsize'  => 'integer',
         'status' => 'boolean',
     ];
+
+    const SELLING_TYPE_INSTORE = 'instore';
+    const SELLING_TYPE_ONLINE = 'online';
+    const SELLING_TYPE_BOTH = 'both';
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -386,6 +391,88 @@ class Product extends Model implements HasMedia
         });
     }
 
+    /**
+     * Get all available selling types
+     *
+     * @return array
+     */
+    public static function getSellingTypes()
+    {
+        return [
+            self::SELLING_TYPE_INSTORE => __('global.instore_only'),
+            self::SELLING_TYPE_ONLINE => __('global.online_only'),
+            self::SELLING_TYPE_BOTH => __('global.instore_and_online'),
+        ];
+    }
+
+    /**
+     * Get the display label for the current selling type
+     *
+     * @return string
+     */
+    public function getSellingTypeLabel()
+    {
+        $types = self::getSellingTypes();
+        return $types[$this->SellingType] ?? __('global.unknown');
+    }
+
+    /**
+     * Scope to filter products for in-store selling
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForInstore($query)
+    {
+        return $query->whereIn('SellingType', [self::SELLING_TYPE_INSTORE, self::SELLING_TYPE_BOTH]);
+    }
+
+    /**
+     * Scope to filter products for online selling
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeForOnline($query)
+    {
+        return $query->whereIn('SellingType', [self::SELLING_TYPE_ONLINE, self::SELLING_TYPE_BOTH]);
+    }
+
+    /**
+     * Check if product is available in-store
+     *
+     * @return bool
+     */
+    public function isAvailableInstore()
+    {
+        return in_array($this->SellingType, [self::SELLING_TYPE_INSTORE, self::SELLING_TYPE_BOTH]);
+    }
+
+    /**
+     * Check if product is available online
+     *
+     * @return bool
+     */
+    public function isAvailableOnline()
+    {
+        return in_array($this->SellingType, [self::SELLING_TYPE_ONLINE, self::SELLING_TYPE_BOTH]);
+    }
+
+    /**
+     * Get a badge HTML for the selling type
+     *
+     * @return string
+     */
+    public function getSellingTypeBadge()
+    {
+        $badges = [
+            self::SELLING_TYPE_INSTORE => '<span class="badge bg-info"><i class="bx bx-store me-1"></i>' . __('global.instore_only') . '</span>',
+            self::SELLING_TYPE_ONLINE => '<span class="badge bg-success"><i class="bx bx-globe me-1"></i>' . __('global.online_only') . '</span>',
+            self::SELLING_TYPE_BOTH => '<span class="badge bg-primary"><i class="bx bx-infinite me-1"></i>' . __('global.instore_and_online') . '</span>',
+        ];
+
+        return $badges[$this->SellingType] ?? '';
+    }
 
 }
 

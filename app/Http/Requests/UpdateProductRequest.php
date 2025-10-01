@@ -7,6 +7,7 @@ use App\Models\Product;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -57,6 +58,15 @@ class UpdateProductRequest extends FormRequest
                 }
             ],
 
+            'SellingType' => [
+                'required',
+                Rule::in([
+                    Product::SELLING_TYPE_INSTORE,
+                    Product::SELLING_TYPE_ONLINE,
+                    Product::SELLING_TYPE_BOTH
+                ])
+            ],
+
             'categories' => 'nullable|array',
             'categories.*' => 'integer|exists:product_categories,id',
             'subCategories' => 'nullable|array',
@@ -76,6 +86,8 @@ class UpdateProductRequest extends FormRequest
             'Packsize.required' => 'Pack size is required.',
             'Packsize.min' => 'Pack size must be at least 1.',
             'Packsize.max' => 'Pack size cannot exceed 9999.',
+            'SellingType.required' => __('validation.selling_type_required'),
+            'SellingType.in' => __('validation.selling_type_invalid'),
         ];
     }
 

@@ -69,6 +69,10 @@ return [
     'view_stock_holdings' => 'View Stock Holdings',
     'total_quantity' => 'Total Quantity',
     'products' => 'Products',
+    'selling_type_help' => 'Choose where this product can be sold.',
+    'selling_type_instore_description' => 'This product is only available for in-store purchases.',
+    'selling_type_online_description' => 'This product is only available through the online shop.',
+    'selling_type_both_description' => 'This product can be purchased both in-store and online.',
 
     // Validation messages
     'location_code_exists' => 'A location with this code already exists.',

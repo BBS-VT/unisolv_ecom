@@ -128,8 +128,10 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                         'LastEditedBy'         => Auth::check() ? Auth::id() : 1,
                         'price_level'          => $row[85] ?? '1',
                         'discount_allowed'     => (int)$discountAllowed,
+                        'SellingType'          => 'both',
                         'created_at'           => now(),
                         'updated_at'           => now(),
+
                     ];
 
                     $this->processedRows++;

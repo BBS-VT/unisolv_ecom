@@ -272,6 +272,7 @@ class ProductController extends Controller
                 'Packsize'      => $productData['Packsize'] ?? 1,
                 'refer_code'    => $productData['refer_code'] ?? null,
                 'status'        => 1,
+                'SellingType'   => $productData['SellingType'] ?? 'both',
                 'LastEditedBy'  => $user->id
             ]);
 
@@ -385,6 +386,7 @@ class ProductController extends Controller
             'Size'          => $request->Size ?? null,
             'Packsize'      => $request->Packsize ?? 1,
             'refer_code'    => $request->refer_code ?? null,
+            'SellingType'   => $request->SellingType ?? 'both',
             'status'        => 1,
             'LastEditedBy'  => $user->id
         ]);

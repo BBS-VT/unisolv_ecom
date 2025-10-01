@@ -203,16 +203,41 @@
                         <h4>{{ __('Selling Type') }}</h4>
                         <div class="card border">
                             <div class="card-body">
-                                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-                                    <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" checked="">
-                                    <label class="btn " for="btncheck1">In-store selling only</label>
+                                <div class="btn-group w-100" role="group" aria-label="Selling type selection">
+                                    {{-- In-Store Only --}}
+                                    <input type="radio" class="btn-check" name="SellingType" id="selling_type_instore" value="instore" autocomplete="off"
+                                           {{ old('SellingType', $product->SellingType ?? 'both') === 'instore' ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-primary" for="selling_type_instore">
+                                        <i class="bx bx-store me-1"></i>
+                                        {{ __('global.instore_only') }}
+                                    </label>
 
-                                    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
-                                    <label class="btn " for="btncheck2">Online selling only</label>
+                                    {{-- Online Only --}}
+                                    <input type="radio" class="btn-check" name="SellingType" id="selling_type_online"
+                                           value="online" autocomplete="off"
+                                           {{ old('SellingType', $product->SellingType ?? 'both') === 'online' ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-primary" for="selling_type_online">
+                                        <i class="bx bx-globe me-1"></i>
+                                        {{ __('global.online_only') }}
+                                    </label>
 
-                                    <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
-                                    <label class="btn " for="btncheck3">Available both in-store & online</label>
+                                    {{-- Both In-Store & Online --}}
+                                    <input type="radio" class="btn-check" name="SellingType" id="selling_type_both"
+                                           value="both" autocomplete="off"
+                                           {{ old('SellingType', $product->SellingType ?? 'both') === 'both' ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-primary" for="selling_type_both">
+                                        <i class="bx bx-infinite me-1"></i>
+                                        {{__('global.instore_and_online') }}
+                                    </label>
                                 </div>
+
+                                <small class="form-text text-muted mt-2 d-block">
+                                    {{ __('messages.selling_type_help') }}
+                                </small>
+
+                                @error('SellingType')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 

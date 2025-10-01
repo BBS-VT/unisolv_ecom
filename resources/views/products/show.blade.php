@@ -208,19 +208,17 @@
                     <h4>{{ __('Selling Type') }}</h4>
                     <div class="card border mb-3">
                         <div class="card-body">
-                            <div class="d-flex gap-2 flex-wrap">
-                                {{--@if($product->InStore)
-                                    <span class="badge bg-success">In-store selling</span>
-                                @endif
-                                @if($product->Online)
-                                    <span class="badge bg-info">Online selling</span>
-                                @endif
-                                @if($product->InStore && $product->Online)
-                                    <span class="badge bg-primary">Available both in-store & online</span>
-                                @endif
-                                @if(!$product->InStore && !$product->Online)
-                                    <em class="text-muted">No selling type specified</em>
-                                @endif--}}
+                            <div class="d-flex align-items-center">
+                                {!! $product->getSellingTypeBadge() !!}
+                                <span class="ms-3 text-muted">
+                                    @if($product->SellingType === 'instore')
+                                        {{ __('messages.selling_type_instore_description') }}
+                                    @elseif($product->SellingType === 'online')
+                                        {{ __('messages.selling_type_online_description') }}
+                                    @else
+                                        {{ __('messages.selling_type_both_description') }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
