@@ -134,7 +134,7 @@ class ProductController extends Controller
 
         // Get categories for filter sidebar
         $categories = ProductCategory::withCount(['products' => function ($q) {
-            $q->where('status', true);
+            $q->where('status', true)->forOnline();
         }])
             ->where('status', true)
             ->having('products_count', '>', 0)
