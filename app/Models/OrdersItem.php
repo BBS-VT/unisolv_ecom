@@ -20,6 +20,7 @@ class OrdersItem extends Model
         'OrderID',
         'company_id',
         'StockItem',
+        'LocationCode',
         'PackageTypeID',
         'discount_type',
         'Quantity',
@@ -53,6 +54,50 @@ class OrdersItem extends Model
     {
         return $this->belongsTo(Product::class, 'StockItem', 'StockCode');
     }
+
+    /**
+     * Get the location for this order item
+     */
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'LocationCode', 'LocationCode');
+    }
+
+    /**
+     * Get the stock holding for this item at the specified location
+     */
+    public function stockHolding()
+    {
+        return $this->hasOne(StockItemHoldings::class, 'StockCode', 'StockItem')
+            ->where('LocationCode', $this->LocationCode);
+    }
+
+    /**
+     * Check if item can be fulfilled from the assigned location
+     */
+    public function canFulfillFromLocation()
+    {
+        $stockHolding = StockItemHoldings::where('StockCode', $this->StockItem)
+            ->where('LocationCode', $this->LocationCode)
+            ->first();
+
+        if (!$stockHolding) {
+            return false;
+        }
+
+        return $stockHolding->QuantityOnHand >= $this->Quantity;
+    }
+
+    /**
+     * Get available quantity at the assigned location
+     */
+    public function getAvailableQuantityAtLocation()
+    {
+        return StockItemHoldings::where('StockCode', $this->StockItem)
+            ->where('LocationCode', $this->LocationCode)
+            ->value('QuantityOnHand') ?? 0;
+    }
+
 
     /**
      * Get the Total Percentage of Invoice Item Taxes
