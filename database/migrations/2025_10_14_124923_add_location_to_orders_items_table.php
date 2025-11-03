@@ -19,12 +19,13 @@ return new class extends Migration
             // Add index for better query performance
             $table->index('LocationCode');
 
-            // Update existing records to use default location
-            DB::table('orders_items')
-                ->whereNull('LocationCode')
-                ->orWhere('LocationCode', '')
-                ->update(['LocationCode' => '0000']);
         });
+
+        // Update existing records to use default location
+        DB::table('orders_items')
+            ->whereNull('LocationCode')
+            ->orWhere('LocationCode', '')
+            ->update(['LocationCode' => '0000']);
     }
 
     /**
