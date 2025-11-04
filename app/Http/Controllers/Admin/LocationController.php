@@ -51,7 +51,7 @@ class LocationController extends Controller
         $location = Location::create($validated);
 
         return redirect()
-            ->route('admin.settings.product', ['#locations'])
+            ->route('settings.product', ['#locations'])
             ->with('success', __('messages.location_created_successfully', ['name' => $location->LocationName]));
     }
 
