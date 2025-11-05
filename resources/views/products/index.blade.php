@@ -86,6 +86,11 @@
                                     <i class="fas fa-upload me-2"></i>{{ __('global.import') }} {{ __('cruds.product.fields.quantity') }}
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.imports.status') }}">
+                                    <i class="fas fa-info-circle me-2"></i>{{ __('global.import') }} {{ __('cruds.status') }}
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 @endcan

@@ -91,7 +91,7 @@ class CompanySetting extends Model
         'payment_ships_to_template' => '<p class="mb-0">{customer.shipping.address_1}</p><p class="mb-0">{customer.shipping.address_2}</p><p class="mb-0">{customer.shipping.city}, {customer.shipping.state}</p><p class="mb-0">{customer.shipping.country}</p><p class="mb-0">{customer.shipping.phone}</p>',
         'invoice_show_payments_on_pdf' => true,
         'shop_announcement' => '',
-        'sales_locations' => false,
+        'sales_locations' => true,
 
         // E-commerce Features
         'b2b_ecommerce_enabled' => true,

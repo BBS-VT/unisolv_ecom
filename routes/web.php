@@ -187,6 +187,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
         ->name('imports.status');
     Route::get('imports/check-progress/{importJobId}', [ProductController::class, 'checkImportProgress'])
         ->name('imports.check-progress');
+    Route::get('imports/product_template', [ProductController::class, 'importTemplate'])->name('imports.download-template');
 
     Route::post('stock-holdings/import', [StockItemHoldingsController::class, 'importExcel'])
         ->name('stock-holdings.import');
@@ -196,7 +197,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
         ->name('stock-holdings.import-status');
     Route::post('customer-balances/import', [CustomerBalanceController::class, 'importExcel'])
         ->name('customer-balances.import');
-
+    Route::get('stock-holdings/download-template', [StockItemHoldingsController::class, 'downloadTemplate'])->name('stock-holdings.download-template');
 
     // Order Status
     Route::resource('orderstatus', 'OrderStatusController');

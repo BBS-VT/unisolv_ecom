@@ -155,6 +155,11 @@ class Product extends Model implements HasMedia
         return $this->hasOne(StockItemHoldings::class, 'StockCode', 'StockCode');
     }
 
+    public function stockHoldings()
+    {
+        return $this->hasMany(StockItemHoldings::class, 'StockCode', 'StockCode');
+    }
+
     public function packageType()
     {
         return $this->hasOne(PackageType::class, 'id', 'UnitPackageID');

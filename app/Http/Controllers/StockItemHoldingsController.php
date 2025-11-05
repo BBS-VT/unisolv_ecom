@@ -84,4 +84,9 @@ class StockItemHoldingsController extends Controller
 
         return back();
     }
+
+    public function downloadTemplate()
+    {
+        //
+    }
 }

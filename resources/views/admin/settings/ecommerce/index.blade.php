@@ -88,7 +88,7 @@
                                                     </small>
                                                 </div>
 
-                                                <div class="form-group mb-0">
+                                                <div class="form-group mb-3">
                                                     <div class="form-check form-switch">
                                                         <input type="hidden" name="ecommerce_require_approval" value="0">
                                                         <input class="form-check-input" type="checkbox"
@@ -100,6 +100,21 @@
                                                     </div>
                                                     <small class="form-text text-muted">
                                                         {{ __('messages.require_order_approval') }}
+                                                    </small>
+                                                </div>
+
+                                                <div class="form-group mb-0">
+                                                    <div class="form-check form-switch">
+                                                        <input type="hidden" name="sales_locations" value="0">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="sales_locations" name="sales_locations" value="1"
+                                                            {{ $settings['sales_locations'] ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="sales_locations">
+                                                            <strong>{{ __('global.multiple_sales_locations') }}</strong>
+                                                        </label>
+                                                    </div>
+                                                    <small class="form-text text-muted">
+                                                        {{ __('messages.multiple_sales_locations') }}
                                                     </small>
                                                 </div>
                                             </div>

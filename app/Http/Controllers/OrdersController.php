@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Services\LocationAssignmentService;
 use Illuminate\Http\Request;
 use App\Http\Requests\Order\Store;
 use App\Http\Requests\Order\Update;
@@ -174,6 +175,9 @@ class OrdersController extends Controller
                     'OrderID' => $request->order_number,
                     'company_id' => $currentCompany->id,
                     'StockItem' => $stockItem->StockCode,
+                    'LocationCode' => LocationAssignmentService::assignLocation(
+                        $stockItem->StockCode, $request->quantity[$i],
+                    ),
                     'discount_type' => 'percent',
                     'discount_val' => $request->discount[$i] ?? 0,
                     'Quantity' => $request->quantity[$i],
@@ -437,6 +441,9 @@ class OrdersController extends Controller
             $ordertradeitemTag
                 ->appendChild($document->createElement("tradeItemDescription"))
                 ->appendChild($document->createTextNode($key->product->StockItemName));
+            $ordertradeitemTag
+                ->appendChild($document->createElement("stockLocation"))
+                ->appendChild($document->createTextNode($key->product->LocationCode));
 
             $ordertradeitemColorTag = $ordertradeitemTag->appendChild(
                 $document->createElement("color")

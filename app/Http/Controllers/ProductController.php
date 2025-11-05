@@ -206,7 +206,7 @@ class ProductController extends Controller
                 ->make(true);
         }
 
-        return view('products.index');
+        return view('products.index', compact('currentCompany'));
     }
 
     public function create()
@@ -433,7 +433,19 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'mainCategories', 'subCategories', 'packageType', 'stockHolding', 'referredProduct', 'referringProducts');
+        $user = auth()->user();
+        $currentCompany = $user->currentCompany();
+
+        $product->load([
+            'categories',
+            'mainCategories',
+            'subCategories',
+            'packageType',
+            'stockHoldings.location',
+            'referredProduct',
+            'referringProducts'
+        ]);
+
 
         $subCategoryParentIds = $product->subCategories->pluck('ParentID')->unique()->filter();
         $parentCategories = ProductCategory::whereIn('id', $subCategoryParentIds)->get();
@@ -445,8 +457,8 @@ class ProductController extends Controller
             $packSizeFamily = $product->packSizeFamily()->with('stockHolding')->get();
         }
 
-        //dd($parentCategories);
-        return view('products.show', compact('product', 'allMainCategories', 'packSizeFamily'));
+        //dd($product);
+        return view('products.show', compact('product', 'allMainCategories', 'packSizeFamily', 'currentCompany'));
     }
 
     public function destroy(Product $product)
@@ -591,6 +603,11 @@ class ProductController extends Controller
             ->get();
 
         return view('admin.imports.status', compact('recentImports'));
+    }
+
+    public function importTemplate()
+    {
+        //
     }
 
 

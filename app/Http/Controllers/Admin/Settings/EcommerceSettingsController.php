@@ -23,7 +23,8 @@ class EcommerceSettingsController extends Controller
             'ecommerce_show_stock' => CompanySetting::getSetting('ecommerce_show_stock', $currentCompany->id),
             'ecommerce_min_order_amount' => CompanySetting::getSetting('ecommerce_min_order_amount', $currentCompany->id),
             'ecommerce_products_per_page' => CompanySetting::getSetting('ecommerce_products_per_page', $currentCompany->id),
-            'ecommerce_new_customer_requires_approval' => CompanySetting::getSetting('ecommerce_new_customer_requires_approval', $currentCompany->id)
+            'ecommerce_new_customer_requires_approval' => CompanySetting::getSetting('ecommerce_new_customer_requires_approval', $currentCompany->id),
+            'sales_locations' => CompanySetting::getSetting('sales_locations', $currentCompany->id),
         ];
 
         return view('admin.settings.ecommerce.index', compact('settings'));
@@ -44,6 +45,7 @@ class EcommerceSettingsController extends Controller
         $currentCompany->setSetting('ecommerce_min_order_amount', $request->input('ecommerce_min_order_amount'));
         $currentCompany->setSetting('ecommerce_products_per_page', $request->input('ecommerce_products_per_page'));
         $currentCompany->setSetting('ecommerce_new_customer_requires_approval', $request->input('ecommerce_new_customer_requires_approval'));
+        $currentCompany->setSetting('sales_locations', $request->input('sales_locations'));
 
 
         foreach ($request->validated() as $key => $value) {

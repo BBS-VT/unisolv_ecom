@@ -73,6 +73,27 @@ return [
     'selling_type_instore_description' => 'This product is only available for in-store purchases.',
     'selling_type_online_description' => 'This product is only available through the online shop.',
     'selling_type_both_description' => 'This product can be purchased both in-store and online.',
+    'stock_distribution_help' => 'Stock is tracked separately at each location. Total quantity shown at bottom.',
+    'no_stock_holdings_help' => 'This product has no stock records. Add stock through inventory management.',
+    'product_import_instructions' => 'Upload a CSV file to import or update products. Ensure your file matches the required format.',
+    'csv_format_help' => 'Accepted formats: .csv, .txt. Maximum file size: 10MB.',
+    'update_existing_help' => 'Update product information for items that already exist in the system.',
+    'create_new_help' => 'Add new products that don\'t exist in the system yet.',
+    'skip_errors_help' => 'Continue importing valid records even if some rows have errors.',
+
+    'stock_import_instructions' => 'Upload a CSV file with stock quantities. The file will be processed in the background and can handle large files.',
+    'stock_code_description' => 'Unique product identifier (must exist in system)',
+    'location_code_description' => 'Location code (0000, 0001, etc.). Defaults to 0000 if not specified.',
+    'quantity_description' => 'Current quantity on hand',
+    'bin_location_description' => 'Warehouse bin/aisle location',
+    'cost_price_description' => 'Most recent purchase cost',
+    'reorder_level_description' => 'Minimum quantity before reordering',
+    'target_stock_description' => 'Desired stock level',
+    'background_import_help' => 'Large imports are processed in the background. You will be notified when complete.',
+    'create_missing_locations_help' => 'Automatically create location records if they don\'t exist.',
+    'update_prices_help' => 'Update last cost price from the CSV file.',
+    'skip_quantity_errors_help' => 'Continue importing valid records even if some rows have errors.',
+
 
     // Validation messages
     'location_code_exists' => 'A location with this code already exists.',

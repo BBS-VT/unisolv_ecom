@@ -165,6 +165,143 @@
                         </div>
                     </div>
 
+                    @if($currentCompany->getSetting('sales_locations'))
+                        <h4>{{ __('Stock by Location') }}</h4>
+                        <div class="card border mb-3">
+                            <div class="card-body">
+                                {{-- Barcode Section --}}
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="product-info-label">{{ __('cruds.product.fields.barcode') }}</div>
+                                        <div class="barcode-display mt-1">
+                                            {{ $product->Barcode ?? 'N/A' }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="product-info-label">{{ __('cruds.product.fields.altbarcode') }}</div>
+                                        <div class="barcode-display mt-1">
+                                            {{ $product->AltBarcode ?? 'N/A' }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-3">
+                                @php
+                                    $stockHoldings = $product->stockHoldings ?? collect();
+                                    $totalStock = $stockHoldings->sum('QuantityOnHand');
+
+                                    \Log::info('Stock Holdings Debug', [
+                                        'stock_holdings' => $stockHoldings->toArray(),
+                                        'total_stock' => $totalStock,
+                                        'product_id' => $product->id
+                                    ]);
+                                @endphp
+
+                                @if($stockHoldings->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>{{ __('global.location') }}</th>
+                                                <th>{{ __('global.location_code') }}</th>
+                                                <th class="text-end">{{ __('global.quantity_on_hand') }}</th>
+                                                <th class="text-end">{{ __('global.reorder_level') }}</th>
+                                                <th class="text-center">{{ __('global.status') }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($stockHoldings->sortByDesc('QuantityOnHand') as $holding)
+                                                <tr class="{{ $holding->location && $holding->location->IsDefault ? 'table-primary' : '' }}">
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            @if($holding->location)
+                                                                <i class="bx bx-map-pin me-2 text-muted"></i>
+                                                                <div>
+                                                                    <strong>{{ $holding->location->LocationName }}</strong>
+                                                                    @if($holding->location->IsDefault)
+                                                                        <span class="badge bg-primary badge-sm ms-1">{{ __('global.default') }}</span>
+                                                                    @endif
+                                                                    @if($holding->BinLocation)
+                                                                        <br><small class="text-muted">
+                                                                            <i class="bx bx-box me-1"></i>
+                                                                            {{ __('global.bin') }}: {{ $holding->BinLocation }}
+                                                                        </small>
+                                                                    @endif
+                                                                </div>
+                                                            @else
+                                                                <span class="text-muted">{{ __('global.unknown_location') }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                        <span class="badge bg-secondary-subtle text-secondary font-monospace">
+                                            {{ $holding->LocationCode }}
+                                        </span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="fs-5 fw-bold">{{ number_format($holding->QuantityOnHand, 2) }}</span>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span class="text-muted">{{ $holding->ReorderLevel ? number_format($holding->ReorderLevel, 2) : 'N/A' }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if($holding->QuantityOnHand > 10)
+                                                            <span class="badge bg-success">
+                                                <i class="bx bx-check-circle me-1"></i>
+                                                {{ __('global.in_stock') }}
+                                            </span>
+                                                        @elseif($holding->QuantityOnHand > 0)
+                                                            <span class="badge bg-warning">
+                                                <i class="bx bx-error me-1"></i>
+                                                {{ __('global.low_stock') }}
+                                            </span>
+                                                        @else
+                                                            <span class="badge bg-danger">
+                                                <i class="bx bx-x-circle me-1"></i>
+                                                {{ __('global.out_of_stock') }}
+                                            </span>
+                                                        @endif
+
+                                                        @if($holding->ReorderLevel && $holding->QuantityOnHand <= $holding->ReorderLevel)
+                                                            <br><small class="text-danger mt-1 d-block">
+                                                                <i class="bx bx-error-circle"></i>
+                                                                {{ __('global.below_reorder_level') }}
+                                                            </small>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot class="table-light">
+                                            <tr>
+                                                <td colspan="2" class="fw-bold">{{ __('global.total_across_all_locations') }}</td>
+                                                <td class="text-end">
+                                                    <span class="fs-5 fw-bold text-primary">{{ number_format($totalStock, 2) }}</span>
+                                                </td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                    {{-- Stock Distribution Chart (Optional Visual) --}}
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="bx bx-info-circle me-1"></i>
+                                            {{ __('messages.stock_distribution_help') }}
+                                        </small>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="bx bx-package display-4 text-muted opacity-25"></i>
+                                        <p class="text-muted mb-0 mt-2">{{ __('global.no_stock_holdings_found') }}</p>
+                                        <small class="text-muted">{{ __('messages.no_stock_holdings_help') }}</small>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+
                     <h4>{{ __('Stock Details') }}</h4>
                     <div class="card border mb-3">
                         <div class="card-body">
@@ -204,6 +341,8 @@
                             </div>
                         </div>
                     </div>
+
+                    @endif
 
                     <h4>{{ __('Selling Type') }}</h4>
                     <div class="card border mb-3">
@@ -322,7 +461,7 @@
                                     <tr>
                                         <td>Price 2</td>
                                         <td>{{ $sellingPrice2Excl ? 'R ' . number_format($sellingPrice2Excl, 2) : 'N/A' }}</td>
-                                        <td>{{ $sellingPrice4Excl ? 'R ' . number_format($sellingPrice4Excl, 2) : 'N/A' }}</td>
+                                        <td>{{ $product->SellingPrice2 ? 'R ' . number_format($product->SellingPrice2, 2) : 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Price 3</td>

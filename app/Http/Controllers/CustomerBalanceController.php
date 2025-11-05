@@ -48,4 +48,9 @@ class CustomerBalanceController extends Controller
 
         return back();
     }
+
+    public function download()
+    {
+
+    }
 }
