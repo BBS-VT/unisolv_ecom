@@ -10,6 +10,7 @@ use App\Http\Requests\Order\Store;
 use App\Http\Requests\Order\Update;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -239,12 +240,15 @@ class OrdersController extends Controller
     {
         abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
         $order->load('items');
         $order->load('customer');
 
         //dd($order);
 
-        return view('orders.details', compact('order'));
+        return view('orders.details', compact('order', 'currentCompany'));
     }
 
     /**
@@ -274,6 +278,8 @@ class OrdersController extends Controller
 
     public function downloadOrder(Order $order)
     {
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
 
         Order::where('id', $order->id)
             ->update([
@@ -388,7 +394,7 @@ class OrdersController extends Controller
             ->appendChild($document->createTextNode("400197"));
         $ordersellerTag
             ->appendChild($document->createElement("additionalPartyIdentification"))
-            ->appendChild($document->createTextNode("Quenera Distribution"));
+            ->appendChild($document->createTextNode($currentCompany->name));
         foreach ($order->items as $key) {
             $orderlineitemTag = $orderTag->appendChild(
                 $document->createElement("orderLineItem")
