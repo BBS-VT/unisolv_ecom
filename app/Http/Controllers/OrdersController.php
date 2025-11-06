@@ -128,7 +128,7 @@ class OrdersController extends Controller
      */
     public function store(Store $request)
     {
-        //dd($request);
+
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
@@ -176,7 +176,9 @@ class OrdersController extends Controller
                     'company_id' => $currentCompany->id,
                     'StockItem' => $stockItem->StockCode,
                     'LocationCode' => LocationAssignmentService::assignLocation(
-                        $stockItem->StockCode, $request->quantity[$i],
+                        $stockItem->StockCode,
+                        $request->quantity[$i],
+                        null
                     ),
                     'discount_type' => 'percent',
                     'discount_val' => $request->discount[$i] ?? 0,
@@ -443,7 +445,7 @@ class OrdersController extends Controller
                 ->appendChild($document->createTextNode($key->product->StockItemName));
             $ordertradeitemTag
                 ->appendChild($document->createElement("stockLocation"))
-                ->appendChild($document->createTextNode($key->product->LocationCode));
+                ->appendChild($document->createTextNode($key->LocationCode));
 
             $ordertradeitemColorTag = $ordertradeitemTag->appendChild(
                 $document->createElement("color")

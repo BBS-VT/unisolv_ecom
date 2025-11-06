@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
+use App\Services\LocationAssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -154,7 +155,7 @@ class CheckoutController extends Controller
         $orderComments = $request->notes ?? '';
 
         if ($creditInfo['on_hold'] || $creditInfo['over_limit']) {
-            $orderStatus = 5; // Set to "On Hold" status (you may need to create this status)
+            $orderStatus = 5; // Set to "On Hold" status
             $creditMessage = $creditInfo['on_hold'] ? 'Customer on credit hold. ' : '';
             $creditMessage .= $creditInfo['over_limit'] ? "Order exceeds credit limit by " . PricingHelper::formatPrice($creditInfo['over_amount']) : '';
             $orderComments = trim($creditMessage . ' ' . $orderComments);
@@ -174,7 +175,7 @@ class CheckoutController extends Controller
                 'CustomerID' => $customer->acc_code,
                 'company_id' => $currentCompany->id,
                 'SalesPersonID' => $ecommerceSalesperson->id,
-                'LastEditedBy' => $ecommerceSalesperson->id,
+                'LastEditedBy' => Auth::id(),
                 'OrderStatusID' => $orderStatus, // New
                 'Authorisation' => 0,
                 'sub_total' => $subtotalCents,
@@ -195,16 +196,24 @@ class CheckoutController extends Controller
                 $unitPriceCents = round($item['pricing']['price'] * 100);
                 $lineTotalCents = round($item['line_total'] * 100);
 
+                // Assign location for this item
+                $assignedLocation = \App\Services\LocationAssignmentService::assignLocation(
+                    $item['product']->StockCode,
+                    $item['quantity'],
+                    null // TODO: Could pass customer's preferred location if available
+                );
+
                 $order->items()->create([
                     'OrderID' => $order->OrderNumber,
                     'company_id' => $currentCompany->id,
                     'StockItem' => $item['product']->StockCode,
+                    'LocationCode' => $assignedLocation,
                     'discount_type' => 'percent',
                     'discount_val' => 0,
                     'Quantity' => $item['quantity'],
                     'UnitPrice' => $unitPriceCents,
                     'total' => $lineTotalCents,
-                    'LastEditedBy' => $ecommerceSalesperson->id,
+                    'LastEditedBy' => Auth::id(),
                     'ContractDiscount' => 0,
                 ]);
             }
@@ -231,9 +240,10 @@ class CheckoutController extends Controller
             }
             Session::put('order_just_completed', true);
 
-            \Log::info('Both session and database cart cleared', [
+            \Log::info('Order completed with location assignments', [
                 'user_id' => Auth::id(),
-                'order_id' => $order->id
+                'order_id' => $order->id,
+                'items_count' => $order->items->count()
             ]);
 
             // Redirect to success page with appropriate message
@@ -262,6 +272,8 @@ class CheckoutController extends Controller
             ->where('id', $orderId)
             ->where('CustomerID', Auth::user()->customer->acc_code)
             ->firstOrFail();
+
+        \Log::info('Checkout success: ' . $order());
 
         return view('shop.checkout.success', compact('order'));
     }

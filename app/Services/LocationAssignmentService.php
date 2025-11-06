@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\StockItemHoldings;
 use App\Models\Location;
+use Illuminate\Support\Facades\Auth;
 
 class LocationAssignmentService
 {
-
     /**
      * Determine the best location to fulfill an order item
      *
@@ -18,8 +18,20 @@ class LocationAssignmentService
      */
     public static function assignLocation($stockCode, $quantity, $preferredLocation = null)
     {
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
+        // Log for debugging
+        \Log::info('Assigning location', [
+            'stock_code' => $stockCode,
+            'quantity' => $quantity,
+            'preferred_location' => $preferredLocation,
+            'sales_locations_enabled' => $currentCompany->getSetting('sales_locations')
+        ]);
+
         // If multi-location is disabled, always use default
-        if (!app('currentCompany')->getSetting('sales_locations')) {
+        if (!$currentCompany->getSetting('sales_locations')) {
+            \Log::info('Multi-location disabled, using default 0000');
             return '0000';
         }
 
@@ -30,6 +42,7 @@ class LocationAssignmentService
                 ->first();
 
             if ($stock && $stock->QuantityOnHand >= $quantity) {
+                \Log::info('Using preferred location', ['location' => $preferredLocation]);
                 return $preferredLocation;
             }
         }
@@ -44,16 +57,25 @@ class LocationAssignmentService
             ->first();
 
         if ($stockHoldings) {
+            \Log::info('Found location with stock', [
+                'location' => $stockHoldings->LocationCode,
+                'available' => $stockHoldings->QuantityOnHand
+            ]);
             return $stockHoldings->LocationCode;
         }
 
         // If no location has enough stock, try the default location
         $defaultLocation = Location::where('IsDefault', true)->first();
         if ($defaultLocation) {
+            \Log::info('Using default location', ['location' => $defaultLocation->LocationCode]);
             return $defaultLocation->LocationCode;
         }
 
         // Final fallback
+        \Log::warning('No suitable location found, using 0000 as fallback', [
+            'stock_code' => $stockCode,
+            'quantity' => $quantity
+        ]);
         return '0000';
     }
 
