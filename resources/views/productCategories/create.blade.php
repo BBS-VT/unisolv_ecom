@@ -75,16 +75,25 @@
                                     @endif
                                     <span class="help-block">{{ trans('cruds.productCategory.fields.description_helper') }}</span>
                                 </div>-->
-                                <div class="form-group">
-                                    <label for="photo">{{ trans('cruds.productCategory.fields.photo') }}</label>
-                                    <div class="needsclick dropzone {{ $errors->has('photo') ? 'is-invalid' : '' }}" id="photo-dropzone">
-                                    </div>
-                                    @if($errors->has('photo'))
-                                        <div class="invalid-feedback">
-                                            {{ $errors->first('photo') }}
-                                        </div>
-                                    @endif
-                                    <span class="help-block">{{ trans('cruds.productCategory.fields.photo_helper') }}</span>
+                                <div class="mb-3">
+                                    <label for="location_id" class="form-label">{{ __('Sales Location') }}</label>
+                                    <select class="form-select @error('location_id') is-invalid @enderror"
+                                            id="location_id" name="location_id">
+                                        <option value="">{{ __('All Locations (Available Everywhere)') }}</option>
+                                        @foreach(\App\Models\Location::shopLocations()->get() as $location)
+                                            <option value="{{ $location->id }}"
+                                                {{ old('location_id', $category->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                                {{ $location->LocationName }} {{ __('Only') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('location_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">
+                                        {{ __('Leave as "All Locations" if this department should be available at every store/branch.') }}<br>
+                                        {{ __('Select a specific location if this department is unique to one storefront.') }}
+                                    </small>
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-danger" type="submit">
