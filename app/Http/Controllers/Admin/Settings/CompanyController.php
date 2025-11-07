@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\Company\Update;
+use App\Models\Company;
 use App\Models\CompanySetting;
 use Gate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CompanyController extends Controller
@@ -57,5 +59,28 @@ class CompanyController extends Controller
 
         session()->flash('alert-success', __('global.company_updated'));
         return redirect()->route('settings.company');
+    }
+
+    public function updateCollectionAddress(Request $request)
+    {
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+        $company = Company::find($currentCompany->id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address_1' => 'required|string|max:255',
+            'address_2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zip' => 'nullable|string|max:20',
+            'country_id' => 'required|exists:countries,id',
+        ]);
+
+        $company->updateAddress('collection', $validated);
+
+        return redirect()->back()->with('success', 'Collection address updated successfully.');
+
     }
 }

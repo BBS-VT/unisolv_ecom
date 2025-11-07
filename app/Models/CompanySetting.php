@@ -118,19 +118,21 @@ class CompanySetting extends Model
         'ecommerce_customer_can_download_invoices' => true,
         'ecommerce_customer_can_view_statements' => false,
 
-        // E-commerce Shipping
-        'ecommerce_shipping_enabled' => false,
-        'ecommerce_shipping_calculation' => 'flat', // flat, weight, zone
-        'ecommerce_flat_shipping_rate' => 0,
-        'ecommerce_free_shipping_threshold' => 0,
-
-        // E-commerce Payment
+       // E-commerce Payment
         'ecommerce_payment_terms' => 'account', // account, cod, prepaid
         'ecommerce_allow_credit_card' => false,
         'ecommerce_allow_eft' => true,
 
         // E-commerce Delivery
         'ecommerce_delivery_enabled' => false,
+        'ecommerce_shipping_calculation' => 'flat', // flat, weight, zone
+        'ecommerce_flat_shipping_rate' => 0,
+        'ecommerce_free_shipping_threshold' => 0,
+
+        // E-commerce Collection
+        'ecommerce_collection_hours_weekday' => 'Monday - Friday: 8:00 AM - 4:30 PM',
+        'ecommerce_collection_hours_saturday' => 'Saturday: 8:00 AM - 12:00 PM',
+        'ecommerce_collection_hours_sunday' => 'Sunday: Closed',
     ];
 
     /**

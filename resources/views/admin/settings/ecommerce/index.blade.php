@@ -32,7 +32,7 @@
                                 @include('layouts._form_errors')
                                 @csrf
 
-                                <div class="row">
+                                <div class="row mb-4">
                                     {{-- General Settings --}}
                                     <div class="col-lg-6">
                                         <div class="card border h-100">
@@ -194,38 +194,122 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                <div class="row mb-4">
                                     {{--Delivery Settings --}}
                                     <div class="col-lg-6">
                                         <div class="card border h-100">
                                             <div class="card-header bg-light py-2">
                                                 <h6 class="mb-0">
-                                                    <i class="bx bx-truck me-1">
-                                                        {{ 'Delivery Settings' }}
-                                                    </i>
+                                                    <i class="bx bxs-truck me-1"></i>
+                                                    {{ 'Delivery Settings' }}
                                                 </h6>
                                             </div>
                                             <div class="card-body">
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           name="ecommerce_delivery_enabled"
-                                                           id="ecommerce_delivery_enabled"
-                                                        {{ $settings['ecommerce_delivery_enabled'] ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="ecommerce_delivery_enabled">
-                                                        {{ __('Enable Delivery') }}
-                                                    </label>
-                                                </div>
-                                                <small class="text-muted">
-                                                    {{ __('messages.enable_ecommerce_deliveries') }}
-                                                </small>
+                                                <div class="form-group mb-0">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               name="ecommerce_delivery_enabled"
+                                                               id="ecommerce_delivery_enabled"
+                                                            {{ $settings['ecommerce_delivery_enabled'] ? 'checked' : '' }}>
+                                                        <label class="form-check-label"
+                                                               for="ecommerce_delivery_enabled">
+                                                            <strong>{{ __('Enable Delivery') }}</strong>
+                                                        </label>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        {{ __('messages.enable_ecommerce_deliveries') }}
+                                                    </small></div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    {{--Collection Settings --}}
+                                    <div class="col-lg-6">
+                                        <div class="card border h-100">
+                                            <div class="card-header d-flex justify-content-between align-items-center bg-light py-2">
+                                                <h6 class="mb-0">
+                                                    <i class="bx bx-box me-1"></i>
+                                                    {{ 'Collection Settings' }}
+                                                </h6>
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#collectionAddressModal">
+                                                    <i class="fas fa-edit"></i> {{ __('Edit Collection Address') }}
+                                                </button>
+                                            </div>
+                                            <div class="card-body">
+                                                @if($currentCompany->hasAddress('collection'))
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <p class="mb-1"><strong>{{ __('Collection Point Name') }}:</strong></p>
+                                                            <p>{{ $currentCompany->collection_address->name ?? 'N/A' }}</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <p class="mb-1"><strong>{{ __('Phone') }}:</strong></p>
+                                                            <p>{{ $currentCompany->collection_address->phone ?? 'N/A' }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mt-2">
+                                                        <div class="col-12">
+                                                            <p class="mb-1"><strong>{{ __('Address') }}:</strong></p>
+                                                            <p class="mb-0">{{ $currentCompany->collection_address->address_1 }}</p>
+                                                            @if($currentCompany->collection_address->address_2)
+                                                                <p class="mb-0">{{ $currentCompany->collection_address->address_2 }}</p>
+                                                            @endif
+                                                            <p class="mb-0">
+                                                                {{ $currentCompany->collection_address->city }}
+                                                                @if($currentCompany->collection_address->state), {{ $currentCompany->collection_address->state }}@endif
+                                                            </p>
+                                                            <p class="mb-0">{{ $currentCompany->collection_address->zip }}</p>
+                                                            <p>{{ $currentCompany->collection_address->country->name ?? 'N/A' }}</p>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="alert alert-warning mb-0">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        {{ __('No collection address configured. Customers will not see collection details at checkout.') }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    {{--Future Use --}}
                                     <div class="col-lg-6">
 
                                     </div>
-                                </div>
 
+                                    {{--Collection Hours --}}
+                                    <div class="col-lg-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0">{{ __('Collection Hours') }}</h5>
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#collectionHoursModal">
+                                                    <i class="fas fa-clock"></i> {{ __('Edit Hours') }}
+                                                </button>
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="list-unstyled mb-0">
+                                                    <li class="mb-2">
+                                                        <i class="fas fa-clock text-primary me-2"></i>
+                                                        <strong>{{ __('Weekdays') }}:</strong>
+                                                        {{ $currentCompany->getSetting('ecommerce_collection_hours_weekday') }}
+                                                    </li>
+                                                    <li class="mb-2">
+                                                        <i class="fas fa-clock text-primary me-2"></i>
+                                                        <strong>{{ __('Saturday') }}:</strong>
+                                                        {{ $currentCompany->getSetting('ecommerce_collection_hours_saturday') }}
+                                                    </li>
+                                                    <li>
+                                                        <i class="fas fa-clock text-primary me-2"></i>
+                                                        <strong>{{ __('Sunday') }}:</strong>
+                                                        {{ $currentCompany->getSetting('ecommerce_collection_hours_sunday') }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 {{-- Action Buttons --}}
                                 <div class="row mt-3">
                                     <div class="col-12">
@@ -237,10 +321,196 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </form>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Collection Address Modal --}}
+    <div class="modal fade" id="collectionAddressModal" tabindex="-1" aria-labelledby="collectionAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="{{ route('settings.company.ecommerce.collection-address') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="collectionAddressModalLabel">{{ __('Collection Address') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_name" class="form-label">{{ __('Location Name') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                       id="collection_name" name="name"
+                                       value="{{ old('name', $company->collection_address->name ?? '') }}" required>
+                                @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_phone" class="form-label">{{ __('Phone') }}</label>
+                                <input type="text" class="form-control @error('phone') is-invalid @enderror"
+                                       id="collection_phone" name="phone"
+                                       value="{{ old('phone', $company->collection_address->phone ?? '') }}">
+                                @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="collection_address_1" class="form-label">{{ __('Address Line 1') }} <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('address_1') is-invalid @enderror"
+                                   id="collection_address_1" name="address_1"
+                                   value="{{ old('address_1', $company->collection_address->address_1 ?? '') }}" required>
+                            @error('address_1')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="collection_address_2" class="form-label">{{ __('Address Line 2') }}</label>
+                            <input type="text" class="form-control @error('address_2') is-invalid @enderror"
+                                   id="collection_address_2" name="address_2"
+                                   value="{{ old('address_2', $company->collection_address->address_2 ?? '') }}">
+                            @error('address_2')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_city" class="form-label">{{ __('City') }} <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('city') is-invalid @enderror"
+                                       id="collection_city" name="city"
+                                       value="{{ old('city', $company->collection_address->city ?? '') }}" required>
+                                @error('city')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_state" class="form-label">{{ __('State/Province') }}</label>
+                                <input type="text" class="form-control @error('state') is-invalid @enderror"
+                                       id="collection_state" name="state"
+                                       value="{{ old('state', $company->collection_address->state ?? '') }}">
+                                @error('state')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_zip" class="form-label">{{ __('Postal Code') }}</label>
+                                <input type="text" class="form-control @error('zip') is-invalid @enderror"
+                                       id="collection_zip" name="zip"
+                                       value="{{ old('zip', $company->collection_address->zip ?? '') }}">
+                                @error('zip')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="collection_country_id" class="form-label">{{ __('Country') }} <span class="text-danger">*</span></label>
+                                <select class="form-select @error('country_id') is-invalid @enderror"
+                                        id="collection_country_id" name="country_id" required>
+                                    <option value="">{{ __('Select Country') }}</option>
+                                    @foreach(\App\Models\Country::all() as $country)
+                                        <option value="{{ $country->id }}"
+                                            {{ old('country_id', $company->collection_address->country_id ?? '') == $country->id ? 'selected' : '' }}>
+                                            {{ $country->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('country_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Save Collection Address') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Collection Hours Modal --}}
+    <div class="modal fade" id="collectionHoursModal" tabindex="-1" aria-labelledby="collectionHoursModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('settings.ecommerce.update') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="collectionHoursModalLabel">{{ __('Collection Hours') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted small mb-3">
+                            {{ __('Enter the collection hours that will be displayed to customers at checkout.') }}
+                        </p>
+
+                        <div class="mb-3">
+                            <label for="weekday_hours" class="form-label">
+                                {{ __('Monday - Friday') }} <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control @error('ecommerce_collection_hours_weekday') is-invalid @enderror"
+                                   id="weekday_hours"
+                                   name="ecommerce_collection_hours_weekday"
+                                   value="{{ old('ecommerce_collection_hours_weekday', $currentCompany->getSetting('ecommerce_collection_hours_weekday')) }}"
+                                   placeholder="e.g., Monday - Friday: 8:00 AM - 4:30 PM"
+                                   required>
+                            <small class="text-muted">Example: Monday - Friday: 8:00 AM - 4:30 PM</small>
+                            @error('ecommerce_collection_hours_weekday')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="saturday_hours" class="form-label">
+                                {{ __('Saturday') }} <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control @error('ecommerce_collection_hours_saturday') is-invalid @enderror"
+                                   id="saturday_hours"
+                                   name="ecommerce_collection_hours_saturday"
+                                   value="{{ old('ecommerce_collection_hours_saturday', $currentCompany->getSetting('ecommerce_collection_hours_saturday')) }}"
+                                   placeholder="e.g., Saturday: 8:00 AM - 12:00 PM"
+                                   required>
+                            <small class="text-muted">Example: Saturday: 8:00 AM - 12:00 PM or Saturday: Closed</small>
+                            @error('ecommerce_collection_hours_saturday')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sunday_hours" class="form-label">
+                                {{ __('Sunday') }} <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control @error('ecommerce_collection_hours_sunday') is-invalid @enderror"
+                                   id="sunday_hours"
+                                   name="ecommerce_collection_hours_sunday"
+                                   value="{{ old('ecommerce_collection_hours_sunday', $currentCompany->getSetting('ecommerce_collection_hours_sunday')) }}"
+                                   placeholder="e.g., Sunday: Closed"
+                                   required>
+                            <small class="text-muted">Example: Sunday: 9:00 AM - 1:00 PM or Sunday: Closed</small>
+                            @error('ecommerce_collection_hours_sunday')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Save Hours') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

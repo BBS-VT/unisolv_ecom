@@ -26,9 +26,12 @@ class EcommerceSettingsController extends Controller
             'ecommerce_new_customer_requires_approval' => CompanySetting::getSetting('ecommerce_new_customer_requires_approval', $currentCompany->id),
             'sales_locations' => CompanySetting::getSetting('sales_locations', $currentCompany->id),
             'ecommerce_delivery_enabled' => CompanySetting::getSetting('ecommerce_delivery_enabled', $currentCompany->id),
+            'ecommerce_collection_hours_weekday' => CompanySetting::getSetting('ecommerce_collection_hours_weekday', $currentCompany->id),
+            'ecommerce_collection_hours_saturday' => CompanySetting::getSetting('ecommerce_collection_hours_saturday', $currentCompany->id),
+            'ecommerce_collection_hours_sunday' => CompanySetting::getSetting('ecommerce_collection_hours_sunday', $currentCompany->id),
         ];
 
-        return view('admin.settings.ecommerce.index', compact('settings'));
+        return view('admin.settings.ecommerce.index', compact('settings', 'currentCompany'));
     }
 
     public function update(Update $request)
@@ -48,6 +51,9 @@ class EcommerceSettingsController extends Controller
         $currentCompany->setSetting('ecommerce_new_customer_requires_approval', $request->input('ecommerce_new_customer_requires_approval'));
         $currentCompany->setSetting('sales_locations', $request->input('sales_locations'));
         $currentCompany->setSetting('ecommerce_delivery_enabled', $request->input('ecommerce_delivery_enabled'));
+        $currentCompany->setSetting('ecommerce_collection_hours_weekday', $request->input('ecommerce_collection_hours_weekday'));
+        $currentCompany->setSetting('ecommerce_collection_hours_saturday', $request->input('ecommerce_collection_hours_saturday'));
+        $currentCompany->setSetting('ecommerce_collection_hours_sunday', $request->input('ecommerce_collection_hours_sunday'));
 
 
         foreach ($request->validated() as $key => $value) {

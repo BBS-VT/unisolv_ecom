@@ -95,7 +95,7 @@
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_collection" value="collection"
-                                        {{ old('delivery_method') == 'collection' ? 'checked' : '' }}>
+                                        {{ old('delivery_method', !$currentCompany->getSetting('ecommerce_delivery_enabled') ? 'collection' : null) == 'collection' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="delivery_method_collection">
                                         <strong>{{ __('Collection') }}</strong><br>
                                         <small class="text-muted">{{ __('messages.delivery_method_pickup') }}</small>
@@ -210,18 +210,24 @@
                             <div class="col-md-6">
                                 <h6>Collection Address:</h6>
                                 <address>
-                                    <strong>{{ config('app.name') }} Warehouse</strong><br>
-                                    123 Industrial Street<br>
-                                    Johannesburg, 2000<br>
-                                    South Africa
+                                    <strong>{{ $currentCompany->collection_address->name }} </strong><br>
+                                    {{ $currentCompany->collection_address->address_1 }}<br>
+                                    @if($currentCompany->collection_address->address_2 )
+                                        <p class="mb-0 small">{{ $currentCompany->collection_address->address_2 }}</p>
+                                    @endif
+                                    <p class="mb-0 small">
+                                        {{ $currentCompany->collection_address->city }}
+                                        @if($currentCompany->collection_address->state), {{ $currentCompany->collection_address->state }}@endif
+                                        {{ $currentCompany->collection_address->zip }}
+                                    </p>
                                 </address>
                             </div>
                             <div class="col-md-6">
                                 <h6>Collection Hours:</h6>
                                 <ul class="list-unstyled">
-                                    <li><strong>Monday - Friday:</strong> 8:00 AM - 4:30 PM</li>
-                                    <li><strong>Saturday:</strong> 8:00 AM - 12:00 PM</li>
-                                    <li><strong>Sunday:</strong> Closed</li>
+                                    <li><strong>{{ $currentCompany->getSetting('ecommerce_collection_hours_weekday') }}</strong></li>
+                                    <li><strong>{{ $currentCompany->getSetting('ecommerce_collection_hours_saturday') }}</strong> </li>
+                                    <li><strong>{{ $currentCompany->getSetting('ecommerce_collection_hours_sunday') }}</strong> </li>
                                 </ul>
                             </div>
                         </div>

@@ -349,4 +349,11 @@ class Company extends Model
         $avatar = CompanySetting::getSetting('avatar', $this->id);
         return $avatar ? asset($avatar) : $this->getDefaultAvatar();
     }
+
+    public function getCollectionAddressAttribute(): ?Model
+    {
+        return $this->hasAddress('collection')
+        ? $this->addresses()->whereRole('collection')->first()
+        : new Address();
+    }
 }

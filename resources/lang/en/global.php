@@ -293,6 +293,7 @@ return [
     ],
     'month_starts'                         => 'Month Start',
     'month_ends'                           => 'Month Ends',
+    'multiple_sales_locations'             => 'Multiple Sales Locations',
     'name'                                 => 'Name',
     'new_calendar_source'                  => 'Create new calendar source',
     'new_message'                          => 'New message',

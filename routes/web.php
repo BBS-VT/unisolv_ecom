@@ -216,6 +216,7 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admi
     // Settings>Company Settings
     Route::get('/company', 'CompanyController@index')->name('company');
     Route::post('/company', 'CompanyController@update')->name('company.update');
+    Route::post('/company/collection-address', 'CompanyController@updateCollectionAddress')->name('company.ecommerce.collection-address');
 
     // Settings>Order Settings
     Route::get('/order', 'OrderController@index')->name('order');
