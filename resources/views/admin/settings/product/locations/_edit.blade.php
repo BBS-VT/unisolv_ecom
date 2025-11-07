@@ -229,11 +229,34 @@
                             @error('SortOrder') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox"
+                                       name="show_in_shop"
+                                       id="show_in_shop"
+                                    {{ old('show_in_shop', $location->show_in_shop ?? true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="show_in_shop">
+                                    {{ __('Display in Shop Navigation') }}
+                                </label>
+                            </div>
+                            <small class="text-muted">{{ __('Show this location as a filter option in the online shop') }}</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="shop_sort_order" class="form-label">{{ __('Shop Display Order') }}</label>
+                            <input type="number" class="form-control"
+                                   id="shop_sort_order" name="shop_sort_order"
+                                   value="{{ old('shop_sort_order', $location->shop_sort_order ?? 0) }}" min="0">
+                            <small class="text-muted">{{ __('Lower numbers appear first in the navigation') }}</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        {{-- (Optional) audit strip could go here if you want parity with view modal --}}
+        {{-- (Optional) audit strip could go here  --}}
     </div>
 
     <div class="modal-footer">

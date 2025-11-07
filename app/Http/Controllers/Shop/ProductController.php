@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Shop;
 use App\Helpers\PricingHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Location;
 use App\Models\ProductCategory;
 use App\Helpers\Features;
 use Illuminate\Http\Request;
@@ -20,6 +21,24 @@ class ProductController extends Controller
             ->where('status', true)
             ->forOnline()
             ->with(['packageType', 'stockHolding']);
+
+        // Location filter
+        $currentLocation = null;
+        if ($request->has('location')) {
+            $currentLocation = Location::where('LocationCode', $request->location)
+                ->where('show_in_shop', true)
+                ->first();
+
+            if ($currentLocation) {
+                // Filter products by categories that belong to this location OR are available everywhere (NULL)
+                $query->whereHas('categories', function($q) use ($currentLocation) {
+                    $q->where(function($subQ) use ($currentLocation) {
+                        $subQ->where('location_id', $currentLocation->id)
+                            ->orWhereNull('location_id'); // Include "all locations" departments
+                    });
+                });
+            }
+        }
 
 
         // Only show products with stock if backorders are disabled
@@ -133,10 +152,20 @@ class ProductController extends Controller
         }
 
         // Get categories for filter sidebar
-        $categories = ProductCategory::withCount(['products' => function ($q) {
+        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
             $q->where('status', true)->forOnline();
         }])
-            ->where('status', true)
+            ->where('status', true);
+
+        // If location is selected, show categories for that location OR available everywhere
+        if ($currentLocation) {
+            $categoriesQuery->where(function($q) use ($currentLocation) {
+                $q->where('location_id', $currentLocation->id)
+                    ->orWhereNull('location_id'); // Include "all locations" departments
+            });
+        }
+
+        $categories = $categoriesQuery
             ->having('products_count', '>', 0)
             ->orderBy('StockGroupName', 'asc')
             ->get();
@@ -149,7 +178,7 @@ class ProductController extends Controller
         });
 
         //dd($products);
-        return view('shop.products.index', compact('products', 'categories'));
+        return view('shop.products.index', compact('products', 'categories', 'currentLocation'));
     }
 
     public function show($slug)

@@ -88,6 +88,12 @@
 </style>
 
 <form id="filter-form" method="GET" action="{{ route('shop.products.index') }}">
+
+    <!-- Preserve location filter if it exists -->
+    @if(request('location'))
+        <input type="hidden" name="location" value="{{ request('location') }}">
+    @endif
+
     <!-- Preserve search query if it exists -->
     @if(request('search'))
         <input type="hidden" name="search" value="{{ request('search') }}">
@@ -101,7 +107,28 @@
     <div class="amazon-sidebar">
         <h6>Department</h6>
         <div class="amazon-filter-section scrollable-filter">
-            @foreach($categories as $category)
+            @forelse($categories as $category)
+                <div class="amazon-filter-item d-flex align-items-center">
+                    <input class="form-check-input me-2 flex-shrink-0" type="checkbox"
+                           name="categories[]"
+                           value="{{ $category->id }}"
+                           id="category-{{ $category->id }}"
+                           {{ in_array($category->id, request('categories', [])) ? 'checked' : '' }}
+                           onchange="applyFilters()">
+                    <label for="category-{{ $category->id }}" class="d-flex justify-content-between w-100 mb-0">
+                    <span class="text-truncate me-2">
+                        {{ $category->StockGroupName }}
+                        @if($category->location)
+                            <small class="text-muted">({{ $category->location->LocationName }})</small>
+                        @endif
+                    </span>
+                        <span class="text-muted flex-shrink-0">({{ $category->products_count ?? 0 }})</span>
+                    </label>
+                </div>
+            @empty
+                <p class="text-muted small">No departments found for this location.</p>
+            @endforelse
+            {{--@foreach($categories as $category)
                 <div class="amazon-filter-item d-flex align-items-center">
                     <input class="form-check-input me-2 flex-shrink-0" type="checkbox"
                            name="categories[]"
@@ -114,7 +141,7 @@
                         <span class="text-muted flex-shrink-0">({{ $category->products_count ?? 0 }})</span>
                     </label>
                 </div>
-            @endforeach
+            @endforeach--}}
         </div>
     </div>
 

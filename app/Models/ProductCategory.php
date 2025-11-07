@@ -33,6 +33,7 @@ class ProductCategory extends Model implements HasMedia
         'StockGroupName',
         'slug',
         'status',
+        'location_id',
         'LastEditedBy',
     ];
 
@@ -171,6 +172,25 @@ class ProductCategory extends Model implements HasMedia
     public function isChild()
     {
         return strlen($this->CategoryCode) == 4 && substr($this->CategoryCode, 2) != '00';
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id', 'LocationCode');
+    }
+
+    // Scope to filter by location
+    public function scopeForLocation($query, $locationId)
+    {
+        return $query->where('location_id', $locationId);
+    }
+
+    // Add scope for locations that have this setting enabled
+    public function scopeForShop($query)
+    {
+        return $query->whereHas('location', function($q) {
+            $q->where('show_in_shop', true); // We'll add this field to locations
+        });
     }
 
 }

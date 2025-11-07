@@ -80,7 +80,7 @@
                                 <button type="button" class="btn btn-outline-danger btn-sm"
                                         title="{{ __('global.delete') }}"
                                         onclick="deleteLocation('{{ $location->LocationCode }}', '{{ $location->LocationName }}')">
-                                    <i data-feather="trash-2" class="icon-xs"></i>
+                                    <i class="fas fa-trash-alt icon-xs me-1"></i>
                                 </button>
                             @endif
                         @endcan

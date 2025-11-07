@@ -68,15 +68,29 @@
     </div>
 
     <!-- Secondary Navigation -->
+    @php
+        $shopLocations = \App\Models\Location::shopLocations()->get();
+        $currentLocation = request('location');
+    @endphp
     <div class="amazon-nav-secondary">
         <div class="container-fluid px-3">
             <div class="d-flex align-items-center">
-                <a href="#" class="me-3">
+                {{-- All Departments (no location filter) --}}
+                <a href="{{ route('shop.products.index') }}"
+                   class="me-3 {{ !$currentLocation ? 'fw-bold text-decoration-underline' : '' }}">
                     <i class="bi bi-list me-1"></i>All
                 </a>
-                <a href="{{ route('shop.products.index') }}" class="me-3">Today's Deals</a>
 
-                <a href="#" class="me-3">Customer Service</a>
+                {{-- Individual Location Links --}}
+                @foreach($shopLocations as $location)
+                    <a href="{{ route('shop.products.index', ['location' => $location->LocationCode]) }}"
+                       class="me-3 {{ $currentLocation == $location->LocationCode ? 'fw-bold text-decoration-underline' : '' }}">
+                        {{ $location->LocationName }}
+                    </a>
+                @endforeach
+
+                <a href="{{ route('shop.products.index', ['featured' => 1]) }}" class="text-uppercase me-3">Today's Deals</a>
+                <a href="#" class="text-uppercase me-3">Customer Service</a>
             </div>
         </div>
     </div>

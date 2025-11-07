@@ -36,6 +36,8 @@ class Location extends Model
         'IsActive',
         'IsDefault',
         'SortOrder',
+        'show_in_shop',
+        'shop_sort_order',
         'LastEditedBy'
     ];
 
@@ -108,6 +110,17 @@ class Location extends Model
                     ->update(['IsDefault' => false]);
             }
         });
+    }
+
+    public function scopeShopLocations($query)
+    {
+        return $query->where('show_in_shop', true)
+            ->orderBy('shop_sort_order', 'asc');
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(ProductCategory::class, 'location_code', 'LocationCode');
     }
 
 }

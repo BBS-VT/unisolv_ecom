@@ -54,7 +54,13 @@
                         </dd>
 
                         <dt class="col-sm-5 text-muted">{{ __('global.sort_order') }}</dt>
-                        <dd class="col-sm-7 mb-0">{{ $location->SortOrder }}</dd>
+                        <dd class="col-sm-7 mb-2">{{ $location->SortOrder }}</dd>
+
+                        <dt class="col-sm-5 text-muted">{{ __('global.store_display') }}</dt>
+                        <dd class="col-sm-7 mb-2">{{ $location->show_in_shop }}</dd>
+
+                        <dt class="col-sm-5 text-muted">{{ __('global.store_sort_order') }}</dt>
+                        <dd class="col-sm-7 mb-0">{{ $location->shop_sort_order }}</dd>
                     </dl>
                 </div>
             </div>
