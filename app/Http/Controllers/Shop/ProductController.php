@@ -33,7 +33,7 @@ class ProductController extends Controller
                 // Filter products by categories that belong to this location OR are available everywhere (NULL)
                 $query->whereHas('categories', function($q) use ($currentLocation) {
                     $q->where(function($subQ) use ($currentLocation) {
-                        $subQ->where('location_id', $currentLocation->id)
+                        $subQ->where('location_id', $currentLocation->LocationCode)
                             ->orWhereNull('location_id'); // Include "all locations" departments
                     });
                 });
@@ -160,7 +160,7 @@ class ProductController extends Controller
         // If location is selected, show categories for that location OR available everywhere
         if ($currentLocation) {
             $categoriesQuery->where(function($q) use ($currentLocation) {
-                $q->where('location_id', $currentLocation->id)
+                $q->where('location_id', $currentLocation->LocationCode)
                     ->orWhereNull('location_id'); // Include "all locations" departments
             });
         }

@@ -17,6 +17,7 @@ use Spatie\MediaLibrary\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Excel as ExcelType;
+use Log;
 
 class ProductCategoryController extends Controller
 {
@@ -67,6 +68,7 @@ class ProductCategoryController extends Controller
                 'CategoryCode' => $request->CategoryCode,
                 'StockGroupName' => $request->StockGroupName,
                 'ParentID' => $request->ParentID,
+                'location_id' => $request->location_id,
                 'LastEditedBy' => auth()->id(),
                 'status' => 1,
             ]
@@ -84,20 +86,25 @@ class ProductCategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $request->validate([
             'CategoryCode' => 'required|string|max:4',
             'StockGroupName' => 'required|string|max:255',
             'ParentID' => 'nullable|exists:product_categories,id',
-        ]);
+            'location_id' => 'nullable|exists:locations,LocationCode',
+       ]);
 
-        $category = ProductCategory::find($id);
+        $category = ProductCategory::findOrFail($id);
+
         $category->update([
             'CategoryCode' => $request->CategoryCode,
             'StockGroupName' => $request->StockGroupName,
             'ParentID' => $request->ParentID,
+            'location_id' => $request->location_id,
             'LastEditedBy' => auth()->id(),
             'status' => 1,
         ]);
+
 
         return response()->json(['success' => true, 'message' => 'Category updated successfully.']);
     }

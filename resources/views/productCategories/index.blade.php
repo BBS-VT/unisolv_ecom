@@ -253,7 +253,7 @@
                                     name="location_id">
                                 <option value="">{{ __('All Locations (Available Everywhere)') }}</option>
                                 @foreach(\App\Models\Location::shopLocations()->get() as $location)
-                                    <option value="{{ $location->id }}">
+                                    <option value="{{ $location->LocationCode }}">
                                         {{ $location->LocationName }} {{ __('Only') }}
                                     </option>
                                 @endforeach
@@ -347,6 +347,7 @@
                 e.preventDefault();
 
                 const formData = new FormData(this);
+                console.log(formData);
                 const categoryId = formData.get('id');
                 const url = categoryId ? `/product-categories/update/${categoryId}` : '/product-categories/store';
 
