@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanySetting;
 use App\Services\LocationAssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,7 @@ class CheckoutController extends Controller
         }
         $user = Auth::user();
         $customer = $user->customer;
+        $currentCompany = $user->currentCompany();
 
         if (!$customer) {
             return redirect()->route('shop.home')->with('error', 'Customer profile not found');
@@ -75,6 +77,7 @@ class CheckoutController extends Controller
         return view('shop.checkout.index', compact(
             'cartItems',
             'customer',
+            'currentCompany',
             'subtotal',
             'vatAmount',
             'vatRate',
@@ -88,6 +91,10 @@ class CheckoutController extends Controller
          */
     public function process(Request $request)
     {
+        $user = Auth::user();
+        $customer = $user->customer;
+        $currentCompany = $user->currentCompany();
+
         // TODO: extract validation to ProcessCartRequest
         $rules = [
             'delivery_method' => 'required|in:delivery,collection',
@@ -95,6 +102,11 @@ class CheckoutController extends Controller
             'notes' => 'nullable|string|max:1000',
             'terms_accepted' => 'accepted'
         ];
+
+        if ($request->fulfillment_method === 'delivery' &&
+            !CompanySetting::getSetting('ecommerce_delivery_enabled', $currentCompany->id)) {
+            return back()->withErrors(['fulfillment_method' => 'Delivery is currently not available.']);
+        }
 
         // delivery specific validation
         if($request->delivery_method === 'delivery') {

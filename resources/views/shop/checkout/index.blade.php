@@ -1,3 +1,4 @@
+@php use App\Models\CompanySetting; @endphp
 @extends('shop.layouts.app')
 
 @section('title', 'Checkout')
@@ -90,16 +91,6 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_delivery" value="delivery"
-                                        {{ old('delivery_method', 'delivery') == 'delivery' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="delivery_method_delivery">
-                                        <strong>{{ __('Delivery') }}</strong><br>
-                                        <small class="text-muted">{{ __('messages.delivery_method_deliver') }}</small>
-                                    </label>
-                                </div>
-                            </div>
 
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
@@ -111,87 +102,102 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                @if(CompanySetting::getSetting('ecommerce_delivery_enabled', $currentCompany->id))
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="delivery_method" id="delivery_method_delivery" value="delivery"
+                                        {{ old('delivery_method', 'delivery') == 'delivery' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="delivery_method_delivery">
+                                        <strong>{{ __('Delivery') }}</strong><br>
+                                        <small class="text-muted">{{ __('messages.delivery_method_deliver') }}</small>
+                                    </label>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card mb-4" id="delivery_address_section">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-geo-alt me-2"></i>{{ __('Delivery Address') }}
-                        </h5>
+                @if(CompanySetting::getSetting('ecommerce_delivery_enabled', $currentCompany->id))
+                    <div class="card mb-4" id="delivery_address_section">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-geo-alt me-2"></i>{{ __('Delivery Address') }}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="delivery_address_line1" class="form-label">{{ __('Address Line 1') }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('delivery_address_line1') is-invalid @enderror"
+                                               id="delivery_address_line1" name="delivery_address_line1"
+                                               value="{{ old('delivery_address_line1', $customer->DeliveryAddressLine1) }}">
+                                        @error('delivery_address_line1')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="delivery_address_line2" class="form-label">{{ __('Address Line 2') }}</label>
+                                        <input type="text" class="form-control @error('delivery_address_line2') is-invalid @enderror"
+                                               id="delivery_address_line2" name="delivery_address_line2"
+                                               value="{{ old('delivery_address_line2', $customer->DeliveryAddressLine2) }}">
+                                        @error('delivery_address_line2')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="delivery_city" class="form-label">{{ __('Town') }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('delivery_city') is-invalid @enderror"
+                                               id="delivery_city" name="delivery_city"
+                                               value="{{ old('delivery_city', $customer->DeliveryCity) }}">
+                                        @error('delivery_city')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="delivery_postal_code" class="form-label">{{ __('Postal Code') }} <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('delivery_postal_code') is-invalid @enderror"
+                                               id="delivery_postal_code" name="delivery_postal_code"
+                                               value="{{ old('delivery_postal_code', $customer->DeliveryPostalCode) }}">
+                                        @error('delivery_postal_code')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="preferred_delivery_date" class="form-label">{{ __('Preferred Delivery Date') }}</label>
+                                        <input type="date" class="form-control @error('preferred_delivery_date') is-invalid @enderror"
+                                               id="preferred_delivery_date" name="preferred_delivery_date"
+                                               value="{{ old('preferred_delivery_date') }}"
+                                               min="{{ date('Y-m-d', strtotime('+1 day')) }}">
+                                        @error('preferred_delivery_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="text-muted">{{ __('messages.delivery_method_schedule') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="update_delivery_address" name="update_delivery_address" value="1">
+                                <label class="form-check-label" for="update_delivery_address">
+                                    {{ __('messages.delivery_address_update') }}
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="delivery_address_line1" class="form-label">{{ __('Address Line 1') }} <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('delivery_address_line1') is-invalid @enderror"
-                                           id="delivery_address_line1" name="delivery_address_line1"
-                                           value="{{ old('delivery_address_line1', $customer->DeliveryAddressLine1) }}">
-                                    @error('delivery_address_line1')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="delivery_address_line2" class="form-label">{{ __('Address Line 2') }}</label>
-                                    <input type="text" class="form-control @error('delivery_address_line2') is-invalid @enderror"
-                                           id="delivery_address_line2" name="delivery_address_line2"
-                                           value="{{ old('delivery_address_line2', $customer->DeliveryAddressLine2) }}">
-                                    @error('delivery_address_line2')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="delivery_city" class="form-label">{{ __('Town') }} <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('delivery_city') is-invalid @enderror"
-                                           id="delivery_city" name="delivery_city"
-                                           value="{{ old('delivery_city', $customer->DeliveryCity) }}">
-                                    @error('delivery_city')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="delivery_postal_code" class="form-label">{{ __('Postal Code') }} <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('delivery_postal_code') is-invalid @enderror"
-                                           id="delivery_postal_code" name="delivery_postal_code"
-                                           value="{{ old('delivery_postal_code', $customer->DeliveryPostalCode) }}">
-                                    @error('delivery_postal_code')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="preferred_delivery_date" class="form-label">{{ __('Preferred Delivery Date') }}</label>
-                                    <input type="date" class="form-control @error('preferred_delivery_date') is-invalid @enderror"
-                                           id="preferred_delivery_date" name="preferred_delivery_date"
-                                           value="{{ old('preferred_delivery_date') }}"
-                                           min="{{ date('Y-m-d', strtotime('+1 day')) }}">
-                                    @error('preferred_delivery_date')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="text-muted">{{ __('messages.delivery_method_schedule') }}</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="update_delivery_address" name="update_delivery_address" value="1">
-                            <label class="form-check-label" for="update_delivery_address">
-                                {{ __('messages.delivery_address_update') }}
-                            </label>
-                        </div>
-                    </div>
-                </div>
+                @endif
 
                 <div class="card mb-4" id="collection_info_section" style="display: none;">
                     <div class="card-header">

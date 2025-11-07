@@ -25,6 +25,7 @@ class EcommerceSettingsController extends Controller
             'ecommerce_products_per_page' => CompanySetting::getSetting('ecommerce_products_per_page', $currentCompany->id),
             'ecommerce_new_customer_requires_approval' => CompanySetting::getSetting('ecommerce_new_customer_requires_approval', $currentCompany->id),
             'sales_locations' => CompanySetting::getSetting('sales_locations', $currentCompany->id),
+            'ecommerce_delivery_enabled' => CompanySetting::getSetting('ecommerce_delivery_enabled', $currentCompany->id),
         ];
 
         return view('admin.settings.ecommerce.index', compact('settings'));
@@ -46,6 +47,7 @@ class EcommerceSettingsController extends Controller
         $currentCompany->setSetting('ecommerce_products_per_page', $request->input('ecommerce_products_per_page'));
         $currentCompany->setSetting('ecommerce_new_customer_requires_approval', $request->input('ecommerce_new_customer_requires_approval'));
         $currentCompany->setSetting('sales_locations', $request->input('sales_locations'));
+        $currentCompany->setSetting('ecommerce_delivery_enabled', $request->input('ecommerce_delivery_enabled'));
 
 
         foreach ($request->validated() as $key => $value) {

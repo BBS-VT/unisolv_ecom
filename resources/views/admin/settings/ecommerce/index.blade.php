@@ -194,6 +194,38 @@
                                     </div>
                                 </div>
 
+                                <div class="row">
+                                    {{--Delivery Settings --}}
+                                    <div class="col-lg-6">
+                                        <div class="card border h-100">
+                                            <div class="card-header bg-light py-2">
+                                                <h6 class="mb-0">
+                                                    <i class="bx bx-truck me-1">
+                                                        {{ 'Delivery Settings' }}
+                                                    </i>
+                                                </h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="ecommerce_delivery_enabled"
+                                                           id="ecommerce_delivery_enabled"
+                                                        {{ $settings['ecommerce_delivery_enabled'] ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="ecommerce_delivery_enabled">
+                                                        {{ __('Enable Delivery') }}
+                                                    </label>
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ __('messages.enable_ecommerce_deliveries') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+
+                                    </div>
+                                </div>
+
                                 {{-- Action Buttons --}}
                                 <div class="row mt-3">
                                     <div class="col-12">

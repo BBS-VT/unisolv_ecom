@@ -128,6 +128,9 @@ class CompanySetting extends Model
         'ecommerce_payment_terms' => 'account', // account, cod, prepaid
         'ecommerce_allow_credit_card' => false,
         'ecommerce_allow_eft' => true,
+
+        // E-commerce Delivery
+        'ecommerce_delivery_enabled' => false,
     ];
 
     /**

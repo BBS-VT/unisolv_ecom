@@ -40,6 +40,7 @@ return [
 
     'location_code_help' => 'Use a unique 4-digit code (e.g., 0000, 0001, 0002). This should match your ERP system location codes.',
     'default_location_help' => 'Main location for inventory management. Used as fallback when no location is specified.',
+    'enable_ecommerce_deliveries' => 'Allow customers to select delivery during checkout. Requires what3words integration for address management.',
 
     // Additional helpful messages for the location system:
     'sales_locations' => 'Enable multi-location inventory management. When disabled, all stock uses the default location (0000).',
