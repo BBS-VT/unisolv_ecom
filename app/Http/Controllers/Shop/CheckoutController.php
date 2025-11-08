@@ -247,6 +247,7 @@ class CheckoutController extends Controller
 
             // Clear the cart
             Session::forget('cart');
+            Session::forget('cart_location');
             if (Auth::check()) {
                 \App\Models\UserCart::where('user_id', Auth::id())->delete();
             }

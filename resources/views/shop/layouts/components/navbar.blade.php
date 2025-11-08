@@ -71,27 +71,58 @@
     @php
         $shopLocations = \App\Models\Location::shopLocations()->get();
         $currentLocation = request('location');
+        $cartLocation = session('cart_location');
     @endphp
     <div class="amazon-nav-secondary">
         <div class="container-fluid px-3">
             <div class="d-flex align-items-center">
-                {{-- All Departments (no location filter) --}}
-                <a href="{{ route('shop.products.index') }}"
-                   class="me-3 {{ !$currentLocation ? 'fw-bold text-decoration-underline' : '' }}">
+                {{-- All Departments (disabled if cart is locked to specific location) --}}
+                <a href="{{ $cartLocation ? '#' : route('shop.products.index') }}"
+                   class="me-3 {{ !$currentLocation ? 'fw-bold text-decoration-underline' : '' }} {{ $cartLocation ? 'text-muted disabled' : '' }}"
+                   @if($cartLocation)
+                       data-bs-toggle="tooltip"
+                   title="Complete your current order to browse other locations"
+                   onclick="event.preventDefault();"
+                    @endif>
                     <i class="bi bi-list me-1"></i>All
                 </a>
 
                 {{-- Individual Location Links --}}
                 @foreach($shopLocations as $location)
-                    <a href="{{ route('shop.products.index', ['location' => $location->LocationCode]) }}"
-                       class="me-3 {{ $currentLocation == $location->LocationCode ? 'fw-bold text-decoration-underline' : '' }}">
+                    @php
+                        $isLocked = $cartLocation && $cartLocation !== $location->LocationCode;
+                        $isActive = $currentLocation == $location->LocationCode || $cartLocation == $location->LocationCode;
+                    @endphp
+
+                    <a href="{{ $isLocked ? '#' : route('shop.products.index', ['location' => $location->LocationCode]) }}"
+                       class="me-3 {{ $isActive ? 'fw-bold text-decoration-underline' : '' }} {{ $isLocked ? 'text-muted' : '' }}"
+                       @if($isLocked)
+                           data-bs-toggle="tooltip"
+                       title="Complete your current order to browse this location"
+                       onclick="event.preventDefault();"
+                       style="cursor: not-allowed; opacity: 0.5;"
+                        @endif>
                         {{ $location->LocationName }}
+                        @if($cartLocation == $location->LocationCode)
+                            <i class="bi bi-lock-fill ms-1" data-bs-toggle="tooltip" title="Cart locked to this location"></i>
+                        @endif
                     </a>
                 @endforeach
 
-                <a href="{{ route('shop.products.index', ['featured' => 1]) }}" class="text-uppercase me-3">Today's Deals</a>
-                <a href="#" class="text-uppercase me-3">Customer Service</a>
+                <a href="{{ route('shop.products.index', ['featured' => 1]) }}" class="me-3">Today's Deals</a>
+                <a href="#" class="me-3">Customer Service</a>
             </div>
         </div>
     </div>
+
+    @if($cartLocation)
+        <div class="container-fluid px-3 mt-2">
+            <div class="alert alert-info alert-dismissible fade show mb-0" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Shopping from {{ \App\Models\Location::where('LocationCode', $cartLocation)->first()?->LocationName }}</strong>
+                - Complete your order or <a href="{{ route('cart.clear') }}" class="alert-link">clear your cart</a> to shop from other locations.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
 </header>

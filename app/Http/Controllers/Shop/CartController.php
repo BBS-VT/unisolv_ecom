@@ -28,6 +28,27 @@ class CartController extends Controller
             $product = Product::findOrFail($request->product_id);
             $quantity = $request->quantity;
 
+            // Get the product's location (from its categories)
+            $productLocation = $product->categories()
+                ->whereNotNull('location_id')
+                ->first()
+                ?->location_id;
+
+            // Check if cart already has a locked location
+            $cartLocation = session('cart_location');
+
+            if ($cartLocation && $productLocation && $cartLocation !== $productLocation) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can only add items from one location per order. Please checkout your current cart first or clear it to shop from a different location.'
+                ], 400);
+            }
+
+            // Lock the location if this is the first location-specific item
+            if (!$cartLocation && $productLocation) {
+                session(['cart_location' => $productLocation]);
+            }
+
             // Check stock availability unless backorders are allowed
             if (!Features::backordersEnabled() && $product->stockHolding->QuantityOnHand < $request->quantity) {
                 return response()->json([
@@ -78,6 +99,7 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Added to cart successfully.',
                 'cart_count' => $cartCount,
+                'locked_location' => session('cart_location'),
                 'product' => [
                     'id' => $product->id,
                     'name' => $product->StockItemName,
@@ -189,6 +211,11 @@ class CartController extends Controller
             }
         }
 
+        // If cart is now empty, clear the location lock
+        if (empty($cart)) {
+            session()->forget('cart_location');
+        }
+
         // Reindex the array
         $cart = array_values($cart);
         Session::put('cart', $cart);
@@ -211,6 +238,7 @@ class CartController extends Controller
     public function clearCart()
     {
         Session::forget('cart');
+        Session::forget('cart_location');
 
         // If user is logged in, clear cart in database
         if (Auth::check()) {
