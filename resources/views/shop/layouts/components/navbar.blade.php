@@ -120,7 +120,7 @@
             <div class="alert alert-info alert-dismissible fade show mb-0" role="alert">
                 <i class="bi bi-info-circle me-2"></i>
                 <strong>Shopping from {{ \App\Models\Location::where('LocationCode', $cartLocation)->first()?->LocationName }}</strong>
-                - Complete your order or <a href="{{ route('cart.clear') }}" class="alert-link">clear your cart</a> to shop from other locations.
+                - Complete your order or <a href="{{ route('shop.cart.clear') }}" class="alert-link">clear your cart</a> to shop from other locations.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
