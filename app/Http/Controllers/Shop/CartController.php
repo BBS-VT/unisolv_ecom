@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Helpers\Features;
 use App\Models\Product;
 use App\Models\UserCart;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -213,7 +214,7 @@ class CartController extends Controller
 
         // If cart is now empty, clear the location lock
         if (empty($cart)) {
-            session()->forget('cart_location');
+            CartService::clearLocationLock();
         }
 
         // Reindex the array
@@ -238,7 +239,7 @@ class CartController extends Controller
     public function clearCart()
     {
         Session::forget('cart');
-        Session::forget('cart_location');
+        CartService::clearLocationLock();
 
         // If user is logged in, clear cart in database
         if (Auth::check()) {

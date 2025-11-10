@@ -1,3 +1,4 @@
+@php use App\Services\CartService; @endphp
 <header class="amazon-header">
     <div class="container-fluid px-3">
         <div class="d-flex align-items-center justify-content-between py-2">
@@ -71,7 +72,7 @@
     @php
         $shopLocations = \App\Models\Location::shopLocations()->get();
         $currentLocation = request('location');
-        $cartLocation = session('cart_location');
+        $cartLocation = CartService::ensureLocationLock();
     @endphp
     <div class="amazon-nav-secondary">
         <div class="container-fluid px-3">
