@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Shop;
 
+use App\Helpers\Features;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrdersItem;
@@ -149,51 +150,110 @@ class OrderController extends Controller
     /**
      * Reorder - add order items to cart
      */
-    public function reorder(Order $order)
+    public function reorder($orderId)
     {
         $customer = Auth::user()->customer;
+
+        $order = Order::with('items.product')
+            ->where('id', $orderId)
+            ->firstOrFail();
 
         // Ensure customer can only reorder their own orders
         if ($order->CustomerID !== $customer->acc_code) {
             abort(403, 'You can only reorder your own orders.');
         }
 
-        $order->load('items.product');
 
         try {
             $addedItems = 0;
+            $skippedItems = [];
+            $locationMismatchItems = [];
+
+            // Get current cart location lock
+            $cartLocation = session('cart_location');
 
             foreach ($order->items as $item) {
+                $product = $item->product;
+
                 // Check if product is still available
-                if ($item->product && $item->product->IsActive) {
-                    // TODO: Add to cart logic here - adjust based on cart
-
-
-                    // Example cart addition (adjust to match your cart implementation):
-                    $cartItem = [
-                        'product_id' => $item->ProductID,
-                        'quantity' => $item->Quantity,
-                        'price' => PricingHelper::getCustomerPrice($item->product, $customer)
-                    ];
-
-                    // Add to session cart or use your cart service
-                    $cart = session()->get('cart', []);
-                    $cart[$item->ProductID] = $cartItem;
-                    session()->put('cart', $cart);
-
-                    $addedItems++;
+                if (!$product || !$product->status || $product->SellingType === 'instore') {
+                    $skippedItems[] = $item->StockItem;
+                    continue;
                 }
+
+                // Check location compatibility
+                $productLocation = $product->categories()
+                    ->whereNotNull('location_id')
+                    ->first()
+                    ?->location_id;
+
+                // If cart is locked and product is from different location, skip it
+                if ($cartLocation && $productLocation && $cartLocation !== $productLocation) {
+                    $locationMismatchItems[] = $product->StockItemName;
+                    continue;
+                }
+
+                // Lock cart to this product's location if not already locked
+                if (!$cartLocation && $productLocation) {
+                    session(['cart_location' => $productLocation]);
+                    $cartLocation = $productLocation;
+                }
+
+                // Get current pricing for the product
+                $pricing = $this->getPriceForCustomer($product);
+
+                // Add to cart with complete structure
+                $cart = session()->get('cart', []);
+
+                if (isset($cart[$product->id])) {
+                    // Product already in cart, increase quantity
+                    $cart[$product->id]['quantity'] += $item->Quantity;
+                } else {
+                    // Add new item to cart - match your addToCart structure
+                    $cart[$product->id] = [
+                        'product_id' => $product->id,
+                        'name' => $product->StockItemName,
+                        'quantity' => $item->Quantity,
+                        'price' => $pricing,
+                        'added_at' => now()->timestamp ,
+                    ];
+                }
+
+                session()->put('cart', $cart);
+                $addedItems++;
+
+            }
+
+            // Build response message
+            $message = '';
+            if ($addedItems > 0) {
+                $message = "{$addedItems} item(s) from order #{$order->OrderNumber} have been added to your cart.";
+            }
+
+            if (!empty($locationMismatchItems)) {
+                $message .= " Some items were skipped because they're from a different location: " . implode(', ', $locationMismatchItems);
+            }
+
+            if (!empty($skippedItems)) {
+                $message .= " Some items are no longer available: " . implode(', ', $skippedItems);
             }
 
             if ($addedItems > 0) {
-                return redirect()->route('shop.cart')
-                    ->with('success', "{$addedItems} items from order #{$order->OrderNumber} have been added to your cart.");
+                return redirect()->route('shop.cart.index')
+                    ->with('success', $message);
             } else {
                 return redirect()->back()
-                    ->with('warning', 'No items could be added to cart. Products may no longer be available.');
+                    ->with('warning', 'No items could be added to cart. Products may no longer be available or are from a different location than items currently in your cart.');
             }
 
         } catch (\Exception $e) {
+            \Log::error('Reorder failed', [
+                'order_id' => $orderId,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return redirect()->back()
                 ->with('error', 'Failed to add items to cart. Please try again.');
         }
@@ -248,5 +308,25 @@ class OrderController extends Controller
             5 => 'On Hold',
             default => 'Unknown'
         };
+    }
+
+    private function getPriceForCustomer($product)
+    {
+        // If user is not logged in, use default price
+        if (!Auth::check()) {
+            return Features::showPrices() ? $product->price : 0;
+        }
+
+        $customer = Auth::user();
+
+        // Check if user has custom pricing
+        switch ($customer->price_level) {
+            case 'wholesale':
+                return $product->wholesale_price ?: $product->price;
+            case 'distributor':
+                return $product->distributor_price ?: $product->price;
+            default:
+                return $product->price;
+        }
     }
 }

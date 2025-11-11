@@ -317,7 +317,7 @@ class CartController extends Controller
             'success' => true,
             'cart_count' => $cartCount,
             'cart_total' => $cartTotal,
-            'mini_cart_html' => view('shop.partials.mini-cart', compact('cart', 'cartTotal', 'cartCount'))->render()
+            'mini_cart_html' => view('shop.cart.partials.mini-cart', compact('cart', 'cartTotal', 'cartCount'))->render()
         ]);
     }
 
