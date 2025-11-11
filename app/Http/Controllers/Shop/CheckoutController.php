@@ -280,13 +280,12 @@ class CheckoutController extends Controller
      */
     public function success($orderId)
     {
-        //dd($orderId);
+
         $order = Order::with(['customer', 'items.product', 'salesperson'])
             ->where('id', $orderId)
             ->where('CustomerID', Auth::user()->customer->acc_code)
             ->firstOrFail();
 
-        \Log::info('Checkout success: ' . $order());
 
         return view('shop.checkout.success', compact('order'));
     }

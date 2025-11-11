@@ -113,7 +113,7 @@
                            name="categories[]"
                            value="{{ $category->id }}"
                            id="category-{{ $category->id }}"
-                           {{ in_array($category->id, request('categories', [])) ? 'checked' : '' }}
+                           {{ in_array($category->id, $selectedCategories ?? []) ? 'checked' : '' }}
                            onchange="applyFilters()">
                     <label for="category-{{ $category->id }}" class="d-flex justify-content-between w-100 mb-0">
                     <span class="text-truncate me-2">

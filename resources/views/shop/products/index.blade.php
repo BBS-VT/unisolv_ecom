@@ -53,7 +53,7 @@
                             </span>
                         @endif
 
-                        @foreach(request('categories', []) as $categoryId)
+                        @foreach($selectedCategories ?? [] as $categoryId)
                             @php $category = $categories->find($categoryId) @endphp
                             @if($category)
                                 <span class="badge bg-secondary me-2 mb-1">

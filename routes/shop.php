@@ -44,16 +44,16 @@ if (Features::ecommerceEnabled()) {
         Route::prefix('checkout')->name('checkout.')->group(function () {
             Route::get('/', [CheckoutController::class, 'index'])->name('index');
             Route::post('/process', [CheckoutController::class, 'process'])->name('process');
-            Route::get('/success/{order}', [CheckoutController::class, 'success'])->name('success');
+            Route::get('/success/{orderId}', [CheckoutController::class, 'success'])->name('success');
         });
 
         // Customer account/profile
         Route::prefix('account')->name('account.')->group(function () {
             Route::get('/', [AccountController::class, 'index'])->name('index');
             Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-            Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-            Route::get('/orders/{order}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
-            Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+            Route::get('/orders/{orderId}', [OrderController::class, 'show'])->name('orders.show');
+            Route::get('/orders/{orderId}/reorder', [OrderController::class, 'reorder'])->name('orders.reorder');
+            Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
             Route::get('/orders/draft', [OrderController::class, 'draft'])->name('orders.draft');
             Route::get('/profile', [AccountController::class, 'profile'])->name('profile');
             Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');

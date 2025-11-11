@@ -22,10 +22,13 @@ class ProductController extends Controller
             ->forOnline()
             ->with(['packageType', 'stockHolding']);
 
-        // Location filter
+        // Check for cart location lock
+        $cartLocation = session('cart_location');
         $currentLocation = null;
-        if ($request->has('location')) {
-            $currentLocation = Location::where('LocationCode', $request->location)
+
+        // Location filter
+        if ($cartLocation) {
+            $currentLocation = Location::where('LocationCode', $cartLocation)
                 ->where('show_in_shop', true)
                 ->first();
 
@@ -35,6 +38,20 @@ class ProductController extends Controller
                     $q->where(function($subQ) use ($currentLocation) {
                         $subQ->where('location_id', $currentLocation->LocationCode)
                             ->orWhereNull('location_id'); // Include "all locations" departments
+                    });
+                });
+            }
+        }
+        elseif ($request->has('location')) {
+            $currentLocation = Location::where('LocationCode', $request->location)
+                ->where('show_in_shop', true)
+                ->first();
+
+            if ($currentLocation) {
+                $query->whereHas('categories', function($q) use ($currentLocation) {
+                    $q->where(function($subQ) use ($currentLocation) {
+                        $subQ->where('location_id', $currentLocation->LocationCode)
+                            ->orWhereNull('location_id');
                     });
                 });
             }
@@ -51,8 +68,16 @@ class ProductController extends Controller
         }
 
         // Category filter
+        $selectedCategories = [];
         if ($request->has('categories') && !empty($request->categories)) {
-            $categoryIds = is_array($request->categories) ? $request->categories : explode(',', $request->categories);
+            $categoryIds = $request->categories;
+
+            if(!is_array($categoryIds)) {
+                $categoryIds = [$categoryIds];
+            }
+
+            $selectedCategories = $categoryIds;
+
             $query->whereHas('categories', function($q) use ($categoryIds) {
                 $q->whereIn('product_categories.id', $categoryIds);
             });
@@ -178,7 +203,7 @@ class ProductController extends Controller
         });
 
         //dd($products);
-        return view('shop.products.index', compact('products', 'categories', 'currentLocation'));
+        return view('shop.products.index', compact('products', 'categories', 'currentLocation', 'selectedCategories'));
     }
 
     public function show($slug)

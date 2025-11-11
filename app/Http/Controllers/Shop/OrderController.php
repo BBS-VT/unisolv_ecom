@@ -73,20 +73,21 @@ class OrderController extends Controller
     /**
      * Display specific order details
      */
-    public function show(Order $order)
+    public function show($orderId)
     {
         $customer = Auth::user()->customer;
+
+        // Load order with authorization check
+        $order = Order::with(['items.product', 'salesperson', 'customer'])
+            ->where('id', $orderId)
+            ->where('CustomerID', $customer->acc_code)
+            ->firstOrFail();
 
         // Ensure customer can only view their own orders
         if ($order->CustomerID !== $customer->acc_code) {
             abort(403, 'You can only view your own orders.');
         }
 
-        $order->load([
-            'items.product',
-            'salesperson',
-            'customer'
-        ]);
 
         // Get order status history
         $statusHistory = $this->getOrderStatusHistory($order);
