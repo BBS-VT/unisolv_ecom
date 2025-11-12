@@ -148,61 +148,6 @@
                             </div>
                         </form>
                     </div>
-
-<!--
-                    <div class="form-group">
-
-                        <table class="table table-bordered table-striped">
-                            <tbody>
-                            <tr>
-                                <th>
-
-                                </th>
-                                <td>
-
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <th>
-
-                                </th>
-                                <td>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>
-
-                                </th>
-                                <td>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>
-                                    {{ trans('cruds.user.fields.customer') }}
-                                </th>
-                                <td>
-
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>
-                                    {{ trans('cruds.user.fields.roles') }}
-                                </th>
-                                <td>
-
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
-                </div>-->
-
             </div>
         </div>
     </div>

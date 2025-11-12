@@ -216,7 +216,7 @@
                             <li >
                                 <a href="{{ route('settings.company') }}">{{ __('global.general_settings') }}</a>
                             </li>
-                            @can('manage_user')
+                            @can('user_access')
                                 <li>
                                     <a href="javascript: void(0);" class="has-arrow waves-effect">{{ __('Users & Roles') }}
                                     </a>

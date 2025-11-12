@@ -16,6 +16,7 @@ return [
     'tax_percent_help' => 'Enter the tax rate as a percentage (e.g., 15 for 15%)',
     'tax_type_updated' => 'Tax type has been updated successfully.',
     'logo_requirements' => 'Recommended: Square image, at least 200x200px, PNG or JPG format.',
+    'user_creation_note' => 'New users will receive login credentials via email. If creating a customer user, ensure the correct customer account is linked. Sales representatives require a unique rep code.',
 
     // Messages related to the B2B shop
     'shop_welcome_message'  => 'Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.',

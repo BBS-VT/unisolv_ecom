@@ -502,6 +502,7 @@ return [
     'import_options'                        => 'Import Options',
     'update_existing_products'              => 'Update Existing Products',
     'create_new_products'                   => 'Create New Products',
+    'create_new_user'                       => 'Add new User',
     'skip_errors'                           => 'Skip Errors and Continue',
     'download_template'                     => 'Download CSV Template',
     'upload_and_import'                     => 'Upload & Import',
@@ -514,4 +515,5 @@ return [
     'create_missing_locations'              => 'Create Missing Locations',
     'update_cost_prices'                    => 'Update Cost Prices',
     'download_stock_template'               => 'Download Stock Import Template',
+    'note'                                  => 'Note'
 ];
