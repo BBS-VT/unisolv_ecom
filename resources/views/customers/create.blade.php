@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@section('style')
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
-@endsection
+@push('style')
+    <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/bootstrap-timepicker/timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+@endpush
 
 @section('content')
     <div class="row">
@@ -464,10 +464,10 @@
 
 @endsection
 
-@section('script')
-    <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
+@push('scripts')
+    <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/bootstrap-timepicker/timepicker/js/bootstrap-timepicker.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js') }}"></script>
 
     <script src="{{ URL::asset('pages/jquery.forms-advanced.js') }}"></script>
 
@@ -489,5 +489,5 @@
         });
     </script>
 
-@endsection
+@endpush
 

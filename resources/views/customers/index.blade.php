@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', __('global.customer_management'))
+@section('title', __('Customer Management'))
 
 @push('styles')
     <link href="{{ URL::asset('build/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />

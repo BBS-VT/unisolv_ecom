@@ -1,82 +1,172 @@
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col">
-                        <h4 class="card-title">{{ trans('cruds.order.title_singular') }} {{ trans('global.list') }}</h4>
-                    </div>
-                    <div class="col-auto align-self-center">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">
+        <i class="mdi mdi-cart-outline me-2 text-primary"></i>
+        {{ trans('cruds.order.title') }}
+    </h4>
+    @can('order_create')
+        <a href="{{ route('orders.create') }}" class="btn btn-primary">
+            <i class="mdi mdi-plus me-1"></i> {{ trans('global.new_order') }}
+        </a>
+    @endcan
+</div>
 
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+<div class="card info-card">
+    <div class="card-body">
+        @if($customerOrders->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="ordersTable">
                     <thead>
                     <tr>
-                        <th width="10"></th>
+                        <th style="width: 10px;"></th>
                         <th>{{ trans('cruds.order.fields.number') }}</th>
                         <th>{{ trans('cruds.order.fields.customer_name') }}</th>
                         <th>{{ trans('cruds.order.fields.salesrep') }}</th>
                         <th>{{ trans('cruds.order.fields.ponumber') }}</th>
                         <th>{{ trans('cruds.order.fields.created_at') }}</th>
                         <th>{{ trans('cruds.order.fields.status') }}</th>
-                        <th>&nbsp;</th>
+                        <th class="text-end">{{ trans('global.actions') }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($customerOrders as $key => $order)
                         <tr data-entry-id="{{ $order->id }}">
-                            <td> </td>
-                            <td> {{ $order->OrderNumber ?? '' }} </td>
-                            <td> {{ $order->customer->CustomerName ?? '' }} </td>
-                            <td> {{ $order->salesperson->PreferredName ?? '' }} </td>
-                            <td> {{ $order->CustomerPurchaseOrderNumber ?? '' }}</td>
-                            <td> {{ $order->created_at ?? '' }} </td>
+                            <td></td>
                             <td>
-                                <span class=" badge <?php if ( $order->OrderStatusID == 1 ) { echo "badge-danger"; }
-                                elseif ( $order->OrderStatusID == 2) { echo "badge-warning"; }
-                                elseif ( $order->OrderStatusID == 3) { echo "badge-info"; }
-                                elseif ( $order->OrderStatusID == 4) { echo "badge-success"; }
-                                ?>"> {{ $order->orderstatus->name ?? '' }} </span>
+                                <strong class="text-dark">{{ $order->OrderNumber ?? '' }}</strong>
+                            </td>
+                            <td>{{ $order->customer->CustomerName ?? '' }}</td>
+                            <td>{{ $order->salesperson->PreferredName ?? '' }}</td>
                             <td>
-                                @can('order_show')
-                                    <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-bs-toggle="tooltip"
-                                       title="{{ trans('global.view') }} {{ trans('cruds.order.title_singular') }}"
-                                       data-bs-placement="top">
-                                        <i class="las dripicons-preview text-info font-18"></i>
-                                    </a>
-                                @endcan
-                                &nbsp;
+                                @if($order->CustomerPurchaseOrderNumber)
+                                    <span class="badge bg-light text-dark border">{{ $order->CustomerPurchaseOrderNumber }}</span>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="text-muted">
+                                    <i class="mdi mdi-calendar-outline me-1"></i>
+                                    {{ $order->created_at ? $order->created_at->format('d M Y') : '' }}
+                                </span>
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = 'secondary';
+                                    switch($order->OrderStatusID) {
+                                        case 1:
+                                            $statusClass = 'danger';
+                                            break;
+                                        case 2:
+                                            $statusClass = 'warning';
+                                            break;
+                                        case 3:
+                                            $statusClass = 'info';
+                                            break;
+                                        case 4:
+                                            $statusClass = 'success';
+                                            break;
+                                    }
+                                @endphp
+                                <span class="badge bg-{{ $statusClass }}">
+                                    {{ $order->orderstatus->name ?? '' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 justify-content-end">
+                                    @can('order_show')
+                                        <a href="{{ route('orders.show', $order->id) }}"
+                                           target="_blank"
+                                           class="btn btn-sm btn-light"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="{{ trans('global.view') }} {{ trans('cruds.order.title_singular') }}">
+                                            <i class="mdi mdi-eye text-info"></i>
+                                        </a>
+                                    @endcan
 
-                                @can('order_delete')
-                                    <form action="{{ route('orders.delete', $order->id) }}" method="POST"
-                                          onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="{{ trans('global.delete') }} {{ trans('cruds.order.title_singular') }}">
-                                            <i class="dripicons-trash"></i>
-                                        </button>
-                                    </form>
-                                @endcan
-                                &nbsp;
-                                @can('order_edit')
-                                    <a href="{{ route('orders.download', $order->id) }}"  onClick="history.go(0)"
-                                       data-bs-toggle="tooltip" title="{{ trans('global.downloadFile') }} {{ trans('cruds.order.title_singular') }}"
-                                       data-bs-placement="top"> <i class="las dripicons-download text-info font-18"></i>
-                                    </a>
-                                @endcan
+                                    @can('order_edit')
+                                        <a href="{{ route('orders.download', $order->id) }}"
+                                           class="btn btn-sm btn-light"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="{{ trans('global.downloadFile') }} {{ trans('cruds.order.title_singular') }}">
+                                            <i class="mdi mdi-download text-primary"></i>
+                                        </a>
+                                    @endcan
 
+                                    @can('order_delete')
+                                        <form action="{{ route('orders.delete', $order->id) }}"
+                                              method="POST"
+                                              onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+                                              class="d-inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-light"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="{{ trans('global.delete') }} {{ trans('cruds.order.title_singular') }}">
+                                                <i class="mdi mdi-delete text-danger"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
-
             </div>
-        </div>
+        @else
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="mdi mdi-cart-outline"></i>
+                </div>
+                <p class="empty-state-text">{{ trans('global.no_orders_yet') }}</p>
+                @can('order_create')
+                    <a href="{{ route('orders.create') }}" class="btn btn-primary mt-3">
+                        <i class="mdi mdi-plus me-1"></i> {{ trans('global.create_first_order') }}
+                    </a>
+                @endcan
+            </div>
+        @endif
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable if there are orders
+            @if($customerOrders->count() > 0)
+            $('#ordersTable').DataTable({
+                responsive: true,
+                pageLength: 10,
+                order: [[5, 'desc']], // Sort by created_at column descending
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "{{ trans('global.search') }}...",
+                    lengthMenu: "{{ trans('global.show') }} _MENU_ {{ trans('global.entries') }}",
+                    info: "{{ trans('global.showing') }} _START_ {{ trans('global.to') }} _END_ {{ trans('global.of') }} _TOTAL_ {{ trans('global.entries') }}",
+                    infoEmpty: "{{ trans('global.showing') }} 0 {{ trans('global.to') }} 0 {{ trans('global.of') }} 0 {{ trans('global.entries') }}",
+                    infoFiltered: "({{ trans('global.filtered_from') }} _MAX_ {{ trans('global.total_entries') }})",
+                    paginate: {
+                        first: "{{ trans('global.first') }}",
+                        last: "{{ trans('global.last') }}",
+                        next: "{{ trans('global.next') }}",
+                        previous: "{{ trans('global.previous') }}"
+                    }
+                },
+                columnDefs: [
+                    { orderable: false, targets: [0, 7] } // Disable sorting on first and last columns
+                ]
+            });
+            @endif
+
+            // Re-initialize tooltips after DataTable draws
+            $('#ordersTable').on('draw.dt', function() {
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+            });
+        });
+    </script>
+@endpush
