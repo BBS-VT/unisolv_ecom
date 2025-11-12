@@ -97,11 +97,11 @@ class CustomersController extends Controller
                     return $html;
                 })
                 ->addColumn('status', function ($customer) {
-                    $html = '';
+                    /*$html = '';
                     if ($customer->CustomerStatus == 1) {
                         $html .= '<a class="updateCustomerStatus" id="customer-' . $customer->id . '" customer_id="' . $customer->id . '"';
                         $html .= ' href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to De-activate Customer">';
-                        $html .= '<span class="badge badge-success">' . trans('global.active') . '</span></a>';
+                        $html .= '<span class="bg bg-success">' . trans('global.active') . '</span></a>';
                     } else {
                         $html .= '<a class="updateCustomerStatus" id="customer-' . $customer->id . '" customer_id="' . $customer->id . '"';
                         $html .= ' href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Activate Customer">';
@@ -112,39 +112,12 @@ class CustomersController extends Controller
                         $html .= ' <span class="badge badge-warning">' . trans('global.credit_hold') . '</span>';
                     }
 
-                    return $html;
+                    return $html;*/
+                    return view('customers.partials.status_badge', compact('customer'));
                 })
                 ->addColumn('action', function ($customer) {
-                    $viewButton = '';
-                    $editButton = '';
-                    $deleteButton = '';
 
-                    if (Gate::allows('customer_show')) {
-                        $viewButton = '<a href="' . route('customers.show', $customer->id) . '" data-toggle="tooltip"';
-                        $viewButton .= ' title="' . trans('global.view') . ' ' . trans('cruds.customer.title_singular') . '"';
-                        $viewButton .= ' data-placement="top">';
-                        $viewButton .= '<i class="las dripicons-preview text-info font-18"></i></a>';
-                    }
-
-                    if (Gate::allows('customer_edit')) {
-                        $editButton = '<a href="' . route('customers.edit', $customer->id) . '" data-toggle="tooltip"';
-                        $editButton .= ' title="' . trans('global.edit') . ' ' . trans('cruds.customer.title_singular') . '"';
-                        $editButton .= ' data-placement="top">';
-                        $editButton .= '<i class="las dripicons-document-edit text-info font-18"></i></a>';
-                    }
-
-                    if (Gate::allows('customer_delete')) {
-                        $deleteButton = '<form action="' . route('customers.destroy', $customer->id) . '" method="POST"';
-                        $deleteButton .= ' onsubmit="return confirm(\'' . trans('global.areYouSure') . '\');" style="display: inline-block;">';
-                        $deleteButton .= '<input type="hidden" name="_method" value="DELETE">';
-                        $deleteButton .= '<input type="hidden" name="_token" value="' . csrf_token() . '">';
-                        $deleteButton .= '<button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"';
-                        $deleteButton .= ' data-toggle="tooltip" data-placement="top"';
-                        $deleteButton .= ' title="' . trans('global.delete') . ' ' . trans('cruds.customer.title_singular') . '">';
-                        $deleteButton .= '<i class="dripicons-trash"></i></button></form>';
-                    }
-
-                    return $viewButton . ' ' . $editButton . ' ' . $deleteButton;
+                    return view('customers.partials.action_buttons', compact('customer'));
                 })
                 ->filterColumn('account_code', function($query, $keyword) use ($display_subaccount) {
                     if ($display_subaccount) {
