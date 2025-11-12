@@ -95,9 +95,9 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-md-1 float-right">
+                            <div class="col-md-1 float-end">
                                 <div class="form-group">
-                                    <label for="AccountOpenedDate" class="float-right">{{ trans('cruds.customer.fields.opened_date') }}</label>
+                                    <label for="AccountOpenedDate" class="float-end">{{ trans('cruds.customer.fields.opened_date') }}</label>
                                     <input type="text" id="AccountOpenedDate" name="AccountOpenedDate" class="form-control text-center"
                                            value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" readonly>
                                 </div>
@@ -150,7 +150,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="BuyingGroupID">{{ trans('cruds.customer.fields.contract') }}</label>
-                                    <select class="select2 form-control mb-3 custom-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
+                                    <select class="select2 form-control mb-3 form-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
                                         @if( $customer->BuyingGroupID == 9999 )
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
                                             @foreach($buyingGroups as $id => $buyingGroup)
@@ -491,9 +491,9 @@
                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <label for="discount_allowed">{{ __('cruds.customer.fields.discount_allowed') }}</label>
-                                                    <div class="d-flex align-items-center custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input" id="discount_allowed" name="discount_allowed" value="0" {{ old('discount_allowed', $customer->discount_allowed) == '0' ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="discount_allowed">{{ __('global.allow_discounts') }}</label>
+                                                    <div class="d-flex align-items-center form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input" id="discount_allowed" name="discount_allowed" value="0" {{ old('discount_allowed', $customer->discount_allowed) == '0' ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="discount_allowed">{{ __('global.allow_discounts') }}</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -503,7 +503,7 @@
                             </div>
                         </div>
 
-                        <div class="float-right">
+                        <div class="float-end">
                             <a class="btn btn-default btn-danger" href="{{ route('customers.index') }}">{{ trans('global.cancel') }}</a>
                             <input class="btn btn-primary" type="submit" value="{{ trans('global.save') }}">
                         </div>

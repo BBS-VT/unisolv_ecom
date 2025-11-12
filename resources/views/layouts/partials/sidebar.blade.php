@@ -22,20 +22,20 @@
                     <li class="nav-item">
                         <a href="{{ route('orders.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Orders') }} </a>
                         {{--<a href="{{ route('orders.create') }}" class="sidebar-menu-action">
-                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                            <i class="fas fa-plus me-2 icon-plus"></i>
                         </a>--}}
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('customers.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Customers') }} </a>
                         {{--<a href="{{ route('customers.create') }}" class="sidebar-menu-action">
-                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                            <i class="fas fa-plus me-2 icon-plus"></i>
                         </a>--}}
                     </li>
                     @can('specialdeal_access')
                     <li class="nav-item">
                         <a href="{{ route('deals.index') }}" class="nav-link"><i class="ti-control-record"></i>{{ __('Contract Discounts') }} </a>
                         {{--<a href="{{ route('deals.create') }}" class="sidebar-menu-action">
-                            <i class="fas fa-plus mr-2 icon-plus"></i>
+                            <i class="fas fa-plus me-2 icon-plus"></i>
                         </a>--}}
 
                     </li>

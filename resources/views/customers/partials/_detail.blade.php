@@ -63,7 +63,7 @@
             <div class="col-12 col-lg-6 col-xl">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-right">
+                        <div class="text-end">
                             <div class="p-l-15 p-b-xs p-t-sm text-warning">
                                  <div class="font-light m-b-0 h3">{{ number_format($balance_bf, 2, ".", " ") }}</div>
                                 <h4 class="semi-bold no-margin text-uppercase card-title text-warning">{{ trans('global.balance_bf') }}</h4>
@@ -71,7 +71,7 @@
                             </div>
                             <div class="wrapper-popover" >
                                 <i class="intro-questionmark" data-original-title="" title=""></i>
-                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-toggle="tooltip" data-placement="bottom" data-original-title="Total outstanding balance brought forward"></i>
+                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-bs-toggle="tooltip" data-bs-placement="bottom" data-original-title="Total outstanding balance brought forward"></i>
                                 <div class="popover-go"></div>
                             </div>
                         </div>
@@ -82,7 +82,7 @@
             <div class="col-12 col-lg-6 col-xl">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-right">
+                        <div class="text-end">
                             <div class="p-l-15 p-b-xs p-t-sm">
                                 <div class="font-light m-b-0 h3">
                                     @if($displaySubAccount == "1")
@@ -96,7 +96,7 @@
                             </div>
                             <div class="wrapper-popover ">
                                 <i class="intro-questionmark" data-original-title="" title=""></i>
-                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-toggle="tooltip" data-placement="bottom" data-original-title="Total invoice qty and value of this customer that has not been paid"></i>
+                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-bs-toggle="tooltip" data-bs-placement="bottom" data-original-title="Total invoice qty and value of this customer that has not been paid"></i>
                                 <div class="popover-go"></div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
             <div class="col-12 col-lg-6 col-xl">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-right">
+                        <div class="text-end">
                             <div class="p-l-15 p-b-xs p-t-sm text-danger">
                                 <div class="font-light m-b-0 h3">{{ number_format($overdue_balance, 2, ".", " ") }}</div>
                                 <h4 class="semi-bold no-margin text-uppercase card-title text-danger">{{ trans('global.overdue') }}</h4>
@@ -115,7 +115,7 @@
                             </div>
                             <div class="wrapper-popover" >
                                 <i class="intro-questionmark" data-original-title="" title=""></i>
-                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-toggle="tooltip" data-placement="bottom" data-original-title="Total invoice qty and value of this customer that has exceeded the payment due date"></i>
+                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-bs-toggle="tooltip" data-bs-placement="bottom" data-original-title="Total invoice qty and value of this customer that has exceeded the payment due date"></i>
                                 <div class="popover-go"></div>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
             <div class="col-12 col-lg-6 col-xl">
                 <div class="card">
                     <div class="card-body">
-                        <div class="text-right p-t-20 p-r-20">
+                        <div class="text-end p-t-20 p-r-20">
                             <div class="p-l-15 p-b-xs p-t-sm text-success">
                                 <div class="font-light m-b-0 h3">0.00</div>
                                 <h4 class="semi-bold no-margin all-caps text-success card-title">{{ trans('global.last_paid') }}</h4>
@@ -134,7 +134,7 @@
                             </div>
                             <div class="wrapper-popover" >
                                 <i class="intro-questionmark" data-original-title="" title=""></i>
-                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-toggle="tooltip" data-placement="bottom" data-original-title="Last payment amount"></i>
+                                <i class="fa fa-info-circle" aria-hidden="true" style="color:#1C75BC" data-bs-toggle="tooltip" data-bs-placement="bottom" data-original-title="Last payment amount"></i>
                                 <div class="popover-go"></div>
                             </div>
                         </div>
@@ -148,11 +148,11 @@
                 <div class="card">
                     <ul class="nav nav-tabs nav-tabs-line" id="addressTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active text-uppercase" id="postal-tab" data-toggle="tab" href="#postal" role="tab"
+                            <a class="nav-link active text-uppercase" id="postal-tab" data-bs-toggle="tab" href="#postal" role="tab"
                                aria-controls="postal" aria-selected="true">{{ trans('global.postal_address') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-uppercase" id="delivery-tab" data-toggle="tab" href="#delivery" role="tab"
+                            <a class="nav-link text-uppercase" id="delivery-tab" data-bs-toggle="tab" href="#delivery" role="tab"
                                aria-controls="delivery" aria-selected="false">{{ trans('global.delivery_address') }}</a>
                         </li>
                     </ul>
@@ -211,8 +211,8 @@
             </div>
             <div class="col-lg-5  stretch-card">
                 <div class="card">
-                    <div class="float-right mb-1">
-                        <a class="dropdown-item text-info text-right" data-toggle="modal" data-target="#displayBalance" href="#">
+                    <div class="float-end mb-1">
+                        <a class="dropdown-item text-info text-end" data-bs-toggle="modal" data-bs-target="#displayBalance" href="#">
                             <i data-feather="list" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                             <span class="bold">{{ trans('global.view') }} {{ trans('global.detail_balance') }}</span>
                         </a>

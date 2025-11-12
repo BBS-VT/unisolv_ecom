@@ -90,7 +90,7 @@
 
         /* Balance Cards */
         .balance-card {
-            border-left: 4px solid;
+            border-start: 4px solid;
             transition: all 0.2s;
             height: 100%;
         }
@@ -101,19 +101,19 @@
         }
 
         .balance-card.current {
-            border-left-color: #1C75BC;
+            border-start-color: #1C75BC;
         }
 
         .balance-card.overdue {
-            border-left-color: #dc3545;
+            border-start-color: #dc3545;
         }
 
         .balance-card.bf {
-            border-left-color: #ffc107;
+            border-start-color: #ffc107;
         }
 
         .balance-card.paid {
-            border-left-color: #28a745;
+            border-start-color: #28a745;
         }
 
         /* Address Card */

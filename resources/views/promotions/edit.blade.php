@@ -29,7 +29,7 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">{{ __('Basic Information') }}</h6>
+                            <h6 class="m-0 fw-bold text-primary">{{ __('Basic Information') }}</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -87,7 +87,7 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Product & Timing</h6>
+                            <h6 class="m-0 fw-bold text-primary">Product & Timing</h6>
                         </div>
 
                         <div class="card-body">
@@ -145,7 +145,7 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Customer Targeting</h6>
+                            <h6 class="m-0 fw-bold text-primary">Customer Targeting</h6>
                         </div>
                         <div class="card-body">
                             <label class="form-label">Applicable Customer Tiers</label>
@@ -169,7 +169,7 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Promotion Configuration</h6>
+                            <h6 class="m-0 fw-bold text-primary">Promotion Configuration</h6>
                         </div>
                         <div class="card-body">
                             <div id="date_range_fields" class="promotion-type-fields" style="display: none;">
@@ -292,7 +292,7 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Usage Limits</h6>
+                            <h6 class="m-0 fw-bold text-primary">Usage Limits</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -320,7 +320,7 @@
                     @if($promotion->product)
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Current Product</h6>
+                                <h6 class="m-0 fw-bold text-primary">Current Product</h6>
                             </div>
                             <div class="card-body">
                                 <h6>{{ $promotion->product->ProductName }}</h6>
@@ -351,7 +351,7 @@
                     @endif
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+                            <h6 class="m-0 fw-bold text-primary">Actions</h6>
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
@@ -378,7 +378,7 @@
 
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Help</h6>
+                            <h6 class="m-0 fw-bold text-primary">Help</h6>
                         </div>
                         <div class="card-body">
                             <small>

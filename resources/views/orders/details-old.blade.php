@@ -12,30 +12,30 @@
                 <div class="card-body invoice-head">
                     <div class="row">
                         <div class="col-md-4 align-self-center">
-                            <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm mr-1" height="24">
+                            <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm me-1" height="24">
                                                                 <img src="assets/images/logo-dark.png" alt="logo-large" class="logo-lg logo-dark" height="20">
                                                                 <img src="assets/images/logo.png" alt="logo-large" class="logo-lg logo-light" height="20">-->
                             <p class="mt-2 mb-0 text-muted">{{ $currentCompany->name }}</p>
                         </div><!--end col-->
                         <div class="col-md-8">
 
-                            <ul class="list-inline mb-0 contact-detail float-right">
+                            <ul class="list-inline mb-0 contact-detail float-end">
                                 <li class="list-inline-item">
-                                    <div class="pl-3">
+                                    <div class="ps-3">
                                         <i class="mdi mdi-web"></i>
                                         <p class="text-muted mb-0">admin@viedges.co.za</p>
                                         <p class="text-muted mb-0">www.qrstuvwxyz.com</p>
                                     </div>
                                 </li>
                                 <li class="list-inline-item">
-                                    <div class="pl-3">
+                                    <div class="ps-3">
                                         <i class="mdi mdi-phone"></i>
                                         <p class="text-muted mb-0">047 538 0017</p>
                                         <p class="text-muted mb-0">047 538 0018</p>
                                     </div>
                                 </li>
                                 <li class="list-inline-item">
-                                    <div class="pl-3">
+                                    <div class="ps-3">
                                         <i class="mdi mdi-map-marker"></i>
                                         <p class="text-muted mb-0">$currentCompany->billing</p>
                                         <p class="text-muted mb-0">Jojweni, 5201</p>
@@ -51,7 +51,7 @@
 
                         </div>
                         <div class="col-md-4">
-                            <div class="float-left">
+                            <div class="float-start">
                                 <address class="font-13">
                                     <strong class="font-14">Invoice To :</strong><br>
                                     {{ $order->customer->CustomerName }}<br>
@@ -75,7 +75,7 @@
                             </div>
                         </div>
                         <div class="col-md-3 ">
-                            <div class="font-13 float-right">
+                            <div class="font-13 float-end">
                                 <strong class="font-14">Account:</strong>&nbsp; {{ $order->customer->acc_main }}<br>
                                 <strong class="font-14">Order Date :</strong> {{ $order->created_at->format('d/m/Y') }}<br>
                                 <strong class="font-14">Order Nr :</strong> {{ $order->OrderNumber }}<br>
@@ -93,11 +93,11 @@
                                         <th>Stock Code</th>
                                         <th>Description</th>
                                         <th class="text-center">Qty</th>
-                                        <th class="text-right">Price(Exc)</th>
-                                        <th class="text-right">Discount</th>
-                                        <th class="text-right">Unit Tax</th>
-                                        <th class="text-right">Net Price</th>
-                                        <th class="text-right">Total(Incl)</th>
+                                        <th class="text-end">Price(Exc)</th>
+                                        <th class="text-end">Discount</th>
+                                        <th class="text-end">Unit Tax</th>
+                                        <th class="text-end">Net Price</th>
+                                        <th class="text-end">Total(Incl)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -111,28 +111,28 @@
                                                 <p class="mb-0 text-muted">{{ $key->product->StockItemName }}</p>
                                             </td>
                                             <td class="text-center">{{ $key->Quantity }}</td>
-                                            <td class="text-right">{{ number_format($key->product->SellingPrice / 1.15, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ floatval($key->discount_val) }} %</td>
-                                            <td class="text-right">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>
-                                            <td class="text-right">{{ number_format($key->total / 100, 2, ".", " ") }}</td>
+                                            <td class="text-end">{{ number_format($key->product->SellingPrice / 1.15, 2, ".", " ") }}</td>
+                                            <td class="text-end">{{ floatval($key->discount_val) }} %</td>
+                                            <td class="text-end">{{ number_format((($key->total / $key->Quantity) - ($key->total / $key->Quantity / 1.15)) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-end">{{ number_format(($key->total / $key->Quantity) / 100, 2, ".", " ") }}</td>
+                                            <td class="text-end">{{ number_format($key->total / 100, 2, ".", " ") }}</td>
                                         </tr>
                                     @endforeach
 
                                     <tr >
                                         <td colspan="6" class="border-0"></td>
-                                        <td class="border-0 font-14 text-dark text-right"><b>Sub Total</b></td>
-                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format($order->sub_total / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-dark text-end"><b>Sub Total</b></td>
+                                        <td class="border-0 font-14 text-dark text-end"><b>{{ number_format($order->sub_total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr>
                                         <th colspan="6" class="border-0"></th>
-                                        <td class="border-0 font-14 text-dark text-right"><b>VAT @ 15%</b></td>
-                                        <td class="border-0 font-14 text-dark text-right"><b>{{ number_format(($order->total * 0.15) / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-dark text-end"><b>VAT @ 15%</b></td>
+                                        <td class="border-0 font-14 text-dark text-end"><b>{{ number_format(($order->total * 0.15) / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     <tr class="bg-black text-white">
                                         <th colspan="6" class="border-0"></th>
-                                        <td class="border-0 font-14 text-right"><b>Total</b></td>
-                                        <td class="border-0 font-14 text-right"><b>{{ number_format($order->total / 100, 2, ".", " ") }}</b></td>
+                                        <td class="border-0 font-14 text-end"><b>Total</b></td>
+                                        <td class="border-0 font-14 text-end"><b>{{ number_format($order->total / 100, 2, ".", " ") }}</b></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -143,12 +143,12 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-6">
                             <h5 class="mt-4">Terms And Conditions :</h5>
-                            <ul class="pl-3">
+                            <ul class="ps-3">
                                 <br>
                             </ul>
                         </div> <!--end col-->
                         <div class="col-lg-6 align-self-end">
-                            <div class="float-right" style="width: 30%;">
+                            <div class="float-end" style="width: 30%;">
                                 <small>Received By:</small>
                                 <img src="assets/images/signature.png" alt="" class="mt-2 mb-1" height="26">
                                 <br>
@@ -159,11 +159,11 @@
                     </div><!--end row-->
                     <hr>
                     <div class="row d-flex justify-content-center">
-                        <div class="col-lg-12 col-xl-4 ml-auto align-self-center">
+                        <div class="col-lg-12 col-xl-4 ms-auto align-self-center">
                             <div class="text-center"><small class="font-12">Thank you very much for doing business with us.</small></div>
                         </div><!--end col-->
                         <div class="col-lg-12 col-xl-4">
-                            <div class="float-right d-print-none">
+                            <div class="float-end d-print-none">
                                 <a href="javascript:window.print()" class="btn btn-soft-info btn-sm">Print</a>
                                 <!--                                        <a href="#" class="btn btn-soft-primary btn-sm">Submit</a>
                                                                         <a href="#" class="btn btn-soft-danger btn-sm">Cancel</a>-->

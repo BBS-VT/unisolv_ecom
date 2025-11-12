@@ -10,7 +10,7 @@
             <!-- Search Bar -->
             <div class="amazon-search-bar flex-grow-1 mx-4">
                 <div class="input-group">
-                    <select class="form-select" style="max-width: 120px; border-radius: 4px 0 0 4px; border-right: none;">
+                    <select class="form-select" style="max-width: 120px; border-radius: 4px 0 0 4px; border-end: none;">
                         <option>All</option>
                         <option>Electronics</option>
                         <option>Office</option>
@@ -44,7 +44,7 @@
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                             document.getElementById('logout-form').submit();">
-                                <i data-feather="power" class="align-self-center icon-xs icon-dual mr-1"></i> {{ __('Logout') }}
+                                <i data-feather="power" class="align-self-center icon-xs icon-dual me-1"></i> {{ __('Logout') }}
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf

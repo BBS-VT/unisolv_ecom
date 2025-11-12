@@ -42,7 +42,7 @@
                         <p class="text-muted mb-0"></p>
                     </div>
 
-                    <div class="col-auto align-self-center float-right">
+                    <div class="col-auto align-self-center float-end">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-sm btn-outline-dark">{{ trans('global.active') }}</button>
                             <button type="button" class="btn btn-sm btn-outline-dark">{{ trans('global.inactive') }}</button>
@@ -55,18 +55,18 @@
                             </a>
                         @endcan
                         @can('customer_balance_import')
-                            <ul class="list-unstyled float-right mb-0">
+                            <ul class="list-unstyled float-end mb-0">
                                 <li class="dropdown">
                                     <a href="#" class="btn btn-sm btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
-                                       data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                       data-bs-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
                                         <i data-feather="upload" class="align-self-center icon-xs"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#importCustomermaster" href="#">
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importCustomermaster" href="#">
                                             <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                             {{ __('global.import') }} {{ __('cruds.customer.title') }}
                                         </a>
-                                        <a class="dropdown-item" data-toggle="modal" data-target="#importBalance" href="#">
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importBalance" href="#">
                                             <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                             {{ __('global.import') }} {{ __('cruds.customer.fields.balance') }}
                                         </a>
@@ -101,7 +101,7 @@
                                 <h6 class="modal-title m-0 text-white" id="importBalanceLabel">{{ trans('global.import') }}
                                     {{ trans('cruds.customer.title') }} {{ trans('cruds.customer.fields.balance') }}
                                 </h6>
-                                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                 </button>
                             </div>
@@ -129,7 +129,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
                                     <button class="btn btn-gradient-danger">{{ __('Upload & Import') }}</button>
                                 </div>
                             </form>
@@ -144,7 +144,7 @@
                                 <h6 class="modal-title m-0 text-white" id="importCustomerLabel">{{ __('global.import') }}
                                     {{ __('cruds.customer.title') }}
                                 </h6>
-                                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                 </button>
                             </div>
@@ -220,7 +220,7 @@
                     });
                 });
 
-                $('[data-toggle="tooltip"]').tooltip();
+                $('[data-bs-toggle="tooltip"]').tooltip();
             });
         });
     </script>

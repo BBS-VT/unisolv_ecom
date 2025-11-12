@@ -26,7 +26,7 @@
                                 {{--<a href="#" class="btn btn-sm btn-outline-primary" id="Dash_Date">
                                     <span class="day-name" id="Day_Name">Today:</span>&nbsp;
                                     <span class="" id="Select_date">Jan 11</span>
-                                    <i data-feather="calendar" class="align-self-center icon-xs ml-1"></i>
+                                    <i data-feather="calendar" class="align-self-center icon-xs ms-1"></i>
                                 </a>--}}
                                 @can('product_tag_create')
                                     <a href="{{ URL::previous() }}" class="btn btn-sm btn-outline-primary">

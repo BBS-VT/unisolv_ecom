@@ -49,7 +49,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="customer">Customer</label>
-                <select id="customer" name="customer_id" data-toggle="select" class="form-control select2">
+                <select id="customer" name="customer_id" data-bs-toggle="select" class="form-control select2">
                     <option disabled selected>Select Customer</option>
                 </select>
             </div>
@@ -132,20 +132,20 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <label>Subtotal</label>
-                        <input type="text" id="subtotal" class="form-control text-right" value="0.00" readonly>
+                        <input type="text" id="subtotal" class="form-control text-end" value="0.00" readonly>
                     </div>
                     <div class="d-flex justify-content-between mt-2">
                         <label>Discount</label>
-                        <input type="text" id="totalDiscount" class="form-control text-right" value="0.00" readonly>
+                        <input type="text" id="totalDiscount" class="form-control text-end" value="0.00" readonly>
                     </div>
                     <div class="d-flex justify-content-between mt-2">
                         <label>Tax</label>
-                        <input type="text" id="totalTax" class="form-control text-right" value="0.00" readonly>
+                        <input type="text" id="totalTax" class="form-control text-end" value="0.00" readonly>
                     </div>
                     <hr>
                     <div class="d-flex justify-content-between mt-2">
                         <label><strong>Total</strong></label>
-                        <input type="text" id="grandTotal" class="form-control text-right font-weight-bold" value="0.00" readonly>
+                        <input type="text" id="grandTotal" class="form-control text-end fw-bold" value="0.00" readonly>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,7 @@
 
     <!-- Save Button -->
     <div class="row mt-4">
-        <div class="col text-right">
+        <div class="col text-end">
             <button type="button" id="saveOrder" class="btn btn-success save_order_button pull-right">Save Order</button>
             <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>

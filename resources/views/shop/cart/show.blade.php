@@ -12,8 +12,8 @@
         }
 
         .input-group .form-control {
-            border-left: 0;
-            border-right: 0;
+            border-start: 0;
+            border-end: 0;
         }
 
         .input-group .btn:hover {

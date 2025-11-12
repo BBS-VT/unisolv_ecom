@@ -11,13 +11,13 @@
                 <div class="col-sm-auto">
                     <div class="form-group">
                         <label for="filter[from]">{{ __('messages.from') }}</label>
-                        <input name="filter[from]" type="text" class="form-control" data-toggle="flatpickr" data-flatpickr-default-date="{{ isset(Request::get("filter")['from']) ? Request::get("filter")['from'] : '' }}" readonly="readonly" placeholder="{{ __('messages.from') }}">
+                        <input name="filter[from]" type="text" class="form-control" data-bs-toggle="flatpickr" data-flatpickr-default-date="{{ isset(Request::get("filter")['from']) ? Request::get("filter")['from'] : '' }}" readonly="readonly" placeholder="{{ __('messages.from') }}">
                     </div>
                 </div>
                 <div class="col-sm-auto">
                     <div class="form-group">
                         <label for="filter[to]">{{ __('messages.to') }}</label>
-                        <input name="filter[to]" type="text" class="form-control" data-toggle="flatpickr" data-flatpickr-default-date="{{ isset(Request::get("filter")['to']) ? Request::get("filter")['to'] : '' }}" readonly="readonly" placeholder="{{ __('messages.to') }}">
+                        <input name="filter[to]" type="text" class="form-control" data-bs-toggle="flatpickr" data-flatpickr-default-date="{{ isset(Request::get("filter")['to']) ? Request::get("filter")['to'] : '' }}" readonly="readonly" placeholder="{{ __('messages.to') }}">
                     </div>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn bg-white border-left border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-left-sm-0">
+        <button type="submit" class="btn bg-white border-start border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-start-sm-0">
             <i class="material-icons text-primary icon-20pt">refresh</i>
             {{ __('messages.filter') }}
         </button>

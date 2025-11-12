@@ -37,7 +37,7 @@
                                         <h1 class="mt-5 mb-4">@yield('code')</h1>
                                         <h5 class="font-16 text-muted mb-5">@yield('message')</h5>
                                     </div>
-                                    <a class="btn btn-primary btn-block waves-effect waves-light" href="{{ route('home') }}">Back to Dashboard <i class="fas fa-redo ml-1"></i></a>
+                                    <a class="btn btn-primary btn-block waves-effect waves-light" href="{{ route('home') }}">Back to Dashboard <i class="fas fa-redo ms-1"></i></a>
                                 </div>
                                 <div class="card-body bg-light-alt text-center">
                                     <span class="text-muted d-none d-sm-inline-block"></span>

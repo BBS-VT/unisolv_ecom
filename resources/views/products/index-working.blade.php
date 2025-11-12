@@ -27,7 +27,7 @@
             <div class="page-title-box">
                 @if($message = Session::get('success'))
                     <div class="alert alert-info alert-dismissible fade in" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">x</span>
                         </button>
                         <strong>{{ trans('global.success') }}</strong> {{ $message }}
@@ -50,29 +50,29 @@
                             <div class="col-auto">
                                 <div class="card-header-action">
                                     @can('product_create')
-                                        <a href="{{ route('products.create') }}" class="btn btn-primary mr-1">
+                                        <a href="{{ route('products.create') }}" class="btn btn-primary me-1">
                                             <i class="fas fa-plus"></i> Add Product
                                         </a>
                                     @endcan
 
                                     @can('product_import')
-                                        <ul class="list-unstyled float-right mb-0">
+                                        <ul class="list-unstyled float-end mb-0">
                                             <li class="dropdown">
                                                 <a href="#"
                                                    class="btn btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
-                                                   data-toggle="dropdown" role="button" aria-haspopup="false"
+                                                   data-bs-toggle="dropdown" role="button" aria-haspopup="false"
                                                    aria-expanded="false">
                                                     <i class="fas fa-file-import align-self-center icon-xs"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" data-toggle="modal"
-                                                       data-target="#importStockmaster" href="#">
+                                                    <a class="dropdown-item" data-bs-toggle="modal"
+                                                       data-bs-target="#importStockmaster" href="#">
                                                         <i data-feather="upload-cloud"
                                                            class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                                         {{ trans('global.import') }} {{ trans('cruds.product.title') }}
                                                     </a>
-                                                    <a class="dropdown-item" data-toggle="modal"
-                                                       data-target="#importQuantities" href="#">
+                                                    <a class="dropdown-item" data-bs-toggle="modal"
+                                                       data-bs-target="#importQuantities" href="#">
                                                         <i data-feather="upload-cloud"
                                                            class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                                         {{ trans('global.import') }} {{ trans('cruds.product.fields.quantity') }}

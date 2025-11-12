@@ -29,7 +29,7 @@
                     <!-- Quick Start Templates -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-success">
+                            <h6 class="m-0 fw-bold text-success">
                                 <i class="fas fa-rocket me-1"></i> Quick Start Templates
                             </h6>
                         </div>
@@ -64,7 +64,7 @@
                     <!-- Basic Information -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Basic Information</h6>
+                            <h6 class="m-0 fw-bold text-primary">Basic Information</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -125,7 +125,7 @@
                     <!-- Product & Timing -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Product & Timing</h6>
+                            <h6 class="m-0 fw-bold text-primary">Product & Timing</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -201,7 +201,7 @@
                     <!-- Customer Targeting -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Customer Targeting</h6>
+                            <h6 class="m-0 fw-bold text-primary">Customer Targeting</h6>
                         </div>
                         <div class="card-body">
                             <label class="form-label">Applicable Customer Tiers</label>
@@ -227,7 +227,7 @@
                     <!-- Promotion Configuration -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Promotion Configuration</h6>
+                            <h6 class="m-0 fw-bold text-primary">Promotion Configuration</h6>
                         </div>
                         <div class="card-body">
                             <!-- Type-specific fields will be shown/hidden based on selection -->
@@ -374,7 +374,7 @@
                     <!-- Usage Limits -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Usage Limits (Optional)</h6>
+                            <h6 class="m-0 fw-bold text-primary">Usage Limits (Optional)</h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -404,7 +404,7 @@
                     <!-- Selected Product Info -->
                     <div class="card shadow mb-4" id="product_info_card" style="display: none;">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Selected Product</h6>
+                            <h6 class="m-0 fw-bold text-primary">Selected Product</h6>
                         </div>
                         <div class="card-body" id="product_info_content">
                             <!-- Product info will be loaded here -->
@@ -414,7 +414,7 @@
                     <!-- Actions -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Actions</h6>
+                            <h6 class="m-0 fw-bold text-primary">Actions</h6>
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
@@ -442,7 +442,7 @@
                     <!-- Promotion Types Help -->
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Promotion Types Guide</h6>
+                            <h6 class="m-0 fw-bold text-primary">Promotion Types Guide</h6>
                         </div>
                         <div class="card-body">
                             <div class="accordion" id="helpAccordion">
@@ -883,7 +883,7 @@
 @push('styles')
     <style>
         .promotion-type-fields {
-            border-left: 4px solid #e3f2fd;
+            border-start: 4px solid #e3f2fd;
             padding-left: 15px;
             margin-left: 10px;
         }
@@ -904,23 +904,23 @@
         }
 
         .alert {
-            border-left: 4px solid;
+            border-start: 4px solid;
         }
 
         .alert-info {
-            border-left-color: #17a2b8;
+            border-start-color: #17a2b8;
         }
 
         .alert-success {
-            border-left-color: #28a745;
+            border-start-color: #28a745;
         }
 
         .alert-warning {
-            border-left-color: #ffc107;
+            border-start-color: #ffc107;
         }
 
         .alert-primary {
-            border-left-color: #007bff;
+            border-start-color: #007bff;
         }
 
         .form-check-label small {

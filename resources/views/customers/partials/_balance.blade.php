@@ -4,7 +4,7 @@
             <h6 class="modal-title m-0 text-white" id="displayBalanceLabel">{{ trans('global.view') }}
                 {{ trans('cruds.customer.title') }} {{ trans('cruds.customer.fields.balance') }}
             </h6>
-            <button type="button" class="btn-close btn-sm " data-dismiss="modal" aria-label="Close">
+            <button type="button" class="btn-close btn-sm " data-bs-dismiss="modal" aria-label="Close">
                  <span aria-hidden="true"><i class="la la-times text-white"></i></span>
             </button>
         </div>
@@ -188,7 +188,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-soft-primary btn-sm" data-dismiss="modal">Close</button>
+            <button class="btn btn-soft-primary btn-sm" data-bs-dismiss="modal">Close</button>
         </div>
     </div>
 </div>

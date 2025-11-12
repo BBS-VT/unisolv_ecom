@@ -25,7 +25,7 @@
                         <div class="col">
                             <h4 class="card-title">{{ __('cruds.order.title_singular') }} {{ __('global.list') }}</h4>
                         </div>
-                        <div class="col-auto align-self-center float-right">
+                        <div class="col-auto align-self-center float-end">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'new' ? 'active' : '' }}">
                                     {{ __('global.new_orders') }}

@@ -42,30 +42,30 @@
                             ?>"> {{ $order->orderstatus->name ?? '' }} </span>
 
                             {{--@if($order->Authorisation == 0 )
-                                <span class="badge badge-success">Authorised </span>
+                                <span class="badge bg-success text-white">Authorised </span>
                             @elseif($order->Authorisation == 1)
-                                <span class="badge badge-warning">On Hold</span>
+                                <span class="badge bg-warning text-dark">On Hold</span>
                             @elseif($order->Authorisation == 2)
-                                <span class="badge badge-info">Released</span>
+                                <span class="badge bg-info text-white">Released</span>
                             @endif--}}
                         </td>
                         <td>
                             @can('order_show')
-                                <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-toggle="tooltip"
+                                <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-bs-toggle="tooltip"
                                    title="{{ __('global.view') }} {{ __('cruds.order.title_singular') }}"
-                                   data-placement="top">
+                                   data-bs-placement="top">
                                     <i class="las dripicons-preview text-info font-18"></i>
                                 </a> &nbsp;
                             @endcan
                             @can('order_download')
                                 <a href="{{ route('orders.download', $order->id) }}"  onClick="window.history.go(0)"
-                                   data-toggle="tooltip" title="{{ __('global.downloadFile') }} {{ __('cruds.order.title_singular') }}"
-                                   data-placement="top"> <i class="las dripicons-download text-info font-18"></i>
+                                   data-bs-toggle="tooltip" title="{{ __('global.downloadFile') }} {{ __('cruds.order.title_singular') }}"
+                                   data-bs-placement="top"> <i class="las dripicons-download text-info font-18"></i>
                                 </a> &nbsp;
                             @endcan
                             @can('order_delete')
                                 <a href="{{ route('orders.delete', $order->id) }}" class="delete-confirm"
-                                   data-toggle="tooltip" data-placement="top" title="{{ __('global.delete') }} {{ __('cruds.order.title_singular') }}">
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('global.delete') }} {{ __('cruds.order.title_singular') }}">
                                     <i class="dripicons-trash text-danger font-18"></i>
                                 </a> &nbsp;
                             @endcan

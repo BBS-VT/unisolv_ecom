@@ -37,7 +37,7 @@
 
                     @include('admin.settings.customer.category._form')
 
-                    <div class="form-group text-right mt-4">
+                    <div class="form-group text-end mt-4">
                         <button type="submit" class="btn btn-danger">{{ __('global.save') }}</button>
                         <a href="{{ url()->previous() }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
                     </div>
@@ -100,7 +100,7 @@
                 pageLength: 25,
             });
             $('.datatable-Order:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
                 $($.fn.dataTable.tables(true)).DataTable()
                     .columns.adjust();
             });

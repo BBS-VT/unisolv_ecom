@@ -394,38 +394,29 @@ class DashboardController extends Controller
      */
     private function getProductReorderRates($currentCompany, $startDate, $endDate)
     {
-        $reorderRateQuery = "
-            SELECT
-                p.id,
-                p.StockItemName,
-                p.StockCode,
-                COUNT(DISTINCT o.id) as order_count,
-                COUNT(DISTINCT o.customer_id) as unique_customers,
-                ROUND(COUNT(DISTINCT o.id) / COUNT(DISTINCT o.customer_id), 1) as reorder_ratio
-            FROM
-                products p
-            JOIN
-                orders_items oi ON p.id = oi.StockItem
-            JOIN
-                orders o ON oi.OrderID = o.id
-            WHERE
-                o.company_id = ? AND
-                o.OrderDate BETWEEN ? AND ?
-            GROUP BY
-                p.id, p.StockItemName, p.StockCode
-            HAVING
-                COUNT(DISTINCT o.customer_id) > 1
-            ORDER BY
-                reorder_ratio DESC
-            LIMIT 5
-        ";
-        $reorderRateQuery = Order::all();
+        // Using Eloquent with relationships
+        $products = Product::select(
+            'products.id',
+            'products.StockItemName',
+            'products.StockCode',
+            DB::raw('COUNT(DISTINCT orders.id) as order_count'),
+            DB::raw('COUNT(DISTINCT orders.CustomerID) as unique_customers'),
+            DB::raw('ROUND(COUNT(DISTINCT orders.id) / NULLIF(COUNT(DISTINCT orders.CustomerID), 0), 1) as reorder_ratio')
+        )
+            ->join('orders_items', 'products.id', '=', 'orders_items.StockItem')
+            ->join('orders', 'orders_items.OrderID', '=', 'orders.id')
+            ->where('orders.company_id', $currentCompany->id)
+            ->whereBetween('orders.OrderDate', [
+                $startDate->format('Y-m-d H:i:s'),
+                $endDate->format('Y-m-d H:i:s')
+            ])
+            ->groupBy('products.id', 'products.StockItemName', 'products.StockCode')
+            ->havingRaw('COUNT(DISTINCT orders.CustomerID) > 1')
+            ->orderByDesc('reorder_ratio')
+            ->limit(5)
+            ->get();
 
-        //return DB::select($reorderRateQuery, [
-        //    $currentCompany->id,
-        //    $startDate->format('Y-m-d H:i:s'),
-        //    $endDate->format('Y-m-d H:i:s')
-        //]);
+        return $products;
     }
 
 

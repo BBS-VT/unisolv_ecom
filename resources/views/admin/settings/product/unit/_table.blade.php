@@ -1,5 +1,5 @@
 @if($product_units->count() > 0)
-    <div class="table-responsive" data-toggle="lists">
+    <div class="table-responsive" data-bs-toggle="lists">
         <table class="table table-xl mb-0 thead-border-top-0 table-striped">
             <thead>
                 <tr>

@@ -42,9 +42,9 @@
                                 ?>"> {{ $order->orderstatus->name ?? '' }} </span>
                             <td>
                                 @can('order_show')
-                                    <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-toggle="tooltip"
+                                    <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-bs-toggle="tooltip"
                                        title="{{ trans('global.view') }} {{ trans('cruds.order.title_singular') }}"
-                                       data-placement="top">
+                                       data-bs-placement="top">
                                         <i class="las dripicons-preview text-info font-18"></i>
                                     </a>
                                 @endcan
@@ -56,7 +56,7 @@
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                data-toggle="tooltip" data-placement="top"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="{{ trans('global.delete') }} {{ trans('cruds.order.title_singular') }}">
                                             <i class="dripicons-trash"></i>
                                         </button>
@@ -65,8 +65,8 @@
                                 &nbsp;
                                 @can('order_edit')
                                     <a href="{{ route('orders.download', $order->id) }}"  onClick="history.go(0)"
-                                       data-toggle="tooltip" title="{{ trans('global.downloadFile') }} {{ trans('cruds.order.title_singular') }}"
-                                       data-placement="top"> <i class="las dripicons-download text-info font-18"></i>
+                                       data-bs-toggle="tooltip" title="{{ trans('global.downloadFile') }} {{ trans('cruds.order.title_singular') }}"
+                                       data-bs-placement="top"> <i class="las dripicons-download text-info font-18"></i>
                                     </a>
                                 @endcan
 

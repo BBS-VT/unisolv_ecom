@@ -25,7 +25,7 @@
                 <!-- Import Form -->
                 <div class="card shadow">
                     <div class="card-header">
-                        <h6 class="m-0 font-weight-bold text-primary">
+                        <h6 class="m-0 fw-bold text-primary">
                             <i class="fas fa-upload me-2"></i>
                             {{ __('Upload File') }}
                         </h6>
@@ -99,7 +99,7 @@
                 <!-- Instructions -->
                 <div class="card shadow mb-4">
                     <div class="card-header">
-                        <h6 class="m-0 font-weight-bold text-success">
+                        <h6 class="m-0 fw-bold text-success">
                             <i class="fas fa-info-circle me-2"></i>
                             {{ __('Import Instructions') }}
                         </h6>
@@ -144,7 +144,7 @@
                 @if(session('import_result'))
                     <div class="card shadow">
                         <div class="card-header">
-                            <h6 class="m-0 font-weight-bold text-info">
+                            <h6 class="m-0 fw-bold text-info">
                                 <i class="fas fa-history me-2"></i>
                                 Last Import Results
                             </h6>
@@ -532,7 +532,7 @@
         }
 
         .border-end {
-            border-right: 1px solid #dee2e6 !important;
+            border-end: 1px solid #dee2e6 !important;
         }
     </style>
 @endpush

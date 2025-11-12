@@ -19,7 +19,7 @@
                             <div class="card-body p-0">
                                 <ul class="nav-border nav nav-pills" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active font-weight-semibold" data-toggle="tab" href="#LogIn_Tab" role="tab">Log In</a>
+                                        <a class="nav-link active font-weight-semibold" data-bs-toggle="tab" href="#LogIn_Tab" role="tab">Log In</a>
                                     </li>
 
                                 </ul>
@@ -54,12 +54,12 @@
 
                                             <div class="form-group row my-3">
                                                 <div class="col-sm-6">
-                                                    <div class="custom-control custom-switch switch-success">
-                                                        <input type="checkbox" class="custom-control-input" name="remember" id="customSwitchSuccess" {{ old('remember') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label text-muted" for="customSwitchSuccess">{{ __('Remember Me') }}</label>
+                                                    <div class="form-check form-switch switch-success">
+                                                        <input type="checkbox" class="form-check-input" name="remember" id="customSwitchSuccess" {{ old('remember') ? 'checked' : '' }}>
+                                                        <label class="form-check-label text-muted" for="customSwitchSuccess">{{ __('Remember Me') }}</label>
                                                     </div>
                                                 </div><!--end col-->
-                                                <div class="col-sm-6 text-right">
+                                                <div class="col-sm-6 text-end">
                                                     @if (Route::has('password.request'))
                                                         <a href="{{ route('password.request') }}" class="text-muted font-13"><i class="dripicons-lock"></i>
                                                             {{ __('Forgot Password?') }}</a>
@@ -69,7 +69,7 @@
 
                                             <div class="form-group mb-0 row">
                                                 <div class="col-12">
-                                                    <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">{{ __('Login') }} <i class="fas fa-sign-in-alt ml-1"></i></button>
+                                                    <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">{{ __('Login') }} <i class="fas fa-sign-in-alt ms-1"></i></button>
                                                 </div>
                                             </div>
                                         </form>

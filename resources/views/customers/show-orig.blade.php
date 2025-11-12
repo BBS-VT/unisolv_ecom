@@ -46,13 +46,13 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-selected="true">{{ trans('global.detail') }}</a>
+                            <a class="nav-link active" data-bs-toggle="tab" href="#home" role="tab" aria-selected="true">{{ trans('global.detail') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#contacts" role="tab" aria-selected="true">{{ trans('global.contacts') }}</a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#contacts" role="tab" aria-selected="true">{{ trans('global.contacts') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#orders" role="tab" aria-selected="true">{{ trans('global.orders') }}</a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#orders" role="tab" aria-selected="true">{{ trans('global.orders') }}</a>
                         </li>
                     </ul>
                     <div class="tab-content">

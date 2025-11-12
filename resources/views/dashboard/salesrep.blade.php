@@ -20,7 +20,7 @@
 <!--                            <a href="#" class="btn btn-sm btn-outline-primary" id="Dash_Date">
                                 <span class="day-name" id="Day_Name">Today:</span>&nbsp;
                                 <span class="" id="Select_date">Jan 11</span>
-                                <i data-feather="calendar" class="align-self-center icon-xs ml-1"></i>
+                                <i data-feather="calendar" class="align-self-center icon-xs ms-1"></i>
                             </a>
                             <a href="#" class="btn btn-sm btn-outline-primary">
                                 <i data-feather="download" class="align-self-center icon-xs"></i>
@@ -42,8 +42,8 @@
                             </div>&lt;!&ndash;end col&ndash;&gt;
                             <div class="col-auto">
                                 <div class="dropdown">
-                                    <a href="#" class="btn btn-sm btn-outline-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        This Month<i class="las la-angle-down ml-1"></i>
+                                    <a href="#" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        This Month<i class="las la-angle-down ms-1"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
                                         <a class="dropdown-item" href="#">Today</a>
@@ -120,7 +120,7 @@
                             <div class="col">
                                 <div class="media">
                                     <img src="{{ asset('images/money-beg.png') }}" alt="" class="align-self-center" height="40">
-                                    <div class="media-body align-self-center ml-3">
+                                    <div class="media-body align-self-center ms-3">
                                         <h6 class="m-0 font-20">$1850.00</h6>
                                         <p class="text-muted mb-0">Total Revenue</p>
                                     </div>&lt;!&ndash;end media body&ndash;&gt;
@@ -147,8 +147,8 @@
                             </div>&lt;!&ndash;end col&ndash;&gt;
                             <div class="col-auto">
                                 <div class="dropdown">
-                                    <a href="#" class="btn btn-sm btn-outline-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        This Week<i class="las la-angle-down ml-1"></i>
+                                    <a href="#" class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        This Week<i class="las la-angle-down ms-1"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right">
                                         <a class="dropdown-item" href="#">Today</a>
@@ -164,7 +164,7 @@
                         <div class="text-center">
                             <div id="ana_device" class="apex-charts"></div>
                             <h6 class="bg-light-alt py-3 px-2 mb-0">
-                                <i data-feather="calendar" class="align-self-center icon-xs mr-1"></i>
+                                <i data-feather="calendar" class="align-self-center icon-xs me-1"></i>
                                 01 January 2020 to 31 December 2020
                             </h6>
                         </div>
@@ -264,7 +264,7 @@
                                 <tr>
                                     <td>
                                         <div class="media">
-                                            <img src="{{ asset('images/products/01.png') }}" height="30" class="mr-3 align-self-center rounded" alt="...">
+                                            <img src="{{ asset('images/products/01.png') }}" height="30" class="me-3 align-self-center rounded" alt="...">
                                             <div class="media-body align-self-center">
                                                 <h6 class="m-0">Dastone Camera EDM 5D(White)</h6>
                                                 <a href="#" class="font-12 text-primary">ID: A3652</a>
@@ -275,14 +275,14 @@
                                     <td>450 <small class="text-muted">(550)</small></td>
                                     <td><span class="badge badge-soft-warning px-2">Stock</span></td>
                                     <td>
-                                        <a href="#" class="mr-2"><i class="las la-pen text-info font-18"></i></a>
+                                        <a href="#" class="me-2"><i class="las la-pen text-info font-18"></i></a>
                                         <a href="#"><i class="las la-trash-alt text-danger font-18"></i></a>
                                     </td>
                                 </tr>&lt;!&ndash;end tr&ndash;&gt;
                                 <tr>
                                     <td>
                                         <div class="media">
-                                            <img src="{{ asset('images/products/02.png') }}" height="30" class="mr-3 align-self-center rounded" alt="...">
+                                            <img src="{{ asset('images/products/02.png') }}" height="30" class="me-3 align-self-center rounded" alt="...">
                                             <div class="media-body align-self-center">
                                                 <h6 class="m-0">Dastone Shoes Max-Zon</h6>
                                                 <a href="#" class="font-12 text-primary">ID: A5002</a>
@@ -293,14 +293,14 @@
                                     <td>750 <small class="text-muted">(00)</small></td>
                                     <td><span class="badge badge-soft-primary px-2">Out of Stock</span></td>
                                     <td>
-                                        <a href="#" class="mr-2"><i class="las la-pen text-info font-18"></i></a>
+                                        <a href="#" class="me-2"><i class="las la-pen text-info font-18"></i></a>
                                         <a href="#"><i class="las la-trash-alt text-danger font-18"></i></a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <div class="media">
-                                            <img src="{{ asset('images/products/04.png') }}" height="30" class="mr-3 align-self-center rounded" alt="...">
+                                            <img src="{{ asset('images/products/04.png') }}" height="30" class="me-3 align-self-center rounded" alt="...">
                                             <div class="media-body align-self-center">
                                                 <h6 class="m-0">Dastone Mask N99 [ISI]</h6>
                                                 <a href="#" class="font-12 text-primary">ID: A6598</a>
@@ -311,14 +311,14 @@
                                     <td>280 <small class="text-muted">(220)</small></td>
                                     <td><span class="badge badge-soft-warning px-2">Stock</span></td>
                                     <td>
-                                        <a href="#" class="mr-2"><i class="las la-pen text-info font-18"></i></a>
+                                        <a href="#" class="me-2"><i class="las la-pen text-info font-18"></i></a>
                                         <a href="#"><i class="las la-trash-alt text-danger font-18"></i></a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <div class="media">
-                                            <img src="{{ asset ('images/products/img-5.png') }}" height="30" class="mr-3 align-self-center rounded" alt="...">
+                                            <img src="{{ asset ('images/products/img-5.png') }}" height="30" class="me-3 align-self-center rounded" alt="...">
                                             <div class="media-body align-self-center">
                                                 <h6 class="m-0">Dastone Bag (Blue)</h6>
                                                 <a href="#" class="font-12 text-primary">ID: A9547</a>
@@ -329,7 +329,7 @@
                                     <td>500 <small class="text-muted">(1000)</small></td>
                                     <td><span class="badge badge-soft-primary px-2">Out of Stock</span></td>
                                     <td>
-                                        <a href="#" class="mr-2"><i class="las la-pen text-info font-18"></i></a>
+                                        <a href="#" class="me-2"><i class="las la-pen text-info font-18"></i></a>
                                         <a href="#"><i class="las la-trash-alt text-danger font-18"></i></a>
                                     </td>
                                 </tr>

@@ -75,12 +75,12 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <div class="custom-control custom-switch">
+                                                        <div class="form-check form-switch">
                                                             <input type="checkbox" name="discount_per_item"
                                                                    id="discount_per_item"
                                                                    {{ $currentCompany->getSetting('discount_per_item') ? 'checked' : '' }}
-                                                                   class="custom-control-input">
-                                                            <label class="custom-control-label" for="discount_per_item">
+                                                                   class="form-check-input">
+                                                            <label class="form-check-label" for="discount_per_item">
                                                                 <strong>{{ __('global.discount_per_item') }}</strong>
                                                             </label>
                                                         </div>
@@ -92,11 +92,11 @@
 
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <div class="custom-control custom-switch">
+                                                        <div class="form-check form-switch">
                                                             <input type="checkbox" name="tax_per_item" id="tax_per_item"
                                                                    {{ $currentCompany->getSetting('tax_per_item') ? 'checked' : '' }}
-                                                                   class="custom-control-input">
-                                                            <label class="custom-control-label" for="tax_per_item">
+                                                                   class="form-check-input">
+                                                            <label class="form-check-label" for="tax_per_item">
                                                                 <strong>{{ __('global.tax_per_item') }}</strong>
                                                             </label>
                                                         </div>
@@ -110,13 +110,13 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <div class="custom-control custom-switch">
+                                                        <div class="form-check form-switch">
                                                             <input type="checkbox" name="sales_locations"
                                                                    id="sales_locations"
                                                                    {{ $currentCompany->getSetting('sales_locations') ? 'checked' : '' }}
-                                                                   class="custom-control-input"
+                                                                   class="form-check-input"
                                                                    onchange="toggleLocationsTab()">
-                                                            <label class="custom-control-label" for="sales_locations">
+                                                            <label class="form-check-label" for="sales_locations">
                                                                 <strong>{{ __('global.enable_sales_locations') }}</strong>
                                                             </label>
                                                         </div>
@@ -249,7 +249,7 @@
                 }
 
                 // Update URL when tab changes
-                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
                     history.pushState(null, null, e.target.hash);
                 });
             });

@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h6 class="modal-title m-0" id="displayDealLabel">{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}</h6>
-                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="la la-times"></i></span>
                 </button>
             </div>
@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="form-group row">
-                            <label for="DealDescription" class="col-sm-4 col-form-label text-left required">{{ trans('cruds.deal.fields.description') }}</label>
+                            <label for="DealDescription" class="col-sm-4 col-form-label text-start required">{{ trans('cruds.deal.fields.description') }}</label>
                             <div class="col-lg-8">
                                 <input class="form-control" type="hidden" id="deal_id" name="deal_id" >
                                 <input class="form-control" type="text" id="deal_name" name="deal_name" value="" >
@@ -80,7 +80,7 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label for="StartDate" class="col-sm-6 text-left col-form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
+                                    <label for="StartDate" class="col-sm-6 text-start col-form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
                                     <div class="col-sm-12">
                                         <input class="form-control" type="date" value="" id="deal_start_date" name="deal_start_date">
                                     </div>
@@ -88,7 +88,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label for="EndDate" class="col-sm-6 col-form-label text-left">{{ trans('cruds.deal.fields.enddate') }}</label>
+                                    <label for="EndDate" class="col-sm-6 col-form-label text-start">{{ trans('cruds.deal.fields.enddate') }}</label>
                                     <div class="col-sm-12">
                                         <input class="form-control" type="date" value="" id="deal_end_date" name="deal_end_date">
                                     </div>
@@ -99,7 +99,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -28,7 +28,7 @@
             <div class="col-lg-8">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold text-primary">{{ __('Promotion Overview') }}</h6>
+                        <h6 class="m-0 fw-bold text-primary">{{ __('Promotion Overview') }}</h6>
                         <div>
                             @php
                                 $statusColors = [
@@ -275,7 +275,7 @@
                 @if($usageStats['recent_usage']->isNotEmpty())
                     <div class="card shadow">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Recent Usage</h6>
+                            <h6 class="m-0 fw-bold text-primary">Recent Usage</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -330,7 +330,7 @@
             <div class="col-lg-4">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Usage Statistics</h6>
+                        <h6 class="m-0 fw-bold text-primary">Usage Statistics</h6>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
@@ -373,7 +373,7 @@
 
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Test Calculator</h6>
+                        <h6 class="m-0 fw-bold text-primary">Test Calculator</h6>
                     </div>
                     <div class="card-body">
                         <form id="testCalculator">
@@ -403,7 +403,7 @@
 
                 <div class="card shadow">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                        <h6 class="m-0 fw-bold text-primary">Quick Actions</h6>
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">

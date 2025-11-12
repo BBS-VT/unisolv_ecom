@@ -59,22 +59,22 @@
                                     <td>{{ $user->RepCode ?? '' }}</td>
                                     <td>
                                         @foreach($user->roles as $key => $item)
-                                            <span class="badge badge-info">{{ $item->title }}</span>
+                                            <span class="badge bg-info text-white">{{ $item->title }}</span>
                                         @endforeach
                                     </td>
                                     <td>
                                         @can('user_show')
-                                            <a href="{{ route('admin.users.show', $user->id) }}" data-toggle="tooltip"
+                                            <a href="{{ route('admin.users.show', $user->id) }}" data-bs-toggle="tooltip"
                                                title="{{ trans('global.view') }} {{ trans('cruds.user.title_singular') }}"
-                                               data-placement="top">
+                                               data-bs-placement="top">
                                                 <i class="las dripicons-preview text-info font-18"></i>
                                             </a>
                                         @endcan
                                         &nbsp;
                                         @can('user_edit')
-                                            <a href="{{ route('admin.users.edit', $user->id) }}" data-toggle="tooltip"
+                                            <a href="{{ route('admin.users.edit', $user->id) }}" data-bs-toggle="tooltip"
                                                title="{{ trans('global.edit') }} {{ trans('cruds.user.title_singular') }}"
-                                               data-placement="top">
+                                               data-bs-placement="top">
                                                 <i class="las dripicons-document-edit text-info font-18"></i>
                                             </a>
                                         @endcan
@@ -85,7 +85,7 @@
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                 <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                        data-toggle="tooltip" data-placement="top"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="{{ trans('global.delete') }} {{ trans('cruds.user.title_singular') }}">
                                                     <i class="dripicons-trash"></i>
                                                 </button>

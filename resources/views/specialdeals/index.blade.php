@@ -13,7 +13,7 @@
             <div class="page-title-box">
                 @if($message = Session::get('success'))
                     <div class="alert alert-info alert-dismissible fade in" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">x</span>
                         </button>
                         <strong>{{ trans('global.success') }}</strong> {{ $message }}
@@ -38,11 +38,11 @@
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ trans('global.add') }} {{ trans('cruds.deal.title_singular') }}
                                 </a>
-                            <!--   <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#createDeal">
+                            <!--   <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createDeal">
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ trans('global.add') }} {{ trans('cruds.deal.title_singular') }}
                                 </button>-->
-                                <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#importDeal">
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#importDeal">
                                     <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                                     {{ trans('global.import') }} {{ trans('cruds.deal.title_singular') }}
                                 </button>
@@ -73,15 +73,15 @@
                                         @foreach($deal->buyingGroup as $key => $group)
                                             @foreach($group->customer as $entity)
                                                 {{ $group->BuyingGroupName }} -
-                                                <span class="badge badge-info">{{ $entity->CustomerName }}</span>
+                                                <span class="badge bg-info text-white">{{ $entity->CustomerName }}</span>
                                             @endforeach
                                         @endforeach
                                     @else
                                         {{ $deal->DealDescription ?? '' }}
-                                        <span class="badge badge-secondary">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
-                                        <span class="badge badge-success">{{ $deal->customer->CustomerName ?? '' }}</span>
-                                        <span class="badge badge-danger">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
-                                        <span class="badge badge-warning">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
+                                        <span class="badge bg-secondary text-white">{{ $deal->productCategory->StockGroupName ?? '' }}</span>
+                                        <span class="badge bg-success text-white">{{ $deal->customer->CustomerName ?? '' }}</span>
+                                        <span class="badge bg-danger text-white">{{ $deal->customerGroup->CustomerCategoryName ?? '' }}</span>
+                                        <span class="badge bg-warning text-dark">{{ $deal->buyingGroup->BuyingGroupName ?? '' }}</span>
                                     @endif
 
                                 </td>
@@ -89,7 +89,7 @@
                                 <td> {{ $deal->DiscountPercentage ?? $deal->DiscountAmount }} </td>
                                 <td> {{ $deal->UnitPrice ?? '' }} </td>
                                 <td>
-                                    <span class="badge badge-primary">
+                                    <span class="badge bg-primary text-white">
                                         {{ intval( ltrim($deal->products->StockCode ?? '', '0')) }} -
                                         {{ $deal->products->StockItemName ?? '' }}
                                     </span>
@@ -98,16 +98,16 @@
                                 <td>
                                     @can('specialdeal_show')
                                         <a href="javascript:void(0)" id="show_deal" data-url="{{ route('deals.show', $deal->id) }}"
-                                           data-toggle="tooltip" title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
-                                           data-placement="top">
+                                           data-bs-toggle="tooltip" title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
+                                           data-bs-placement="top">
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
                                     @endcan
                                     &nbsp;
                                     @can('specialdeal_edit')
-                                        <a href="{{ route('deals.edit', $deal->id) }}" data-toggle="tooltip"
+                                        <a href="{{ route('deals.edit', $deal->id) }}" data-bs-toggle="tooltip"
                                            title="{{ trans('global.edit') }} {{ trans('cruds.deal.title_singular') }}"
-                                           data-placement="top">
+                                           data-bs-placement="top">
                                             <i class="las dripicons-document-edit text-info font-18"></i>
                                         </a>
                                     @endcan
@@ -118,7 +118,7 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                    data-toggle="tooltip" data-placement="top"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="{{ trans('global.delete') }} {{ trans('cruds.deal.title_singular') }}">
                                                 <i class="dripicons-trash"></i>
                                             </button>
@@ -135,7 +135,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h6 class="modal-title m-0" id="createDealLabel">{{ trans('global.create') }} {{ trans('cruds.deal.title_singular') }}</h6>
-                                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true"><i class="la la-times"></i></span>
                                     </button>
                                 </div>
@@ -145,7 +145,7 @@
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="form-group row">
-                                                    <label for="DealDescription" class="col-sm-4 col-form-label text-left required">{{ trans('cruds.deal.fields.description') }}</label>
+                                                    <label for="DealDescription" class="col-sm-4 col-form-label text-start required">{{ trans('cruds.deal.fields.description') }}</label>
                                                     <div class="col-lg-8">
                                                         <input class="form-control" type="text" value="{{ old('DealDescription', '')  }}" id="DealDescription" name="DealDescription" required>
                                                         @if($errors->has('DealDescription'))
@@ -160,7 +160,7 @@
                                                     <div class="col-lg-6">
                                                         <div class="form-group bootstrap-select-1">
                                                             <label>{{ trans('cruds.deal.fields.product') }}</label>
-                                                            <select class="select2 form-control mb-3 custom-select {{ $errors->has('StockItemID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
+                                                            <select class="select2 form-control mb-3 form-select {{ $errors->has('StockItemID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
                                                                 <option disabled selected value> -- select an option -- </option>
                                                                 @foreach($products as $id => $product )
                                                                     <option value="{{ $id }}" >{{ $product }}</option>
@@ -171,7 +171,7 @@
                                                     <div class="col-lg-6">
                                                         <div class="form-group bootstrap-select-1">
                                                             <label >{{ trans('cruds.deal.fields.department') }}</label>
-                                                            <select class="select2 form-control mb-3 custom-select {{ $errors->has('StockGroupID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
+                                                            <select class="select2 form-control mb-3 form-select {{ $errors->has('StockGroupID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
                                                                 <option disabled selected value> -- select an option -- </option>
                                                                 @foreach($categories as $id => $category )
                                                                     <option value="{{ $id }}" >{{ $category }}</option>
@@ -184,7 +184,7 @@
                                                     <div class="col-lg-6">
                                                         <div class="form-group bootstrap-select-1">
                                                             <label >{{ trans('cruds.deal.fields.buygroup') }}</label>
-                                                            <select class="select2 form-control mb-3 custom-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
+                                                            <select class="select2 form-control mb-3 form-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
                                                                 <option disabled selected value> -- select an option -- </option>
                                                                 @foreach($buyinggroups as $id => $buyingroup )
                                                                     <option value="{{ $id }}" >{{ $buyingroup }}</option>
@@ -195,7 +195,7 @@
                                                     <div class="col-lg-6">
                                                         <div class="form-group bootstrap-select-1">
                                                             <label >{{ trans('cruds.deal.fields.customergroup') }}</label>
-                                                            <select class="select2 form-control mb-3 custom-select {{ $errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
+                                                            <select class="select2 form-control mb-3 form-select {{ $errors->has('CustomerCategoryID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
                                                                 <option disabled selected value> -- select an option -- </option>
                                                                 @foreach($customergroups as $id => $customergroup )
                                                                     <option value="{{ $id }}" >{{ $customergroup }}</option>
@@ -208,7 +208,7 @@
                                                     <div class="col-lg-12">
                                                         <div class="form-group bootstrap-select-1">
                                                             <label >{{ trans('cruds.deal.fields.customer') }}</label>
-                                                            <select class="select2 form-control mb-3 custom-select {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
+                                                            <select class="select2 form-control mb-3 form-select {{ $errors->has('CustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;">
                                                                 <option disabled selected value> -- select an option -- </option>
                                                                 @foreach($customers as $id => $customer )
                                                                     <option value="{{ $id }}" >{{ $customer }}</option>
@@ -218,14 +218,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="DiscountAmount" class="col-sm-4 col-form-label text-left">{{ trans('cruds.deal.fields.discount') }}</label>
+                                                    <label for="DiscountAmount" class="col-sm-4 col-form-label text-start">{{ trans('cruds.deal.fields.discount') }}</label>
                                                     <div class="col-lg-8">
                                                         <input class="form-control" type="text" value="{{ old('DiscountAmount', isset($deal) ? $deal->DiscountAmount : '') }}"
                                                                id="DiscountAmount" name="DiscountAmount">
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="DiscountPercentage" class="col-sm-4 col-form-label text-left">{{ trans('cruds.deal.fields.discountperc') }}</label>
+                                                    <label for="DiscountPercentage" class="col-sm-4 col-form-label text-start">{{ trans('cruds.deal.fields.discountperc') }}</label>
                                                     <div class="input-group col-lg-8">
                                                         <input type="text" id="DiscountPercentage" name="DiscountPercentage" class="form-control" placeholder="">
                                                         <div class="input-group-append">
@@ -234,7 +234,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label for="UnitPrice" class="col-sm-4 col-form-label text-left">{{ trans('cruds.deal.fields.unitprice') }}</label>
+                                                    <label for="UnitPrice" class="col-sm-4 col-form-label text-start">{{ trans('cruds.deal.fields.unitprice') }}</label>
                                                     <div class="col-lg-8">
                                                         <input class="form-control" type="text" value="{{ old('DiscountAmount', isset($deal) ? $deal->DiscountAmount : '') }}"
                                                                id="UnitPrice" name="UnitPrice">
@@ -243,7 +243,7 @@
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <label for="StartDate" class="col-sm-6 text-left col-form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
+                                                            <label for="StartDate" class="col-sm-6 text-start col-form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
                                                             <div class="col-sm-12">
                                                                 <input class="form-control" type="date" value="{{ date('Y-m-d') }}" id="StartDate" name="StartDate">
                                                             </div>
@@ -251,7 +251,7 @@
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div class="form-group">
-                                                            <label for="EndDate" class="col-sm-6 col-form-label text-left">{{ trans('cruds.deal.fields.enddate') }}</label>
+                                                            <label for="EndDate" class="col-sm-6 col-form-label text-start">{{ trans('cruds.deal.fields.enddate') }}</label>
                                                             <div class="col-sm-12">
                                                                 <input class="form-control" type="date" value="{{ date('Y-m-d') }}" id="EndDate" name="EndDate">
                                                             </div>
@@ -262,7 +262,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                                         <button type="button" id="submit" value="submit" class="btn btn-primary btn-sm">Save</button>
                                     </div>
                                 </form>
@@ -275,7 +275,7 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-danger">
                                     <h6 class="modal-title m-0 text-white" id="importDealLabel">{{ trans('global.import') }} {{ trans('cruds.deal.title_singular') }}</h6>
-                                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                     </button>
                                 </div>

@@ -13,7 +13,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label class="required" for="customer">{{ __('cruds.order.fields.customer_name') }}</label>
-            <select id="customer" name="customer_id" data-toggle="select" class="select2 form-control js-customer" data-select2-id="customer">
+            <select id="customer" name="customer_id" data-bs-toggle="select" class="select2 form-control js-customer" data-select2-id="customer">
                 <option disabled selected>{{ __('global.pleaseSelect') }}</option>
                 @if($order->customer_id)
                     <option value="{{ $order->customer_id }}"
@@ -41,7 +41,7 @@
 </div>
 
 <div class="col-12 mt-5">
-    <div class="table-responsive" data-toggle="lists">
+    <div class="table-responsive" data-bs-toggle="lists">
         <table class="table table-xl mb-0 thead-border-top-0 table-striped" id="orderDetail">
             <thead>
                 <tr>
@@ -60,20 +60,20 @@
                         <th class="w-10">{{ __('global.quantity') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-15">{{ __('global.price') }}</th>
-                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                        <th class="text-end w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and $discount_per_item)
                         <th class="w-40">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
                         <th class="w-20">{{ __('global.discount') }}</th>
-                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                        <th class="text-end w-10">{{ __('global.total') }}</th>
                     @elseif(!$tax_per_item and !$discount_per_item)
                         <th class="w-60">{{ __('global.products') }}</th>
                         <th class="w-10">{{ __('global.quantity') }}</th>
                         <th class="col-2 col-sm-2">{{ __('global.stockOnhand') }}</th>
                         <th class="w-20">{{ __('global.price') }}</th>
-                        <th class="text-right w-10">{{ __('global.total') }}</th>
+                        <th class="text-end w-10">{{ __('global.total') }}</th>
                     @endif
                     <th></th>
                 </tr>
@@ -127,9 +127,9 @@
                         </td>
 
                     @endif
-                    <td class="text-right">
+                    <td class="text-end">
                         <p class="mb-1">
-                            <input type="text" name="total[]" class="price_input text-right price-text amount_price" value="0" readonly>
+                            <input type="text" name="total[]" class="price_input text-end price-text amount_price" value="0" readonly>
                         </p>
                         <div class="tax_list"></div>
                     </td>
@@ -187,9 +187,9 @@
                                     </div>
                                 </td>
                             @endif
-                            <td class="text-right">
+                            <td class="text-end">
                                 <p class="mb-1">
-                                    <input type="text" name="total[]" class="col-sm-2 price_input text-right price-text amount_price" value="{{ $item->total }}" readonly>
+                                    <input type="text" name="total[]" class="col-sm-2 price_input text-end price-text amount_price" value="{{ $item->total }}" readonly>
                                 </p>
                                 <div class="tax_list"></div>
                             </td>
@@ -212,7 +212,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-5 mt-4 pr-4">
+    <div class="col-md-5 mt-4 pe-4">
         <div class="form-group">
             <label for="notes">{{ __('global.notes') }}</label>
             <textarea name="notes" id="notes" class="form-control" rows="2">{{ $order->notes }}</textarea>
@@ -224,14 +224,14 @@
         </div>
     </div>
 
-    <div class="col-md-4 offset-md-3 mt-5 pl-4">
+    <div class="col-md-4 offset-md-3 mt-5 ps-4">
         <div class="card card-body shadow-none border">
 
             <div class="d-flex align-items-center mb-3">
                 <div class="h6 mb-0 w-50">
                     <strong class="text-muted">{{ __('global.sub_total') }}</strong>
                 </div>
-                <div class="ml-auto h6 mb-0">
+                <div class="ms-auto h6 mb-0">
                     <input id="sub_total" name="sub_total" type="text" class="price_input price-text w-100 fs-inherit" value="{{ $order->sub_total ?? 0 }}" readonly>
                 </div>
             </div>
@@ -243,7 +243,7 @@
                     </div>
                     <div class="col-12 h6 mb-0">
                         <div class="form-group select-container">
-                            <select id="total_taxes" name="total_taxes[]" data-toggle="select" multiple class="form-control priceListener select-with-footer" data-select2-id="total_taxes">
+                            <select id="total_taxes" name="total_taxes[]" data-bs-toggle="select" multiple class="form-control priceListener select-with-footer" data-select2-id="total_taxes">
                                 @foreach(get_tax_types_select2_array($currentCompany->id) as $option)
                                     <option value="{{ $option['id'] }}" data-percent="{{ $option['percent'] }}" {{ $order->hasTax($option['id']) ? 'selected=""' : '' }}>{{ $option['text'] }}</option>
                                 @endforeach
@@ -280,12 +280,12 @@
                 <div class="h5 mb-0">
                     <strong class="text-muted">{{ __('global.total') }}</strong>
                 </div>
-                <div class="ml-auto h5 mb-0">
+                <div class="ms-auto h5 mb-0">
                     <input id="grand_total" name="grand_total" type="text" class="price_input price-text w-100 fs-inherit" value="{{ $order->total ?? 0 }}" readonly>
                 </div>
             </div>
         </div>
-        <div class="col-12 text-center float-right mt-3">
+        <div class="col-12 text-center float-end mt-3">
             <button type="button" id="save_form_button" class="btn btn-danger save_form_button pull-right">{{ __('global.save') }}</button>
             <a href="{{ route('orders.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
         </div>

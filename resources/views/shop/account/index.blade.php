@@ -257,7 +257,7 @@
         }
 
         .stats-card {
-            border-left: 4px solid var(--bs-primary);
+            border-start: 4px solid var(--bs-primary);
         }
 
         .progress {

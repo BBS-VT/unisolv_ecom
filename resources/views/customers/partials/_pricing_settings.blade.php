@@ -4,7 +4,7 @@
             <i data-feather="tag" class="icon-dual-primary me-2"></i>
             <h5 class="card-title mb-0">{{ __('global.pricing_settings') }}</h5>
             @can('customer_edit')
-                <button type="button" data-toggle="modal" data-target="#pricingSettingsModal" class="btn btn-sm btn-outline-primary ms-auto float-end">
+                <button type="button" data-bs-toggle="modal" data-bs-target="#pricingSettingsModal" class="btn btn-sm btn-outline-primary ms-auto float-end">
                     <i data-feather="edit-2" class="icon-xs"></i> {{ __('global.edit') }}
                 </button>
             @endcan
@@ -66,7 +66,7 @@
                         <i data-feather="sliders" class="icon-dual-primary me-2"></i>
                         {{ __('global.edit') }} {{ __('global.pricing_settings') }}
                     </h5>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true"><i class="la la-times"></i></span>
                     </button>
                 </div>
@@ -104,7 +104,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light btn-sm" data-dismiss="modal">
+                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">
                             {{ __('global.cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary btn-sm">

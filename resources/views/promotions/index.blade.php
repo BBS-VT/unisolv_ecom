@@ -21,12 +21,12 @@
 
         <div class="row mb-4">
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card border-start-warning shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">{{ __('Scheduled') }}</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['scheduled']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-warning text-uppercase mb-1">{{ __('Scheduled') }}</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['scheduled']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-clock fa-2x text-gray-300"></i>
@@ -37,12 +37,12 @@
             </div>
 
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card border-start-danger shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">{{ __('Expired') }}</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['expired']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-danger text-uppercase mb-1">{{ __('Expired') }}</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['expired']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-times-circle fa-2x text-gray-300"></i>
@@ -53,12 +53,12 @@
             </div>
 
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-info shadow h-100 py-2">
+                <div class="card border-start-info shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">{{ __('Online Only') }}</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['online_only']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-info text-uppercase mb-1">{{ __('Online Only') }}</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['online_only']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-globe fa-2x text-gray-300"></i>
@@ -69,12 +69,12 @@
             </div>
 
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card border-start-secondary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">{{ __('Imported') }}</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['imported']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-secondary text-uppercase mb-1">{{ __('Imported') }}</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['imported']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-download fa-2x text-gray-300"></i>
@@ -85,12 +85,12 @@
             </div>
 
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card border-start-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['total']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['total']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-tags fa-2x text-gray-300"></i>
@@ -100,12 +100,12 @@
                 </div>
             </div>
             <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card border-left-success shadow h-100 py-2">
+                <div class="card border-start-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($statistics['active']) }}</div>
+                            <div class="col me-2">
+                                <div class="text-xs fw-bold text-success text-uppercase mb-1">Active</div>
+                                <div class="h5 mb-0 fw-bold text-gray-800">{{ number_format($statistics['active']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -117,7 +117,7 @@
         </div>
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">{{ __('Filters & Search') }}</h6>
+                <h6 class="m-0 fw-bold text-primary">{{ __('Filters & Search') }}</h6>
             </div>
             <div class="card-body">
                 <form method="GET" action="{{ route('promotions.index') }}" class="row g-3">
@@ -208,7 +208,7 @@
 
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">
+                <h6 class="m-0 fw-bold text-primary">
                     Promotions ({{ $promotions->total() }} total)
                 </h6>
 

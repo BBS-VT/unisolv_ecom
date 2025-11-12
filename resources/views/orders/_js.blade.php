@@ -380,7 +380,7 @@
                 '<div class="h6 mb-0 w-50">' +
                 '  <strong class="text-muted">' + name + '</strong>' +
                 '</div>' +
-                '<div class="ml-auto h6 mb-0">' +
+                '<div class="ms-auto h6 mb-0">' +
                 '  <input type="text" class=price_input price-text w-100 fs-inherit" value="'+ Number(amount).toFixed(2) +'" disabled>' +
                 '</div>' +
             '</div>';

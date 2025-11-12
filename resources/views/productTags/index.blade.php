@@ -77,17 +77,17 @@
                                             </td>
                                             <td>
                                                 @can('product_tag_show')
-                                                    <a  href="{{ route('product-tags.show', $productTag->id) }}" data-toggle="tooltip"
+                                                    <a  href="{{ route('product-tags.show', $productTag->id) }}" data-bs-toggle="tooltip"
                                                     title="{{ trans('global.view') }} {{ trans('cruds.productTag.title_singular') }}"
-                                                    data-placement="top">
+                                                    data-bs-placement="top">
                                                         <i class="las dripicons-preview text-info font-18"></i>
                                                     </a>
                                                 @endcan
                                                     &nbsp;
                                                 @can('product_tag_edit')
-                                                    <a href="{{ route('product-tags.edit', $productTag->id) }}" data-toggle="tooltip"
+                                                    <a href="{{ route('product-tags.edit', $productTag->id) }}" data-bs-toggle="tooltip"
                                                        title="{{ trans('global.edit') }} {{ trans('cruds.productTag.title_singular') }}"
-                                                       data-placement="top">
+                                                       data-bs-placement="top">
                                                         <i class="las dripicons-document-edit text-info font-18"></i>
                                                     </a>
                                                 @endcan
@@ -97,7 +97,7 @@
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                                data-toggle="tooltip" data-placement="top"
+                                                                data-bs-toggle="tooltip" data-bs-placement="top"
                                                                 title="{{ trans('global.delete') }} {{ trans('cruds.productTag.title_singular') }}">
                                                             <i class="dripicons-trash"></i>
                                                         </button>
@@ -172,7 +172,7 @@
                 pageLength: 25,
             });
             $('.datatable-ProductTag:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
                 $($.fn.dataTable.tables(true)).DataTable()
                     .columns.adjust();
             });

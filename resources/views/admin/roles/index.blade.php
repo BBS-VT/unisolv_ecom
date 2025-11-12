@@ -72,7 +72,7 @@
                                 </td>
                                 <td>
                                     @foreach($role->permissions as $key => $item)
-                                        <span class="badge badge-info">{{ $item->title }}</span>
+                                        <span class="badge bg-info text-white">{{ $item->title }}</span>
                                     @endforeach
                                 </td>
                                 <td>
@@ -165,7 +165,7 @@
                 pageLength: 100,
             });
             let table = $('.datatable-User:not(.ajaxTable)').DataTable({ buttons:dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
                 $($.fn.dataTable.tables(true)).DataTable()
                     .columns.adjust();
             });

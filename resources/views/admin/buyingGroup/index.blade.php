@@ -17,7 +17,7 @@
                     <div class="col-auto align-self-center">
                         @can('buying_group_create')
                             <a href="{{ route("admin.buying-group.create") }}" class="btn btn-sm btn-soft-primary">
-                                <i class="fas fa-plus mr-2"></i>
+                                <i class="fas fa-plus me-2"></i>
                                 {{ trans('global.add') }}&nbsp;{{ trans('global.buying_group') }}
                             </a>
                         @endcan
@@ -58,9 +58,9 @@
                                 </td>
                                 <td>
                                     @can('buying_group_edit')
-                                        <a href="{{ route('admin.buying-group.edit', $buyingGroup->id) }}" data-toggle="tooltip"
+                                        <a href="{{ route('admin.buying-group.edit', $buyingGroup->id) }}" data-bs-toggle="tooltip"
                                            title="{{ trans('global.edit') }} {{ trans('cruds.buyingGroup.title_singular') }}"
-                                           data-placement="top">
+                                           data-bs-placement="top">
                                             <i class="las dripicons-document-edit text-info font-18"></i>
                                         </a>
                                     @endcan
@@ -71,7 +71,7 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                    data-toggle="tooltip" data-placement="top"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="{{ trans('global.delete') }} {{ trans('cruds.buyingGroup.title_singular') }}">
                                                 <i class="dripicons-trash"></i>
                                             </button>
@@ -140,7 +140,7 @@
                 pageLength: 25,
             });
             $('.datatable-Order:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
                 $($.fn.dataTable.tables(true)).DataTable()
                     .columns.adjust();
             });

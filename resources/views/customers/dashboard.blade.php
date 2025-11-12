@@ -28,23 +28,23 @@
         }
 
         .balance-card {
-            border-left: 4px solid;
+            border-start: 4px solid;
         }
 
         .balance-current {
-            border-left-color: #2a76f4;
+            border-start-color: #2a76f4;
         }
 
         .balance-30 {
-            border-left-color: #0acf97;
+            border-start-color: #0acf97;
         }
 
         .balance-60 {
-            border-left-color: #ffbc00;
+            border-start-color: #ffbc00;
         }
 
         .balance-90 {
-            border-left-color: #fa5c7c;
+            border-start-color: #fa5c7c;
         }
 
         .table td, .table th {
@@ -176,7 +176,7 @@
                 <div class="card summary-card">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-user mr-1 text-primary"></i> {{ __('Account Information') }}
+                            <i class="dripicons-user me-1 text-primary"></i> {{ __('Account Information') }}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -199,7 +199,7 @@
                     </div>
                     <div class="card-footer bg-light">
                         <a href="{{ route('customer.profile') }}" class="btn btn-sm btn-outline-primary btn-block">
-                            <i class="dripicons-pencil mr-1"></i> {{ __('Update Profile') }}
+                            <i class="dripicons-pencil me-1"></i> {{ __('Update Profile') }}
                         </a>
                     </div>
                 </div>
@@ -208,22 +208,22 @@
                 <div class="card summary-card mt-4">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-lightbulb mr-1 text-warning"></i> {{ __('Quick Actions') }}
+                            <i class="dripicons-lightbulb me-1 text-warning"></i> {{ __('Quick Actions') }}
                         </h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
                             <a href="{{ route('orders.create') }}" class="list-group-item list-group-item-action">
-                                <i class="dripicons-cart mr-2 text-primary"></i> {{ __('Place New Order') }}
+                                <i class="dripicons-cart me-2 text-primary"></i> {{ __('Place New Order') }}
                             </a>
                             <a href="{{ route('orders.index') }}" class="list-group-item list-group-item-action">
-                                <i class="dripicons-document-edit mr-2 text-info"></i> {{ __('View All Orders') }}
+                                <i class="dripicons-document-edit me-2 text-info"></i> {{ __('View All Orders') }}
                             </a>
                             <a href="{{ route('products.index') }}" class="list-group-item list-group-item-action">
-                                <i class="dripicons-view-list mr-2 text-success"></i> {{ __('Browse Products') }}
+                                <i class="dripicons-view-list me-2 text-success"></i> {{ __('Browse Products') }}
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                <i class="dripicons-message mr-2 text-warning"></i> {{ __('Contact Support') }}
+                                <i class="dripicons-message me-2 text-warning"></i> {{ __('Contact Support') }}
                             </a>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                 <div class="card summary-card">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-cart mr-1 text-primary"></i> {{ __('Recent Orders') }}
+                            <i class="dripicons-cart me-1 text-primary"></i> {{ __('Recent Orders') }}
                         </h5>
                         <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-primary">
                             {{ __('View All') }}
@@ -369,13 +369,13 @@
                                                     </span>
                                             </td>
                                             <td>
-                                                <a href="{{ route('orders.show', $order->id) }}" class="action-btn text-info" data-toggle="tooltip" title="{{ __('View Order') }}">
+                                                <a href="{{ route('orders.show', $order->id) }}" class="action-btn text-info" data-bs-toggle="tooltip" title="{{ __('View Order') }}">
                                                     <i class="dripicons-preview"></i>
                                                 </a>
-                                                {{--<a href="{{ route('orders.track', $order->id) }}" class="action-btn text-success" data-toggle="tooltip" title="{{ __('Track Order') }}">
+                                                {{--<a href="{{ route('orders.track', $order->id) }}" class="action-btn text-success" data-bs-toggle="tooltip" title="{{ __('Track Order') }}">
                                                     <i class="dripicons-location"></i>
                                                 </a>--}}
-                                                {{--<a href="{{ route('orders.reorder', $order->id) }}" class="action-btn text-primary" data-toggle="tooltip" title="{{ __('Reorder') }}">
+                                                {{--<a href="{{ route('orders.reorder', $order->id) }}" class="action-btn text-primary" data-bs-toggle="tooltip" title="{{ __('Reorder') }}">
                                                     <i class="dripicons-refresh"></i>
                                                 </a>--}}
                                             </td>
@@ -389,7 +389,7 @@
                                 <img src="{{ asset('images/empty-orders.svg') }}" alt="No orders" style="width: 120px; opacity: 0.6">
                                 <p class="mt-3 text-muted">{{ __('No recent orders found.') }}</p>
                                 <a href="{{ route('orders.create') }}" class="btn btn-primary mt-2">
-                                    <i class="dripicons-cart mr-1"></i> {{ __('Place Your First Order') }}
+                                    <i class="dripicons-cart me-1"></i> {{ __('Place Your First Order') }}
                                 </a>
                             </div>
                         @endif
@@ -405,18 +405,18 @@
                     <div class="card-header bg-light">
                         <ul class="nav nav-tabs card-header-tabs" id="orderHistoryTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="all-orders-tab" data-toggle="tab" href="#all-orders" role="tab" aria-controls="all-orders" aria-selected="true">
-                                    <i class="dripicons-document-edit mr-1"></i> {{ __('All Orders') }}
+                                <a class="nav-link active" id="all-orders-tab" data-bs-toggle="tab" href="#all-orders" role="tab" aria-controls="all-orders" aria-selected="true">
+                                    <i class="dripicons-document-edit me-1"></i> {{ __('All Orders') }}
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="pending-tab" data-toggle="tab" href="#pending" role="tab" aria-controls="pending" aria-selected="false">
-                                    <i class="dripicons-time-reverse mr-1"></i> {{ __('Pending') }}
+                                <a class="nav-link" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab" aria-controls="pending" aria-selected="false">
+                                    <i class="dripicons-time-reverse me-1"></i> {{ __('Pending') }}
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">
-                                    <i class="dripicons-checkmark mr-1"></i> {{ __('Completed') }}
+                                <a class="nav-link" id="completed-tab" data-bs-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">
+                                    <i class="dripicons-checkmark me-1"></i> {{ __('Completed') }}
                                 </a>
                             </li>
                         </ul>
@@ -471,13 +471,13 @@
                                                             </span>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('orders.show', $order->id) }}" class="action-btn text-info" data-toggle="tooltip" title="{{ __('View Order') }}">
+                                                        <a href="{{ route('orders.show', $order->id) }}" class="action-btn text-info" data-bs-toggle="tooltip" title="{{ __('View Order') }}">
                                                             <i class="dripicons-preview"></i>
                                                         </a>
-                                                        {{--<a href="{{ route('orders.track', $order->id) }}" class="action-btn text-success" data-toggle="tooltip" title="{{ __('Track Order') }}">
+                                                        {{--<a href="{{ route('orders.track', $order->id) }}" class="action-btn text-success" data-bs-toggle="tooltip" title="{{ __('Track Order') }}">
                                                             <i class="dripicons-location"></i>
                                                         </a>
-                                                        <a href="{{ route('orders.reorder', $order->id) }}" class="action-btn text-primary" data-toggle="tooltip" title="{{ __('Reorder') }}">
+                                                        <a href="{{ route('orders.reorder', $order->id) }}" class="action-btn text-primary" data-bs-toggle="tooltip" title="{{ __('Reorder') }}">
                                                             <i class="dripicons-refresh"></i>
                                                         </a>--}}
                                                     </td>
@@ -494,7 +494,7 @@
                                         <img src="{{ asset('images/empty-orders.svg') }}" alt="No orders" style="width: 120px; opacity: 0.6">
                                         <p class="mt-3 text-muted">{{ __('No order history found.') }}</p>
                                         <a href="{{ route('orders.create') }}" class="btn btn-primary mt-2">
-                                            <i class="dripicons-cart mr-1"></i> {{ __('Place Your First Order') }}
+                                            <i class="dripicons-cart me-1"></i> {{ __('Place Your First Order') }}
                                         </a>
                                     </div>
                                 @endif
@@ -522,7 +522,7 @@
         <script>
             $(document).ready(function() {
                 // Initialize tooltips
-                $('[data-toggle="tooltip"]').tooltip();
+                $('[data-bs-toggle="tooltip"]').tooltip();
 
                 // Initialize tabs
                 $('#orderHistoryTab a').on('click', function (e) {

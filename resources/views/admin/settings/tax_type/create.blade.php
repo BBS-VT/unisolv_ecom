@@ -38,7 +38,7 @@
 
                         @include('admin.settings.tax_type._form')
 
-                        <div class="form-group text-right mt-4">
+                        <div class="form-group text-end mt-4">
                             <button type="submit" class="btn btn-danger">{{ __('global.save') }}</button>
                             <a href="{{ url()->previous() }}" class="btn btn-secondary">{{ trans('global.cancel') }}</a>
                         </div>

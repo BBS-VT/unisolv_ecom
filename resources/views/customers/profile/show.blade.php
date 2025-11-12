@@ -19,7 +19,7 @@
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -30,7 +30,7 @@
                 <div class="card">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-user mr-1 text-primary"></i> {{ __('Account Information') }}
+                            <i class="dripicons-user me-1 text-primary"></i> {{ __('Account Information') }}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="card-footer bg-light">
                         <a href="{{ route('customer.profile.edit') }}" class="btn btn-sm btn-outline-primary btn-block">
-                            <i class="dripicons-pencil mr-1"></i> {{ __('Edit Profile') }}
+                            <i class="dripicons-pencil me-1"></i> {{ __('Edit Profile') }}
                         </a>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="card">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-location mr-1 text-primary"></i> {{ __('Delivery Information') }}
+                            <i class="dripicons-location me-1 text-primary"></i> {{ __('Delivery Information') }}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -109,7 +109,7 @@
                 <div class="card mt-4">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-lock mr-1 text-primary"></i> {{ __('Password & Security') }}
+                            <i class="dripicons-lock me-1 text-primary"></i> {{ __('Password & Security') }}
                         </h5>
                     </div>
                     <div class="card-body">

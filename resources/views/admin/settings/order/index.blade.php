@@ -47,11 +47,11 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="form-group mb-3">
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input"
                                                                id="displaySellingPrices" name="display_selling_prices"
                                                             {{ $currentCompany->getSetting('display_selling_prices') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="displaySellingPrices">
+                                                        <label class="form-check-label" for="displaySellingPrices">
                                                             <strong>{{ __('global.display_selling_prices') }}</strong>
                                                         </label>
                                                     </div>
@@ -61,11 +61,11 @@
                                                 </div>
 
                                                 <div class="form-group mb-0">
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input"
                                                                id="displayCostPrices" name="display_cost_prices"
                                                             {{ $currentCompany->getSetting('display_cost_prices') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="displayCostPrices">
+                                                        <label class="form-check-label" for="displayCostPrices">
                                                             <strong>{{ __('global.display_cost_prices') }}</strong>
                                                         </label>
                                                     </div>
@@ -88,11 +88,11 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="form-group mb-3">
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input"
                                                                id="orderCustomerConfirmation" name="order_customer_confirmation"
                                                             {{ $currentCompany->getSetting('order_customer_confirmation') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="orderCustomerConfirmation">
+                                                        <label class="form-check-label" for="orderCustomerConfirmation">
                                                             <strong>{{ __('global.order_customer_confirmation') }}</strong>
                                                         </label>
                                                     </div>
@@ -102,11 +102,11 @@
                                                 </div>
 
                                                 <div class="form-group mb-0">
-                                                    <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input"
+                                                    <div class="form-check form-switch">
+                                                        <input type="checkbox" class="form-check-input"
                                                                id="orderFulfillmentNotification" name="order_fulfillment_notification"
                                                             {{ $currentCompany->getSetting('order_fulfillment_notification') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="orderFulfillmentNotification">
+                                                        <label class="form-check-label" for="orderFulfillmentNotification">
                                                             <strong>{{ __('global.order_fulfillment_notification') }}</strong>
                                                         </label>
                                                     </div>

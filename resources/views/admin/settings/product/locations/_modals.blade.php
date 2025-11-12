@@ -171,19 +171,19 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive"
+                                        <div class="form-check form-switch">
+                                            <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive"
                                                 {{ old('IsActive', true) ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="IsActive">{{ __('global.active') }}</label>
+                                            <label class="form-check-label" for="IsActive">{{ __('global.active') }}</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault"
+                                        <div class="form-check form-switch">
+                                            <input type="checkbox" class="form-check-input" id="IsDefault" name="IsDefault"
                                                 {{ old('IsDefault', false) ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="IsDefault">{{ __('global.default_location') }}</label>
+                                            <label class="form-check-label" for="IsDefault">{{ __('global.default_location') }}</label>
                                         </div>
                                         <small class="form-text text-muted">{{ __('messages.default_location_help') }}</small>
                                     </div>

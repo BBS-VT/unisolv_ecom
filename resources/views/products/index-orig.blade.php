@@ -13,7 +13,7 @@
             <div class="page-title-box">
                 @if($message = Session::get('success'))
                     <div class="alert alert-info alert-dismissible fade in" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">x</span>
                         </button>
                         <strong>{{ trans('global.success') }}</strong> {{ $message }}
@@ -49,18 +49,18 @@
                                 </a>
                             @endcan
                             @can('product_import')
-                                <ul class="list-unstyled float-right mb-0">
+                                <ul class="list-unstyled float-end mb-0">
                                     <li class="dropdown">
                                         <a href="#" class="btn btn-sm btn-outline-danger dropdown-toggle arrow-none waves-light waves-effect"
-                                            data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                            data-bs-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
                                             <i data-feather="upload" class="align-self-center icon-xs"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" data-toggle="modal" data-target="#importStockmaster" href="#">
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importStockmaster" href="#">
                                                 <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                                 {{ trans('global.import') }} {{ trans('cruds.product.title') }}
                                             </a>
-                                            <a class="dropdown-item" data-toggle="modal" data-target="#importQuantities" href="#">
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importQuantities" href="#">
                                                 <i data-feather="upload-cloud" class="align-self-center icon-xs icon-dual me-1"></i>&nbsp;
                                                 {{ trans('global.import') }} {{ trans('cruds.product.fields.quantity') }}
                                             </a>
@@ -103,41 +103,41 @@
                                 <td>{{ number_format($product->SellingPrice, 2, '.', ' ') }}</td>
                                 <td>
                                     @foreach($product->categories as $key => $item)
-                                        <span class="badge badge-info">{{ $item->StockGroupName }}</span>
+                                        <span class="badge bg-info text-white">{{ $item->StockGroupName }}</span>
                                     @endforeach
                                 </td>
 <!--                                <td>
                                     @foreach($product->tags as $key => $item)
-                                        <span class="badge badge-info">{{ $item->name }}</span>
+                                        <span class="badge bg-info text-white">{{ $item->name }}</span>
                                     @endforeach
                                 </td>-->
                                 <td>{{ $product->stockHolding->QuantityOnHand ?? '' }}</td>
                                 <td>
                                     @if($product->status==1)
                                         <a class="updateProductStatus" id="product-{{ $product->id }}" product_id="{{ $product->id }}"
-                                           href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Disable Product">
-                                            <span class="badge badge-success">Active</span>
+                                           href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-placement="top" title="Click to Disable Product">
+                                            <span class="badge bg-success text-white">Active</span>
                                         </a>
                                     @else
                                         <a class="updateProductStatus" id="product-{{ $product->id }}" product_id="{{ $product->id }}"
-                                           href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Click to Enable Product">
-                                            <span class="badge badge-danger">Inactive</span>
+                                           href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-placement="top" title="Click to Enable Product">
+                                            <span class="badge bg-danger text-white">Inactive</span>
                                         </a>
                                     @endif
                                 </td>
                                 <td class="mx-auto">
                                     @can('product_show')
-                                        <a href="{{ route('products.show', $product->id) }}" data-toggle="tooltip"
+                                        <a href="{{ route('products.show', $product->id) }}" data-bs-toggle="tooltip"
                                            title="{{ trans('global.view') }} {{ trans('cruds.product.title_singular') }}"
-                                           data-placement="top">
+                                           data-bs-placement="top">
                                             <i class="las dripicons-preview text-info font-18"></i>
                                         </a>
                                     @endcan
                                     &nbsp;
                                     @can('product_edit')
-                                        <a href="{{ route('products.edit', $product->id) }}" data-toggle="tooltip"
+                                        <a href="{{ route('products.edit', $product->id) }}" data-bs-toggle="tooltip"
                                            title="{{ trans('global.edit') }} {{ trans('cruds.product.title_singular') }}"
-                                           data-placement="top">
+                                           data-bs-placement="top">
                                             <i class="las dripicons-document-edit text-info font-18"></i>
                                         </a>
                                     @endcan
@@ -148,7 +148,7 @@
                                             <input type="hidden" name="_method" value="DELETE">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <button aria-expanded="false" class="text-danger font-18" style="border:none; background: none;" type="submit"
-                                                    data-toggle="tooltip" data-placement="top"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="{{ trans('global.delete') }} {{ trans('cruds.product.title_singular') }}">
                                                 <i class="dripicons-trash"></i>
                                             </button>
@@ -165,7 +165,7 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-danger">
                                     <h6 class="modal-title m-0 text-white" id="importQuantitiesLabel">{{ trans('global.import') }} {{ trans('cruds.product.fields.quantity') }}</h6>
-                                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                     </button>
                                 </div>
@@ -189,7 +189,7 @@
                             <div class="modal-content">
                                 <div class="modal-header bg-danger">
                                     <h6 class="modal-title m-0 text-white" id="importStockmasterLabel">{{ trans('global.import') }} {{ trans('cruds.product.title') }}</h6>
-                                    <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true"><i class="la la-times text-white"></i></span>
                                     </button>
                                 </div>
@@ -269,7 +269,7 @@
                 pageLength: 25,
             });
             $('.datatable:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+            $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
                 $($.fn.dataTable.tables(true)).DataTable()
                     .columns.adjust();
             });

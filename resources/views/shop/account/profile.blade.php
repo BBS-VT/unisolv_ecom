@@ -321,7 +321,7 @@
         }
 
         .alert-warning {
-            border-left: 4px solid #ffc107;
+            border-start: 4px solid #ffc107;
         }
 
         .badge {

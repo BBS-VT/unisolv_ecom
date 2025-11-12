@@ -21,7 +21,7 @@
                 <div class="card">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0">
-                            <i class="dripicons-user mr-1 text-primary"></i> {{ __('Profile Information') }}
+                            <i class="dripicons-user me-1 text-primary"></i> {{ __('Profile Information') }}
                         </h5>
                     </div>
                     <div class="card-body">
@@ -125,7 +125,7 @@
 
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-primary">{{ __('Update Profile') }}</button>
-                                <a href="{{ route('customer.profile') }}" class="btn btn-light ml-2">{{ __('Cancel') }}</a>
+                                <a href="{{ route('customer.profile') }}" class="btn btn-light ms-2">{{ __('Cancel') }}</a>
                             </div>
                         </form>
                     </div>
