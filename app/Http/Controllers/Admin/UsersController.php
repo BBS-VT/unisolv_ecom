@@ -23,7 +23,7 @@ class UsersController extends Controller
 
         $users = User::all();
         $roles = Role::all()->pluck('title', 'id');
-        $customers = Customer::all();
+        $customers = Customer::all()->pluck('CustomerName', 'id');
 
         return view('admin.users.index', compact('users', 'roles', 'customers'));
     }
@@ -71,18 +71,72 @@ class UsersController extends Controller
         return redirect()->route('admin.users.index')->with('flash_message', 'User successfully added');
     }
 
-    public function edit(User $user)
+    public function edit($id)
     {
         abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $roles = Role::all()->pluck('title','id');
+        $user = User::with('roles')->findOrFail($id);
 
-        $user->load('roles');
-
-        return view('admin.users.edit', compact('roles', 'user'));
+        return response()->json([
+            'id' => $user->id,
+            'PreferredName' => $user->PreferredName,
+            'email' => $user->email,
+            'PhoneNumber' => $user->PhoneNumber,
+            'roles' => $user->roles->map(function($role) {
+                return ['id' => $role->id, 'title' => $role->title];
+            }),
+            'IsSalesperson' => $user->IsSalesperson,
+            'RepCode' => $user->RepCode,
+            'IsCustomer' => $user->IsCustomer,
+            'customer_id' => $user->customer_id,
+        ]);
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'PreferredName' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'PhoneNumber' => 'nullable|string|max:20',
+            'password' => 'nullable|min:8',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
+            'IsSalesperson' => 'nullable|boolean',
+            'RepCode' => 'nullable|string|max:50|unique:users,RepCode,' . $id,
+            'IsCustomer' => 'nullable|boolean',
+            'customer_id' => 'nullable|exists:customers,id',
+        ]);
+
+        // Update user fields
+        $user->PreferredName = $validated['PreferredName'];
+        $user->FullName = $validated['PreferredName'];
+        $user->email = $validated['email'];
+        $user->PhoneNumber = $validated['PhoneNumber'] ?? null;
+
+        // Only update password if provided
+        if (!empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+        }
+
+        // Update salesperson fields
+        $user->IsSalesperson = $request->has('IsSalesperson') ? 1 : 0;
+        $user->RepCode = $user->IsSalesperson ? $validated['RepCode'] : null;
+
+        // Update customer fields
+        $user->IsCustomer = $request->has('IsCustomer') ? 1 : 0;
+        $user->customer_id = $user->IsCustomer ? $validated['customer_id'] : null;
+
+        $user->save();
+
+        // Sync roles
+        $user->roles()->sync($validated['roles']);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User updated successfully.');
+    }
+    /*public function update(UpdateUserRequest $request, User $user)
     {
         //$user->update($request->all());
         $input = User::where('id', $user->id)->first();
@@ -102,7 +156,7 @@ class UsersController extends Controller
 
         return redirect()->route('admin.users.index');
         //echo "<pre>"; print_r($input); die;
-    }
+    }*/
 
     public function show(User $user)
     {

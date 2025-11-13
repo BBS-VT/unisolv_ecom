@@ -264,23 +264,11 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid">
+
         @include('flash-message')
 
-        <!-- Page Title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <h4 class="page-title">
-                        <i class="mdi mdi-account-group me-2"></i>
-                        {{ trans('cruds.user.title') }}
-                    </h4>
-                </div>
-            </div>
-        </div>
-
         <!-- Users Table Card -->
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-12">
                 <div class="card users-card">
                     <div class="card-header">
@@ -368,13 +356,14 @@
                                                     @endcan
 
                                                     @can('user_edit')
-                                                        <a href="{{ route('admin.users.edit', $user->id) }}"
-                                                           class="action-btn"
-                                                           data-bs-toggle="tooltip"
-                                                           data-bs-placement="top"
-                                                           title="{{ trans('global.edit') }} {{ trans('cruds.user.title_singular') }}">
+                                                        <button type="button"
+                                                                class="action-btn edit-user-btn"
+                                                                data-user-id="{{ $user->id }}"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
+                                                                title="{{ trans('global.edit') }} {{ trans('cruds.user.title_singular') }}">
                                                             <i class="mdi mdi-pencil text-primary"></i>
-                                                        </a>
+                                                        </button>
                                                     @endcan
 
                                                     @can('user_delete')
@@ -420,10 +409,13 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     <!-- Include Create User Modal -->
     @include('admin.users._newUser')
+
+    <!-- Include Edit User Modal -->
+    @include('admin.users._editUser')
 @endsection
 
 @push('scripts')
@@ -582,6 +574,178 @@
                 const $submitBtn = $(this).find('button[type="submit"]');
                 $submitBtn.prop('disabled', true);
                 $submitBtn.html('<span class="spinner-border spinner-border-sm me-1"></span> {{ __("global.creating") }}...');
+            });
+
+            // ===== EDIT MODAL SCRIPTS =====
+
+            // Initialize Select2 for edit modal roles
+            $('#edit_roles').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#editUserModal'),
+                placeholder: '{{ __("global.select_roles") }}',
+                allowClear: false
+            });
+
+            // Initialize Select2 for edit modal customers
+            $('#edit_customer_id').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#editUserModal'),
+                placeholder: '{{ __("global.select_customer") }}',
+                allowClear: true
+            });
+
+            // Initialize phone input mask for edit modal
+            $('#edit_PhoneNumber').inputmask('999 999 9999');
+
+            // Password visibility toggle for edit modal
+            $('#editTogglePassword').on('click', function() {
+                const passwordField = $('#edit_password');
+                const icon = $(this).find('i');
+
+                if (passwordField.attr('type') === 'password') {
+                    passwordField.attr('type', 'text');
+                    icon.removeClass('mdi-eye-outline').addClass('mdi-eye-off-outline');
+                } else {
+                    passwordField.attr('type', 'password');
+                    icon.removeClass('mdi-eye-off-outline').addClass('mdi-eye-outline');
+                }
+            });
+
+            // Show/hide Rep Code field in edit modal
+            $('#edit_IsSalesperson').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#editRepCodeGroup').slideDown(300);
+                    $('#edit_RepCode').prop('required', true);
+                } else {
+                    $('#editRepCodeGroup').slideUp(300);
+                    $('#edit_RepCode').prop('required', false).val('');
+                }
+            });
+
+            // Show/hide Customer field in edit modal
+            $('#edit_IsCustomer').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#editCustomerGroup').slideDown(300);
+                    $('#edit_customer_id').prop('required', true);
+                } else {
+                    $('#editCustomerGroup').slideUp(300);
+                    $('#edit_customer_id').prop('required', false).val('').trigger('change');
+                }
+            });
+
+            // Handle edit button click
+            $(document).on('click', '.edit-user-btn', function() {
+                const userId = $(this).data('user-id');
+
+                // Show loading state
+                $('#editUserModal .modal-body').html(`
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 text-muted">{{ __('global.loading_user_data') }}</p>
+                    </div>
+                `);
+
+                // Show modal
+                const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                editModal.show();
+
+                // Fetch user data
+                $.ajax({
+                    url: '{{ route("admin.users.index") }}/' + userId + '/edit',
+                    type: 'GET',
+                    success: function(response) {
+                        // Restore the form HTML from global template
+                        $('#editUserModalBody').html(window.editUserModalBodyTemplate);
+
+                        // Update form action
+                        $('#editUserForm').attr('action', '{{ route("admin.users.index") }}/' + userId);
+
+                        // Populate form fields
+                        $('#edit_PreferredName').val(response.PreferredName);
+                        $('#edit_email').val(response.email);
+                        $('#edit_PhoneNumber').val(response.PhoneNumber);
+
+                        // Set roles (Select2 multiple)
+                        const roleIds = response.roles.map(role => role.id);
+                        $('#edit_roles').val(roleIds).trigger('change');
+
+                        // Set IsSalesperson
+                        if (response.IsSalesperson == 1) {
+                            $('#edit_IsSalesperson').prop('checked', true);
+                            $('#editRepCodeGroup').show();
+                            $('#edit_RepCode').val(response.RepCode).prop('required', true);
+                        } else {
+                            $('#edit_IsSalesperson').prop('checked', false);
+                            $('#editRepCodeGroup').hide();
+                            $('#edit_RepCode').val('').prop('required', false);
+                        }
+
+                        // Set IsCustomer
+                        if (response.IsCustomer == 1) {
+                            $('#edit_IsCustomer').prop('checked', true);
+                            $('#editCustomerGroup').show();
+                            $('#edit_customer_id').val(response.customer_id).trigger('change').prop('required', true);
+                        } else {
+                            $('#edit_IsCustomer').prop('checked', false);
+                            $('#editCustomerGroup').hide();
+                            $('#edit_customer_id').val('').trigger('change').prop('required', false);
+                        }
+
+                        // Re-initialize Select2 after population
+                        $('#edit_roles').select2({
+                            theme: 'bootstrap-5',
+                            dropdownParent: $('#editUserModal'),
+                            placeholder: '{{ __("global.select_roles") }}',
+                            allowClear: false
+                        });
+
+                        $('#edit_customer_id').select2({
+                            theme: 'bootstrap-5',
+                            dropdownParent: $('#editUserModal'),
+                            placeholder: '{{ __("global.select_customer") }}',
+                            allowClear: true
+                        });
+
+                        // Re-apply input mask
+                        $('#edit_PhoneNumber').inputmask('999 999 9999');
+                    },
+                    error: function(xhr) {
+                        $('#editUserModal .modal-body').html(`
+                            <div class="alert alert-danger">
+                                <i class="mdi mdi-alert-circle-outline me-2"></i>
+                                {{ __('global.error_loading_user') }}
+                        </div>
+`);
+                    }
+                });
+            });
+
+            // Reset edit form when modal is closed
+            $('#editUserModal').on('hidden.bs.modal', function() {
+                $('#editUserForm')[0].reset();
+                $('#edit_roles').val(null).trigger('change');
+                $('#edit_customer_id').val(null).trigger('change');
+                $('#editRepCodeGroup').hide();
+                $('#editCustomerGroup').hide();
+                $('#edit_RepCode').prop('required', false);
+                $('#edit_customer_id').prop('required', false);
+
+                // Reset password visibility
+                $('#edit_password').attr('type', 'password');
+                $('#editTogglePassword i').removeClass('mdi-eye-off-outline').addClass('mdi-eye-outline');
+
+                // Clear validation states
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').remove();
+            });
+
+            // Form submission loading state for edit
+            $('#editUserForm').on('submit', function() {
+                const $submitBtn = $(this).find('button[type="submit"]');
+                $submitBtn.prop('disabled', true);
+                $submitBtn.html('<span class="spinner-border spinner-border-sm me-1"></span> {{ __("global.saving") }}...');
             });
         });
     </script>

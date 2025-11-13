@@ -17,6 +17,7 @@ return [
     'tax_type_updated' => 'Tax type has been updated successfully.',
     'logo_requirements' => 'Recommended: Square image, at least 200x200px, PNG or JPG format.',
     'user_creation_note' => 'New users will receive login credentials via email. If creating a customer user, ensure the correct customer account is linked. Sales representatives require a unique rep code.',
+    'user_edit_note' => 'Changes to user roles and permissions will take effect immediately. Leave password field blank to keep the current password.',
 
     // Messages related to the B2B shop
     'shop_welcome_message'  => 'Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.',

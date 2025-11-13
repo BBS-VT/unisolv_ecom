@@ -179,7 +179,7 @@
                             <!-- Customer Selection (shown when IsCustomer is checked) -->
                             <div class="mb-3" id="customerGroup" style="display: none;">
                                 <label for="customer_id" class="form-label fw-semibold">
-                                    {{ __('cruds.user.fields.select_customer') }}
+                                    {{ __('global.select_customer') }}
                                     <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select select2-customer @error('customer_id') is-invalid @enderror"
@@ -217,7 +217,7 @@
                     </button>
                     <button type="submit" class="btn btn-primary">
                         <i class="mdi mdi-check me-1"></i>
-                        {{ __('global.create_user') }}
+                        {{ __('global.save') }}
                     </button>
                 </div>
             </form>

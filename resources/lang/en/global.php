@@ -515,5 +515,15 @@ return [
     'create_missing_locations'              => 'Create Missing Locations',
     'update_cost_prices'                    => 'Update Cost Prices',
     'download_stock_template'               => 'Download Stock Import Template',
-    'note'                                  => 'Note'
+    'note'                                  => 'Note',
+    'showing'                               => 'Showing',
+    'from'                                  => 'From',
+    'to'                                    => 'to',
+    'of'                                    => 'of',
+    'previous'                              => 'Previous',
+    'select_roles'                          => 'Select Roles',
+    'select_customer'                       => 'Select Customer',
+    'leave_blank_to_keep'                   => 'Leave blank to keep current',
+    'password_edit_note'                    => 'Only fill this field if you want to change the password',
+    'save_changes'                          => 'Save Changes',
 ];
