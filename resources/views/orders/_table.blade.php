@@ -35,20 +35,20 @@
                             {{ $order->OrderDate->format('Y-m-d') }}
                         </td>
                         <td>
-                            <span class=" badge <?php if ( $order->OrderStatusID == 1 ) { echo "badge-danger"; }
-                            elseif ( $order->OrderStatusID == 2) { echo "badge-warning"; }
-                            elseif ( $order->OrderStatusID == 3) { echo "badge-info"; }
-                            elseif ( $order->OrderStatusID == 4) { echo "badge-success"; }
-                            elseif ( $order->OrderStatusID == 5) { echo "badge-secondary"; }
+                            <span class=" badge <?php if ( $order->OrderStatusID == 1 ) { echo "bg-danger"; }
+                            elseif ( $order->OrderStatusID == 2) { echo "bg-warning"; }
+                            elseif ( $order->OrderStatusID == 3) { echo "bg-info"; }
+                            elseif ( $order->OrderStatusID == 4) { echo "bg-success"; }
+                            elseif ( $order->OrderStatusID == 5) { echo "bg-secondary"; }
                             ?>"> {{ $order->orderstatus->name ?? '' }} </span>
 
-                            {{--@if($order->Authorisation == 0 )
-                                <span class="badge bg-success text-white">Authorised </span>
+                            @if($order->Authorisation == 0 )
+                                <span class="badge bg-success text-white"></span>
                             @elseif($order->Authorisation == 1)
                                 <span class="badge bg-warning text-dark">On Hold</span>
                             @elseif($order->Authorisation == 2)
                                 <span class="badge bg-info text-white">Released</span>
-                            @endif--}}
+                            @endif
                         </td>
                         <td>
                             @can('order_show')

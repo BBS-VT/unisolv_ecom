@@ -1,15 +1,11 @@
-@extends('layouts.app', ['page' => 'orders'])
+@extends('layouts.master', ['page' => 'orders'])
 
 @section('title', __('global.create_order'))
 
-@section('style')
-    {{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css">
-    <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />--}}
-    <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
-@endsection
+@push('styles')
+    <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+@endpush
 
 @section('content')
     <div class="row">
@@ -39,13 +35,10 @@
     </div>
 @endsection
 
-@section('script')
-    <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
-    <script src="{{ URL::asset('plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
-
-
+@push('scripts')
+    <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {
@@ -141,5 +134,5 @@
 
     @include('orders._js')
 
-@endsection
+@endpush
 

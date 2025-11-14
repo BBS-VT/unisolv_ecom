@@ -135,7 +135,7 @@
                     </td>
                     <td>
                         <a onclick="removeRow(this)">
-                            <i data-feather="trash"></i>
+                            <i class="bx bx-trash"></i>
                         </a>
                     </td>
                 </tr>
