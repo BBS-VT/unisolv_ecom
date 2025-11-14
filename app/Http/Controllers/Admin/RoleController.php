@@ -24,8 +24,9 @@ class RoleController extends Controller
         abort_if(Gate::denies('role_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::all();
+        $permissions = Permission::all()->pluck('title', 'id');
 
-        return view('admin.roles.index', compact('roles'));
+        return view('admin.roles.index', compact('roles', 'permissions'));
     }
 
     /**
@@ -100,7 +101,12 @@ class RoleController extends Controller
         $role->update($request->all());
         $role->permissions()->sync($request->input('permissions', []));
 
-        return redirect()->route('admin.roles.index');
+        //return response()->json([
+        //    'success' => true,
+        //    'message' => __('global.role_updated_successfully')
+        //]);
+        return redirect()->route('admin.roles.index')
+            ->with('success', 'Role updated successfully');
     }
 
     /**

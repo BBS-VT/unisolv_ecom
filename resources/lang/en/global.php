@@ -549,4 +549,31 @@ return [
     'last_updated' => 'Last Updated',
     'last_edited_by' => 'Last Edited By',
     'system' => 'System',
+
+    // Roles Management
+    'add_role' => 'Add Role',
+    'add_first_role' => 'Add First Role',
+    'no_roles_yet' => 'No roles have been created yet. Click the button above to create your first role.',
+    'create_role' => 'Create Role',
+    'enter_role_name' => 'Enter role name (e.g., Administrator, Manager, Sales)',
+    'select_permissions' => 'Select Permissions',
+    'no_permissions' => 'No permissions assigned',
+    'role_creation_note' => 'Permissions define what actions users with this role can perform. Choose carefully based on the level of access needed.',
+    'permissions' => 'Permissions',
+    'preview' => 'Preview',
+    'permissions_assigned' => 'permissions assigned to this role',
+
+    // Permission Management
+    'quick_actions' => 'Quick Actions',
+    'collapse_all' => 'Collapse All',
+    'expand_all' => 'Expand All',
+    'search_permissions' => 'Search permissions...',
+    'selected' => 'selected',
+    'permissions_selected' => 'permissions selected',
+    'no_permissions_found' => 'No permissions found matching your search.',
+
+    // Role Delete
+    'delete_role_warning' => 'You are about to delete this role:',
+    'role_deleted_successfully' => 'The role has been deleted successfully.',
+    'error_deleting_role' => 'An error occurred while deleting the role. Please try again.',
 ];
