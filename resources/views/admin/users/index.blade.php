@@ -366,22 +366,17 @@
                                                         </button>
                                                     @endcan
 
-                                                    @can('user_delete')
-                                                        <form action="{{ route('admin.users.destroy', $user->id) }}"
-                                                              method="POST"
-                                                              onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
-                                                              class="d-inline-block">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                    class="action-btn delete-btn"
+                                                        @can('user_delete')
+                                                            <button type="button"
+                                                                    class="action-btn delete-btn delete-user-btn"
+                                                                    data-user-id="{{ $user->id }}"
+                                                                    data-user-name="{{ $user->PreferredName }}"
                                                                     data-bs-toggle="tooltip"
                                                                     data-bs-placement="top"
                                                                     title="{{ trans('global.delete') }} {{ trans('cruds.user.title_singular') }}">
                                                                 <i class="mdi mdi-delete text-danger"></i>
                                                             </button>
-                                                        </form>
-                                                    @endcan
+                                                        @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -578,27 +573,10 @@
 
             // ===== EDIT MODAL SCRIPTS =====
 
-            // Initialize Select2 for edit modal roles
-            $('#edit_roles').select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#editUserModal'),
-                placeholder: '{{ __("global.select_roles") }}',
-                allowClear: false
-            });
+            // Note: Select2 and InputMask for edit modal are initialized after AJAX loads data
 
-            // Initialize Select2 for edit modal customers
-            $('#edit_customer_id').select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#editUserModal'),
-                placeholder: '{{ __("global.select_customer") }}',
-                allowClear: true
-            });
-
-            // Initialize phone input mask for edit modal
-            $('#edit_PhoneNumber').inputmask('999 999 9999');
-
-            // Password visibility toggle for edit modal
-            $('#editTogglePassword').on('click', function() {
+            // Password visibility toggle for edit modal (delegated event)
+            $(document).on('click', '#editTogglePassword', function() {
                 const passwordField = $('#edit_password');
                 const icon = $(this).find('i');
 
@@ -611,8 +589,8 @@
                 }
             });
 
-            // Show/hide Rep Code field in edit modal
-            $('#edit_IsSalesperson').on('change', function() {
+            // Show/hide Rep Code field in edit modal (delegated event)
+            $(document).on('change', '#edit_IsSalesperson', function() {
                 if ($(this).is(':checked')) {
                     $('#editRepCodeGroup').slideDown(300);
                     $('#edit_RepCode').prop('required', true);
@@ -622,8 +600,8 @@
                 }
             });
 
-            // Show/hide Customer field in edit modal
-            $('#edit_IsCustomer').on('change', function() {
+            // Show/hide Customer field in edit modal (delegated event)
+            $(document).on('change', '#edit_IsCustomer', function() {
                 if ($(this).is(':checked')) {
                     $('#editCustomerGroup').slideDown(300);
                     $('#edit_customer_id').prop('required', true);
@@ -747,6 +725,82 @@
                 $submitBtn.prop('disabled', true);
                 $submitBtn.html('<span class="spinner-border spinner-border-sm me-1"></span> {{ __("global.saving") }}...');
             });
+
+            $(document).on('click', '.delete-user-btn', function() {
+                const userId = $(this).data('user-id');
+                const userName = $(this).data('user-name');
+
+                Swal.fire({
+                    title: '{{ __("global.delete_confirmation") }}',
+                    html: '{{ __("global.delete_user_warning") }}<br><strong>' + userName + '</strong>',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="mdi mdi-delete me-1"></i> {{ __("global.yes_delete") }}',
+                    cancelButtonText: '<i class="mdi mdi-close me-1"></i> {{ __("global.cancel") }}',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger px-4',
+                        cancelButton: 'btn btn-secondary px-4'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading
+                        Swal.fire({
+                            title: '{{ __("global.deleting") }}...',
+                            html: '{{ __("global.please_wait") }}',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit delete request
+                        $.ajax({
+                            url: '{{ route("admin.users.index") }}/' + userId,
+                            type: 'DELETE',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                Swal.fire({
+                                    title: '{{ __("global.deleted") }}!',
+                                    text: '{{ __("global.user_deleted_successfully") }}',
+                                    icon: 'success',
+                                    confirmButtonColor: '#667eea',
+                                    confirmButtonText: '{{ __("global.ok") }}',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary px-4'
+                                    },
+                                    buttonsStyling: false
+                                }).then(() => {
+                                    // Reload page to refresh user list
+                                    window.location.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: '{{ __("global.error") }}!',
+                                    text: xhr.responseJSON?.message || '{{ __("global.error_deleting_user") }}',
+                                    icon: 'error',
+                                    confirmButtonColor: '#667eea',
+                                    confirmButtonText: '{{ __("global.ok") }}',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary px-4'
+                                    },
+                                    buttonsStyling: false
+                                });
+                            }
+                        });
+                    }
+                });
+            });
         });
+
+
     </script>
 @endpush

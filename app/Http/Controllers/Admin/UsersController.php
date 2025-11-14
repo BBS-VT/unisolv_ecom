@@ -136,27 +136,7 @@ class UsersController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
     }
-    /*public function update(UpdateUserRequest $request, User $user)
-    {
-        //$user->update($request->all());
-        $input = User::where('id', $user->id)->first();
-        $input->FullName      = $request->input('FullName');
-        $input->PreferredName = $request->input('PreferredName');
-        $input->email         = $request->input('email');
-        if(!empty($request->input('password'))){
-            $input->password  = Hash::make($request->input('password'));
-        }
-        $input->RepCode       = $request->input('RepCode');
-        $input->PhoneNumber   = $request->input('PhoneNumber');
-        $input->IsCustomer    = $request->filled('IsCustomer');
-        $input->IsSalesperson = $request->filled('IsSalesperson');
-        $input->save();
 
-        $user->roles()->sync($request->input('roles', []));
-
-        return redirect()->route('admin.users.index');
-        //echo "<pre>"; print_r($input); die;
-    }*/
 
     public function show(User $user)
     {

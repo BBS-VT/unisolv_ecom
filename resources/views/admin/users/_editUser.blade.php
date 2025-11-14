@@ -336,7 +336,7 @@
             <!-- Customer Selection (shown when IsCustomer is checked) -->
             <div class="mb-3" id="editCustomerGroup" style="display: none;">
                 <label for="edit_customer_id" class="form-label fw-semibold">
-                    {{ __('cruds.user.fields.select_customer') }}
+                    {{ __('global.select_customer') }}
                     <span class="text-danger">*</span>
                 </label>
                 <select class="form-select select2-edit-customer"

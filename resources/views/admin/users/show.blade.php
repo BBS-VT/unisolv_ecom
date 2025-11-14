@@ -1,160 +1,511 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
+@section('title', $user->PreferredName)
 
+@push('styles')
+    <style>
+        /* User Header with Gradient */
+        .user-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .user-info-section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .user-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .user-email {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .user-roles {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-roles .badge {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .user-actions .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-actions .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Info Cards */
+        .info-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .info-card .card-header {
+            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
+            border-bottom: 2px solid #e9ecef;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .info-card .card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card .card-title i {
+            color: #667eea;
+        }
+
+        /* Detail Row Styling */
+        .detail-row {
+            padding: 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 0;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+        }
+
+        .detail-icon.primary {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+
+        .detail-icon.success {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+        }
+
+        .detail-icon.info {
+            background: rgba(23, 162, 184, 0.15);
+            color: #17a2b8;
+        }
+
+        .detail-icon.warning {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+        /* Status Badges */
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .user-header {
+                padding: 1.5rem;
+            }
+
+            .user-name {
+                font-size: 1.5rem;
+            }
+
+            .user-actions {
+                width: 100%;
+            }
+
+            .user-actions .btn {
+                flex: 1;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="page-title-box">
-            </div>
-        </div>
-    </div>
-    <div class="row">
-            <div class="col-lg-12">
-            <div class="card">
-            <!--      <div class="card-header">
-                    <div class="row">
-                        <div class="col">
-                            <h4 class="card-title"> {{ trans('global.user_name') }}: {{ $user->PreferredName }} </h4>
-                        </div>
-                        <div class="col-auto align-self-center">
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-outline-primary">
-                                <i data-feather="arrow-left-circle" class="align-self-center icon-xs"></i>
-                                {{ trans('global.back_to_list') }}
-                            </a>
-                        </div>
+    <div class="container-fluid">
+        @include('flash-message')
+
+        <!-- User Header -->
+        <div class="user-header">
+            <div class="user-info-section">
+                <div class="user-avatar-container">
+                    <div class="user-avatar">
+                        <i class="mdi mdi-account"></i>
                     </div>
                 </div>
 
-                <div class="card-body">-->
-                    <div class="container emp-profile">
-                        <form method="POST">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="profile-img">
-                                        <img src="{{ asset('images/users/user-5.jpg') }}" />
-                                        <div class="file btn btn-lg btn-primary">
-                                            {{ __('global.change_photo') }}
-                                            <input type="file" name="file" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="profile-head">
-                                        <h5>{{ $user->PreferredName }}</h5>
-                                        <h6>
-                                            @foreach($user->roles as $key => $roles)
-                                                <span class="label label-info">{{ $roles->title }}</span>
-                                            @endforeach
-                                        </h6>
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <li class="nav-item">
-                                                <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home"
-                                                   aria-selected="true">{{ __('global.about') }}</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-                                                   aria-selected="false">{{ __('global.timeline') }}</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <a href="{{ route('admin.users.index') }}" class="profile-edit-btn">
-                                        <i data-feather="arrow-left-circle" class="align-self-center icon-xs"></i>
-                                        {{ __('global.back_to_list') }}
-                                    </a><br /><br>
-                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="profile-edit-btn mt-4">
-                                        <i data-feather="arrow-left-circle" class="align-self-center icon-xs"></i>
-                                        {{ __('global.edit') }} {{ __('global.profile') }}
-                                    </a>
-<!--                                    <input type="submit" class="profile-edit-btn mt-4" name="btnAddMore" value="{{ __('global.edit') }} {{ __('global.profile') }}" />-->
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="profile-work">
+                <h2 class="user-name">{{ $user->PreferredName }}</h2>
 
-                                    </div>
+                <div class="user-email">
+                    <i class="mdi mdi-email-outline"></i>
+                    <span>{{ $user->email }}</span>
+                </div>
+
+                <div class="user-roles">
+                    @forelse($user->roles as $role)
+                        <span class="badge">{{ $role->title }}</span>
+                    @empty
+                        <span class="badge">{{ __('global.no_roles') }}</span>
+                    @endforelse
+                </div>
+
+                <div class="user-actions">
+                    @can('user_edit')
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn">
+                            <i class="mdi mdi-pencil me-1"></i> {{ __('global.edit') }}
+                        </a>
+                    @endcan
+
+                    <a href="{{ route('admin.users.index') }}" class="btn">
+                        <i class="mdi mdi-arrow-left me-1"></i> {{ __('global.back_to_list') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Contact Information -->
+            <div class="col-lg-6 mb-4">
+                <div class="card info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="mdi mdi-card-account-details"></i>
+                            {{ __('global.contact_information') }}
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="detail-row">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon primary">
+                                    <i class="mdi mdi-email"></i>
                                 </div>
-                                <div class="col-md-8">
-                                    <div class="tab-content profile-tab" id="myTabContent">
-                                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.id') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p> {{ $user->id }} </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.email') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p> {{ $user->email }} </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.phonenumber') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p> {{ $user->PhoneNumber ?? '' }} </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.salesrep') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p>
-                                                        @if ( $user->IsSalesperson == 1)
-                                                            Yes
-                                                        @else
-                                                            No
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.repcode') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p> {{ $user->RepCode }} </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <label> {{ __('cruds.user.fields.customer') }} </label>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <p>
-                                                        @if ( $user->IsCustomer == 1)
-                                                            Yes
-                                                        @else
-                                                            No
-                                                        @endif
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="flex-grow-1">
+                                    <p class="detail-label">{{ __('cruds.user.fields.email') }}</p>
+                                    <p class="detail-value">{{ $user->email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon success">
+                                    <i class="mdi mdi-phone"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="detail-label">{{ __('cruds.user.fields.phonenumber') }}</p>
+                                    <p class="detail-value">{{ $user->PhoneNumber ?? __('global.not_provided') }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon info">
+                                    <i class="mdi mdi-badge-account"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="detail-label">{{ __('cruds.user.fields.id') }}</p>
+                                    <p class="detail-value">#{{ $user->id }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role & Permissions -->
+            <div class="col-lg-6 mb-4">
+                <div class="card info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="mdi mdi-shield-account"></i>
+                            {{ __('global.roles_and_permissions') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="detail-row">
+                            <p class="detail-label">{{ __('cruds.user.fields.roles') }}</p>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                @forelse($user->roles as $role)
+                                    <span class="badge bg-primary">{{ $role->title }}</span>
+                                @empty
+                                    <span class="text-muted">{{ __('global.no_roles_assigned') }}</span>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Information -->
+            <div class="col-lg-6 mb-4">
+                <div class="card info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="mdi mdi-briefcase"></i>
+                            {{ __('global.sales_information') }}
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="detail-row">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon {{ $user->IsSalesperson ? 'success' : 'warning' }}">
+                                    <i class="mdi mdi-account-tie"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="detail-label">{{ __('cruds.user.fields.salesrep') }}</p>
+                                    <p class="detail-value">
+                                        @if($user->IsSalesperson == 1)
+                                            <span class="status-active">
+                                                <i class="mdi mdi-check-circle"></i> {{ __('global.yes') }}
+                                            </span>
+                                        @else
+                                            <span class="status-inactive">
+                                                <i class="mdi mdi-close-circle"></i> {{ __('global.no') }}
+                                            </span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($user->IsSalesperson == 1)
+                            <div class="detail-row">
+                                <div class="d-flex align-items-center">
+                                    <div class="detail-icon primary">
+                                        <i class="mdi mdi-barcode"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="detail-label">{{ __('cruds.user.fields.repcode') }}</p>
+                                        <p class="detail-value">
+                                            <span class="badge bg-light text-dark border">{{ $user->RepCode }}</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        @endif
                     </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="col-lg-6 mb-4">
+                <div class="card info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="mdi mdi-account-group"></i>
+                            {{ __('global.customer_information') }}
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="detail-row">
+                            <div class="d-flex align-items-center">
+                                <div class="detail-icon {{ $user->IsCustomer ? 'success' : 'warning' }}">
+                                    <i class="mdi mdi-account-check"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="detail-label">{{ __('cruds.user.fields.customer') }}</p>
+                                    <p class="detail-value">
+                                        @if($user->IsCustomer == 1)
+                                            <span class="status-active">
+                                                <i class="mdi mdi-check-circle"></i> {{ __('global.yes') }}
+                                            </span>
+                                        @else
+                                            <span class="status-inactive">
+                                                <i class="mdi mdi-close-circle"></i> {{ __('global.no') }}
+                                            </span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($user->IsCustomer == 1 && $user->customer)
+                            <div class="detail-row">
+                                <div class="d-flex align-items-center">
+                                    <div class="detail-icon info">
+                                        <i class="mdi mdi-domain"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="detail-label">{{ __('global.linked_customer') }}</p>
+                                        <p class="detail-value">
+                                            <a href="{{ route('customers.show', $user->customer_id) }}" class="text-primary text-decoration-none">
+                                                {{ $user->customer->CustomerName }}
+                                                <i class="mdi mdi-open-in-new ms-1"></i>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Metadata -->
+            <div class="col-12">
+                <div class="card info-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="mdi mdi-information"></i>
+                            {{ __('global.account_metadata') }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <p class="detail-label">{{ __('global.created_at') }}</p>
+                                <p class="detail-value">
+                                    <i class="mdi mdi-calendar me-1"></i>
+                                    {{ $user->created_at->format('d M Y, H:i') }}
+                                </p>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <p class="detail-label">{{ __('global.last_updated') }}</p>
+                                <p class="detail-value">
+                                    <i class="mdi mdi-update me-1"></i>
+                                    {{ $user->updated_at->format('d M Y, H:i') }}
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="detail-label">{{ __('global.last_edited_by') }}</p>
+                                <p class="detail-value">
+                                    <i class="mdi mdi-account-edit me-1"></i>
+                                    {{ $user->lastedited->PreferredName ?? __('global.system') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 @endsection
-
-@push('custom-scripts')
-
-@endpush
-
