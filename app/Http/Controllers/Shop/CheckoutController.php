@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanySetting;
+use App\Models\StockItemHoldings;
 use App\Services\LocationAssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -228,6 +229,29 @@ class CheckoutController extends Controller
                     'LastEditedBy' => Auth::id(),
                     'ContractDiscount' => 0,
                 ]);
+            }
+
+            // Reduce stock at the assigned location
+            try {
+                StockItemHoldings::reduceStock(
+                    $item['product']->StockCode,
+                    $assignedLocation,
+                    $item['quantity'],
+                    Auth::id()
+                );
+            } catch (\Exception $e) {
+                \Log::error('Stock reduction failed', [
+                    'order_id' => $order->id,
+                    'order_item_id' => $orderItem->id,
+                    'stock_code' => $item['product']->StockCode,
+                    'location' => $assignedLocation,
+                    'error' => $e->getMessage()
+                ]);
+
+                // Decide how to handle this:
+                // Option 1: Continue anyway (stock will be negative)
+                // Option 2: Rollback the entire order
+                // throw $e; // Uncomment to rollback
             }
 
             // Update customer delivery address if provided and requested

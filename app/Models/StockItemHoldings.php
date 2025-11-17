@@ -122,4 +122,93 @@ class StockItemHoldings extends Model
         });
     }
 
+    /**
+     * Reduce stock quantity for an order
+     *
+     * @param string $stockCode
+     * @param string $locationCode
+     * @param float $quantity
+     * @param int|null $userId
+     * @return bool
+     * @throws \Exception
+     */
+    public static function reduceStock($stockCode, $locationCode, $quantity, $userId = null)
+    {
+        $holding = self::where('StockCode', $stockCode)
+            ->where('LocationCode', $locationCode)
+            ->lockForUpdate() // Prevent race conditions
+            ->first();
+
+        if (!$holding) {
+            throw new \Exception("No stock holding found for product {$stockCode} at location {$locationCode}");
+        }
+
+        // This should never happen due to cart validation, but check anyway
+        if ($holding->QuantityOnHand < $quantity) {
+            throw new \Exception("Insufficient stock at checkout. Available: {$holding->QuantityOnHand}, Requested: {$quantity}. This indicates a race condition or cart validation issue.");
+        }
+
+        $oldQuantity = $holding->QuantityOnHand;
+        $holding->QuantityOnHand -= $quantity;
+        $holding->LastEditedBy = $userId ?? auth()->id();
+        $holding->save();
+
+        \Log::info("Stock reduced for order", [
+            'stock_code' => $stockCode,
+            'location' => $locationCode,
+            'quantity_reduced' => $quantity,
+            'previous_quantity' => $oldQuantity,
+            'new_quantity' => $holding->QuantityOnHand,
+            'user_id' => $userId ?? auth()->id()
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Increase stock quantity (for order cancellations, returns, etc.)
+     *
+     * @param string $stockCode
+     * @param string $locationCode
+     * @param float $quantity
+     * @param int|null $userId
+     * @return bool
+     */
+    public static function increaseStock($stockCode, $locationCode, $quantity, $userId = null)
+    {
+        $holding = self::where('StockCode', $stockCode)
+            ->where('LocationCode', $locationCode)
+            ->lockForUpdate()
+            ->first();
+
+        if (!$holding) {
+            // Create a new stock holding if it doesn't exist
+            $holding = self::create([
+                'StockCode' => $stockCode,
+                'LocationCode' => $locationCode,
+                'QuantityOnHand' => $quantity,
+                'LastEditedBy' => $userId ?? auth()->id()
+            ]);
+
+            \Log::info("New stock holding created", [
+                'stock_code' => $stockCode,
+                'location' => $locationCode,
+                'quantity' => $quantity
+            ]);
+        } else {
+            $holding->QuantityOnHand += $quantity;
+            $holding->LastEditedBy = $userId ?? auth()->id();
+            $holding->save();
+
+            \Log::info("Stock increased", [
+                'stock_code' => $stockCode,
+                'location' => $locationCode,
+                'quantity_added' => $quantity,
+                'new_quantity' => $holding->QuantityOnHand
+            ]);
+        }
+
+        return true;
+    }
+
 }
