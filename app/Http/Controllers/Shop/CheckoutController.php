@@ -156,6 +156,25 @@ class CheckoutController extends Controller
             $subtotal += $lineTotal;
         }
 
+        foreach ($cartItems as $item) {
+            $assignedLocation = LocationAssignmentService::assignLocation(
+                $item['product']->StockCode,
+                $item['quantity'],
+                null
+            );
+
+            $availableStock = StockItemHoldings::getQuantityAtLocation(
+                $item['product']->StockCode,
+                $assignedLocation
+            );
+
+            if ($availableStock < $item['quantity']) {
+                return back()->withErrors([
+                    'stock' => "Sorry, {$item['product']->StockItemName} is no longer available in the requested quantity. Available: {$availableStock}, Requested: {$item['quantity']}. Please update your cart."
+                ])->withInput();
+            }
+        }
+
         // VAT calculation
         $vatRate = 0.15;
         $vatAmount = $subtotal * $vatRate;
@@ -216,7 +235,7 @@ class CheckoutController extends Controller
                     null // TODO: Could pass customer's preferred location if available
                 );
 
-                $order->items()->create([
+                $orderItem = $order->items()->create([
                     'OrderID' => $order->OrderNumber,
                     'company_id' => $currentCompany->id,
                     'StockItem' => $item['product']->StockCode,
@@ -229,29 +248,29 @@ class CheckoutController extends Controller
                     'LastEditedBy' => Auth::id(),
                     'ContractDiscount' => 0,
                 ]);
-            }
 
-            // Reduce stock at the assigned location
-            try {
-                StockItemHoldings::reduceStock(
-                    $item['product']->StockCode,
-                    $assignedLocation,
-                    $item['quantity'],
-                    Auth::id()
-                );
-            } catch (\Exception $e) {
-                \Log::error('Stock reduction failed', [
-                    'order_id' => $order->id,
-                    'order_item_id' => $orderItem->id,
-                    'stock_code' => $item['product']->StockCode,
-                    'location' => $assignedLocation,
-                    'error' => $e->getMessage()
-                ]);
+                // Reduce stock at the assigned location
+                try {
+                    StockItemHoldings::reduceStock(
+                        $item['product']->StockCode,
+                        $assignedLocation,
+                        $item['quantity'],
+                        Auth::id()
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Stock reduction failed', [
+                        'order_id' => $order->id,
+                        'order_item_id' => $orderItem->id,
+                        'stock_code' => $item['product']->StockCode,
+                        'location' => $assignedLocation,
+                        'error' => $e->getMessage()
+                    ]);
 
-                // Decide how to handle this:
-                // Option 1: Continue anyway (stock will be negative)
-                // Option 2: Rollback the entire order
-                // throw $e; // Uncomment to rollback
+                    // Decide how to handle this:
+                    // Option 1: Continue anyway (stock will be negative)
+                    // Option 2: Rollback the entire order
+                    // throw $e; // Uncomment to rollback
+                }
             }
 
             // Update customer delivery address if provided and requested

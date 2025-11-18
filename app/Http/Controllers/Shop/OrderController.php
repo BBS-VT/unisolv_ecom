@@ -239,7 +239,7 @@ class OrderController extends Controller
             }
 
             if ($addedItems > 0) {
-                return redirect()->route('shop.cart.index')
+                return redirect()->route('shop.cart.show')
                     ->with('success', $message);
             } else {
                 return redirect()->back()

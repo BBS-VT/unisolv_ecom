@@ -47,7 +47,7 @@
             <div class="text-center py-4">
                 <i class="bi bi-cart-x mb-3" style="font-size: 2.5rem;"></i>
                 <p>Your cart is empty</p>
-                <a href="{{ route('shop.products') }}" class="btn btn-primary btn-sm">Shop Now</a>
+                <a href="{{ route('shop.products.index') }}" class="btn btn-primary btn-sm">Shop Now</a>
             </div>
         @endif
     </div>

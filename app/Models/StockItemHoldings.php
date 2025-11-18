@@ -149,9 +149,15 @@ class StockItemHoldings extends Model
         }
 
         $oldQuantity = $holding->QuantityOnHand;
-        $holding->QuantityOnHand -= $quantity;
-        $holding->LastEditedBy = $userId ?? auth()->id();
-        $holding->save();
+        $newQuantity = $oldQuantity - $quantity;
+
+        $updated = self::where('StockCode', $stockCode)
+            ->where('LocationCode', $locationCode)
+            ->update([
+                'QuantityOnHand' => $newQuantity,
+                'LastEditedBy' => $userId ?? auth()->id(),
+                'updated_at' => now()
+            ]);
 
         \Log::info("Stock reduced for order", [
             'stock_code' => $stockCode,
@@ -196,15 +202,28 @@ class StockItemHoldings extends Model
                 'quantity' => $quantity
             ]);
         } else {
-            $holding->QuantityOnHand += $quantity;
-            $holding->LastEditedBy = $userId ?? auth()->id();
-            $holding->save();
+            $oldQuantity = $holding->QuantityOnHand;
+            $newQuantity = $oldQuantity + $quantity;
 
-            \Log::info("Stock increased", [
+            $updated = self::where('StockCode', $stockCode)
+                ->where('LocationCode', $locationCode)
+                ->update([
+                    'QuantityOnHand' => $newQuantity,
+                    'LastEditedBy' => $userId ?? auth()->id(),
+                    'updated_at' => now()
+                ]);
+
+            if (!$updated) {
+                throw new \Exception("Failed to update stock for {$stockCode} at {$locationCode}");
+            }
+
+            \Log::info("Stock reduced for order", [
                 'stock_code' => $stockCode,
                 'location' => $locationCode,
-                'quantity_added' => $quantity,
-                'new_quantity' => $holding->QuantityOnHand
+                'quantity_reduced' => $quantity,
+                'previous_quantity' => $oldQuantity,
+                'new_quantity' => $newQuantity,
+                'user_id' => $userId ?? auth()->id()
             ]);
         }
 
