@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Features;
+use App\Http\Controllers\Admin\StockTransactionController;
 use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\CustomersController;
@@ -180,11 +181,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     // Customer Group
     Route::resource('customer-category', 'CustomerCategoryController');
 
+    // Stock Transactions
+    Route::get('/stock-transactions', [StockTransactionController::class, 'index'])
+        ->name('stock-transactions.index');
+    Route::get('/stock-transactions/product/{stockCode}', [StockTransactionController::class, 'productHistory'])
+        ->name('stock-transactions.product');
+
     // Import routes
     Route::post('imports/process', [ProductController::class, 'importExcel'])
         ->name('imports.process');
-    Route::get('imports/status', [ProductController::class, 'showImportStatus'])
+    Route::get('imports/status', [StockTransactionController::class, 'importStatus'])
         ->name('imports.status');
+    Route::get('/imports/{importJob}/details', [StockTransactionController::class, 'importDetails'])
+        ->name('imports.details');
+    Route::get('/imports/{importJob}/progress', [StockTransactionController::class, 'importProgress'])
+        ->name('imports.progress');
     Route::get('imports/check-progress/{importJobId}', [ProductController::class, 'checkImportProgress'])
         ->name('imports.check-progress');
     Route::get('imports/product_template', [ProductController::class, 'importTemplate'])->name('imports.download-template');

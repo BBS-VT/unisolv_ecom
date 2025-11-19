@@ -129,10 +129,20 @@ class StockItemHoldings extends Model
      * @param string $locationCode
      * @param float $quantity
      * @param int|null $userId
+     * @param  string  $referenceType
+     * @param  int|null  $referenceId
+     * @param  string|null  $notes
      * @return bool
      * @throws \Exception
      */
-    public static function reduceStock($stockCode, $locationCode, $quantity, $userId = null)
+    public static function reduceStock(
+        $stockCode,
+        $locationCode,
+        $quantity, $userId = null,
+        $referenceType = 'Order',
+        $referenceId = null,
+        $notes = null
+        )
     {
         $holding = self::where('StockCode', $stockCode)
             ->where('LocationCode', $locationCode)
@@ -148,8 +158,9 @@ class StockItemHoldings extends Model
             throw new \Exception("Insufficient stock at checkout. Available: {$holding->QuantityOnHand}, Requested: {$quantity}. This indicates a race condition or cart validation issue.");
         }
 
-        $oldQuantity = $holding->QuantityOnHand;
-        $newQuantity = $oldQuantity - $quantity;
+        $oldQuantity = (float) $holding->QuantityOnHand;
+        $quantityToReduce = (float) $quantity;
+        $newQuantity = $oldQuantity - $quantityToReduce;
 
         $updated = self::where('StockCode', $stockCode)
             ->where('LocationCode', $locationCode)
@@ -159,12 +170,30 @@ class StockItemHoldings extends Model
                 'updated_at' => now()
             ]);
 
+        if (!$updated) {
+            throw new \Exception("Failed to update stock for {$stockCode} at {$locationCode}");
+        }
+
+        StockTransaction::create([
+            'StockCode' => $stockCode,
+            'LocationCode' => $locationCode,
+            'transaction_type' => strtolower($referenceType),
+            'quantity_change' => -$quantityToReduce, // Negative for reduction
+            'quantity_before' => $oldQuantity,
+            'quantity_after' => $newQuantity,
+            'reference_type' => $referenceType,
+            'reference_id' => $referenceId,
+            'notes' => $notes,
+            'user_id' => $userId ?? auth()->id(),
+            'company_id' => $holding->product->company_id ?? auth()->user()->currentCompany()->id
+        ]);
+
         \Log::info("Stock reduced for order", [
             'stock_code' => $stockCode,
             'location' => $locationCode,
-            'quantity_reduced' => $quantity,
+            'quantity_reduced' => $quantityToReduce,
             'previous_quantity' => $oldQuantity,
-            'new_quantity' => $holding->QuantityOnHand,
+            'new_quantity' => $newQuantity,
             'user_id' => $userId ?? auth()->id()
         ]);
 
@@ -173,15 +202,16 @@ class StockItemHoldings extends Model
 
     /**
      * Increase stock quantity (for order cancellations, returns, etc.)
-     *
-     * @param string $stockCode
-     * @param string $locationCode
-     * @param float $quantity
-     * @param int|null $userId
-     * @return bool
      */
-    public static function increaseStock($stockCode, $locationCode, $quantity, $userId = null)
-    {
+    public static function increaseStock(
+        $stockCode,
+        $locationCode,
+        $quantity,
+        $userId = null,
+        $referenceType = 'Adjustment',
+        $referenceId = null,
+        $notes = null
+    ) {
         $holding = self::where('StockCode', $stockCode)
             ->where('LocationCode', $locationCode)
             ->lockForUpdate()
@@ -196,15 +226,32 @@ class StockItemHoldings extends Model
                 'LastEditedBy' => $userId ?? auth()->id()
             ]);
 
+            // Log the transaction
+            StockTransaction::create([
+                'StockCode' => $stockCode,
+                'LocationCode' => $locationCode,
+                'transaction_type' => 'initial',
+                'quantity_change' => $quantity,
+                'quantity_before' => 0,
+                'quantity_after' => $quantity,
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
+                'notes' => $notes ?? 'Initial stock holding created',
+                'user_id' => $userId ?? auth()->id(),
+                'company_id' => $holding->product->company_id ?? auth()->user()->currentCompany()->id
+            ]);
+
             \Log::info("New stock holding created", [
                 'stock_code' => $stockCode,
                 'location' => $locationCode,
                 'quantity' => $quantity
             ]);
         } else {
-            $oldQuantity = $holding->QuantityOnHand;
-            $newQuantity = $oldQuantity + $quantity;
+            $oldQuantity = (float) $holding->QuantityOnHand;
+            $quantityToAdd = (float) $quantity;
+            $newQuantity = $oldQuantity + $quantityToAdd;
 
+            // Update stock holding
             $updated = self::where('StockCode', $stockCode)
                 ->where('LocationCode', $locationCode)
                 ->update([
@@ -217,15 +264,98 @@ class StockItemHoldings extends Model
                 throw new \Exception("Failed to update stock for {$stockCode} at {$locationCode}");
             }
 
-            \Log::info("Stock reduced for order", [
+            // Log the transaction
+            \App\Models\StockTransaction::create([
+                'StockCode' => $stockCode,
+                'LocationCode' => $locationCode,
+                'transaction_type' => strtolower($referenceType),
+                'quantity_change' => $quantityToAdd, // Positive for increase
+                'quantity_before' => $oldQuantity,
+                'quantity_after' => $newQuantity,
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
+                'notes' => $notes,
+                'user_id' => $userId ?? auth()->id(),
+                'company_id' => $holding->product->company_id ?? auth()->user()->currentCompany()->id
+            ]);
+
+            \Log::info("Stock increased", [
                 'stock_code' => $stockCode,
                 'location' => $locationCode,
-                'quantity_reduced' => $quantity,
-                'previous_quantity' => $oldQuantity,
-                'new_quantity' => $newQuantity,
-                'user_id' => $userId ?? auth()->id()
+                'quantity_added' => $quantityToAdd,
+                'new_quantity' => $newQuantity
             ]);
         }
+
+        return true;
+    }
+
+    /**
+     * Update stock from CSV import and log the transaction
+     *
+     * @param string $stockCode
+     * @param string $locationCode
+     * @param float $newQuantity
+     * @param int|null $userId
+     * @param string|null $importReference (e.g., filename)
+     * @return bool
+     */
+    public static function updateFromImport(
+        $stockCode,
+        $locationCode,
+        $newQuantity,
+        $userId = null,
+        $referenceType = 'ImportJob',
+        $referenceId = null,
+        $notes = null
+    ) {
+        $holding = self::where('StockCode', $stockCode)
+            ->where('LocationCode', $locationCode)
+            ->lockForUpdate()
+            ->first();
+
+        $oldQuantity = $holding ? (float) $holding->QuantityOnHand : 0;
+        $newQuantity = (float) $newQuantity;
+        $quantityChange = $newQuantity - $oldQuantity;
+
+        // Skip if no change
+        if ($quantityChange == 0) {
+            return false;
+        }
+
+        if (!$holding) {
+            // Create new stock holding
+            $holding = self::create([
+                'StockCode' => $stockCode,
+                'LocationCode' => $locationCode,
+                'QuantityOnHand' => $newQuantity,
+                'LastEditedBy' => $userId ?? auth()->id()
+            ]);
+        } else {
+            // Update existing holding
+            self::where('StockCode', $stockCode)
+                ->where('LocationCode', $locationCode)
+                ->update([
+                    'QuantityOnHand' => $newQuantity,
+                    'LastEditedBy' => $userId ?? auth()->id(),
+                    'updated_at' => now()
+                ]);
+        }
+
+        // Log the transaction
+        StockTransaction::create([
+            'StockCode' => $stockCode,
+            'LocationCode' => $locationCode,
+            'transaction_type' => 'import',
+            'quantity_change' => $quantityChange,
+            'quantity_before' => $oldQuantity,
+            'quantity_after' => $newQuantity,
+            'reference_type' => $referenceType,
+            'reference_id' => $referenceId,
+            'notes' => $notes,
+            'user_id' => $userId ?? auth()->id(),
+            'company_id' => $holding->product->company_id ?? auth()->user()->currentCompany()->id
+        ]);
 
         return true;
     }

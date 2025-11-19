@@ -88,7 +88,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('admin.imports.status') }}">
-                                    <i class="fas fa-info-circle me-2"></i>{{ __('global.import') }} {{ __('cruds.status') }}
+                                    <i class="fas fa-info-circle me-2"></i>{{ __('global.import') }} {{ __('global.status') }}
                                 </a>
                             </li>
                         </ul>

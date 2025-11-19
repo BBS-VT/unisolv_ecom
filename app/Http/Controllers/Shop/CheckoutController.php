@@ -255,7 +255,10 @@ class CheckoutController extends Controller
                         $item['product']->StockCode,
                         $assignedLocation,
                         $item['quantity'],
-                        Auth::id()
+                        Auth::id(),
+                        'Order',
+                        $order->id,
+                        "E-commerce order #{$order->OrderNumber}"
                     );
                 } catch (\Exception $e) {
                     \Log::error('Stock reduction failed', [
@@ -266,10 +269,7 @@ class CheckoutController extends Controller
                         'error' => $e->getMessage()
                     ]);
 
-                    // Decide how to handle this:
-                    // Option 1: Continue anyway (stock will be negative)
-                    // Option 2: Rollback the entire order
-                    // throw $e; // Uncomment to rollback
+                    throw $e;
                 }
             }
 

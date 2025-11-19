@@ -202,7 +202,7 @@
                         <span key="t-reports">{{ __('global.reports') }}</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="#">{{ __('Stock Reports') }}</a></li>
+                        <li><a href="{{ route('admin.stock-transactions.index') }}">{{ __('Stock Transactions') }}</a></li>
                     </ul>
                 </li>
 

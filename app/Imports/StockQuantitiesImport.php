@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Imports;
 
 use App\Models\ImportJob;
@@ -22,9 +21,12 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
     protected $importJobId;
     protected $totalRows = 0;
     protected $processedRows = 0;
+    protected $successfulRows = 0;
+    protected $failedRows = 0;
+    protected $itemsUpdated = 0;
 
     /**
-     * @param int $importJobId
+     * @param  int  $importJobId
      */
     public function __construct(int $importJobId)
     {
@@ -32,7 +34,7 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
     }
 
     /**
-     * @ return int
+     * @return int
      */
     public function startRow(): int
     {
@@ -55,7 +57,7 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
     public function registerEvents(): array
     {
         return [
-            BeforeImport::class => function(BeforeImport $event) {
+            BeforeImport::class => function (BeforeImport $event) {
                 $totalRows = $event->getReader()->getTotalRows();
                 // Extract the number from the first sheet (index 0)
                 $this->totalRows = isset($totalRows['Worksheet']) ? $totalRows['Worksheet'] : (isset($totalRows['Sheet1']) ? $totalRows['Sheet1'] : 0);
@@ -64,69 +66,127 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
                 // Update total rows in import job
                 ImportJob::where('id', $this->importJobId)->update([
                     'total_rows' => $this->totalRows,
+                    'status' => ImportJob::STATUS_PROCESSING,
+                ]);
+
+                Log::info("Stock import started", [
+                    'import_job_id' => $this->importJobId,
+                    'total_rows' => $this->totalRows
                 ]);
             },
-            AfterImport::class => function(AfterImport $event) {
+
+            AfterImport::class => function (AfterImport $event) {
                 // Mark as completed in the import tracker
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
-                    $importJob->updateProgress($this->totalRows);
+                    $importJob->update([
+                        'processed_rows' => $this->processedRows,
+                        'successful_rows' => $this->successfulRows,
+                        'failed_rows' => $this->failedRows,
+                        'items_updated' => $this->itemsUpdated,
+                    ]);
+                    $importJob->markAsCompleted();
+
+                    Log::info("Stock import completed", [
+                        'import_job_id' => $this->importJobId,
+                        'processed' => $this->processedRows,
+                        'successful' => $this->successfulRows,
+                        'failed' => $this->failedRows,
+                        'items_updated' => $this->itemsUpdated
+                    ]);
                 }
             },
-            AfterSheet::class => function(AfterSheet $event) {
+
+            AfterSheet::class => function (AfterSheet $event) {
                 // Update progress after each sheet
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
-                    $importJob->updateProgress($this->processedRows);
+                    $importJob->updateProgress(
+                        $this->processedRows,
+                        $this->successfulRows,
+                        $this->failedRows
+                    );
                 }
             },
         ];
     }
 
     /**
-     * @param Collection $rows
+     * @param  Collection  $rows
      */
     public function collection(Collection $rows)
     {
-        $chunks = $rows->chunk(250);
+        $importJob = ImportJob::find($this->importJobId);
+        $userId = Auth::check() ? Auth::id() : ($importJob->imported_by ?? 1);
 
-        foreach ($chunks as $chunk) {
-            $holdings = [];
-
-            foreach ($chunk as $row) {
-                if (isset($row[0]) && $row[0]) {
-                    $stockCode = trim($row[0]);
-
-                    $holdings[] = [
-                        'StockCode'         => $stockCode,
-                        'LocationCode'      => $row[109] ?? '0000',
-                        'QuantityOnHand'    => $row[10] ?? 0,
-                        'BinLocation'       => $row[6] ?? '',
-                        'LastCostPrice'     => $row[25] ?? 0,
-                        'ReorderLevel'      => $row[16] ?? 0,
-                        'TargetStockLevel'  => $row[17] ?? 0,
-                        'LastEditedBy'      => Auth::check() ? Auth::id() : 1,
-                        'created_at'        => now(),
-                        'updated_at'        => now(),
-                    ];
-
+        foreach ($rows as $index => $row) {
+            try {
+                // Validate that we have a stock code
+                if (!isset($row[0]) || !$row[0]) {
+                    $this->failedRows++;
                     $this->processedRows++;
+                    continue;
                 }
+
+                $stockCode = trim($row[0]);
+                $locationCode = $row[109] ?? '0000';
+                $quantityOnHand = $row[10] ?? 0;
+
+                // Use the updateFromImport method which logs transactions
+                $wasUpdated = StockItemHoldings::updateFromImport(
+                    $stockCode,
+                    $locationCode,
+                    $quantityOnHand,
+                    $userId,
+                    'ImportJob',
+                    $this->importJobId,
+                    "Import: {$importJob->filename}"
+                );
+
+                // Also update other fields that don't affect quantity
+                // Use updateOrCreate to handle these additional fields
+                StockItemHoldings::where('StockCode', $stockCode)
+                    ->where('LocationCode', $locationCode)
+                    ->update([
+                        'BinLocation' => $row[6] ?? '',
+                        'LastCostPrice' => $row[25] ?? 0,
+                        'ReorderLevel' => $row[16] ?? 0,
+                        'TargetStockLevel' => $row[17] ?? 0,
+                        'LastEditedBy' => $userId,
+                        'updated_at' => now(),
+                    ]);
+
+                if ($wasUpdated) {
+                    $this->itemsUpdated++;
+                }
+
+                $this->successfulRows++;
+
+            } catch (\Exception $e) {
+                $this->failedRows++;
+
+                Log::error("Stock import row failed", [
+                    'import_job_id' => $this->importJobId,
+                    'row_number' => $index + 2, // +2 because of 0-index and header row
+                    'stock_code' => $stockCode ?? 'unknown',
+                    'error' => $e->getMessage()
+                ]);
             }
 
-            if (!empty($holdings)) {
-                // Batch insert the holdings
-                DB::table('stock_item_holdings')->insert($holdings);
-            }
+            $this->processedRows++;
 
-            // Update progress every 1000 rows
-            if ($this->processedRows % 1000 === 0) {
+            // Update progress every 100 rows (more frequent for better UX)
+            if ($this->processedRows % 100 === 0) {
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
-                    $importJob->updateProgress($this->processedRows);
+                    $importJob->update([
+                        'processed_rows' => $this->processedRows,
+                        'successful_rows' => $this->successfulRows,
+                        'failed_rows' => $this->failedRows,
+                        'items_updated' => $this->itemsUpdated,
+                    ]);
                 }
             }
         }
-
     }
 }
