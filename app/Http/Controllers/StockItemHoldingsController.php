@@ -32,10 +32,23 @@ class StockItemHoldingsController extends Controller
         $filename = $request->file('import_file')->getClientOriginalName();
 
         // Create an import job record to track progress
-        $importJob = ImportJob::create([
+        /*$importJob = ImportJob::create([
             'filename' => $filename,
             'total_rows' => 0, // Will be updated by the job
             'processed_rows' => 0,
+            'status' => ImportJob::STATUS_PENDING,
+            'started_at' => now(),
+        ]);*/
+        $importJob = ImportJob::create([
+            'job_id' => $jobId,
+            'filename' => $filename,
+            'total_rows' => 0, // Will be updated in BeforeImport event
+            'processed_rows' => 0,
+            'successful_rows' => 0,
+            'failed_rows' => 0,
+            'items_updated' => 0,
+            'company_id' => auth()->user()->currentCompany()->id,
+            'imported_by' => auth()->id(),
             'status' => ImportJob::STATUS_PENDING,
             'started_at' => now(),
         ]);

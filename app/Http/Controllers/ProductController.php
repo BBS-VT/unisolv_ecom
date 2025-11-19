@@ -16,6 +16,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
 use App\Models\StockItemHoldings;
+use App\Models\StockTransaction;
 use Cache;
 use Gate;
 use Illuminate\Http\Request;
@@ -457,8 +458,14 @@ class ProductController extends Controller
             $packSizeFamily = $product->packSizeFamily()->with('stockHolding')->get();
         }
 
+        $recentTransactions = StockTransaction::with(['location', 'user'])
+            ->forProduct($product->StockCode)
+            ->latest()
+            ->take(5)
+            ->get();
+
         //dd($product);
-        return view('products.show', compact('product', 'allMainCategories', 'packSizeFamily', 'currentCompany'));
+        return view('products.show', compact('product', 'allMainCategories', 'packSizeFamily', 'currentCompany', 'recentTransactions'));
     }
 
     public function destroy(Product $product)

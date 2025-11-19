@@ -137,7 +137,7 @@
                                         <td class="text-end font-weight-bold">{{ number_format($transaction->quantity_after, 2) }}</td>
                                         <td>
                                             @if($transaction->reference_type == 'Order' && $transaction->reference_id)
-                                                <a href="{{ route('admin.orders.show', $transaction->reference_id) }}">
+                                                <a href="{{ route('orders.show', $transaction->reference_id) }}">
                                                     Order #{{ $transaction->reference_id }}
                                                 </a>
                                             @elseif($transaction->reference_type == 'ImportJob' && $transaction->reference_id)

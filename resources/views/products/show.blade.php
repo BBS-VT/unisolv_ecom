@@ -91,6 +91,10 @@
                 <span class="badge bg-primary fs-6">{{ __('Stock Code :') }} {{ $product->StockCode }}</span>
             </div>
             <div>
+                <a href="{{ route('admin.stock-transactions.product', $product->StockCode) }}"
+                   class="btn btn-outline-info me-2">
+                    <i class="bx bx-history me-1"></i> {{ __('Transaction History') }}
+                </a>
                 <a href="{{ route('products.edit', $product->id) }}" class="btn btn-primary me-2">
                     <i class="fas fa-edit me-1"></i> {{ __('global.edit') }}
                 </a>
@@ -392,6 +396,96 @@
                             </div>
                         </div>
                     </div>
+
+                    <h4>{{ __('Recent Stock Transactions') }}</h4>
+                    <div class="card border mb-3">
+                        <div class="card-body">
+                            @if($recentTransactions->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>{{ __('Date') }}</th>
+                                            <th>{{ __('Type') }}</th>
+                                            <th>{{ __('Location') }}</th>
+                                            <th class="text-end">{{ __('Change') }}</th>
+                                            <th class="text-end">{{ __('After') }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($recentTransactions as $transaction)
+                                            <tr>
+                                                <td>
+                                                    <small>{{ $transaction->created_at->format('M d, Y') }}</small>
+                                                    <br>
+                                                    <small class="text-muted">{{ $transaction->created_at->format('H:i') }}</small>
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $typeColors = [
+                                                            'order' => 'danger',
+                                                            'return' => 'success',
+                                                            'adjustment' => 'warning',
+                                                            'transfer' => 'info',
+                                                            'import' => 'primary',
+                                                            'initial' => 'secondary'
+                                                        ];
+                                                        $typeIcons = [
+                                                            'order' => 'bx-cart-alt',
+                                                            'return' => 'bx-undo',
+                                                            'adjustment' => 'bx-slider',
+                                                            'transfer' => 'bx-transfer',
+                                                            'import' => 'bx-import',
+                                                            'initial' => 'bx-plus-circle'
+                                                        ];
+                                                        $color = $typeColors[$transaction->transaction_type] ?? 'secondary';
+                                                        $icon = $typeIcons[$transaction->transaction_type] ?? 'bx-help-circle';
+                                                    @endphp
+                                                    <span class="badge bg-{{ $color }}">
+                                                <i class="bx {{ $icon }} me-1"></i>
+                                                {{ ucfirst($transaction->transaction_type) }}
+                                            </span>
+                                                </td>
+                                                <td>
+                                                    <small>
+                                                        @if($transaction->location)
+                                                            {{ $transaction->location->LocationName }}
+                                                        @else
+                                                            {{ $transaction->LocationCode }}
+                                                        @endif
+                                                    </small>
+                                                </td>
+                                                <td class="text-end">
+                                            <span class="fw-bold {{ $transaction->quantity_change < 0 ? 'text-danger' : 'text-success' }}">
+                                                {{ $transaction->quantity_change > 0 ? '+' : '' }}{{ number_format($transaction->quantity_change, 2) }}
+                                            </span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <small class="text-muted">{{ number_format($transaction->quantity_after, 2) }}</small>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="text-center mt-3 pt-3 border-top">
+                                    <a href="{{ route('admin.stock-transactions.product', $product->StockCode) }}"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bx bx-history me-1"></i>
+                                        {{ __('View Complete Transaction History') }}
+                                    </a>
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="bx bx-history display-4 text-muted opacity-25"></i>
+                                    <p class="text-muted mb-0 mt-2">{{ __('No transactions recorded yet') }}</p>
+                                    <small class="text-muted">{{ __('Stock movements will appear here once recorded') }}</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
