@@ -40,7 +40,7 @@ class StockItemHoldingsController extends Controller
             'started_at' => now(),
         ]);*/
         $importJob = ImportJob::create([
-            'job_id' => $jobId,
+            //'job_id' => $importJobId,
             'filename' => $filename,
             'total_rows' => 0, // Will be updated in BeforeImport event
             'processed_rows' => 0,

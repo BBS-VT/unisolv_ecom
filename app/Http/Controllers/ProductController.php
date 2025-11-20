@@ -396,7 +396,7 @@ class ProductController extends Controller
         if ($product->stockHolding) {
             $product->stockHolding->update([
                 'LastCostPrice' => $request->LastCostPrice ?? 0,
-                'QuantityOnHand' => $request->QuantityOnHand ?? 0,
+                //'QuantityOnHand' => $request->QuantityOnHand ?? 0,
             ]);
         }
 

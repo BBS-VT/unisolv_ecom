@@ -781,7 +781,7 @@
     </div>
 @endsection
 
-@push('script')
+@push('scripts')
     <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js')}}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

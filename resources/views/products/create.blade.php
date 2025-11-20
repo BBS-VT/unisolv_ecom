@@ -773,8 +773,7 @@
             }
         })
     </script>
-@endpush
-
-@push('script-bottom')
     <script src="{{ URL::asset('build/js/pages/form-file-upload.init.js') }}"></script>
 @endpush
+
+

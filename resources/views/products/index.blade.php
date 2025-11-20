@@ -316,9 +316,7 @@
             });
         });
     </script>
-@endpush
 
-@push('script-bottom')
     <script>
         // Additional initialization if needed
         document.addEventListener('DOMContentLoaded', function() {
@@ -330,3 +328,4 @@
         });
     </script>
 @endpush
+
