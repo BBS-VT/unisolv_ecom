@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsersController;
@@ -130,6 +131,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/orders/{order}/details', 'OrdersController@show')->name('orders.show');
     Route::get('/orders/{order}/delete', 'OrdersController@delete')->name('orders.delete');
     Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');
+    Route::get('/orders/{order}/print/invoice', 'OrdersController@printInvoice')
+        ->name('print.invoice');
+    Route::get('/orders/{order}/print/picklist', 'OrdersController@printPickList')
+        ->name('print.picklist');
+    Route::get('/orders/{order}/print/packing-slip', 'OrdersController@printPackingSlip')
+        ->name('print.packing-slip');
 
     // Special Deals
     Route::delete('deals/destroy', 'SpecialDealsController@massDestroy')->name('deals.massDestroy');

@@ -27,6 +27,7 @@ use App\Mail\FulfillmentNotificationMail;
 use App\Mail\OrderConfirmationMail;
 use App\Notifications\NewOrderNotification;
 use Illuminate\Support\Facades\Notification;
+use Log;
 
 class OrdersController extends Controller
 {
@@ -530,5 +531,230 @@ class OrdersController extends Controller
         header('Content-disposition: attachment; filename="Order'.$order->OrderNumber.'.SCO"');
         echo $document->saveXML();
 
+    }
+
+    /**
+     * Display invoice/order confirmation
+     */
+    public function printInvoice(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
+        Log::info('Current company loaded', [
+            'company_id' => $currentCompany ? $currentCompany->id : null,
+            'company_name' => $currentCompany ? $currentCompany->name : null
+        ]);
+
+        // Log initial order state BEFORE loading relationships
+        Log::info('Order BEFORE loading relationships', [
+            'order_id' => $order->id,
+            'order_number' => $order->OrderNumber,
+            'customer_id' => $order->CustomerID,
+            'user_id' => $order->LastEditedBy,
+            'status' => $order->orderstatus->name,
+            'created_at' => $order->created_at,
+            'loaded_relations' => array_keys($order->getRelations())
+        ]);
+
+        // Load relationships with debug logging
+        Log::info('Loading order items relationship...');
+        $order->load('items');
+        Log::info('Items loaded', [
+            'items_count' => $order->items->count(),
+            'items_loaded' => $order->relationLoaded('items')
+        ]);
+
+        if ($order->items->count() > 0) {
+            Log::info('First item details', [
+                'item_id' => $order->items->first()->id,
+                'product_id' => $order->items->first()->product_id,
+                'location_id' => $order->items->first()->location_id,
+                'quantity' => $order->items->first()->quantity,
+                'price' => $order->items->first()->price
+            ]);
+        } else {
+            Log::warning('No items found for this order!');
+        }
+
+        Log::info('Loading items.product relationship...');
+        $order->load('items.product');
+        Log::info('Items.product loaded', [
+            'first_item_has_product' => $order->items->first() ? $order->items->first()->relationLoaded('product') : false
+        ]);
+
+        if ($order->items->count() > 0 && $order->items->first()->product) {
+            Log::info('First product details', [
+                'product_id' => $order->items->first()->product->id,
+                'product_name' => $order->items->first()->product->StockItemName,
+                'product_sku' => $order->items->first()->product->StockCode
+            ]);
+        } else {
+            Log::warning('No product found on first item!');
+        }
+
+        Log::info('Loading items.location relationship...');
+        $order->load('items.location');
+        Log::info('Items.location loaded');
+
+        Log::info('Loading customer relationship...');
+        $order->load('customer');
+        Log::info('Customer loaded', [
+            'customer_loaded' => $order->relationLoaded('customer'),
+            'customer_id' => $order->customer ? $order->customer->id : null,
+            'customer_name' => $order->customer ? $order->customer->name : null
+        ]);
+
+        if (!$order->customer) {
+            Log::error('Customer not loaded! This will cause blade errors');
+        }
+
+
+        Log::info('Loading user relationship...');
+        $order->load('lastedited');
+        Log::info('User loaded', [
+            'user_loaded' => $order->relationLoaded('user'),
+            'user_id' => $order->user ? $order->user->id : null,
+            'user_name' => $order->user ? $order->user->name : null
+        ]);
+
+        // Log final order state AFTER loading relationships
+        Log::info('Order AFTER loading relationships', [
+            'loaded_relations' => array_keys($order->getRelations()),
+            'items_count' => $order->items->count()
+        ]);
+
+        // Calculate order totals with debug logging
+        Log::info('Calculating order totals...');
+
+        $subtotal = $order->items->sum(function ($item) {
+            $itemTotal = ($item->price * $item->quantity) / 100;
+            Log::debug('Item calculation', [
+                'item_id' => $item->id,
+                'price' => $item->price,
+                'quantity' => $item->quantity,
+                'total' => $itemTotal
+            ]);
+            return $itemTotal;
+        });
+
+        Log::info('Subtotal calculated', ['subtotal' => $subtotal]);
+
+        $vatRate = 0.15; // 15% VAT
+        $vatAmount = $subtotal * $vatRate;
+        $total = $subtotal + $vatAmount;
+
+        Log::info('Totals calculated', [
+            'subtotal' => $subtotal,
+            'vat_rate' => $vatRate,
+            'vat_amount' => $vatAmount,
+            'total' => $total
+        ]);
+
+        // Group items by location for delivery information
+        Log::info('Grouping items by location...');
+        $itemsByLocation = $order->items->groupBy('location_id');
+        Log::info('Items grouped', [
+            'location_groups' => $itemsByLocation->count(),
+            'location_ids' => $itemsByLocation->keys()->toArray()
+        ]);
+
+        // Final data check before passing to view
+        Log::info('Preparing to pass data to view', [
+            'order_id' => $order->id,
+            'has_customer' => $order->customer ? true : false,
+            'has_items' => $order->items->count() > 0,
+            'has_company' => $currentCompany ? true : false,
+            'subtotal' => $subtotal,
+            'total' => $total
+        ]);
+
+        // Check for potential issues
+        if (!$order->customer) {
+            Log::error('CRITICAL: Order has no customer - blade will fail!');
+        }
+        if ($order->items->count() === 0) {
+            Log::warning('WARNING: Order has no items - invoice will be empty');
+        }
+        if (!$currentCompany) {
+            Log::error('CRITICAL: No current company - blade will fail!');
+        }
+
+        Log::info('=== PRINT INVOICE DEBUG END ===');
+
+        return view('orders.print.invoice', compact(
+            'order',
+            'currentCompany',
+            'subtotal',
+            'vatAmount',
+            'total',
+            'vatRate',
+            'itemsByLocation'
+        ));
+    }
+
+    /**
+     * Display backoffice pick list/packing slip
+     * Location-based grouping for warehouse operations
+     */
+    public function printPickList(Order $order, Request $request)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
+        // Load necessary relationships
+        $order->load([
+            'items.product',
+            'items.location',
+            'customer',
+            'location'
+        ]);
+
+        // Group items by location for picking efficiency
+        $itemsByLocation = $order->items->groupBy('location_id');
+
+        // Option to show/hide pricing (from query parameter)
+        $showPricing = $request->get('pricing', false);
+
+        return view('orders.print.picklist', compact(
+            'order',
+            'currentCompany',
+            'itemsByLocation',
+            'showPricing'
+        ));
+    }
+
+    /**
+     * Display combined packing slip with delivery note
+     * For orders that need both picking and delivery information
+     */
+    public function printPackingSlip(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
+
+        // Load necessary relationships
+        $order->load([
+            'items.product',
+            'items.location',
+            'customer',
+            'location',
+            'user'
+        ]);
+
+        // Group items by location
+        $itemsByLocation = $order->items->groupBy('location_id');
+
+        return view('orders.print.packing-slip', compact(
+            'order',
+            'currentCompany',
+            'itemsByLocation'
+        ));
     }
 }
