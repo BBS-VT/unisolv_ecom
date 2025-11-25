@@ -52,7 +52,7 @@
                         </td>
                         <td>
                             @can('order_show')
-                                <a href="{{ route('orders.show', $order->id) }}" target="_blank" data-bs-toggle="tooltip"
+                                <a href="{{ route('print.order', $order->id) }}" target="_blank" data-bs-toggle="tooltip"
                                    title="{{ __('global.view') }} {{ __('cruds.order.title_singular') }}"
                                    data-bs-placement="top">
                                     <i class="las dripicons-preview text-info font-18"></i>

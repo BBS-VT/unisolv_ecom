@@ -79,7 +79,7 @@
                             @auth
                                 @php
                                     // TODO: display subtotal as excl VAT if wholesale pricing
-                                    $subtotal = 0;
+                                    $orderTotal = 0;
                                     foreach($cart as $item) {
                                         $product = \App\Models\Product::find($item['product_id']);
 
@@ -87,12 +87,13 @@
                                             continue;
                                         }
                                         $pricing = \App\Helpers\PricingHelper::getProductPricing($product);
-                                        $subtotal += $pricing['price'] * $item['quantity'];
+                                        $orderTotal += $pricing['price'] * $item['quantity'];
                                     }
                                     $taxRate = 0.15; // TODO: link to TAX model
-                                    $tax = $subtotal * $taxRate;
+
                                     // TODO: include VAT for wholesale pricing
-                                    $orderTotal = $subtotal;
+                                    $subtotal = $orderTotal / (1 + $taxRate);
+                                    $tax = $orderTotal - $subtotal;
                                 @endphp
 
                                 <div class="d-flex justify-content-between mb-2">

@@ -137,7 +137,7 @@ class CheckoutController extends Controller
 
         // Calculate totals
         $cartItems = [];
-        $subtotal = 0;
+        $total = 0;
 
         foreach ($cart as $item) {
             $product = Product::find($item['product_id']);
@@ -153,7 +153,7 @@ class CheckoutController extends Controller
                 'line_total' => $lineTotal
             ];
 
-            $subtotal += $lineTotal;
+            $total += $lineTotal;
         }
 
         foreach ($cartItems as $item) {
@@ -177,8 +177,9 @@ class CheckoutController extends Controller
 
         // VAT calculation
         $vatRate = 0.15;
-        $vatAmount = $subtotal * $vatRate;
-        $total = $subtotal + $vatAmount;
+        $subtotal = $total / (1 + $vatRate);
+        $vatAmount = $total - $subtotal;
+        //$total = $subtotal + $vatAmount;
 
         // Check credit limit
         $creditInfo = $this->checkCreditLimit($customer, $total);

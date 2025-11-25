@@ -131,8 +131,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/orders/{order}/details', 'OrdersController@show')->name('orders.show');
     Route::get('/orders/{order}/delete', 'OrdersController@delete')->name('orders.delete');
     Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');
-    Route::get('/orders/{order}/print/invoice', 'OrdersController@printInvoice')
-        ->name('print.invoice');
+    Route::get('/orders/{order}/print/order', 'OrdersController@printInvoice')
+        ->name('print.order');
     Route::get('/orders/{order}/print/picklist', 'OrdersController@printPickList')
         ->name('print.picklist');
     Route::get('/orders/{order}/print/packing-slip', 'OrdersController@printPackingSlip')
