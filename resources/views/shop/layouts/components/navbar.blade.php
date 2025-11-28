@@ -10,12 +10,12 @@
             <!-- Search Bar -->
             <div class="amazon-search-bar flex-grow-1 mx-4">
                 <div class="input-group">
-                    <select class="form-select" style="max-width: 120px; border-radius: 4px 0 0 4px; border-end: none;">
+                    {{--<select class="form-select" style="max-width: 120px; border-radius: 4px 0 0 4px; border-end: none;">
                         <option>All</option>
                         <option>Electronics</option>
                         <option>Office</option>
                         <option>Industrial</option>
-                    </select>
+                    </select>--}}
                     <input type="text" class="form-control" placeholder="Search products..." id="globalSearch">
                     <button class="amazon-search-btn" type="button">
                         <i class="bi bi-search"></i>
@@ -54,10 +54,15 @@
                     </div>
                 @endguest--}}
 
-                <a href="{{ route('shop.account.orders.index') }}" class="amazon-nav-item me-3">
-                    <span class="nav-label">Returns</span>
-                    <span class="nav-title">& Orders</span>
-                </a>
+                @guest
+
+
+                @else
+                    <a href="{{ route('shop.account.orders.index') }}" class="amazon-nav-item me-3">
+                        <span class="nav-label">Returns</span>
+                        <span class="nav-title">& Orders</span>
+                    </a>
+                @endguest
 
                 <a href="{{ route('shop.cart.show') }}" class="amazon-nav-item position-relative">
                     <i class="bi bi-cart3" style="font-size: 2rem;"></i>

@@ -19,13 +19,14 @@ class LoginResponse implements LoginResponseContract
             return redirect()->route('shop.home');
         }
 
-        if($authUser->IsSalesperson == '1') {
+        if($authUser->IsSalesperson == '1' && $authUser->hasRole('Sales Rep')) {
             $redirect = route('sales.dashboard');
         } elseif($authUser->IsCustomer == '1') {
             $redirect = route('customers.dashboard');
         }
 
         return redirect($redirect);
+        //return redirect()->route('dashboard');
 
     }
 }

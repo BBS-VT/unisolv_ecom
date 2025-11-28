@@ -753,7 +753,7 @@
                                     <div class="empty-state-icon">
                                         <i class="mdi mdi-account-multiple-outline"></i>
                                     </div>
-                                    <p class="empty-state-text">{{ __('global.contacts_will_appear_here') }}</p>
+                                    <p class="empty-state-text">{{ __('global.no_contacts_yet') }}</p>
                                 </div>
                             </div>
                         </div>

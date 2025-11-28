@@ -141,7 +141,7 @@
                             <div class="col-md-6">
                                 <h6>{{ __('Order Information') }}</h6>
                                 <p class="mb-1"><strong>Order Number:</strong> #{{ $order->OrderNumber }}</p>
-                                <p class="mb-1"><strong>Order Date:</strong> {{ $order->OrderDate->format('d M Y, H:i') }}</p>
+                                <p class="mb-1"><strong>Order Date:</strong> {{ $order->OrderDate }}</p>
                                 <p class="mb-1"><strong>Status:</strong>
                                     <span class="badge bg-primary">New</span>
                                 </p>
@@ -280,7 +280,7 @@
                 </div>
 
                 <div class="row">
-                    {{--<div class="col-md-4 mb-3">
+                    <div class="col-md-4 mb-3">
                         <button type="button" class="btn btn-outline-secondary w-100" id="print-order">
                             <i class="bi bi-printer me-2"></i>{{ __('Print Order') }}
                         </button>
@@ -294,8 +294,8 @@
                         <a href="{{ route('shop.account.orders.show', $order->id) }}" class="btn btn-primary w-100">
                             <i class="bi bi-eye me-2"></i>{{ __('View Order Details') }}
                         </a>
-                    </div>--}}
-                    <div class="col-md-6 mb-3">
+                    </div>
+                    {{-- <div class="col-md-6 mb-3">
                         <a href="{{ route('shop.products.index') }}" class="btn btn-outline-primary w-100">
                             <i class="bi bi-bag me-2"></i>{{ __('Continue Shopping') }}
                         </a>
@@ -304,7 +304,7 @@
                         <a href="{{ route('shop.account.orders.show', $order->id) }}" class="btn btn-primary w-100">
                             <i class="bi bi-eye me-2"></i>{{ __('View Order Details') }}
                         </a>
-                    </div>
+                    </div>--}}
                 </div>
 
                 <div class="card">
@@ -317,7 +317,7 @@
                             <div class="col-md-4 mb-2">
                                 <i class="bi bi-telephone me-2"></i>
                                 <strong>Phone:</strong><br>
-                                <small class="text-muted">{{ config('app.phone', '+27 11 123 4567') }}</small>
+                                <small class="text-muted" type="tel">{{ $currentCompany->billing->phone }}</small>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <i class="bi bi-envelope me-2"></i>

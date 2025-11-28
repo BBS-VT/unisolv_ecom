@@ -136,7 +136,7 @@
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="DeliveryState" class="form-label">
-                                        State <span class="text-danger">*</span>
+                                        Prov
                                     </label>
                                     <input type="text"
                                            class="form-control @error('DeliveryState') is-invalid @enderror"

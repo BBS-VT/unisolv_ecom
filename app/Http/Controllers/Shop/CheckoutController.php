@@ -324,6 +324,8 @@ class CheckoutController extends Controller
      */
     public function success($orderId)
     {
+        $user = Auth::user();
+        $currentCompany = $user->currentCompany();
 
         $order = Order::with(['customer', 'items.product', 'salesperson'])
             ->where('id', $orderId)
@@ -331,7 +333,7 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
 
-        return view('shop.checkout.success', compact('order'));
+        return view('shop.checkout.success', compact('order', 'currentCompany'));
     }
 
     /**

@@ -65,6 +65,7 @@ class Order extends Model
         'tax_per_item' => 'boolean',
         'discount_per_item' => 'boolean',
         'preferred_delivery_date' => 'date',
+        'OrderDate' => 'datetime',
     ];
 
     /**
