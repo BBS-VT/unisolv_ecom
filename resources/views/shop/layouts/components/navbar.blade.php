@@ -4,7 +4,7 @@
         <div class="d-flex align-items-center justify-content-between py-2">
             <!-- Logo -->
             <a href="{{ route('shop.home') }}" class="navbar-brand">
-                <strong>B2B Shop</strong>
+                <strong>{{ $companyName }}</strong>
             </a>
 
             <!-- Search Bar -->

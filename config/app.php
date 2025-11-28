@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Unisolv CRM'),
+    'name' => env('APP_NAME', 'Unisolv'),
 
     /*
     |--------------------------------------------------------------------------
@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\CartServiceProvider::class,
+        App\Providers\ViewServiceProvider::class,
 
 
     ],

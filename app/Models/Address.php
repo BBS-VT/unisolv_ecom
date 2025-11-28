@@ -20,6 +20,7 @@ class Address extends Model
         'state',
         'zip',
         'phone',
+        'email',
         'lat',
         'lng'
     ];

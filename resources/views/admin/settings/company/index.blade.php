@@ -128,6 +128,25 @@
                                                     @enderror
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="billing_email" class="form-label">
+                                                        {{ __('global.email') }}
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">
+                                                            <i class="bx bx-envelope"></i>
+                                                        </span>
+                                                        <input name="billing[email]" type="text"
+                                                               class="form-control @error('billing.email') is-invalid @enderror"
+                                                               value="{{ old('billing.email', $currentCompany->billing->email ?? '') }}"
+                                                               placeholder="{{ __('global.email') }}">
+                                                        @error('billing.email')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

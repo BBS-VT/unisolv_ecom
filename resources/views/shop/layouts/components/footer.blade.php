@@ -1,7 +1,7 @@
 <footer class="amazon-footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-3">
+            {{--<div class="col-md-3">
                 <h6>Get to Know Us</h6>
                 <div class="d-flex flex-column">
                     <a href="#">About Us</a>
@@ -37,12 +37,12 @@
                     <a href="#">Returns & Replacements</a>
                     <a href="#">Help</a>
                 </div>
-            </div>
+            </div>--}}
         </div>
     </div>
     <div class="amazon-footer-bottom">
         <div class="container">
-            <p class="mb-0">&copy; {{ date('Y') }} B2B Shop, Inc. or its affiliates</p>
+            <p class="mb-0">&copy; {{ date('Y') }} {{ $companyName }}, or its affiliates</p>
         </div>
     </div>
 </footer>
