@@ -304,7 +304,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function category($slug)
+    public function category(Request $request, $slug)
     {
         // Find category by slug or ID
         $category = ProductCategory::where('slug', $slug)
@@ -313,12 +313,153 @@ class ProductController extends Controller
 
         $query = Product::query()
             ->where('status', true)
+            ->forOnline()
             ->whereHas('categories', function($q) use ($category) {
                 $q->where('product_categories.id', $category->id);
             })
             ->with(['packageType', 'stockHolding']);
 
-        $this->applyFilters($query, request());
+        // Check for cart location lock
+        $cartLocation = session('cart_location');
+        $currentLocation = null;
+
+        // Location filter
+        if ($cartLocation) {
+            $currentLocation = Location::where('LocationCode', $cartLocation)
+                ->where('show_in_shop', true)
+                ->first();
+
+            if ($currentLocation) {
+                // Products are already filtered by category above, which handles location
+                // But we still set currentLocation for the view
+            }
+        }
+        elseif ($request->has('location')) {
+            $currentLocation = Location::where('LocationCode', $request->location)
+                ->where('show_in_shop', true)
+                ->first();
+        }
+
+        // Only show products with stock if backorders are disabled
+        if (!Features::backordersEnabled()) {
+            $query->whereHas('stockHolding', function ($q) {
+                $q->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+                    ->groupBy('StockCode')
+                    ->havingRaw('total_quantity > 0');
+            });
+        }
+
+        // Price filter
+        if ($request->has('price_range') && !empty($request->price_range)) {
+            $range = explode('-', $request->price_range);
+            $min = $range[0] ?? 0;
+            $max = $range[1] ?? null;
+
+            // Apply price filter based on customer's price level
+            $customer = auth()->user()?->customer;
+            $priceLevel = $customer->price_level ?? 1;
+            $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+
+            $query->where($priceField, '>=', $min);
+            if ($max) {
+                $query->where($priceField, '<=', $max);
+            }
+        }
+
+        // Custom price range
+        if (($request->has('price_min') && !empty($request->price_min)) ||
+            ($request->has('price_max') && !empty($request->price_max))) {
+
+            $customer = auth()->user()?->customer;
+            $priceLevel = $customer->price_level ?? 1;
+            $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+
+            if ($request->price_min) {
+                $query->where($priceField, '>=', $request->price_min);
+            }
+            if ($request->price_max) {
+                $query->where($priceField, '<=', $request->price_max);
+            }
+        }
+
+        // Availability filter
+        if ($request->has('availability') && !empty($request->availability)) {
+            $availability = is_array($request->availability) ? $request->availability : explode(',', $request->availability);
+
+            $query->where(function($q) use ($availability) {
+                foreach ($availability as $status) {
+                    switch ($status) {
+                        case 'in_stock':
+                            $q->orWhereHas('stockHolding', function($sq) {
+                                $sq->where('QuantityOnHand', '>', 10);
+                            });
+                            break;
+                        case 'low_stock':
+                            $q->orWhereHas('stockHolding', function($sq) {
+                                $sq->whereBetween('QuantityOnHand', [1, 10]);
+                            });
+                            break;
+                        case 'backorder':
+                            if (Features::backordersEnabled()) {
+                                $q->orWhereHas('stockHolding', function($sq) {
+                                    $sq->where('QuantityOnHand', '<=', 0);
+                                });
+                            }
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Search filter
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('StockItemName', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('StockCode', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('MarketingComments', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        // Sorting
+        switch ($request->get('sort', 'relevance')) {
+            case 'price_low_high':
+                $customer = auth()->user()?->customer;
+                $priceLevel = $customer->price_level ?? 1;
+                $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+                $query->orderBy($priceField, 'asc');
+                break;
+            case 'price_high_low':
+                $customer = auth()->user()?->customer;
+                $priceLevel = $customer->price_level ?? 1;
+                $priceField = 'SellingPrice' . ($priceLevel > 1 ? $priceLevel : '');
+                $query->orderBy($priceField, 'desc');
+                break;
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('is_featured', 'desc')->orderBy('StockItemName', 'asc');
+        }
+
+        // Get categories for filter sidebar - same as index
+        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
+            $q->where('status', true)->forOnline();
+        }])
+            ->where('status', true);
+
+        // If location is selected, show categories for that location OR available everywhere
+        if ($currentLocation) {
+            $categoriesQuery->where(function($q) use ($currentLocation) {
+                $q->where('location_id', $currentLocation->LocationCode)
+                    ->orWhereNull('location_id');
+            });
+        }
+
+        $categories = $categoriesQuery
+            ->having('products_count', '>', 0)
+            ->orderBy('StockGroupName', 'asc')
+            ->get();
 
         $products = $query->paginate(Features::productsPerPage());
 
@@ -327,9 +468,10 @@ class ProductController extends Controller
             return $product;
         });
 
-        $categories = $this->getCategories();
+        // Pass empty array for selectedCategories since we're already in a category view
+        $selectedCategories = [$category->id];
 
-        return view('shop.products.category', compact('products', 'categories', 'category'));
+        return view('shop.products.category', compact('products', 'categories', 'category', 'currentLocation', 'selectedCategories'));
     }
 
     protected function applyFilters($query, Request $request)

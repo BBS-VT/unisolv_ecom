@@ -604,36 +604,36 @@
             <div class="row text-center">
                 <div class="col-6">
                     <small class="text-muted">Tier 1</small><br>
-                    <strong>${(price1 / 100).toFixed(2)}</strong>
+                    <strong>${(price1 ).toFixed(2)}</strong>
                 </div>
                 <div class="col-6">
                     <small class="text-muted">Tier 2</small><br>
-                    <strong>${(price2 / 100).toFixed(2)}</strong>
+                    <strong>${(price2 ).toFixed(2)}</strong>
                 </div>
             </div>
             <div class="row text-center mt-2">
                 <div class="col-6">
                     <small class="text-muted">Tier 3</small><br>
-                    <strong>${(price3 / 100).toFixed(2)}</strong>
+                    <strong>${(price3).toFixed(2)}</strong>
                 </div>
                 <div class="col-6">
                     <small class="text-muted">Tier 4</small><br>
-                    <strong>${(price4 / 100).toFixed(2)}</strong>
+                    <strong>${(price4 ).toFixed(2)}</strong>
                 </div>
             </div>
         `;
 
                 // Update tier price displays
-                document.getElementById('tier_1_price').textContent = `${(price1 / 100).toFixed(2)}`;
-                document.getElementById('tier_2_price').textContent = `${(price2 / 100).toFixed(2)}`;
-                document.getElementById('tier_3_price').textContent = `${(price3 / 100).toFixed(2)}`;
-                document.getElementById('tier_4_price').textContent = `${(price4 / 100).toFixed(2)}`;
+                document.getElementById('tier_1_price').textContent = `${(price1 ).toFixed(2)}`;
+                document.getElementById('tier_2_price').textContent = `${(price2 ).toFixed(2)}`;
+                document.getElementById('tier_3_price').textContent = `${(price3 ).toFixed(2)}`;
+                document.getElementById('tier_4_price').textContent = `${(price4 ).toFixed(2)}`;
 
                 // Update regular price displays in date range fields
-                document.getElementById('regular_price_1').textContent = `${(price1 / 100).toFixed(2)}`;
-                document.getElementById('regular_price_2').textContent = `${(price2 / 100).toFixed(2)}`;
-                document.getElementById('regular_price_3').textContent = `${(price3 / 100).toFixed(2)}`;
-                document.getElementById('regular_price_4').textContent = `${(price4 / 100).toFixed(2)}`;
+                document.getElementById('regular_price_1').textContent = `${(price1 ).toFixed(2)}`;
+                document.getElementById('regular_price_2').textContent = `${(price2 ).toFixed(2)}`;
+                document.getElementById('regular_price_3').textContent = `${(price3 ).toFixed(2)}`;
+                document.getElementById('regular_price_4').textContent = `${(price4 ).toFixed(2)}`;
 
                 productCard.style.display = 'block';
             } else {

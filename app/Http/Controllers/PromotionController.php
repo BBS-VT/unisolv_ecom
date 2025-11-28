@@ -72,7 +72,7 @@ class PromotionController extends Controller
 
     public function create(): View
     {
-        $products = Product::select('StockCode', 'StockItemName')
+        $products = Product::select('StockCode', 'StockItemName', 'SellingPrice', 'SellingPrice2', 'SellingPrice3', 'SellingPrice4' )
             ->orderBy('StockItemName')
             ->get();
 
