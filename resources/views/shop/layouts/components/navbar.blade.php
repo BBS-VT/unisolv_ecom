@@ -115,8 +115,8 @@
                     </a>
                 @endforeach
 
-                <a href="{{ route('shop.products.index', ['featured' => 1]) }}" class="me-3">Today's Deals</a>
-                <a href="#" class="me-3">Customer Service</a>
+                <a href="{{ route('shop.products.index', ['featured' => 1]) }}" class="me-3">{{__('Latest Specials')}}</a>
+{{--                <a href="#" class="me-3">Customer Service</a>--}}
             </div>
         </div>
     </div>

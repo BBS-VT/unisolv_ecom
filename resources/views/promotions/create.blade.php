@@ -584,6 +584,84 @@
         // Load product information when product is selected
         function loadProductInfo() {
             const select = document.getElementById('stock_code');
+            const stockCode = select.value;
+            const productCard = document.getElementById('product_info_card');
+            const productContent = document.getElementById('product_info_content');
+
+            if (!stockCode) {
+                productCard.style.display = 'none';
+                return;
+            }
+
+            // Show loading state
+            productContent.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            productCard.style.display = 'block';
+
+            // Fetch product info via AJAX
+            fetch(`/promotions/product/${stockCode}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Product not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const price1 = (data.price1 / 1).toFixed(2);
+                    const price2 = (data.price2 / 1).toFixed(2);
+                    const price3 = (data.price3 / 1).toFixed(2);
+                    const price4 = (data.price4 / 1).toFixed(2);
+
+                    // Update product info card
+                    productContent.innerHTML = `
+                <h6>${data.name}</h6>
+                <p class="text-muted mb-2">Stock Code: ${data.stock_code}</p>
+
+                <div class="row text-center">
+                    <div class="col-6">
+                        <small class="text-muted">Tier 1</small><br>
+                        <strong>R ${price1}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Tier 2</small><br>
+                        <strong>R ${price2}</strong>
+                    </div>
+                </div>
+                <div class="row text-center mt-2">
+                    <div class="col-6">
+                        <small class="text-muted">Tier 3</small><br>
+                        <strong>R ${price3}</strong>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">Tier 4</small><br>
+                        <strong>R ${price4}</strong>
+                    </div>
+                </div>
+            `;
+
+                    // Update tier price displays
+                    document.getElementById('tier_1_price').textContent = `R ${price1}`;
+                    document.getElementById('tier_2_price').textContent = `R ${price2}`;
+                    document.getElementById('tier_3_price').textContent = `R ${price3}`;
+                    document.getElementById('tier_4_price').textContent = `R ${price4}`;
+
+                    // Update regular price displays in date range fields
+                    document.getElementById('regular_price_1').textContent = `R ${price1}`;
+                    document.getElementById('regular_price_2').textContent = `R ${price2}`;
+                    document.getElementById('regular_price_3').textContent = `R ${price3}`;
+                    document.getElementById('regular_price_4').textContent = `R ${price4}`;
+                })
+                .catch(error => {
+                    console.error('Error loading product info:', error);
+                    productContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Failed to load product information
+                </div>
+            `;
+                });
+        }
+        /*function loadProductInfo() {
+            const select = document.getElementById('stock_code');
             const selectedOption = select.options[select.selectedIndex];
             const productCard = document.getElementById('product_info_card');
             const productContent = document.getElementById('product_info_content');
@@ -639,7 +717,7 @@
             } else {
                 productCard.style.display = 'none';
             }
-        }
+        }*/
 
         // Quick duration setters
         function setDuration(days) {

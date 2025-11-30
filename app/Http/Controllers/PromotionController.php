@@ -525,4 +525,24 @@ class PromotionController extends Controller
 
         return $validated;
     }
+
+    public function getProductInfo($stockCode)
+    {
+        $product = Product::where('StockCode', $stockCode)
+            ->select('StockCode', 'StockItemName', 'SellingPrice', 'SellingPrice2', 'SellingPrice3', 'SellingPrice4')
+            ->first();
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return response()->json([
+            'stock_code' => $product->StockCode,
+            'name' => $product->StockItemName,
+            'price1' => $product->SellingPrice,
+            'price2' => $product->SellingPrice2,
+            'price3' => $product->SellingPrice3,
+            'price4' => $product->SellingPrice4,
+        ]);
+    }
 }

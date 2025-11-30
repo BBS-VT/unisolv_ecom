@@ -1,4 +1,3 @@
-{{-- Updated amazon-product-card with promotion integration --}}
 <div class="amazon-product-card" data-product-url='{{ route('shop.products.show', $product->slug ?? $product->id) }}'>
     <div class="position-relative">
         <img src="{{ $product->photo ? $product->photo->thumbnail : 'https://dummyimage.com/300x300/cccccc/000000.png&text=No+Image' }}" class="amazon-product-image">

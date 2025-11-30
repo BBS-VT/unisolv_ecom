@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Livewire\SalesOrder\OrderForm;
 use App\Helpers\Features;
 use App\Http\Controllers\Admin\StockTransactionController;
 use App\Http\Controllers\CustomerBalanceController;
@@ -19,7 +21,6 @@ use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
 use App\Http\Controllers\Admin\Settings\ProductController as ProductSettingController;
 use App\Http\Controllers\Admin\LocationController;
-use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,53 +56,53 @@ Route::group(['middleware' => ['auth','customer']], function () {
 });
 
 Route::group(['middleware' => ['auth']], function () {
-   Route::get('/dashboard', 'DashboardController@index')->name('home');
+   Route::get('/dashboard', [DashboardController::class, 'index'])->name('home');
    Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
        ->name('dashboard.sales.chart-data');
-   Route::get('/sales', 'DashboardController@sales')->name('sales.dashboard');
+   Route::get('/sales', [DashboardController::class, 'sales'])->name('sales.dashboard');
 
 
 
    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
 
    // Customers
-   Route::delete('customers/destroy', 'CustomersController@massDestroy')->name('customers.massDestroy');
+   Route::delete('customers/destroy', [CustomersController::class, 'massDestroy'])->name('customers.massDestroy');
 
-   Route::resource('customers', 'CustomersController');
-   Route::post('update-customer-status', 'CustomersController@updateCustomerStatus');
-   Route::get('customer-lookup', 'CustomersController@lookup')->name('customers.lookup');
-   Route::get('generateStoreEan', 'CustomersController@generateStoreEan')->name('customers.storeid');
-   Route::post('importBalances', 'CustomerBalanceController@importExcel')->name('importBalances');
-    Route::post('importCustomermaster', 'CustomersController@importExcel')->name('importCustomermaster');
-    Route::patch('customers/{customer}/pricing', 'CustomersController@updatePricing')->name('customers.update_pricing');
+   Route::resource('customers', CustomersController::class);
+   Route::post('update-customer-status', [CustomersController::class, 'updateCustomerStatus']);
+   Route::get('customer-lookup', [CustomersController::class, 'lookup'])->name('customers.lookup');
+   Route::get('generateStoreEan', [CustomersController::class, 'generateStoreEan'])->name('customers.storeid');
+   Route::post('importBalances', [CustomerBalanceController::class, 'importExcel'])->name('importBalances');
+    Route::post('importCustomermaster', [CustomersController::class, 'importExcel'])->name('importCustomermaster');
+    Route::patch('customers/{customer}/pricing', [CustomersController::class, 'updatePricing'])->name('customers.update_pricing');
 
    // Product Categories
-    Route::delete('product-categories/destroy', 'ProductCategoryController@massDestroy')->name('product-categories.massDestroy');
-    Route::post('product-categories/media', 'ProductCategoryController@storeMedia')->name('product-categories.storeMedia');
-    Route::post('product-categories/ckmedia', 'ProductCategoryController@storeCKEditorImages')->name('product-categories.storeCKEditorImages');
-    Route::post('update-category-status', 'ProductCategoryController@updateCategoryStatus');
-    Route::post('importCategories', 'ProductCategoryController@importExcel')->name('importProductCategories');
-    Route::post('product-categories/update/{id}', 'ProductCategoryController@update')->name('productCategories.update');
-    Route::post('product-categories/store', 'ProductCategoryController@store')->name('productCategories.store');
-    Route::resource('product-categories', 'ProductCategoryController');
+    Route::delete('product-categories/destroy', [ProductCategoryController::class, 'massDestroy'])->name('product-categories.massDestroy');
+    Route::post('product-categories/media', [ProductCategoryController::class, 'storeMedia'])->name('product-categories.storeMedia');
+    Route::post('product-categories/ckmedia', [ProductCategoryController::class, 'storeCKEditorImages'])->name('product-categories.storeCKEditorImages');
+    Route::post('update-category-status', [ProductCategoryController::class, 'updateCategoryStatus']);
+    Route::post('importCategories', [ProductCategoryController::class, 'importExcel'])->name('importProductCategories');
+    Route::post('product-categories/update/{id}', [ProductCategoryController::class, 'update'])->name('productCategories.update');
+    Route::post('product-categories/store', [ProductCategoryController::class, 'store'])->name('productCategories.store');
+    Route::resource('product-categories', ProductCategoryController::class);
 
     // Product Tags
-    Route::delete('product-tags/destroy','ProductTagController@massDestroy')->name('product-tags.massDestroy');
-    Route::resource('product-tags', 'ProductTagController');
+    //Route::delete('product-tags/destroy','ProductTagController@massDestroy')->name('product-tags.massDestroy');
+    //Route::resource('product-tags', 'ProductTagController');
 
     // Products
     //Route::get('products', 'ProductController@index')->name('products.index');
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     //Route::get('products/show', 'ProductController@show')->name('products.show');
-    Route::delete('products/destroy', 'ProductController@massDestroy')->name('products.massDestroy');
-    Route::post('products/media','ProductController@storeMedia')->name('products.storeMedia');
-    Route::post('products/ckmedia', 'ProductController@storeCKEditorImages')->name('products.storeCKEditorImages');
-    Route::post('update-product-status', 'ProductController@updateProductStatus');
-    Route::resource('products', 'ProductController');
-    Route::post('importQuantities', 'StockItemHoldingsController@importExcel')->name('importQuantities');
+    Route::delete('products/destroy', [ProductController::class, 'massDestroy'])->name('products.massDestroy');
+    Route::post('products/media',[ProductController::class, 'storeMedia'])->name('products.storeMedia');
+    Route::post('products/ckmedia', [ProductController::class, 'storeCKEditorImages'])->name('products.storeCKEditorImages');
+    Route::post('update-product-status', [ProductController::class, 'updateProductStatus']);
+    Route::resource('products', ProductController::class);
+    Route::post('importQuantities', [StockItemHoldingsController::class, 'importExcel'])->name('importQuantities');
     //Route::post('importStockmaster', 'ProductController@importExcel')->name('importStockmaster');
     //Route::match(['get', 'post'], 'products/maintain/{id?}', 'ProductController@maintain')->name('products.maintain');
-    Route::get('products/product_search', 'ProductController@productSearch')->name('product.search');
+    Route::get('products/product_search', [ProductController::class, 'productSearch'])->name('product.search');
 
     // Promotions
     Route::prefix('promotions')->name('promotions.')->group(function () {
@@ -123,31 +124,35 @@ Route::group(['middleware' => ['auth']], function () {
             ->name('analytics');
     });
     Route::resource('promotions', PromotionController::class);
+    Route::get('/promotions/product/{stockCode}', [PromotionController::class, 'getProductInfo'])
+        ->name('promotions.product-info');
 
     // Orders
-    Route::get('orders/create', 'OrdersController@create')->name('orders.create');
-    Route::post('orders/create', 'OrdersController@store')->name('orders.store');
-    Route::get('orders/download/{order}', 'OrdersController@downloadOrder')->name('orders.download');
-    Route::get('/orders/{order}/details', 'OrdersController@show')->name('orders.show');
-    Route::get('/orders/{order}/delete', 'OrdersController@delete')->name('orders.delete');
-    Route::get('/orders/{tab?}', 'OrdersController@index')->name('orders.index');
-    Route::get('/orders/{order}/print/order', 'OrdersController@printInvoice')
+    Route::get('orders/create', OrderForm::class)->name('orders.create');
+    Route::get('orders/{orderId}/edit', OrderForm::class)->name('orders.edit');
+    //Route::get('orders/create', 'OrdersController@create')->name('orders.create');
+    //Route::post('orders/create', 'OrdersController@store')->name('orders.store');
+    Route::get('orders/download/{order}', [OrdersController::class, 'downloadOrder'])->name('orders.download');
+    Route::get('/orders/{order}/details', [OrdersController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/delete', [OrdersController::class, 'delete'])->name('orders.delete');
+    Route::get('/orders/{order}/print/order', [OrdersController::class, 'printInvoice'])
         ->name('print.order');
-    Route::get('/orders/{order}/print/picklist', 'OrdersController@printPickList')
+    Route::get('/orders/{order}/print/picklist', [OrdersController::class, 'printPickList'])
         ->name('print.picklist');
-    Route::get('/orders/{order}/print/packing-slip', 'OrdersController@printPackingSlip')
+    Route::get('/orders/{order}/print/packing-slip', [OrdersController::class, 'printPackingSlip'])
         ->name('print.packing-slip');
+    Route::get('/orders/{tab?}', [OrdersController::class, 'index'])->name('orders.index');
 
     // Special Deals
-    Route::delete('deals/destroy', 'SpecialDealsController@massDestroy')->name('deals.massDestroy');
-    Route::resource('deals', 'SpecialDealsController');
-    Route::get('exportExcel/{type}', 'SpecialDealsController@exportExcel')->name('exportSpecialDeals');
-    Route::post('importExcel', 'SpecialDealsController@importExcel')->name('importSpecialDeals');
+    Route::delete('deals/destroy', [SpecialDealsController::class, 'massDestroy'])->name('deals.massDestroy');
+    Route::resource('deals', SpecialDealsController::class);
+    Route::get('exportExcel/{type}', [SpecialDealsController::class, 'exportExcel'])->name('exportSpecialDeals');
+    Route::post('importExcel', [SpecialDealsController::class, 'importExcel'])->name('importSpecialDeals');
 
     // Ajax requests
-    Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
-    Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
-    Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
+    //Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
+    //Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
+    //Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
 
 });
 
