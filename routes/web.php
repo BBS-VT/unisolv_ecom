@@ -1,5 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BuyingGroupController;
+use App\Http\Controllers\Admin\CustomerCategoryController;
+use App\Http\Controllers\Admin\OrderStatusController;
+use App\Http\Controllers\Admin\PackageTypeController;
+use App\Http\Controllers\Admin\Settings\TaxTypeController;
+use App\Http\Controllers\AjaxController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\SpecialDealsController;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\SalesOrder\OrderForm;
 use App\Helpers\Features;
@@ -19,8 +27,16 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
-use App\Http\Controllers\Admin\Settings\ProductController as ProductSettingController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\Settings\AccountController as AccountSettingController;
+use App\Http\Controllers\Admin\Settings\CompanyController as CompanySettingController;
+use App\Http\Controllers\Admin\Settings\CustomerController as CustomerSettingController;
+use App\Http\Controllers\Admin\Settings\EcommerceSettingsController;
+use App\Http\Controllers\Admin\Settings\OrderController as OrderSettingController;
+use App\Http\Controllers\Admin\Settings\PreferenceController as PreferenceSettingController;
+use App\Http\Controllers\Admin\Settings\ProductController as ProductSettingController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +76,6 @@ Route::group(['middleware' => ['auth']], function () {
    Route::get('/dashboard/sales/chart-data', [DashboardController::class, 'getChartData'])
        ->name('dashboard.sales.chart-data');
    Route::get('/sales', [DashboardController::class, 'sales'])->name('sales.dashboard');
-
 
 
    Route::post('/upload', [FileUploadController::class, 'upload'])->name('file.upload');
@@ -150,8 +165,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('importExcel', [SpecialDealsController::class, 'importExcel'])->name('importSpecialDeals');
 
     // Ajax requests
-    //Route::get('/ajax/products', 'AjaxController@products')->name('ajax.products');
-    //Route::get('/ajax/customers', 'AjaxController@customers')->name('ajax.customers');
+    Route::get('/ajax/products', [AjaxController::class, 'products'])->name('ajax.products');
+    Route::get('/ajax/customers', [AjaxController::class, 'customers'])->name('ajax.customers');
     //Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
 
 });
@@ -159,10 +174,10 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {
 
     // landing page
-    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Permissions
-    Route::delete('permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
-    Route::resource('permissions', 'PermissionController');
+    Route::delete('permissions/destroy', [PermissionController::class, 'massDestroy'])->name('permissions.massDestroy');
+    Route::resource('permissions', PermissionController::class);
 
     // locations
     Route::group(['prefix' => 'locations', 'as' => 'locations.'], function () {
@@ -179,19 +194,19 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     });
 
     // Roles
-    Route::delete('roles/destroy', 'RoleController@massDestroy')->name('roles.massDestroy');
-    Route::resource('roles', 'RoleController');
+    Route::delete('roles/destroy', [RoleController::class, 'massDestroy'])->name('roles.massDestroy');
+    Route::resource('roles', RoleController::class);
 
     // Users
-    Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
-    Route::resource('users', 'UsersController');
+    Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
+    Route::resource('users', UsersController::class);
 
     // BuyingGroup
-    Route::delete('buying-group/destroy', 'BuyingGroupController@massDestroy')->name('buying-group.massDestroy');
-    Route::resource('buying-group', 'BuyingGroupController');
+    Route::delete('buying-group/destroy', [BuyingGroupController::class, 'massDestroy'])->name('buying-group.massDestroy');
+    Route::resource('buying-group', BuyingGroupController::class);
 
     // Customer Group
-    Route::resource('customer-category', 'CustomerCategoryController');
+    Route::resource('customer-category', CustomerCategoryController::class);
 
     // Stock Transactions
     Route::get('/stock-transactions', [StockTransactionController::class, 'index'])
@@ -223,56 +238,56 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::get('stock-holdings/download-template', [StockItemHoldingsController::class, 'downloadTemplate'])->name('stock-holdings.download-template');
 
     // Order Status
-    Route::resource('orderstatus', 'OrderStatusController');
+    Route::resource('orderstatus', OrderStatusController::class);
 
     // Package Types
-    Route::resource('packagetype', 'PackageTypeController');
+    Route::resource('packagetype', PackageTypeController::class);
 
 });
 
 Route::group(['prefix' => 'settings', 'as' => 'settings.',  'namespace' => 'Admin\Settings','middleware' => ['auth']], function () {
 
     // Settings>Account Settings
-    Route::get('/account', 'AccountController@index')->name('account');
-    Route::post('/account', 'AccountController@update')->name('account.update');
+    Route::get('/account', [AccountSettingController::class, 'index'])->name('account');
+    Route::post('/account', [AccountSettingController::class, 'update'])->name('account.update');
 
     // Settings>Company Settings
-    Route::get('/company', 'CompanyController@index')->name('company');
-    Route::post('/company', 'CompanyController@update')->name('company.update');
-    Route::post('/company/collection-address', 'CompanyController@updateCollectionAddress')->name('company.ecommerce.collection-address');
+    Route::get('/company', [CompanySettingController::class, 'index'])->name('company');
+    Route::post('/company', [CompanySettingController::class, 'update'])->name('company.update');
+    Route::post('/company/collection-address', [CompanySettingController::class, 'updateCollectionAddress'])->name('company.ecommerce.collection-address');
 
     // Settings>Order Settings
-    Route::get('/order', 'OrderController@index')->name('order');
-    Route::post('/order', 'OrderController@update')->name('order.update');
+    Route::get('/order', [OrderSettingController::class, 'index'])->name('order');
+    Route::post('/order', [OrderSettingController::class, 'update'])->name('order.update');
 
     // Settings>Preferences
-    Route::get('/preferences', 'PreferenceController@index')->name('preferences');
-    Route::post('/preferences', 'PreferenceController@update')->name('preferences.update');
+    Route::get('/preferences', [PreferenceSettingController::class, 'index'])->name('preferences');
+    Route::post('/preferences', [PreferenceSettingController::class, 'update'])->name('preferences.update');
 
     // Settings>Product Settings
     Route::get('/product', [ProductSettingController::class, 'index'])->name('product');
     Route::post('/product', [ProductSettingController::class, 'update'])->name('product.update');
 
     // Settings>Customer Settings
-    Route::get('/customer', 'CustomerController@index')->name('customer');
-    Route::post('/customer', 'CustomerController@update')->name('customer.update');
+    Route::get('/customer', [CustomerSettingController::class, 'index'])->name('customer');
+    Route::post('/customer', [CustomerSettingController::class, 'update'])->name('customer.update');
 
     // Settings>Ecommerce Settings
-    Route::get('/ecommerce', 'EcommerceSettingsController@index')->name('ecommerce');
-    Route::post('/ecommerce', 'EcommerceSettingsController@update')->name('ecommerce.update');
+    Route::get('/ecommerce', [EcommerceSettingsController::class, 'index'])->name('ecommerce');
+    Route::post('/ecommerce', [EcommerceSettingsController::class, 'update'])->name('ecommerce.update');
 
     // Settings>Tax Types
-    Route::get('/tax-types', 'TaxTypeController@index')->name('tax_types');
-    Route::get('/tax-types/create', 'TaxTypeController@create')->name('tax_types.create');
-    Route::post('/tax-types/create', 'TaxTypeController@store')->name('tax_types.store');
-    Route::get('/tax-types/{tax_type}/edit', 'TaxTypeController@edit')->name('tax_types.edit');
-    Route::post('/tax-types/{tax_type}/edit', 'TaxTypeController@update')->name('tax_types.update');
-    Route::delete('/tax-types/{tax_type}/delete', 'TaxTypeController@destroy')->name('tax_types.destroy');
+    Route::get('/tax-types', [TaxTypeController::class, 'index'])->name('tax_types');
+    Route::get('/tax-types/create', [TaxTypeController::class, 'create'])->name('tax_types.create');
+    Route::post('/tax-types/create', [TaxTypeController::class, 'store'])->name('tax_types.store');
+    Route::get('/tax-types/{tax_type}/edit', [TaxTypeController::class, 'edit'])->name('tax_types.edit');
+    Route::post('/tax-types/{tax_type}/edit', [TaxTypeController::class, 'update'])->name('tax_types.update');
+    Route::delete('/tax-types/{tax_type}/delete', [TaxTypeController::class, 'destroy'])->name('tax_types.destroy');
 });
 
 Route::group(['prefix' => '/portal/{customer}', 'as' => 'customer_portal.', 'namespace' => 'CustomerPortal', 'middleware' => ['auth']], function () {
    // Dashboard
-    Route::get('/', 'DashboardController@index');
-    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+    Route::get('/', [CustomerDashboardController::class, 'index']);
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
 
 });

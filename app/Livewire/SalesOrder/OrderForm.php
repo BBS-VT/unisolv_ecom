@@ -600,7 +600,7 @@ class OrderForm extends Component
         $salesrep = auth()->user();
 
         // Get customers based on sales rep
-        if ($salesrep->IsSalesperson == '1') {
+        /*if ($salesrep->IsSalesperson == '1') {
             $customers = Customer::where('SalesRepID', $salesrep->RepCode)
                 ->select('acc_main', 'CustomerName')
                 ->orderBy('CustomerName')
@@ -614,14 +614,14 @@ class OrderForm extends Component
         // Get all products for the select dropdown
         $products = Product::select('id', 'StockCode', 'StockItemName')
             ->orderBy('StockItemName')
-            ->get();
+            ->get();*/
 
         // Get all tax types
         $taxTypes = TaxType::all();
 
         return view('livewire.sales-order.order-form', [
-            'customers' => $customers,
-            'products' => $products,
+//            'customers' => $customers,
+//            'products' => $products,
             'taxTypes' => $taxTypes,
             'currentCompany' => $currentCompany,
         ])->layout('layouts.master', ['page' => 'orders']);
