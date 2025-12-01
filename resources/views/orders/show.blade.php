@@ -15,7 +15,7 @@
 <!--                                    <img src="assets/images/logo-sm.png" alt="logo-small" class="logo-sm me-1" height="24">
                                     <img src="assets/images/logo-dark.png" alt="logo-large" class="logo-lg logo-dark" height="20">
                                     <img src="assets/images/logo.png" alt="logo-large" class="logo-lg logo-light" height="20">-->
-                                    <p class="mt-2 mb-0 text-muted">Ngcwanguba Megasave</p>
+                                    <p class="mt-2 mb-0 text-muted">{{ $currentCompany->name }}</p>
                                 </div><!--end col-->
                                 <div class="col-md-8">
 
@@ -37,8 +37,8 @@
                                         <li class="list-inline-item">
                                             <div class="ps-3">
                                                 <i class="mdi mdi-map-marker"></i>
-                                                <p class="text-muted mb-0">Main Road</p>
-                                                <p class="text-muted mb-0">Coffee Bay, 5102</p>
+                                                <p class="text-muted mb-0">{{ $currentCompany->billing->address_1 }}</p>
+                                                <p class="text-muted mb-0">{{ $currentCompany->billing->city }}, {{ $currentCompany->billing->city }}</p>
                                             </div>
                                         </li>
                                     </ul>

@@ -90,7 +90,7 @@
                                             <th style="width: 10%">{{ __('global.discount') }}</th>
                                         @endif
                                         @if($taxPerItem)
-                                            <th style="width: 15%">{{ __('global.taxes') }}</th>
+                                            <th style="width: 8%" class="text-center">VAT</th>
                                         @endif
                                         <th style="width: 12%" class="text-end">{{ __('global.total') }}</th>
                                         <th style="width: 5%"></th>
@@ -106,8 +106,7 @@
                                                         id="product-select-{{ $index }}"
                                                         class="product-select form-control form-control-sm @error('orderLines.'.$index.'.product_id') is-invalid @enderror"
                                                         data-index="{{ $index }}"
-                                                        style="width: 100%;"
-                                                        @if(!$customerId) disabled @endif>
+                                                        style="width: 100%;">
                                                         <option value="">{{ __('global.pleaseSelect') }}</option>
                                                         @if($line['product_id'])
                                                             <option value="{{ $line['product_id'] }}" selected>
@@ -212,18 +211,17 @@
 
                                             {{-- Taxes --}}
                                             @if($taxPerItem)
-                                                <td>
-                                                    <select
-                                                        wire:model.live="orderLines.{{ $index }}.taxes"
-                                                        class="form-control form-control-sm"
-                                                        multiple
-                                                        size="2">
-                                                        @foreach($taxTypes as $tax)
-                                                            <option value="{{ $tax->id }}">
-                                                                {{ $tax->TaxTypeName }} ({{ $tax->TaxRate }}%)
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                {{-- Display tax rate (read-only) --}}
+                                                <td class="text-center">
+                                                    @if($line['product_id'] && isset($line['tax_rate']))
+                                                        <span class="badge bg-info">
+                                                            {{ $line['tax_rate'] }}% VAT
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-secondary">
+                                                            Zero Rated
+                                                        </span>
+                                                    @endif
                                                 </td>
                                             @endif
 
@@ -415,20 +413,28 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // Initialize Customer Select2
-            initCustomerSelect2();
+            // Wait for Livewire to be ready
+            document.addEventListener('livewire:initialized', () => {
+                // Initialize Customer Select2
+                initCustomerSelect2();
 
-            // Initialize Product Select2 for existing rows
-            initAllProductSelects();
+                // Initialize Product Select2 for existing rows
+                initAllProductSelects();
+
+                // Initial toggle on page load
+                toggleProductSelects();
+            });
 
             // Re-initialize when Livewire adds new rows
             Livewire.hook('morph.added', ({ el }) => {
                 initAllProductSelects();
+                toggleProductSelects();
             });
 
             // Re-initialize after Livewire updates
             Livewire.hook('morph.updated', ({ el, component }) => {
                 initAllProductSelects();
+                toggleProductSelects();
             });
         });
 
@@ -453,14 +459,33 @@
                 },
                 placeholder: "{{ __('global.pleaseSelect') }}",
                 allowClear: true,
-                minimumInputLength: 2 // Only search after 2 characters
+                minimumInputLength: 2
             }).on('change', function(e) {
                 // Update Livewire property when selection changes
-            @this.set('customerId', $(this).val());
+                let customerId = $(this).val();
+                Livewire.find('{{ $_instance->getId() }}').set('customerId', customerId);
+
+                // Enable/disable product selects based on customer selection
+                toggleProductSelects();
+            });
+        }
+
+        function toggleProductSelects() {
+            let component = Livewire.find('{{ $_instance->getId() }}');
+            let hasCustomer = component && component.customerId ? true : false;
+
+            $('.product-select').each(function() {
+                if (hasCustomer) {
+                    $(this).prop('disabled', false);
+                } else {
+                    $(this).prop('disabled', true);
+                }
             });
         }
 
         function initAllProductSelects() {
+            let component = Livewire.find('{{ $_instance->getId() }}');
+
             $('.product-select').each(function() {
                 let $select = $(this);
                 let index = $select.data('index');
@@ -470,6 +495,10 @@
                     $select.select2('destroy');
                 }
 
+                // Check if should be disabled
+                let hasCustomer = component && component.customerId ? true : false;
+                $select.prop('disabled', !hasCustomer);
+
                 // Initialize Select2
                 $select.select2({
                     ajax: {
@@ -478,9 +507,10 @@
                         dataType: "json",
                         delay: 250,
                         data: function (params) {
+                            let customerId = component ? component.customerId : null;
                             return {
                                 search: params.term,
-                                customer_id: @this.customerId
+                                customer_id: customerId
                             };
                         },
                         processResults: function (response) {
@@ -492,14 +522,16 @@
                     },
                     placeholder: "{{ __('global.pleaseSelect') }}",
                     allowClear: true,
-                    minimumInputLength: 2, // Only search after 2 characters
+                    minimumInputLength: 2,
                     dropdownAutoWidth: true,
                     width: '100%'
                 }).on('change', function(e) {
                     let productId = $(this).val();
 
                     // Call Livewire method to handle product selection
-                @this.call('productSelected', index, productId);
+                    if (component) {
+                        component.call('productSelected', index, productId);
+                    }
                 });
             });
         }

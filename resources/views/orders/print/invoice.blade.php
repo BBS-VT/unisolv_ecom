@@ -21,15 +21,15 @@
                     @endif
                     <div class="company-name-simple">{{ $currentCompany->name }}</div>
                     <div class="company-address-simple">
-                        @if($currentCompany->address->billing)
-                            {{ $currentCompany->address->billing->address_1 }}<br>
+                        @if($currentCompany->billing)
+                            {{ $currentCompany->billing->address_1 }}<br>
+                        @endif@if($currentCompany->billing->address_2)
+                            {{ $currentCompany->billing->address_2 }}<br>
                         @endif
-                        @if($currentCompany->city)
-                            {{ $currentCompany->city }} {{ $currentCompany->postal_code }}<br>
+                        @if($currentCompany->billing->city)
+                            {{ $currentCompany->billing->city }} {{ $currentCompany->billing->zip }}<br>
                         @endif
-                        @if($currentCompany->country)
-                            {{ $currentCompany->country }}
-                        @endif
+
                     </div>
                 </div>
 
@@ -131,8 +131,8 @@
                             </tr>
                         @endif
                         <tr>
-                            <td>Tax</td>
-                            <td>R {{ number_format($order->tax_amount, 2) }}</td>
+                            <td>VAT</td>
+                            <td>R {{ number_format(($order->total / 100) - ($order->sub_total / 100), 2) }}</td>
                         </tr>
                         <tr class="total-row">
                             <td>Total</td>
@@ -168,7 +168,7 @@
 
         // Close window after print
         window.onafterprint = function() {
-            // window.close(); // Uncomment to auto-close after printing
+            window.close();
         }
     </script>
 @endsection

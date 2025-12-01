@@ -19,7 +19,7 @@ use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\UsersController as AdminUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\HomeController;
@@ -171,7 +171,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 });
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','middleware' => ['auth']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.',  'middleware' => ['auth']], function () {
 
     // landing page
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -198,8 +198,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.',  'namespace' => 'Admin','mi
     Route::resource('roles', RoleController::class);
 
     // Users
-    Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
-    Route::resource('users', UsersController::class);
+    Route::delete('users/destroy', [AdminUserController::class, 'massDestroy'])->name('users.massDestroy');
+    Route::resource('users', AdminUserController::class);
 
     // BuyingGroup
     Route::delete('buying-group/destroy', [BuyingGroupController::class, 'massDestroy'])->name('buying-group.massDestroy');

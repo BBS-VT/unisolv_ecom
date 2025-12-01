@@ -192,7 +192,7 @@ class OrderForm extends Component
             return;
         }
 
-        $product = Product::with(['taxes', 'stockHolding'])->find($productId);
+        $product = Product::with(['stockHolding', 'defaultTax'])->find($productId);
 
         if (!$product) {
             return;
@@ -210,6 +210,12 @@ class OrderForm extends Component
 
         // Get stock on hand
         $stockOnHand = StockItemHoldings::getTotalQuantityForProduct($product->StockCode);
+
+        // Set taxes based on product's TaxIndicator
+        $taxes = [];
+        if ($pricing['default_tax_id']) {
+            $taxes = [$pricing['default_tax_id']];
+        }
 
         // Update the line with product data
         $this->orderLines[$lineIndex]['product_id'] = $product->id;
@@ -231,9 +237,9 @@ class OrderForm extends Component
         $this->orderLines[$lineIndex]['discount_reason'] = $discountRules['reason'];
         $this->orderLines[$lineIndex]['is_contract_discount'] = $discountRules['is_contract'];
 
-        // Set taxes
-        $taxIds = $product->taxes->pluck('tax_type_id')->toArray();
-        $this->orderLines[$lineIndex]['taxes'] = $taxIds;
+        // Set taxes automatically
+        $this->orderLines[$lineIndex]['taxes'] = $taxes;
+        $this->orderLines[$lineIndex]['tax_rate'] = $pricing['tax_rate'];
 
         // Calculate line total
         $this->calculateLineTotal($lineIndex);
@@ -599,29 +605,10 @@ class OrderForm extends Component
         $currentCompany = $user->currentCompany();
         $salesrep = auth()->user();
 
-        // Get customers based on sales rep
-        /*if ($salesrep->IsSalesperson == '1') {
-            $customers = Customer::where('SalesRepID', $salesrep->RepCode)
-                ->select('acc_main', 'CustomerName')
-                ->orderBy('CustomerName')
-                ->get();
-        } else {
-            $customers = Customer::select('acc_main', 'CustomerName')
-                ->orderBy('CustomerName')
-                ->get();
-        }
-
-        // Get all products for the select dropdown
-        $products = Product::select('id', 'StockCode', 'StockItemName')
-            ->orderBy('StockItemName')
-            ->get();*/
-
         // Get all tax types
         $taxTypes = TaxType::all();
 
         return view('livewire.sales-order.order-form', [
-//            'customers' => $customers,
-//            'products' => $products,
             'taxTypes' => $taxTypes,
             'currentCompany' => $currentCompany,
         ])->layout('layouts.master', ['page' => 'orders']);

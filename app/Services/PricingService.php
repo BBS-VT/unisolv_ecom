@@ -35,6 +35,9 @@ class PricingService
 
         if ($specialDeal && $specialDeal->UnitPrice > 0) {
             // Contract pricing takes precedence
+
+            $defaultTax = $product->getDefaultTaxes();
+
             return [
                 'price' => $specialDeal->UnitPrice,
                 'price2' => $product->SellingPrice2 ?? 0,
@@ -44,12 +47,16 @@ class PricingService
                 'last_cost' => $product->stockHolding->LastCostPrice ?? 0,
                 'is_contract' => true,
                 'contract_deal' => $specialDeal,
+                'default_tax_id' => $defaultTax ? $defaultTax->id : null,
+                'tax_rate' => $defaultTax ? $defaultTax->TaxRate : 0,
             ];
         }
 
         // No contract pricing, use customer's price level
         $priceLevel = $customer->price_level ?? 1;
         $price = $this->getPriceByLevel($product, $priceLevel);
+
+        $defaultTax = $product->getDefaultTaxes();
 
         return [
             'price' => $price,
@@ -60,6 +67,8 @@ class PricingService
             'last_cost' => $product->stockHolding->LastCostPrice ?? 0,
             'is_contract' => false,
             'contract_deal' => null,
+            'default_tax_id' => $defaultTax ? $defaultTax->id : null,
+            'tax_rate' => $defaultTax ? $defaultTax->percent : 0,
         ];
     }
 
@@ -146,6 +155,8 @@ class PricingService
      */
     private function getDefaultPricing(Product $product)
     {
+        $defaultTax = $product->getDefaultTaxes();
+
         return [
             'price' => $product->SellingPrice,
             'price2' => $product->SellingPrice2 ?? 0,
@@ -155,6 +166,8 @@ class PricingService
             'last_cost' => $product->stockHolding->LastCostPrice ?? 0,
             'is_contract' => false,
             'contract_deal' => null,
+            'default_tax_id' => $defaultTax ? $defaultTax->id : null,
+            'tax_rate' => $defaultTax ? $defaultTax->TaxRate : 0,
         ];
     }
 }

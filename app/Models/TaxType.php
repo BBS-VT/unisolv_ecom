@@ -40,6 +40,11 @@ class TaxType extends Model
         return $this->hasMany(Tax::class);
     }
 
+    public function product()
+    {
+        return $this->hasMany(Product::class, 'TaxTypeId', 'id');
+    }
+
     /**
      * List Tax Types for Select2 Javascript Library
      *

@@ -479,5 +479,19 @@ class Product extends Model implements HasMedia
         return $badges[$this->SellingType] ?? '';
     }
 
+    public function defaultTax()
+    {
+        return $this->belongsTo(TaxType::class, 'TaxTypeId', 'id');
+    }
+
+    public function getDefaultTaxes()
+    {
+        if ($this->TaxIndicator == 1 && $this->defaultTax) {
+            return $this->defaultTax;
+        }
+
+        return null;
+    }
+
 }
 

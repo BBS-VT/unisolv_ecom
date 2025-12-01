@@ -11,7 +11,7 @@
                         </div>
                         <div class="tm_invoice_right tm_text_right">
                             <div class="tm_primary_color tm_f50 tm_text_uppercase">{{ __('Sales Order') }}</div>
-                            <p class="tm_invoice_number tm_m0">{{ $currentCompany->name }}, {{ $order->customer->PostalAddressLine2 }}</b></p>
+                            <p class="tm_invoice_number tm_m0">{{ $currentCompany->name }}, {{ $currentCompany->billing->address_1 }}</b></p>
                         </div>
                     </div>
                     <div class="tm_invoice_info tm_mb20">

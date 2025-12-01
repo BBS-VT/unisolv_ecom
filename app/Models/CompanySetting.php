@@ -92,6 +92,7 @@ class CompanySetting extends Model
         'invoice_show_payments_on_pdf' => true,
         'shop_announcement' => '',
         'sales_locations' => true,
+        'use_multiple_taxes' => false,
 
         // E-commerce Features
         'b2b_ecommerce_enabled' => true,
