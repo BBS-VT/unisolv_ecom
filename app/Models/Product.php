@@ -196,6 +196,22 @@ class Product extends Model implements HasMedia
         return $this->hasMany(Product::class, 'refer_code', 'StockCode');
     }
 
+    public function promotions()
+    {
+        return $this->hasMany(Promotion::class, 'stock_code', 'StockCode');
+    }
+
+    public function activePromotion()
+    {
+        return $this->hasOne(Promotion::class, 'stock_code', 'StockCode')
+            ->where('status', 'active')
+            ->where('starts_at', '<=', now())
+            ->where('ends_at', '>=', now())
+            ->orderBy('created_at', 'desc');
+        ;
+    }
+
+
     /**
      * Scope a query to only include Products of a given company.
      *
@@ -492,6 +508,8 @@ class Product extends Model implements HasMedia
 
         return null;
     }
+
+
 
 }
 

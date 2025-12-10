@@ -29,20 +29,57 @@ class PricingHelper
         $basePrice = $product->SellingPrice;
         $customerPrice = $priceLevel == 1 ? $basePrice : ($product->$priceField ?? $basePrice);
 
+        // Convert to cents for consistency with promotions
+        $basePriceInCents = intval($basePrice * 100);
+        $customerPriceInCents = intval($customerPrice * 100);
+
+        // Check for active promotions
+        $promotionPriceInCents = null;
+        $hasPromotion = false;
+
+        if (!$product->relationLoaded('activePromotion')) {
+            $product->load('activePromotion');
+        }
+
+        if ($product->activePromotion) {
+            $promotion = $product->activePromotion;
+
+            if (!$promotion->customer_tiers || in_array($priceLevel, $promotion->customer_tiers)) {
+                $promotionPriceField = 'sale_price_' . $priceLevel;
+                $promotionPriceInCents = $promotion->$promotionPriceField;
+
+                if ($promotionPriceInCents && $promotionPriceInCents < $customerPriceInCents) {
+                    $hasPromotion = true;
+                    $finalPriceInCents = $promotionPriceInCents;
+                } else {
+                    $finalPriceInCents = $customerPriceInCents;
+                }
+            } else {
+                $finalPriceInCents = $customerPriceInCents;
+            }
+        } else {
+            $finalPriceInCents = $customerPriceInCents;
+        }
+
         $discountPercentage = 0;
-        if ($priceLevel > 1 && $basePrice > 0 && $customerPrice < $basePrice) {
-            $discountPercentage = round((($basePrice - $customerPrice) / $basePrice) * 100);
+        if ($basePriceInCents > 0 && $finalPriceInCents < $basePriceInCents) {
+            $discountPercentage = round((($basePriceInCents - $finalPriceInCents) / $basePriceInCents) * 100);
         }
 
         $taxRate = $product->taxType ? $product->taxType->percent : 0;
 
+        // Return prices in rands for display
         return [
-            'price' => $customerPrice,
+            'price' => $finalPriceInCents / 100, // Convert back to rands for display
             'base_price' => $basePrice,
+            'customer_price' => $customerPrice,
+            'promotion_price' => $promotionPriceInCents ? $promotionPriceInCents / 100 : null,
+            'price_in_cents' => $finalPriceInCents,
+            'has_promotion' => $hasPromotion,
             'price_level' => $priceLevel,
             'discount_percentage' => $discountPercentage,
             'tax_rate' => $taxRate,
-            'price_ex_tax' => $customerPrice / (1 + ($taxRate / 100)),
+            'price_ex_tax' => ($finalPriceInCents / 100) / (1 + ($taxRate / 100)),
             'show_prices' => Features::publicPricesEnabled() || auth()->check(),
         ];
     }

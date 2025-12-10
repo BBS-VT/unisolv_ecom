@@ -28,7 +28,9 @@ class PromotionCalculationService
             return $this->noPromotionResult($stockCode, $quantity);
         }
 
-        $originalPrice = $product->{"SalePrice{$customerTier}"};
+        $priceField = $customerTier == 1 ? 'SellingPrice' : 'SellingPrice' . $customerTier;
+        $originalPriceInRands = $product->$priceField ?? $product->SellingPrice;
+        $originalPrice = intval($originalPriceInRands * 100);
 
         $promotions = $this->getApplicablePromotions($stockCode, $customerTier, $customer);
 
@@ -245,7 +247,10 @@ class PromotionCalculationService
         }
 
         $promotions = $this->getApplicablePromotions($stockCode, $customerTier);
-        $originalPrice = $product->{"SalePrice{$customerTier}"};
+
+        $priceField = $customerTier == 1 ? 'SellingPrice' : 'SellingPrice' . $customerTier;
+        $originalPriceInRands = $product->$priceField ?? $product->SellingPrice;
+        $originalPrice = intval($originalPriceInRands * 100);
 
         $promotionSummaries = $promotions->map(function ($promotion) use ($originalPrice) {
             $calculation = $promotion->calculateDiscount(1, $originalPrice, 1);
@@ -412,7 +417,7 @@ class PromotionCalculationService
         ];
 
         // Add product-specific context
-        $basePrice = $product->SalePrice1;
+        $basePrice = intval($product->SellingPrice * 100);
         $suggestions['context'] = [
             'product_name' => $product->ProductName,
             'base_price' => $basePrice,
@@ -489,7 +494,9 @@ class PromotionCalculationService
             ->map(function ($promotion) use ($customerTier) {
                 $product = $promotion->product;
                 if ($product) {
-                    $originalPrice = $product->{"SalePrice{$customerTier}"};
+                    $priceField = $customerTier == 1 ? 'SellingPrice' : 'SellingPrice' . $customerTier;
+                    $originalPriceInRands = $product->$priceField ?? $product->SellingPrice;
+                    $originalPrice = intval($originalPriceInRands * 100);
                     $calculation = $promotion->calculateDiscount(1, $originalPrice, $customerTier);
                     $promotion->potential_savings = $calculation['savings_per_item'] ?? 0;
                     $promotion->promotion_message = $calculation['message'] ?? '';

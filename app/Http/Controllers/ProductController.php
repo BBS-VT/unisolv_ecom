@@ -403,17 +403,17 @@ class ProductController extends Controller
         if ($request->hasFile('file')) {
             try {
                 $product->addMedia($request->file('file'))->toMediaCollection('photo');
-                //\Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+                \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
             } catch (\Exception $e) {
                 \Log::error('Photo upload failed: ' . $e->getMessage());
             }
         } else {
-            //\Log::info('No file uploaded - checking for photo input');
+            \Log::info('No file uploaded - checking for photo input');
             if ($request->input('photo', false)) {
                 $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
                 if (file_exists($photoPath)) {
                     $product->addMedia($photoPath)->toMediaCollection('photo');
-                    //\Log::info('Photo from tmp uploaded: ' . $photoPath);
+                    \Log::info('Photo from tmp uploaded: ' . $photoPath);
                 } else {
                     \Log::error('Photo file not found: ' . $photoPath);
                 }

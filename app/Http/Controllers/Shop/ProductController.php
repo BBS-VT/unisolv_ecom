@@ -20,7 +20,7 @@ class ProductController extends Controller
         $query = Product::query()
             ->where('status', true)
             ->forOnline()
-            ->with(['packageType', 'stockHolding']);
+            ->with(['packageType', 'stockHolding', 'activePromotion']);
 
         // Check for cart location lock
         $cartLocation = session('cart_location');
