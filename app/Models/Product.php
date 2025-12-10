@@ -102,7 +102,12 @@ class Product extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null) : void
     {
-        $this->addMediaConversion('thumb')->width('250');
+        $this->addMediaConversion('thumb')
+            ->width('250')
+            ->width('250')
+            ->sharpen(10)
+            ->optimize()
+            ->nonQueued();
     }
 
     public function categories()
@@ -507,6 +512,33 @@ class Product extends Model implements HasMedia
         }
 
         return null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('photo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+    }
+
+    public function debugMediaConversions()
+    {
+        $media = $this->getFirstMedia('photo');
+
+        if (!$media) {
+            return 'No media found';
+        }
+
+        $conversions = $media->getGeneratedConversions();
+        $hasThumb = $media->hasGeneratedConversion('thumb');
+
+        return [
+            'media_id' => $media->id,
+            'file_name' => $media->file_name,
+            'conversions' => $conversions,
+            'has_thumb' => $hasThumb,
+            'thumb_url' => $hasThumb ? $media->getUrl('thumb') : null,
+        ];
     }
 
 

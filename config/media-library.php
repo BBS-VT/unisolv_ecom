@@ -1,10 +1,8 @@
 <?php
 
 return [
-
     /*
-     * The disk on which to store added files and derived images by default. Choose
-     * one or more of the disks you've configured in config/filesystems.php.
+     * The disk where files should be stored
      */
     'disk_name' => env('MEDIA_DISK', 'public'),
 
@@ -12,18 +10,24 @@ return [
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
      */
-    'max_file_size' => 1024 * 1024 * 10,
+    'max_file_size' => 1024 * 1024 * 10, // 10MB
 
     /*
-     * This queue will be used to generate derived and responsive images.
-     * Leave empty to use the default queue.
+     * This queue connection will be used to generate derived and responsive images.
+     * Leave empty to use the default queue connection.
+     */
+    'queue_connection_name' => env('QUEUE_CONNECTION', 'sync'),
+
+    /*
+     * This queue name will be used to generate derived and responsive images.
      */
     'queue_name' => '',
 
     /*
      * By default all conversions will be performed on a queue.
+     * Set this to `false` to disable queueing.
      */
-    'queue_conversions_by_default' => env('QUEUE_CONVERSIONS_BY_DEFAULT', true),
+    'queue_conversions_by_default' => env('QUEUE_CONVERSIONS_BY_DEFAULT', false),
 
     /*
      * The fully qualified class name of the media model.
@@ -31,33 +35,36 @@ return [
     'media_model' => Spatie\MediaLibrary\MediaCollections\Models\Media::class,
 
     /*
-     * The fully qualified class name of the model used for temporary uploads.
-     *
-     * This model is only used in Media Library Pro (https://medialibrary.pro)
+     * When enabled, media collections will be serialized using the default
+     * laravel model serialization behaviour.
      */
-    'temporary_upload_model' => Spatie\MediaLibraryPro\Models\TemporaryUpload::class,
+    'use_default_collection_serialization' => false,
 
     /*
-     * When enabled, Media Library Pro will only process temporary uploads there were uploaded
-     * in the same session. You can opt to disable this for stateless usage of
-     * the pro components.
+     * The conversions that should be performed.
      */
-    'enable_temporary_uploads_session_affinity' => true,
+    'jobs' => [
+        'perform_conversions' => \Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob::class,
+        'generate_responsive_images' => \Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob::class,
+    ],
 
     /*
-     * When enabled, Media Library pro will generate thumbnails for uploaded file.
+     * When enabled, no jobs will be dispatched to perform conversions.
+     * Conversions will be performed synchronously.
      */
-    'generate_thumbnails_for_temporary_uploads' => true,
+    'generate_thumbnails_synchronously' => true,
 
     /*
-     * This is the class that is responsible for naming generated files.
-     */
-    'file_namer' => Spatie\MediaLibrary\Support\FileNamer\DefaultFileNamer::class,
-
-    /*
-     * The class that contains the strategy for determining a media file's path.
+     * The path generator class to use.
      */
     'path_generator' => Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator::class,
+
+    /*
+     * Here you can specify which path generator should be used for the given class.
+     */
+    'custom_path_generators' => [
+        // Model::class => PathGenerator::class
+    ],
 
     /*
      * When urls to files get generated, this class will be called. Use the default
@@ -67,7 +74,7 @@ return [
 
     /*
      * Moves media on updating to keep path consistent. Enable it only with a custom
-     * PathGenerator that uses, for example, the media UUID.
+     * path generator that uses, for example, the media UUID.
      */
     'moves_media_on_update' => false,
 
@@ -85,6 +92,7 @@ return [
     'image_optimizers' => [
         Spatie\ImageOptimizer\Optimizers\Jpegoptim::class => [
             '-m85', // set maximum quality to 85%
+            '--force', // ensure that progressive generation is always done also if a little bigger
             '--strip-all', // this strips out all text information such as comments and EXIF data
             '--all-progressive', // this will make sure the resulting image is a progressive one
         ],
@@ -104,10 +112,19 @@ return [
             '-O3', // this produces the slowest but best results
         ],
         Spatie\ImageOptimizer\Optimizers\Cwebp::class => [
-                '-m 6', // for the slowest compression method in order to get the best compression.
-                '-pass 10', // for maximizing the amount of analysis pass.
-                '-mt', // multithreading for some speed improvements.
-                '-q 90', //quality factor that brings the least noticeable changes.
+            '-m 6', // effort level (0-6)
+            '-pass 10', // maximum number of passes
+            '-mt', // multithreading
+            '-q 90', // quality factor (0-100)
+        ],
+        Spatie\ImageOptimizer\Optimizers\Avifenc::class => [
+            '-a cq-level=23', // constant quality level
+            '-j all', // use all available threads
+            '--min 0', // minimum quantizer
+            '--max 63', // maximum quantizer
+            '--minalpha 0', // minimum alpha quantizer
+            '--maxalpha 63', // maximum alpha quantizer
+            '-a tune=ssim', // tune for SSIM
         ],
     ],
 
@@ -117,6 +134,7 @@ return [
     'image_generators' => [
         Spatie\MediaLibrary\Conversions\ImageGenerators\Image::class,
         Spatie\MediaLibrary\Conversions\ImageGenerators\Webp::class,
+        Spatie\MediaLibrary\Conversions\ImageGenerators\Avif::class,
         Spatie\MediaLibrary\Conversions\ImageGenerators\Pdf::class,
         Spatie\MediaLibrary\Conversions\ImageGenerators\Svg::class,
         Spatie\MediaLibrary\Conversions\ImageGenerators\Video::class,
@@ -147,8 +165,8 @@ return [
      * your custom jobs extend the ones provided by the package.
      */
     'jobs' => [
-        'perform_conversions' => Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob::class,
-        'generate_responsive_images' => Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob::class,
+        'perform_conversions' => \Spatie\MediaLibrary\Conversions\Jobs\PerformConversionsJob::class,
+        'generate_responsive_images' => \Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob::class,
     ],
 
     /*
@@ -175,10 +193,10 @@ return [
     'responsive_images' => [
         /*
          * This class is responsible for calculating the target widths of the responsive
-         * images. By default we optimize for filesize and create variations that each are 20%
+         * images. By default we optimize for filesize and create variations that each are 30%
          * smaller than the previous one. More info in the documentation.
          *
-         * https://docs.spatie.be/laravel-medialibrary/v9/advanced-usage/generating-responsive-images
+         * https://docs.spatie.be/laravel-medialibrary/v11/responsive-images/getting-started-with-responsive-images
          */
         'width_calculator' => Spatie\MediaLibrary\ResponsiveImages\WidthCalculator\FileSizeOptimizedWidthCalculator::class,
 
@@ -190,26 +208,18 @@ return [
 
         /*
          * This class will generate the tiny placeholder used for progressive image loading. By default
-         * the media library will use a tiny blurred jpg image.
+         * the medialibrary will use a tiny blurred jpg image.
          */
         'tiny_placeholder_generator' => Spatie\MediaLibrary\ResponsiveImages\TinyPlaceholderGenerator\Blurred::class,
     ],
 
-    /*
-     * When enabling this option, a route will be registered that will enable
-     * the Media Library Pro Vue and React components to move uploaded files
-     * in a S3 bucket to their right place.
-     */
     'enable_vapor_uploads' => env('ENABLE_MEDIA_LIBRARY_VAPOR_UPLOADS', false),
 
-    /*
-     * When converting Media instances to response the media library will add
-     * a `loading` attribute to the `img` tag. Here you can set the default
-     * value of that attribute.
-     *
-     * Possible values: 'lazy', 'eager', 'auto' or null if you don't want to set any loading instruction.
-     *
-     * More info: https://css-tricks.com/native-lazy-loading/
-     */
     'default_loading_attribute_value' => null,
+
+    /*
+     * You can specify a prefix for that is used for storing all media.
+     * If you set this to `/my-subdir`, all your media will be stored in a `/my-subdir` directory.
+     */
+    'prefix' => env('MEDIA_PREFIX', ''),
 ];

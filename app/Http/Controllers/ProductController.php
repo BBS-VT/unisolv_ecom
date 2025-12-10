@@ -402,7 +402,16 @@ class ProductController extends Controller
 
         if ($request->hasFile('file')) {
             try {
-                $product->addMedia($request->file('file'))->toMediaCollection('photo');
+                // Clear existing media if replacing
+                $product->clearMediaCollection('photo');
+
+                // Add new media with conversion
+                $product->addMedia($request->file('file'))
+                    ->toMediaCollection('photo');
+
+                // Force regeneration of conversions
+                $product->getFirstMedia('photo')?->recreateConversions();
+
                 \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
             } catch (\Exception $e) {
                 \Log::error('Photo upload failed: ' . $e->getMessage());
@@ -412,7 +421,16 @@ class ProductController extends Controller
             if ($request->input('photo', false)) {
                 $photoPath = storage_path('tmp/uploads/' . $request->input('photo'));
                 if (file_exists($photoPath)) {
-                    $product->addMedia($photoPath)->toMediaCollection('photo');
+                    // Clear existing media if replacing
+                    $product->clearMediaCollection('photo');
+
+                    // Add new media
+                    $product->addMedia($photoPath)
+                        ->toMediaCollection('photo');
+
+                    // Force regeneration of conversions
+                    $product->getFirstMedia('photo')?->recreateConversions();
+
                     \Log::info('Photo from tmp uploaded: ' . $photoPath);
                 } else {
                     \Log::error('Photo file not found: ' . $photoPath);
@@ -494,39 +512,6 @@ class ProductController extends Controller
 
     }
 
-    /*public function maintain(Product $product, $id=null)
-    {
-        if ($id=="") {
-            // Add a Product
-            abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-            $title = "new";
-            $product = new Product;
-            $productdata = [];
-            $categories = ProductCategory::all()->pluck('StockGroupName', 'id')->prepend(trans('global.pleaseSelect'), '');
-            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
-            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-            $tags = ProductTag::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
-
-        } else {
-            // Edit a Product
-            abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-            $title = "edit";
-            $productdata = Product::find($id);
-            $productdata = json_decode(json_encode($productdata), true);
-            $categories = ProductCategory::all()->pluck('StockGroupName', 'id');
-            $salesunits = PackageType::all()->pluck('PackageTypeName', 'id');
-            $packageunits = PackageType::all()->pluck('PackageTypeName', 'id');
-            $tags = ProductTag::all()->pluck('name', 'id');
-
-            $product = Product::find($id);
-        }
-
-        return view('products.maintain', compact('categories', 'tags', 'salesunits', 'packageunits', 'title', 'product', 'productdata'));
-    }*/
 
     public function updateProductStatus(Request $request)
     {
