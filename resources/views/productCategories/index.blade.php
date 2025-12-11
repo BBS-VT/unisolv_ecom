@@ -347,7 +347,6 @@
                 e.preventDefault();
 
                 const formData = new FormData(this);
-                console.log(formData);
                 const categoryId = formData.get('id');
                 const url = categoryId ? `/product-categories/update/${categoryId}` : '/product-categories/store';
 
@@ -362,16 +361,36 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
+                            // Close modal first
+                            bootstrap.Modal.getInstance(document.getElementById('productCategoryModal')).hide();
+
                             // Show success message
-                            alert(categoryId ? 'Category updated successfully' : 'Category added successfully');
-                            window.location.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: categoryId ? 'Category updated successfully' : 'Category added successfully',
+                                confirmButtonColor: '#667eea'
+                            }).then((result) => {
+                                // Reload page after user clicks OK
+                                window.location.reload();
+                            });
                         } else {
-                            alert('Error: ' + (data.message || 'Something went wrong'));
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Something went wrong. Please try again.',
+                                confirmButtonColor: '#667eea'
+                            });
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred. Please try again.',
+                            confirmButtonColor: '#667eea'
+                        });
                     });
             });
 
