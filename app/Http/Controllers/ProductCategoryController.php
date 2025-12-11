@@ -39,21 +39,6 @@ class ProductCategoryController extends Controller
         return view('productCategories.create');
     }
 
-    /*public function store(StoreProductCategoryRequest $request)
-    {
-        $productCategory = ProductCategory::create($request->all());
-
-        if ($request->input('photo', false)) {
-            $productCategory->addMedia(storage_path('tmp/uploads/' . $request->input('photo')))->toMediaCollection('photo');
-        }
-
-        if ($media = $request->input('ck-media', false)) {
-            Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
-        }
-
-        return redirect()->route('product-categories.index');
-    }*/
-
     public function store(Request $request)
     {
         $request->validate([
@@ -147,17 +132,21 @@ class ProductCategoryController extends Controller
     public function updateCategoryStatus(Request $request)
     {
         if($request->ajax()) {
-            $data = $request->all();
+            $productCategory = ProductCategory::findOrFail($request->category_id);
 
-            if($data['status'] == "Active"){
-                $status = 0;
-            } else {
-                $status = 1;
-            }
+            // The JavaScript is sending 1 for checked (active), 0 for unchecked (inactive)
+            $productCategory->status = $request->status;
+            $productCategory->save();
 
-            ProductCategory::where('id',$data['category_id'])->update(['status'=>$status]);
-            return response()->json(['status'=>$status,'category_id'=>$data['category_id']]);
+            return response()->json([
+                'success' => true,
+                'status' => $productCategory->status,
+                'category_id' => $productCategory->id,
+                'message' => $productCategory->status ? 'Category enabled' : 'Category disabled'
+            ]);
         }
+
+        return response()->json(['success' => false, 'message' => 'Invalid request'], 400);
     }
 
     public function importExcel(Request $request)

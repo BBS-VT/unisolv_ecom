@@ -102,7 +102,7 @@
                                         </div>
                                     </td>
                                     <td class="text-end">
-                                        @can('customer_edit')
+                                        @can('product_category_edit')
                                             <button class="btn btn-sm btn-outline-primary edit-category"
                                                     data-id="{{ $productCategory->id }}"
                                                     data-category-code="{{ $productCategory->CategoryCode }}"
@@ -114,7 +114,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         @endcan
-                                        @can('customer_delete')
+                                        @can('product_category_delete')
                                             <form
                                                 action="{{ route('product-categories.destroy', $productCategory->id) }}"
                                                 method="POST"
@@ -313,7 +313,7 @@
             });
 
             // Edit Category
-            $('.edit-category').on('click', function() {
+            $('#datatable').on('click', '.edit-category',function() {
                 const categoryId = $(this).data('id');
                 const categoryCode = $(this).data('category-code');
                 const stockGroupName = $(this).data('stock-group-name');
@@ -376,42 +376,68 @@
             });
 
             // Update Category Status
-            $('.updateCategoryStatus').on('change', function() {
+            $('#datatable').on('change', '.updateCategoryStatus', function() {
                 const categoryId = $(this).data('category-id');
                 const isActive = $(this).is(':checked');
+                const $checkbox = $(this); // Store reference for reverting if needed
 
-                fetch(`/product-categories/update-status/${categoryId}`, {
+                $.ajax({
+                    url: '/update-category-status',
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    body: JSON.stringify({
+                    data: {
+                        category_id: categoryId,
                         status: isActive ? 1 : 0
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
+                    },
+                    success: function(data) {
                         if (data.success) {
                             // Update tooltip
-                            $(this).attr('title', isActive ? 'Click to Disable' : 'Click to Enable');
+                            $(`#category-${categoryId}`).attr('title', isActive ? 'Click to Disable' : 'Click to Enable');
 
-                            // Show brief notification
-                            const message = isActive ? 'Category enabled' : 'Category disabled';
-                            console.log(message);
+                            // Reinitialize tooltip
+                            var tooltip = bootstrap.Tooltip.getInstance($(`#category-${categoryId}`)[0]);
+                            if (tooltip) {
+                                tooltip.dispose();
+                            }
+                            new bootstrap.Tooltip($(`#category-${categoryId}`)[0]);
+
+                            // Show success toast
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message || (isActive ? 'Category enabled' : 'Category disabled'),
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true
+                            });
                         } else {
                             // Revert checkbox on error
-                            $(this).prop('checked', !isActive);
-                            alert('Error updating status');
+                            $checkbox.prop('checked', !isActive);
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Failed to update category status',
+                                confirmButtonColor: '#667eea'
+                            });
                         }
-                    })
-                    .catch(error => {
+                    },
+                    error: function(xhr, status, error) {
                         console.error('Error:', error);
                         // Revert checkbox on error
-                        $(this).prop('checked', !isActive);
-                        alert('An error occurred. Please try again.');
-                    });
+                        $checkbox.prop('checked', !isActive);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred while updating the status. Please try again.',
+                            confirmButtonColor: '#667eea'
+                        });
+                    }
+                });
             });
         });
     </script>
