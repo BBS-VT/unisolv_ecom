@@ -18,7 +18,7 @@
                             <!-- Full Name -->
                             <div class="mb-3">
                                 <label for="PreferredName" class="form-label fw-semibold">
-                                    {{ __('cruds.user.fields.fullname') }}
+                                    {{ __('cruds.user.fields.preferredname') }}
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text"
@@ -28,6 +28,21 @@
                                        value="{{ old('PreferredName') }}"
                                        required>
                                 @error('PreferredName')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="FullName" class="form-label fw-semibold">
+                                    {{ __('cruds.user.fields.fullname') }}
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       class="form-control @error('FullName') is-invalid @enderror"
+                                       id="FullName"
+                                       name="FullName"
+                                       value="{{ old('FullName') }}"
+                                       required>
+                                @error('FullName')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
