@@ -98,7 +98,7 @@
 
             <!-- Pagination -->
             @if($products->hasPages())
-                <div class="d-flex justify-content-center mt-5">
+                <div class="d-flex justify-content-center mt-3 mb-2">
                     {{ $products->links('shop.components.pagination') }}
                 </div>
             @endif

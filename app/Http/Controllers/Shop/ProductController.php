@@ -195,7 +195,7 @@ class ProductController extends Controller
             ->orderBy('StockGroupName', 'asc')
             ->get();
 
-        $products = $query->paginate(Features::productsPerPage());
+        $products = $query->paginate(Features::productsPerPage())->withQueryString();
 
         $products->getCollection()->transform(function ($product) {
             $product->pricing = PricingHelper::getProductPricing($product);
