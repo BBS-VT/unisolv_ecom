@@ -368,7 +368,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: categoryId ? 'Category updated successfully' : 'Category added successfully',
+                                text: categoryId ? 'Department updated successfully' : 'Department added successfully',
                                 confirmButtonColor: '#667eea'
                             }).then((result) => {
                                 // Reload page after user clicks OK
@@ -425,7 +425,7 @@
                             // Show success toast
                             Swal.fire({
                                 icon: 'success',
-                                title: data.message || (isActive ? 'Category enabled' : 'Category disabled'),
+                                title: data.message || (isActive ? 'Department enabled' : 'Department disabled'),
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -439,7 +439,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: data.message || 'Failed to update category status',
+                                text: data.message || 'Failed to update department status',
                                 confirmButtonColor: '#667eea'
                             });
                         }
