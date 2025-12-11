@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StockItemHoldingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\PackSizeController;
@@ -48,6 +49,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.admin.', 'namespace' => 'Api\V1\Adm
     Route::post('/stock/check-availability', [PackSizeController::class, 'checkStockAvailability']);
     Route::post('/stock/allocation', [PackSizeController::class, 'calculateStockAllocation']);
     Route::post('/stock/recommendations', [PackSizeController::class, 'getRecommendedPackSizes']);
+
+    Route::post('/stock-quantities/import', [StockItemHoldingsController::class, 'importFromApi']);
 
     Route::apiResource('products', 'ProductApiController');
 

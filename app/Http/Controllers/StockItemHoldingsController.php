@@ -28,17 +28,76 @@ class StockItemHoldingsController extends Controller
             'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
         ]);
 
+        $importJob = $this->startImport(
+            $request->file('import_file'),
+            $request->user(),
+            true // withSession
+        );
+
+        return back();
+    }
+
+    public function importFromApi(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+        ]);
+
+        $importJob = $this->startImport(
+            $request->file('import_file'),
+            $request->user(),    // user from Passport
+            false                // no Session, pure API
+        );
+
+        return response()->json([
+            'status'        => 'queued',
+            'import_job_id' => $importJob->id,
+        ], 202);
+    }
+
+    private function startImport(UploadedFile $file, ?User $user, bool $withSession = true): ImportJob
+    {
+        $path     = $file->store('temp');
+        $filename = $file->getClientOriginalName();
+
+        $companyId   = $user ? $user->currentCompany()->id : null;
+        $importedBy  = $user ? $user->id : null;
+
+        $importJob = ImportJob::create([
+            'filename'        => $filename,
+            'total_rows'      => 0,
+            'processed_rows'  => 0,
+            'successful_rows' => 0,
+            'failed_rows'     => 0,
+            'items_updated'   => 0,
+            'company_id'      => $companyId,
+            'imported_by'     => $importedBy,
+            'status'          => ImportJob::STATUS_PENDING,
+            'started_at'      => now(),
+        ]);
+
+        ProcessStockQuantitiesImport::dispatch($path, $importJob->id);
+
+        if ($withSession) {
+            Session::put('success', 'Stock quantities import has started. You can monitor progress on the imports status page.');
+            Session::put('import_job_id', $importJob->id);
+        }
+
+        return $importJob;
+    }
+    /*public function importExcel(Request $request)
+    {
+        abort_if(Gate::denies('stock_quantityImport'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+        ]);
+
         $path = $request->file('import_file')->store('temp');
         $filename = $request->file('import_file')->getClientOriginalName();
 
         // Create an import job record to track progress
-        /*$importJob = ImportJob::create([
-            'filename' => $filename,
-            'total_rows' => 0, // Will be updated by the job
-            'processed_rows' => 0,
-            'status' => ImportJob::STATUS_PENDING,
-            'started_at' => now(),
-        ]);*/
+
         $importJob = ImportJob::create([
             //'job_id' => $importJobId,
             'filename' => $filename,
@@ -59,7 +118,7 @@ class StockItemHoldingsController extends Controller
         Session::put('import_job_id', $importJob->id);
 
         return back();
-    }
+    }*/
 
     /**
      * Display the import status page
