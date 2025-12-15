@@ -78,10 +78,17 @@ class StockTransactionController extends Controller
      */
     public function importDetails($importJobId)
     {
-        $importJob = ImportJob::with(['user', 'stockTransactions.product', 'stockTransactions.location'])
-            ->findOrFail($importJobId);
+        $importJob = ImportJob::with(['user'])->findOrFail($importJobId);
 
-        return view('admin.imports.details', compact('importJob'));
+        // Paginate transactions separately to avoid loading all into memory
+        $transactions = $importJob->stockTransactions()
+            ->with(['product', 'location'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(100);
+        //$importJob = ImportJob::with(['user', 'stockTransactions.product', 'stockTransactions.location'])
+        //    ->findOrFail($importJobId);
+
+        return view('admin.imports.details', compact('importJob', 'transactions'));
     }
 
     /**

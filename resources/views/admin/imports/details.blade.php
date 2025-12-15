@@ -153,7 +153,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Stock Changes ({{ $importJob->stockTransactions->count() }})</h5>
+                        <h5 class="mb-0">Stock Changes ({{ number_format($importJob->stockTransactions()->count()) }} total - page {{ $transactions->currentPage() }} of {{ $transactions->lastPage() }})</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -169,7 +169,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($importJob->stockTransactions as $transaction)
+                                @forelse($transactions as $transaction)
                                     <tr>
                                         <td>
                                             {{ $transaction->StockCode }}
@@ -205,6 +205,9 @@
                                 @endforelse
                                 </tbody>
                             </table>
+                            <div class="d-flex justify-content-center mt-3">
+                                {{ $transactions->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>

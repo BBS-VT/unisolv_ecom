@@ -354,7 +354,7 @@ class StockItemHoldings extends Model
             'reference_id' => $referenceId,
             'notes' => $notes,
             'user_id' => $userId ?? auth()->id(),
-            'company_id' => $holding->product->company_id ?? auth()->user()->currentCompany()->id
+            'company_id' => $companyId ?? $holding->product->company_id ?? 1
         ]);
 
         return true;

@@ -19,6 +19,7 @@ class ProcessStockQuantitiesImport implements ShouldQueue
 
     protected $filePath;
     protected $importJobId;
+    protected $companyId;
 
     public $timeout = 3600;
     public $tries = 3;
@@ -28,13 +29,15 @@ class ProcessStockQuantitiesImport implements ShouldQueue
      *
      * @param string $filePath
      * @param int $importJobId
+     * @param int|null $companyId
      * @return void
      *
      */
-    public function __construct(string $filePath, int $importJobId)
+    public function __construct(string $filePath, int $importJobId, ?int $companyId = null)
     {
         $this->filePath = $filePath;
         $this->importJobId = $importJobId;
+        $this->companyId = $companyId;
     }
 
     /**
@@ -44,7 +47,11 @@ class ProcessStockQuantitiesImport implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('Starting Stock Quantities import process', ['file' => $this->filePath, 'import_job_id' => $this->importJobId]);
+        Log::info('Starting Stock Quantities import process', [
+            'file' => $this->filePath,
+            'import_job_id' => $this->importJobId,
+            'company_id' => $this->companyId
+        ]);
 
         $importJob = ImportJob::findOrFail($this->importJobId);
         $importJob->update(['status' => ImportJob::STATUS_PROCESSING, 'started_at' => now()]);
@@ -54,7 +61,7 @@ class ProcessStockQuantitiesImport implements ShouldQueue
             StockItemHoldings::truncate();
 
             // Create an instance of the importer with progress tracking
-            $importer = new StockQuantitiesImport($this->importJobId);
+            $importer = new StockQuantitiesImport($this->importJobId, $this->companyId);
 
             Excel::import($importer, storage_path('app/' . $this->filePath));
 

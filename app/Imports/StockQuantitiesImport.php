@@ -19,6 +19,7 @@ use Maatwebsite\Excel\Events\AfterSheet;
 class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStartRow, WithEvents
 {
     protected $importJobId;
+    protected $companyId;
     protected $totalRows = 0;
     protected $processedRows = 0;
     protected $successfulRows = 0;
@@ -27,10 +28,12 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
 
     /**
      * @param  int  $importJobId
+     * @param int|null $companyId
      */
-    public function __construct(int $importJobId)
+    public function __construct(int $importJobId, ?int $companyId = null)
     {
         $this->importJobId = $importJobId;
+        $this->companyId = $companyId;
     }
 
     /**
@@ -119,6 +122,8 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
         $importJob = ImportJob::find($this->importJobId);
         $userId = Auth::check() ? Auth::id() : ($importJob->imported_by ?? 1);
 
+        $companyId = $this->companyId ?? $importJob->company_id;
+
         foreach ($rows as $index => $row) {
             try {
                 // Validate that we have a stock code
@@ -140,7 +145,8 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
                     $userId,
                     'ImportJob',
                     $this->importJobId,
-                    "Import: {$importJob->filename}"
+                    "Import: {$importJob->filename}",
+                    $companyId
                 );
 
                 // Also update other fields that don't affect quantity
@@ -175,8 +181,8 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
 
             $this->processedRows++;
 
-            // Update progress every 100 rows (more frequent for better UX)
-            if ($this->processedRows % 100 === 0) {
+            // Update progress every 500 rows (more frequent for better UX)
+            if ($this->processedRows % 500 === 0) {
                 $importJob = ImportJob::find($this->importJobId);
                 if ($importJob) {
                     $importJob->update([

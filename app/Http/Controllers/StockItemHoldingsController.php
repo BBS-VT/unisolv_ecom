@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ProcessStockQuantitiesImport;
-use App\Models\ImportJob;
-use App\Models\StockItemHoldings;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use App\Models\User;
+use App\Models\ImportJob;
+use App\Jobs\ProcessStockQuantitiesImport;
+use App\Models\StockItemHoldings;
+use Symfony\Component\HttpFoundation\Response;
 use DB;
 use Gate;
-use Symfony\Component\HttpFoundation\Response;
 use Session;
 
 class StockItemHoldingsController extends Controller
@@ -43,10 +45,17 @@ class StockItemHoldingsController extends Controller
             'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
         ]);
 
-        $importJob = $this->startImport(
+        $user = $request->user();
+        //if (!$user->companies()->where('company_id', $request->company_id)->exists()) {
+        //    return response()->json(['error' => 'Unauthorized company access'], 403);
+        //}
+        $companyId = 1;
+
+        $importJob = $this->startImportWithCompany(
             $request->file('import_file'),
-            $request->user(),    // user from Passport
-            false                // no Session, pure API
+            $user,
+            $companyId,
+            false // no session
         );
 
         return response()->json([
@@ -55,13 +64,54 @@ class StockItemHoldingsController extends Controller
         ], 202);
     }
 
+    private function startImportWithCompany(UploadedFile $file, ?User $user, int $companyId, bool $withSession = true): ImportJob
+    {
+        $path     = $file->store('temp');
+        $filename = $file->getClientOriginalName();
+
+        $importJob = ImportJob::create([
+            'filename'        => $filename,
+            'total_rows'      => 0,
+            'processed_rows'  => 0,
+            'successful_rows' => 0,
+            'failed_rows'     => 0,
+            'items_updated'   => 0,
+            'company_id'      => $companyId,
+            'imported_by'     => $user?->id,
+            'status'          => ImportJob::STATUS_PENDING,
+            'started_at'      => now(),
+        ]);
+
+        ProcessStockQuantitiesImport::dispatch($path, $importJob->id, $companyId);
+
+        if ($withSession) {
+            Session::put('success', 'Stock quantities import has started. You can monitor progress on the imports status page.');
+            Session::put('import_job_id', $importJob->id);
+        }
+
+        return $importJob;
+    }
+
     private function startImport(UploadedFile $file, ?User $user, bool $withSession = true): ImportJob
     {
         $path     = $file->store('temp');
         $filename = $file->getClientOriginalName();
 
-        $companyId   = $user ? $user->currentCompany()->id : null;
-        $importedBy  = $user ? $user->id : null;
+        $companyId = null;
+        $importedBy = null;
+
+        if ($user) {
+            $importedBy = $user->id;
+
+            // Try to get current company, but handle if it returns null
+            $currentCompany = $user->currentCompany();
+            if ($currentCompany) {
+                $companyId = $currentCompany->id;
+            } else {
+                // Fallback: get the first company_id from the pivot table
+                $companyId = $user->companies()->value('company_id');
+            }
+        }
 
         $importJob = ImportJob::create([
             'filename'        => $filename,
@@ -76,7 +126,7 @@ class StockItemHoldingsController extends Controller
             'started_at'      => now(),
         ]);
 
-        ProcessStockQuantitiesImport::dispatch($path, $importJob->id);
+        ProcessStockQuantitiesImport::dispatch($path, $importJob->id, $companyId);
 
         if ($withSession) {
             Session::put('success', 'Stock quantities import has started. You can monitor progress on the imports status page.');
@@ -85,40 +135,6 @@ class StockItemHoldingsController extends Controller
 
         return $importJob;
     }
-    /*public function importExcel(Request $request)
-    {
-        abort_if(Gate::denies('stock_quantityImport'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $request->validate([
-            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
-        ]);
-
-        $path = $request->file('import_file')->store('temp');
-        $filename = $request->file('import_file')->getClientOriginalName();
-
-        // Create an import job record to track progress
-
-        $importJob = ImportJob::create([
-            //'job_id' => $importJobId,
-            'filename' => $filename,
-            'total_rows' => 0, // Will be updated in BeforeImport event
-            'processed_rows' => 0,
-            'successful_rows' => 0,
-            'failed_rows' => 0,
-            'items_updated' => 0,
-            'company_id' => auth()->user()->currentCompany()->id,
-            'imported_by' => auth()->id(),
-            'status' => ImportJob::STATUS_PENDING,
-            'started_at' => now(),
-        ]);
-
-        ProcessStockQuantitiesImport::dispatch($path, $importJob->id);
-
-        Session::put('success', 'Stock quantities import has started. You can monitor progress on the imports status page.');
-        Session::put('import_job_id', $importJob->id);
-
-        return back();
-    }*/
 
     /**
      * Display the import status page

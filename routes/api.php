@@ -21,6 +21,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'Api\V1\Admin\Auth'], function() 
     Route::post('login', 'AuthController@login');
 });
 
+Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
+    Route::post('stock-quantities/import', [StockItemHoldingsController::class, 'importFromApi']);
+});
+
+
 Route::group(['prefix' => 'v1', 'as' => 'api.admin.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:api']], function () {
     // Permissions
     Route::apiResource('permissions', 'PermissionsApiController');
@@ -50,8 +55,9 @@ Route::group(['prefix' => 'v1', 'as' => 'api.admin.', 'namespace' => 'Api\V1\Adm
     Route::post('/stock/allocation', [PackSizeController::class, 'calculateStockAllocation']);
     Route::post('/stock/recommendations', [PackSizeController::class, 'getRecommendedPackSizes']);
 
-    Route::post('/stock-quantities/import', [StockItemHoldingsController::class, 'importFromApi']);
 
     Route::apiResource('products', 'ProductApiController');
 
 });
+
+
