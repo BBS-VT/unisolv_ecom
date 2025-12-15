@@ -4,6 +4,8 @@
 
 @push('styles')
     <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/dropzone/basic.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('build/libs/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .column-content {
             background-color: #fff; /* Set background to white */
@@ -28,6 +30,86 @@
 
         .pack-size-chain {
             font-size: 0.875rem;
+        }
+
+        /* Dropzone thumbnail fixes */
+        #photo-dropzone {
+            border: 2px dashed #dee2e6;
+            border-radius: 0.375rem;
+            padding: 20px;
+            background-color: #f8f9fa;
+            min-height: 200px;
+        }
+
+        #photo-dropzone .dz-preview {
+            margin: 10px;
+        }
+
+        #photo-dropzone .dz-preview .dz-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        #photo-dropzone .dz-preview .dz-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #photo-dropzone .dz-preview .dz-details {
+            padding: 0.5rem;
+        }
+
+        #photo-dropzone .dz-preview .dz-filename {
+            font-size: 0.85rem;
+        }
+
+        #photo-dropzone .dz-preview .dz-size {
+            font-size: 0.75rem;
+        }
+
+        /* Make remove link more visible */
+        #photo-dropzone .dz-preview .dz-remove {
+            font-size: 0.85rem;
+            color: #dc3545;
+            text-decoration: none;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        #photo-dropzone .dz-preview .dz-remove:hover {
+            color: #c82333;
+            text-decoration: underline;
+        }
+
+        /* Success/error states */
+        #photo-dropzone .dz-preview.dz-success .dz-success-mark,
+        #photo-dropzone .dz-preview.dz-error .dz-error-mark {
+            opacity: 1;
+        }
+
+        #photo-dropzone .dz-preview.dz-success .dz-image {
+            border: 2px solid #28a745;
+        }
+
+        #photo-dropzone .dz-preview.dz-error .dz-image {
+            border: 2px solid #dc3545;
+        }
+
+        /* Progress bar styling */
+        #photo-dropzone .dz-preview .dz-progress {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e9ecef;
+            margin-top: 0.5rem;
+        }
+
+        #photo-dropzone .dz-preview .dz-progress .dz-upload {
+            background-color: #667eea;
+            height: 100%;
         }
     </style>
 @endpush
@@ -606,16 +688,50 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js')}}"></script>
-    <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
+    <!-- DEBUG SECTION - Remove after fixing -->
+    <script>
+        console.log('Debug: Checking media data');
+        @if($product->hasMedia('photo'))
+        console.log('Product has media');
+        @foreach($product->getMedia('photo') as $media)
+        console.log('Media {{ $loop->index }}:', {
+            name: "{{ $media->file_name }}",
+            size: {{ $media->size }},
+            url: "{{ $media->getUrl() }}",
+            thumb: "{{ $media->getUrl('thumb') }}",
+            uuid: "{{ $media->uuid }}"
+        });
+        @endforeach
+        @else
+        console.log('No media found');
+        @endif
+    </script>
+    <!-- END DEBUG SECTION -->
+
+    <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>
 
     <script>
-        Dropzone.options.photoDropzone = {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure Dropzone is loaded
+            if (typeof Dropzone === 'undefined') {
+                console.error('Dropzone is not loaded!');
+                return;
+            }
+
+            console.log('Setting up Dropzone');
+
+            Dropzone.autoDiscover = false;
+
+            var photoDropzone = new Dropzone("#photo-dropzone", {
                 url: '{{ route('products.storeMedia') }}',
-                maxFilesize: 5, // MB
+                maxFilesize: 5,
                 acceptedFiles: '.jpeg,.jpg,.png,.gif',
-                maxFiles: 1,
+                maxFiles: 5,
                 addRemoveLinks: true,
+                thumbnailWidth: 150,
+                thumbnailHeight: 150,
+                thumbnailMethod: 'crop',
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
                 },
@@ -624,58 +740,118 @@
                     width: 4096,
                     height: 4096
                 },
-                success: function (file, response) {
-                    $('form').find('input[name="photo"]').remove()
-                    $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
-                },
-                removedfile: function (file) {
-                    file.previewElement.remove()
-                    if (file.status !== 'error') {
-                        $('form').find('input[name="photo"]').remove()
-                        this.options.maxFiles = this.options.maxFiles + 1
-                    }
-                },
-                init: function () {
-                    @if($product->photo)
-        // Create a mock file object
-        var mockFile = {
-            name: "{{ basename($product->photo->url) }}",
-                        size: {{ $product->photo->size ?? 100000 }},
-                        accepted: true,
-                        upload: { uuid: "{{ $product->photo->uuid ?? uniqid() }}" }
+                init: function() {
+                    console.log('Dropzone initialized');
+                    var myDropzone = this;
+
+                    @if($product->hasMedia('photo'))
+                    console.log('Loading existing images');
+
+                    @foreach($product->getMedia('photo') as $index => $media)
+                    var mockFile{{ $index }} = {
+                        name: "{{ $media->file_name }}",
+                        size: {{ $media->size }},
+                        accepted: true
                     };
 
-                    // Add file to dropzone
-                    this.options.addedfile.call(this, mockFile);
+                    console.log('Adding file {{ $index }}:', mockFile{{ $index }});
 
-                    // Set the thumbnail - use the same method as your view
-                    this.options.thumbnail.call(this, mockFile, "{{ $product->photo->thumbnail ?? $product->photo->url }}");
+                    // Add the file to dropzone
+                    myDropzone.emit("addedfile", mockFile{{ $index }});
+
+                    // Add the thumbnail
+                    myDropzone.emit("thumbnail", mockFile{{ $index }}, "{{ $media->getUrl('thumb') }}");
 
                     // Mark as complete
-                    mockFile.previewElement.classList.add('dz-complete', 'dz-success');
+                    myDropzone.emit("complete", mockFile{{ $index }});
 
-                    // Add hidden input
-                    $('form').append('<input type="hidden" name="photo" value="{{ basename($product->photo->url) }}">');
+                    // Make file look successful
+                    mockFile{{ $index }}.previewElement.classList.add('dz-success');
 
-                    this.options.maxFiles = this.options.maxFiles - 1;
+                    console.log('File {{ $index }} added successfully');
+                    @endforeach
+
+                    // Adjust maxFiles count
+                    myDropzone.options.maxFiles = myDropzone.options.maxFiles - {{ $product->getMedia('photo')->count() }};
+                    console.log('Remaining maxFiles:', myDropzone.options.maxFiles);
                     @endif
-        },
-        error: function (file, response) {
-            if ($.type(response) === 'string') {
-                var message = response //dropzone sends it's own error messages in string
-            } else {
-                var message = response.errors.file
-            }
-            file.previewElement.classList.add('dz-error')
-            _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
-            _results = []
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                node = _ref[_i]
-                _results.push(node.textContent = message)
-            }
-            return _results
-        }
-    }
+                },
+                success: function(file, response) {
+                    console.log('Upload success:', response);
+                    $('form').find('input[name="photo"]').remove();
+                    $('form').append('<input type="hidden" name="photo" value="' + response.name + '">');
+                },
+                removedfile: function(file) {
+                    console.log('Removing file:', file.name);
+
+                    // If this is an existing file (not a newly uploaded one)
+                    if (file.accepted && !file.xhr) {
+                        // Find the media ID by matching the file name
+                        @if($product->hasMedia('photo'))
+                        var mediaId = null;
+                        @foreach($product->getMedia('photo') as $index => $media)
+                        if (file.name === "{{ $media->file_name }}") {
+                            mediaId = {{ $media->id }};
+                        }
+                        @endforeach
+
+                        if (mediaId) {
+                            // Show confirmation
+                            if (!confirm('Are you sure you want to delete this image? This cannot be undone.')) {
+                                return false;
+                            }
+
+                            // Delete from server
+                            $.ajax({
+                                url: '/products/media/' + mediaId,
+                                type: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                success: function(response) {
+                                    console.log('File deleted from server');
+                                    // Remove preview element
+                                    if (file.previewElement != null && file.previewElement.parentNode != null) {
+                                        file.previewElement.parentNode.removeChild(file.previewElement);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error deleting file:', error);
+                                    alert('Failed to delete image. Please try again.');
+                                }
+                            });
+                        }
+                        @endif
+                    } else {
+                        // This is a newly uploaded file that hasn't been saved yet
+                        if (file.previewElement != null && file.previewElement.parentNode != null) {
+                            file.previewElement.parentNode.removeChild(file.previewElement);
+                        }
+                    }
+
+                    this.options.maxFiles = this.options.maxFiles + 1;
+                    return this._updateMaxFilesReachedClass();
+                },
+                error: function(file, response) {
+                    console.error('Dropzone error:', response);
+                    if (typeof response === 'string') {
+                        var message = response;
+                    } else if (response.errors && response.errors.file) {
+                        var message = response.errors.file;
+                    } else {
+                        var message = 'Upload failed';
+                    }
+
+                    if (file.previewElement) {
+                        file.previewElement.classList.add('dz-error');
+                        var errorNodes = file.previewElement.querySelectorAll('[data-dz-errormessage]');
+                        errorNodes.forEach(function(node) {
+                            node.textContent = message;
+                        });
+                    }
+                }
+            });
+        });
     </script>
     <script>
         $(document).ready(function() {

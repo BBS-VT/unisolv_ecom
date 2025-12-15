@@ -106,18 +106,16 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::resource('product-tags', 'ProductTagController');
 
     // Products
-    //Route::get('products', 'ProductController@index')->name('products.index');
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    //Route::get('products/show', 'ProductController@show')->name('products.show');
     Route::delete('products/destroy', [ProductController::class, 'massDestroy'])->name('products.massDestroy');
     Route::post('products/media',[ProductController::class, 'storeMedia'])->name('products.storeMedia');
     Route::post('products/ckmedia', [ProductController::class, 'storeCKEditorImages'])->name('products.storeCKEditorImages');
     Route::post('update-product-status', [ProductController::class, 'updateProductStatus']);
     Route::resource('products', ProductController::class);
     Route::post('importQuantities', [StockItemHoldingsController::class, 'importExcel'])->name('importQuantities');
-    //Route::post('importStockmaster', 'ProductController@importExcel')->name('importStockmaster');
-    //Route::match(['get', 'post'], 'products/maintain/{id?}', 'ProductController@maintain')->name('products.maintain');
     Route::get('products/product_search', [ProductController::class, 'productSearch'])->name('product.search');
+    Route::delete('products/media/{media}', [ProductController::class, 'destroyMedia'])
+        ->name('products.destroyMedia');
 
     // Promotions
     Route::prefix('promotions')->name('promotions.')->group(function () {

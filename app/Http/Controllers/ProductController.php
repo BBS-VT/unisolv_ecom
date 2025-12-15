@@ -346,9 +346,9 @@ class ProductController extends Controller
             ->pluck('StockItemName', 'StockCode')
             ->prepend('-- No Pack Size Link --', '');
 
-        $product->load('categories',  'packageType', 'stockHolding', 'referredProduct', 'referringProducts');
+        $product->load('categories',  'packageType', 'stockHolding', 'referredProduct', 'referringProducts', 'media');
 
-        //dd($product);
+        //dd($product->getMedia('photo'));
         return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes', 'referProducts'));
     }
 
@@ -600,6 +600,21 @@ class ProductController extends Controller
     public function importTemplate()
     {
         //
+    }
+
+    public function destroyMedia(Media $media)
+    {
+        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Optional: Verify the media belongs to a product owned by the current company
+        $product = $media->model;
+        if ($product && $product->company_id !== auth()->user()->currentCompany()->id) {
+            abort(403);
+        }
+
+        $media->delete();
+
+        return response()->json(['success' => true]);
     }
 
 
