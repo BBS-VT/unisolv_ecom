@@ -128,6 +128,8 @@
                 <h2 class="mb-0">{{ __('global.edit') }} {{ __('cruds.product.title_singular') }}</h2>
             </div>
         </div>
+
+
         <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -228,6 +230,13 @@
 
                         <h4>{{ __('Stock Details') }}</h4>
                         <div class="card border">
+                            @can('adjust_stock')
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-sm btn-warning float-end" data-bs-toggle="modal" data-bs-target="#adjustStockModal">
+                                    <i class="mdi mdi-plus-minus-variant"></i> Adjust Stock
+                                </button>
+                            </div>
+                            @endcan
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-xxl-2 col-md-2">
@@ -676,37 +685,20 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-2">
                 <button class="btn btn-danger" type="submit">
                     {{ __('global.update') }}
                 </button>
                 <a href="{{ route('products.index') }}" class="btn btn-secondary">{{ __('global.cancel') }}</a>
             </div>
         </form>
+
+        @include('products.partials.adjustStock')
     </div>
 
 @endsection
 
 @push('scripts')
-    <!-- DEBUG SECTION - Remove after fixing -->
-    <script>
-        console.log('Debug: Checking media data');
-        @if($product->hasMedia('photo'))
-        console.log('Product has media');
-        @foreach($product->getMedia('photo') as $media)
-        console.log('Media {{ $loop->index }}:', {
-            name: "{{ $media->file_name }}",
-            size: {{ $media->size }},
-            url: "{{ $media->getUrl() }}",
-            thumb: "{{ $media->getUrl('thumb') }}",
-            uuid: "{{ $media->uuid }}"
-        });
-        @endforeach
-        @else
-        console.log('No media found');
-        @endif
-    </script>
-    <!-- END DEBUG SECTION -->
 
     <script src="{{ URL::asset('build/libs/inputmask/jquery.inputmask.min.js') }}"></script>
     <script src="{{ URL::asset('build/libs/dropzone/dropzone-min.js') }}"></script>

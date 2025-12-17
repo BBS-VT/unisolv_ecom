@@ -70,6 +70,12 @@
                     </a>
                 @endcan
 
+                @can('adjust_stock')
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adjustStockModalIndex">
+                        <i class="mdi mdi-plus-minus-variant me-1"></i> Adjust Stock
+                    </button>
+                @endcan
+
                 @can('product_import')
                     <div class="btn-group">
                         <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -136,6 +142,7 @@
     <!-- Import Modals -->
     @include('products.partials.importStockmaster')
     @include('products.partials.importStockquantities')
+    @include('products.partials.adjustStockIndex')
 
 @endsection
 

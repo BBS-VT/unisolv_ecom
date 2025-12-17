@@ -184,4 +184,86 @@ class AjaxController extends Controller
 
         return response()->json(['discValidate' => $maxdiscount]);
     }
+
+    public function search(Request $request)
+    {
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
+
+        \Log::info('Product search initiated', [
+            'search_term' => $request->get('q'),
+            'page' => $request->get('page', 1),
+            'user_id' => auth()->id(),
+            'company_id' => $currentCompany->id() ?? 'NO COMPANY'
+        ]);
+
+        $search = $request->get('q');
+        $page = $request->get('page', 1);
+        $perPage = 10;
+
+        if (!auth()->check()) {
+            \Log::error('Product search - User not authenticated');
+            return response()->json([
+                'items' => [],
+                'has_more' => false,
+                'error' => 'Not authenticated'
+            ]);
+        }
+
+        // Check if user has company
+        if (!auth()->user()->company_id) {
+            \Log::error('Product search - User has no company_id', [
+                'user_id' => auth()->id()
+            ]);
+            return response()->json([
+                'items' => [],
+                'has_more' => false,
+                'error' => 'No company assigned'
+            ]);
+        }
+
+        $query = Product::query()
+            ->where('company_id', auth()->user()->currentCompany->id);
+
+        // Log total products for this company before search
+        $totalCompanyProducts = Product::where('company_id', auth()->user()->company_id)->count();
+        \Log::info('Total products for company', [
+            'company_id' => auth()->user()->company_id,
+            'total_products' => $totalCompanyProducts
+        ]);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('StockCode', 'like', "%{$search}%")
+                    ->orWhere('StockItemName', 'like', "%{$search}%");
+            });
+
+            \Log::info('Search filter applied', [
+                'search_term' => $search,
+                'sql' => $query->toSql(),
+                'bindings' => $query->getBindings()
+            ]);
+        }
+
+        $total = $query->count();
+
+        \Log::info('Search query count', [
+            'total_matches' => $total,
+            'search_term' => $search
+        ]);
+
+        $products = $query->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get(['id', 'StockCode', 'StockItemName']);
+
+        \Log::info('Products retrieved', [
+            'count' => $products->count(),
+            'products' => $products->toArray()
+        ]);
+
+        return response()->json([
+            'items' => $products,
+            'has_more' => ($page * $perPage) < $total
+        ]);
+    }
 }

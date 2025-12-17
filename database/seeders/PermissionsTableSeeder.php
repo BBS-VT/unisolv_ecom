@@ -790,6 +790,18 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => '2019-09-15 06:10:05',
                 'updated_at' => '2019-09-15 06:10:05',
             ],
+            [
+                'id'         => '131',
+                'title'      => 'manage_setting',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
+            [
+                'id'         => '132',
+                'title'      => 'adjust_stock',
+                'created_at' => '2019-09-15 06:10:05',
+                'updated_at' => '2019-09-15 06:10:05',
+            ],
 
         ];
 

@@ -106,18 +106,22 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::resource('product-tags', 'ProductTagController');
 
     // Products
+    Route::get('products/search', [AjaxController::class, 'search'])->name('products.search');
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::delete('products/destroy', [ProductController::class, 'massDestroy'])->name('products.massDestroy');
     Route::post('products/media',[ProductController::class, 'storeMedia'])->name('products.storeMedia');
     Route::post('products/ckmedia', [ProductController::class, 'storeCKEditorImages'])->name('products.storeCKEditorImages');
     Route::post('update-product-status', [ProductController::class, 'updateProductStatus']);
+
     Route::resource('products', ProductController::class);
     Route::post('importQuantities', [StockItemHoldingsController::class, 'importExcel'])->name('importQuantities');
-    Route::get('products/product_search', [ProductController::class, 'productSearch'])->name('product.search');
+    //Route::get('products/product_search', [ProductController::class, 'productSearch'])->name('product.search');
     Route::delete('products/media/{media}', [ProductController::class, 'destroyMedia'])
         ->name('products.destroyMedia');
+    Route::post('products/{product}/adjust-stock', [ProductController::class, 'adjustStock'])->name('products.adjust-stock');
 
-    // Promotions
+
+    // Promotionss
     Route::prefix('promotions')->name('promotions.')->group(function () {
         // Imports
         Route::get('import', [PromotionController::class, 'showImport'])->name('import');
@@ -166,6 +170,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/ajax/products', [AjaxController::class, 'products'])->name('ajax.products');
     Route::get('/ajax/customers', [AjaxController::class, 'customers'])->name('ajax.customers');
     //Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
+
 
 });
 

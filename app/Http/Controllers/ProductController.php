@@ -11,6 +11,7 @@ use App\Imports\StockMasterImport;
 use App\Jobs\ProcessCsvImport;
 use App\Jobs\UpdateProductFields;
 use App\Models\ImportJob;
+use App\Models\Location;
 use App\Models\PackageType;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -40,6 +41,7 @@ class ProductController extends Controller
         $user = auth()->user();
         $currentCompany = $user->currentCompany();
 
+        $locations = Location::all();
 
         if ($request->ajax()) {
 
@@ -207,7 +209,7 @@ class ProductController extends Controller
                 ->make(true);
         }
 
-        return view('products.index', compact('currentCompany'));
+        return view('products.index', compact('currentCompany', 'locations'));
     }
 
     public function create()
@@ -346,10 +348,12 @@ class ProductController extends Controller
             ->pluck('StockItemName', 'StockCode')
             ->prepend('-- No Pack Size Link --', '');
 
+        $locations = Location::all();
+
         $product->load('categories',  'packageType', 'stockHolding', 'referredProduct', 'referringProducts', 'media');
 
-        //dd($product->getMedia('photo'));
-        return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes', 'referProducts'));
+        //dd($locations);
+        return view('products.edit', compact('subCategories', 'mainCategories', 'product', 'packagetypes', 'locations','referProducts'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
@@ -617,6 +621,131 @@ class ProductController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function adjustStock(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'location_code' => 'required|exists:locations,LocationCode',
+            'adjustment_type' => 'required|in:add,subtract,set',
+            'quantity' => 'required|numeric|min:0',
+            'reason' => 'nullable|string|max:500',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Get current stock level using StockCode and LocationCode
+            $stock = StockItemHoldings::where('StockCode', $product->StockCode)
+                ->where('LocationCode', $validated['location_code'])
+                ->lockForUpdate()
+                ->first();
+
+            // If no stock record exists, handle creation
+            if (!$stock) {
+                // Only allow 'set' or 'add' for new records, not 'subtract'
+                if ($validated['adjustment_type'] === 'subtract') {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot subtract from non-existent stock. Use "Set Exact Quantity" or "Add to Stock" instead.',
+                    ], 400);
+                }
+
+                $newQuantity = $validated['quantity'];
+
+                // Use the existing increaseStock method which handles creation
+                StockItemHoldings::increaseStock(
+                    $product->StockCode,
+                    $validated['location_code'],
+                    $newQuantity,
+                    auth()->id(),
+                    'manual_adjustment',
+                    null,
+                    $validated['notes'] . ($validated['reason'] ? ' (Reason: ' . $validated['reason'] . ')' : '')
+                );
+
+                DB::commit();
+
+                \Log::info("New stock holding created via adjustment", [
+                    'stock_code' => $product->StockCode,
+                    'location' => $validated['location_code'],
+                    'quantity' => $newQuantity,
+                    'reason' => $validated['reason'],
+                    'user_id' => auth()->id()
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Stock record created and quantity set successfully',
+                    'new_quantity' => $newQuantity,
+                    'change' => $newQuantity,
+                ]);
+            }
+
+            // Existing stock record - proceed with normal adjustment
+            $oldQuantity = (float) $stock->QuantityOnHand;
+
+            $newQuantity = match($validated['adjustment_type']) {
+                'add' => $oldQuantity + $validated['quantity'],
+                'subtract' => max(0, $oldQuantity - $validated['quantity']),
+                'set' => $validated['quantity'],
+            };
+
+            $actualChange = $newQuantity - $oldQuantity;
+
+            // Update stock
+            $updated = StockItemHoldings::where('StockCode', $product->StockCode)
+                ->where('LocationCode', $validated['location_code'])
+                ->update([
+                    'QuantityOnHand' => $newQuantity,
+                    'LastEditedBy' => auth()->id(),
+                    'updated_at' => now()
+                ]);
+
+            if (!$updated) {
+                throw new \Exception("Failed to update stock for {$product->StockCode} at {$validated['location_code']}");
+            }
+
+            // Create stock transaction
+            StockTransaction::create([
+                'StockCode' => $product->StockCode,
+                'LocationCode' => $validated['location_code'],
+                'transaction_type' => 'manual_adjustment',
+                'quantity_change' => $actualChange,
+                'quantity_before' => $oldQuantity,
+                'quantity_after' => $newQuantity,
+                'reference_type' => 'manual',
+                'reference_id' => null,
+                'user_id' => auth()->id(),
+                'reason' => $validated['reason'],
+                'notes' => $validated['notes'],
+                'company_id' => $product->company_id ?? auth()->user()->currentCompany()->id,
+            ]);
+
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock adjusted successfully',
+                'new_quantity' => $newQuantity,
+                'change' => $actualChange,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Stock adjustment error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'product_stock_code' => $product->StockCode ?? null,
+                'location_code' => $validated['location_code'] ?? null,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adjusting stock: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 
 
 
