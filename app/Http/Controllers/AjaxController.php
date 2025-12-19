@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\SpecialDeals;
+use App\Models\StockItemHoldings;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -178,7 +179,7 @@ class AjaxController extends Controller
         $user = $request->user();
         $currentCompany = $user->currentCompany();
 
-        $maxdiscount = Product::findByCompany($currentCompany->id)
+        $maxdiscount = Product::findByCompany($currentCompany->id())
             ->where('id', $request->id)
             ->value('DiscountPercentage');
 
@@ -189,13 +190,6 @@ class AjaxController extends Controller
     {
         $user = $request->user();
         $currentCompany = $user->currentCompany();
-
-        \Log::info('Product search initiated', [
-            'search_term' => $request->get('q'),
-            'page' => $request->get('page', 1),
-            'user_id' => auth()->id(),
-            'company_id' => $currentCompany->id() ?? 'NO COMPANY'
-        ]);
 
         $search = $request->get('q');
         $page = $request->get('page', 1);
@@ -211,7 +205,7 @@ class AjaxController extends Controller
         }
 
         // Check if user has company
-        if (!auth()->user()->company_id) {
+        if (!auth()->user()->currentCompany()->id) {
             \Log::error('Product search - User has no company_id', [
                 'user_id' => auth()->id()
             ]);
@@ -223,14 +217,10 @@ class AjaxController extends Controller
         }
 
         $query = Product::query()
-            ->where('company_id', auth()->user()->currentCompany->id);
+            ->where('company_id', auth()->user()->currentCompany()->id);
 
         // Log total products for this company before search
-        $totalCompanyProducts = Product::where('company_id', auth()->user()->company_id)->count();
-        \Log::info('Total products for company', [
-            'company_id' => auth()->user()->company_id,
-            'total_products' => $totalCompanyProducts
-        ]);
+        $totalCompanyProducts = Product::where('company_id', auth()->user()->currentCompany()->id)->count();
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -238,32 +228,49 @@ class AjaxController extends Controller
                     ->orWhere('StockItemName', 'like', "%{$search}%");
             });
 
-            \Log::info('Search filter applied', [
-                'search_term' => $search,
-                'sql' => $query->toSql(),
-                'bindings' => $query->getBindings()
-            ]);
         }
 
         $total = $query->count();
-
-        \Log::info('Search query count', [
-            'total_matches' => $total,
-            'search_term' => $search
-        ]);
 
         $products = $query->skip(($page - 1) * $perPage)
             ->take($perPage)
             ->get(['id', 'StockCode', 'StockItemName']);
 
-        \Log::info('Products retrieved', [
-            'count' => $products->count(),
-            'products' => $products->toArray()
-        ]);
-
         return response()->json([
             'items' => $products,
             'has_more' => ($page * $perPage) < $total
         ]);
+    }
+
+    public function getStock(Product $product, $locationCode)
+    {
+
+        try {
+            $stock = StockItemHoldings::where('StockCode', $product->StockCode)
+                ->where('LocationCode', $locationCode)
+                ->first();
+
+            $quantity = $stock ? $stock->QuantityOnHand : 0;
+
+            return response()->json([
+                'quantity' => $quantity,
+                'location_code' => $locationCode,
+                'product_id' => $product->id,
+                'stock_code' => $product->StockCode,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error getting stock', [
+                'error' => $e->getMessage(),
+                'product_id' => $product->id,
+                'location_code' => $locationCode
+            ]);
+
+            return response()->json([
+                'quantity' => 0,
+                'location_code' => $locationCode,
+                'product_id' => $product->id,
+                'error' => 'Error retrieving stock'
+            ], 500);
+        }
     }
 }

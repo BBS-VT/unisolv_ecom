@@ -26,6 +26,8 @@ use App\Http\Controllers\Api\V1\Admin\ProductCategoryApiController;
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
     Route::post('stock-quantities/import', [StockItemHoldingsController::class, 'importFromApi']);
+
+
 });
 
 

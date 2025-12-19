@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\OrderStatusController;
 use App\Http\Controllers\Admin\PackageTypeController;
 use App\Http\Controllers\Admin\Settings\TaxTypeController;
 use App\Http\Controllers\AjaxController;
+use App\Http\Controllers\Api\V1\Admin\ProductApiController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\SpecialDealsController;
 use Illuminate\Support\Facades\Route;
@@ -107,12 +108,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Products
     Route::get('products/search', [AjaxController::class, 'search'])->name('products.search');
+    Route::get('products/{product}/stock/{locationCode}', [AjaxController::class, 'getStock']);
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::delete('products/destroy', [ProductController::class, 'massDestroy'])->name('products.massDestroy');
     Route::post('products/media',[ProductController::class, 'storeMedia'])->name('products.storeMedia');
     Route::post('products/ckmedia', [ProductController::class, 'storeCKEditorImages'])->name('products.storeCKEditorImages');
     Route::post('update-product-status', [ProductController::class, 'updateProductStatus']);
-
     Route::resource('products', ProductController::class);
     Route::post('importQuantities', [StockItemHoldingsController::class, 'importExcel'])->name('importQuantities');
     //Route::get('products/product_search', [ProductController::class, 'productSearch'])->name('product.search');

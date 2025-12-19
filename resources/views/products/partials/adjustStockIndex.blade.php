@@ -216,7 +216,7 @@
                     $('#currentStockDisplay').html('<span class="spinner-border spinner-border-sm"></span>');
 
                     // Fetch current stock for this product/location
-                    fetch(`/api/products/${productId}/stock/${locationCode}`)
+                    fetch(`/products/${productId}/stock/${locationCode}`)
                         .then(response => response.json())
                         .then(data => {
                             $('#currentStockDisplay').text(data.quantity || 0);
