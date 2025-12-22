@@ -96,10 +96,10 @@ class Customer extends Model
         return $this->belongsTo(BuyingGroup::class, 'BuyingGroupID', 'BuyingGroupName');
     }
 
-    public function primaryContact()
-    {
-        return $this->hasOne('User', 'PrimaryContactPersonID');
-    }
+    //public function primaryContact()
+    //{
+    //    return $this->hasOne('User', 'PrimaryContactPersonID');
+    //}
 
     public function alternateContact()
     {
@@ -155,6 +155,33 @@ class Customer extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_id', 'id');
+    }
+
+    /**
+     * Customer has many contacts (polymorphic)
+     */
+    public function contacts()
+    {
+        return $this->morphMany(Contact::class, 'contactable');
+    }
+
+
+    /**
+     * Get the primary contact
+     */
+    public function primaryContact()
+    {
+        return $this->morphOne(Contact::class, 'contactable')
+            ->where('is_primary', true);
+    }
+
+    /**
+     * Get active contacts only
+     */
+    public function activeContacts()
+    {
+        return $this->morphMany(Contact::class, 'contactable')
+            ->where('is_active', true);
     }
 
     public function getCurrencyCodeAttribute()
