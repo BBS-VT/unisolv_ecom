@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
 
             $table->string('SupplierName');
+            $table->string('VatNr', 50)->nullable();
             $table->string('tax_reference', 50)->nullable();
 
             // Contact Information (main numbers)

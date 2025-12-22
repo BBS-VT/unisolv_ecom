@@ -436,6 +436,7 @@ return [
     'subscription-billing'                 => 'Subscriptions',
     'subscription-payments'                => 'Payments',
     'suffix'                               => 'Sufix',
+    'suppliers'                            => 'Suppliers',
     'tag'                                  => 'Tag',
     'tags'                                 => 'Tags',
     'task_management'                      => 'Task management',

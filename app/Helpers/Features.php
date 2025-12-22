@@ -131,4 +131,14 @@ class Features
         return self::ecommerceEnabled() &&
             (bool) self::getSetting('ecommerce_show_stock', true);
     }
+
+    /**
+     * Check if Supplier module is enabled
+     */
+    public static function supplierModule(): bool
+    {
+        $enabled = (bool) self::getSetting('module_suppliers', false);
+
+        return $enabled;
+    }
 }

@@ -141,39 +141,22 @@
                     </ul>
                 </li>
 
-                @can('manage_purchase')
-                    <li>
-                        <a href="javascript: void(0);" class="has-arrow waves-effect"><i class="bx bx-wallet "></i>
-                            <span key="t-purchase">{{ __('global.purchases') }}</span>
-                        </a>
+                @if (\App\Helpers\Features::supplierModule())
+{{--                    @can('manage_purchase')--}}
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <i class="bx bxs-wallet"></i>
+                                <span key="t-customers">{{ __('global.suppliers') }}</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li ><a href="{{ route('suppliers.create') }}" key="t-suppliers-new">{{ __('global.new') }} {{ __('cruds.supplier.title_singular') }}</a></li>
+                                <li><a href="{{ route('suppliers.index') }}" key="t-suppliers-list">{{ __('global.list') }} {{ __('cruds.supplier.title') }}</a></li>
+                            </ul>
 
-                        <ul class="sub-menu" aria-expanded="false">
-                            @can('manage_supplier')
-                                <li>
-                                    <a href="javascript: void(0);" class="has-arrow">{{ __('Suppliers') }}</a>
-                                    <ul class="sub-menu" aria-expanded="true">
-                                        <li><a href="{{ route('suppliers.create') }}">{{ __('New Supplier') }}</a></li>
-                                        <li><a href="{{ route('suppliers.index') }}">{{ __('List Suppliers') }}</a></li>
-                                    </ul>
-                                </li>
-                            @endcan
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow">{{ __('Purchase Orders') }}</a>
-                                <ul class="sub-menu" aria-expanded="true">
-                                    <li><a href="{{ route('purchase-orders.create') }}">{{ __('global.new') }} {{ __('Order') }}</a></li>
-                                    <li><a href="{{ route('purchase-orders.index') }}">{{ __('global.list') }} {{ __('Orders') }}</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow">{{ __('Goods Receipt') }}</a>
-                                <ul class="sub-menu" aria-expanded="true">
-                                    <li><a href="{{ route('goods-receipts.create') }}">{{ __('global.new') }} {{ __('Receipt') }}</a></li>
-                                    <li><a href="{{ route('goods-receipts.index') }}">{{ __('global.list') }} {{ __('Receipts') }}</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                @endcan
+                        </li>
+                    {{-- @endcan --}}
+                @endif
+
                 @can('manage_ticket')
                     <li>
                         <a href="javascript: void(0);" class="has-arrow waves-effect"><i class="bx bx-support "></i>

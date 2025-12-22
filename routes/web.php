@@ -28,6 +28,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\Shop\HomeController as ShopHomeController;
 use App\Http\Controllers\StockItemHoldingsController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierContactController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\Settings\AccountController as AccountSettingController;
 use App\Http\Controllers\Admin\Settings\CompanyController as CompanySettingController;
@@ -172,7 +174,24 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/ajax/customers', [AjaxController::class, 'customers'])->name('ajax.customers');
     //Route::get('/ajax/maxdiscount', 'AjaxController@maxdiscount')->name('ajax.maxdiscount');
 
+    if (Features::supplierModule()) {
 
+        // Suppliers
+        Route::resource('suppliers', SupplierController::class);
+        Route::post('suppliers/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])
+            ->name('suppliers.toggle-status');
+        Route::post('suppliers/{supplier}/toggle-credit-hold', [SupplierController::class, 'toggleCreditHold'])
+            ->name('suppliers.toggle-credit-hold');
+
+        // Supplier Contacts
+        Route::prefix('suppliers/{supplier}/contacts')->name('suppliers.contacts.')->group(function () {
+            Route::post('/', [SupplierContactController::class, 'store'])->name('store');
+            Route::put('{contact}', [SupplierContactController::class, 'update'])->name('update');
+            Route::delete('{contact}', [SupplierContactController::class, 'destroy'])->name('destroy');
+            Route::post('{contact}/make-primary', [SupplierContactController::class, 'makePrimary'])->name('make-primary');
+            Route::post('{contact}/toggle-active', [SupplierContactController::class, 'toggleActive'])->name('toggle-active');
+        });
+    }
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.',  'middleware' => ['auth']], function () {
