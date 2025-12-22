@@ -94,6 +94,9 @@ class CompanySetting extends Model
         'sales_locations' => true,
         'use_multiple_taxes' => false,
 
+        // Modules
+        'module_suppliers' => true,
+
         // E-commerce Features
         'b2b_ecommerce_enabled' => true,
         'ecommerce_guest_checkout' => false,
