@@ -9,6 +9,7 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class SupplierController extends Controller
 {
@@ -17,8 +18,15 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Supplier::with(['country', 'currency', 'primaryContact'])
-                    ->forCompany();
+        //abort_if(Gate::denies('supplier_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
+
+        //$query = Supplier::with(['country', 'currency', 'primaryContact'])
+        $query = Supplier::with(['country', 'currency'])
+                    //->forCompany();
+                    ->where('company_id', $currentCompany->id);
 
         // Search
         if ($request->filled('search')) {
@@ -98,10 +106,11 @@ class SupplierController extends Controller
             // Create addresses if provided
             if ($request->filled('delivery_address_line1')) {
                 $supplier->updateAddress('delivery', [
-                    'address_line1' => $request->delivery_address_line1,
-                    'address_line2' => $request->delivery_address_line2,
+                    'name'  => $request->SupplierName,
+                    'address_1' => $request->delivery_address_line1,
+                    'address_2' => $request->delivery_address_line2,
                     'city' => $request->delivery_city,
-                    'postal_code' => $request->delivery_postal_code,
+                    'zip' => $request->delivery_postal_code,
                     'province' => $request->delivery_province,
                     'country_id' => $request->CountryID,
                 ]);
@@ -109,10 +118,11 @@ class SupplierController extends Controller
 
             if ($request->filled('postal_address_line1')) {
                 $supplier->updateAddress('postal', [
-                    'address_line1' => $request->postal_address_line1,
-                    'address_line2' => $request->postal_address_line2,
+                    'name'  => $request->SupplierName,
+                    'address_1' => $request->postal_address_line1,
+                    'address_2' => $request->postal_address_line2,
                     'city' => $request->postal_city,
-                    'postal_code' => $request->postal_postal_code,
+                    'zip' => $request->postal_postal_code,
                     'province' => $request->postal_province,
                     'country_id' => $request->CountryID,
                 ]);
@@ -143,10 +153,10 @@ class SupplierController extends Controller
             'country',
             'currency',
             'contacts',
-            'primaryContact',
-            'purchaseOrders' => function($query) {
+            //'primaryContact',
+            /*'purchaseOrders' => function($query) {
                 $query->latest()->limit(10);
-            }
+            }*/
         ]);
 
         return view('suppliers.show', compact('supplier'));

@@ -180,12 +180,12 @@
                             <div class="col-md-6">
                                 <h6 class="mb-2">Delivery Address</h6>
                                 @if($supplier->hasAddress('delivery'))
-                                    @php $address = $supplier->address('delivery'); @endphp
+                                    @php $address = $supplier->address('delivery', $supplier->SupplierName); @endphp
                                     <p class="mb-0">
-                                        {{ $address->address_line1 }}<br>
-                                        @if($address->address_line2){{ $address->address_line2 }}<br>@endif
+                                        {{ $address->address_1 }}<br>
+                                        @if($address->address_2){{ $address->address_2 }}<br>@endif
                                         {{ $address->city }}@if($address->province), {{ $address->province }}@endif<br>
-                                        {{ $address->postal_code }}
+                                        {{ $address->zip }}
                                     </p>
                                 @else
                                     <p class="text-muted mb-0">No delivery address on file</p>
@@ -194,7 +194,7 @@
                             <div class="col-md-6">
                                 <h6 class="mb-2">Postal Address</h6>
                                 @if($supplier->hasAddress('postal'))
-                                    @php $address = $supplier->address('postal'); @endphp
+                                    @php $address = $supplier->address('postal', $supplier->SupplierName); @endphp
                                     <p class="mb-0">
                                         {{ $address->address_line1 }}<br>
                                         @if($address->address_line2){{ $address->address_line2 }}<br>@endif
@@ -351,7 +351,7 @@
                 </div>
 
                 <!-- Recent Purchase Orders -->
-                @if($supplier->purchaseOrders->count() > 0)
+                {{--@if($supplier->purchaseOrders->count() > 0)
                     <div class="card shadow-sm">
                         <div class="card-header bg-light">
                             <h5 class="mb-0"><i class="mdi mdi-file-document me-2"></i>Recent Purchase Orders</h5>
@@ -374,7 +374,7 @@
                             </div>
                         </div>
                     </div>
-                @endif
+                @endif--}}
             </div>
         </div>
     </div>
@@ -551,7 +551,7 @@
             formData.append('is_active', $('#isActive').is(':checked') ? 1 : 0);
 
             $.ajax({
-                url: `/admin/suppliers/${supplierId}/contacts`,
+                url: `/suppliers/${supplierId}/contacts`,
                 method: 'POST',
                 data: Object.fromEntries(formData),
                 success: function(response) {

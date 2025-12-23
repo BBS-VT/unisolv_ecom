@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Create Supplier')
+@section('title', 'Edit Supplier')
 
 @section('content')
     <div class="container-fluid">
@@ -9,13 +9,14 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
                     <li class="breadcrumb-item"><a href="{{ route('suppliers.index') }}">Suppliers</a></li>
-                    <li class="breadcrumb-item active">Create Supplier</li>
+                    <li class="breadcrumb-item active">Edit Supplier</li>
                 </ol>
             </nav>
-            <h1 class="h3 mb-0">Create New Supplier</h1>
+            <h1 class="h3 mb-0">{{ __('Update Supplier') }}</h1>
         </div>
 
         <form action="{{ route('suppliers.store') }}" method="POST">
+            @method('PATCH')
             @csrf
 
             <div class="row">

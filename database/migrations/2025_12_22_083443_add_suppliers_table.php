@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('suppliers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('acc_main', 11)->nullable();
             $table->string('acc_sub', 3)->default('000');
             $table->string('acc_code', 20)->unique()->index();
@@ -66,7 +66,7 @@ return new class extends Migration
         Schema::create('product_supplier', function (Blueprint $table) {
             $table->id();
             $table->string('StockCode', 50); // Your products use StockCode
-            $table->uuid('supplier_id');
+            $table->unsignedBigInteger('supplier_id');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
 
             // Supplier-specific product details

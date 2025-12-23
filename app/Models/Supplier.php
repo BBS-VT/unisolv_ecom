@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class Supplier extends Model
 {
-    use SoftDeletes, UUIDTrait, HasAddresses;
+    use SoftDeletes, HasAddresses;
 
     protected $fillable = [
         'acc_main',
@@ -259,7 +259,7 @@ class Supplier extends Model
      */
     public function scopeForCompany($query, $companyId = null)
     {
-        $companyId = $companyId ?? (auth()->user()->company_id ?? null);
+        //$companyId = $companyId ?? (auth()->user()->company()->id ?? null);
 
         return $query->where('company_id', $companyId);
     }

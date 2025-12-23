@@ -14,6 +14,9 @@ class SupplierContactController extends Controller
      */
     public function store(Request $request, Supplier $supplier)
     {
+        $user = $request->user();
+        $currentCompany = $user->currentCompany();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -26,7 +29,7 @@ class SupplierContactController extends Controller
         ]);
 
         try {
-            $validated['company_id'] = auth()->user()->company_id;
+            $validated['company_id'] = $currentCompany->id;
 
             $contact = $supplier->contacts()->create($validated);
 
@@ -37,11 +40,13 @@ class SupplierContactController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error creating supplier contact: ' . $e->getMessage());
+            Log::error('Error creating supplier contact: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add contact. Please try again.'
+                'message' => 'Failed to add contact. Error: ' . $e->getMessage()
             ], 500);
         }
     }
