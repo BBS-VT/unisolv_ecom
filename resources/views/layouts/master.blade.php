@@ -37,6 +37,46 @@
 
     @include('layouts.vendor-scripts')
     @livewireScripts
+
+    <!-- Toast Notifications for Livewire -->
+    <script>
+        // Listen for Livewire notifications
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('notify', (event) => {
+                const message = event.message || event[0]?.message || 'Action completed';
+                const type = event.type || event[0]?.type || 'success';
+
+                if (typeof toastr !== 'undefined') {
+                    // Using toastr
+                    toastr[type](message);
+                } else if (typeof Swal !== 'undefined') {
+                    // Using SweetAlert2
+                    Swal.fire({
+                        icon: type,
+                        text: message,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                } else {
+                    // Fallback to alert
+                    alert(message);
+                }
+            });
+        });
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <style>
+        /* Livewire loading states */
+        [wire\:loading] {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
 </body>
 
 </html>

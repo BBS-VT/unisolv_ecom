@@ -153,7 +153,7 @@ class SupplierController extends Controller
             'country',
             'currency',
             'contacts',
-            //'primaryContact',
+            'primaryContact',
             /*'purchaseOrders' => function($query) {
                 $query->latest()->limit(10);
             }*/
