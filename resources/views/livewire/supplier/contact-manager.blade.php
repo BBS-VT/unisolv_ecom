@@ -234,8 +234,4 @@
     @endif
 </div>
 
-<style>
-    .modal.show {
-        display: block !important;
-    }
-</style>
+

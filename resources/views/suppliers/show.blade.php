@@ -226,5 +226,8 @@
         .btn-white { background: #fff; border-color: #dee2e6; color: #333; }
         .nav-tabs .nav-link { border: none; color: #6c757d; padding: 1rem 1.25rem; }
         .nav-tabs .nav-link.active { border-bottom: 2px solid var(--primary-color); color: var(--primary-color); }
+        .modal.show {
+            display: block !important;
+        }
     </style>
 @endsection
