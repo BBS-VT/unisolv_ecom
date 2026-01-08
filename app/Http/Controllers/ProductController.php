@@ -414,9 +414,9 @@ class ProductController extends Controller
                     ->toMediaCollection('photo');
 
                 // Force regeneration of conversions
-                $product->getFirstMedia('photo')?->recreateConversions();
+                //$product->getFirstMedia('photo')?->recreateConversions();
 
-                \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
+                //\Log::info('Photo uploaded successfully for product ID: ' . $product->id);
             } catch (\Exception $e) {
                 \Log::error('Photo upload failed: ' . $e->getMessage());
             }
@@ -433,9 +433,9 @@ class ProductController extends Controller
                         ->toMediaCollection('photo');
 
                     // Force regeneration of conversions
-                    $product->getFirstMedia('photo')?->recreateConversions();
+                    //$product->getFirstMedia('photo')?->recreateConversions();
 
-                    \Log::info('Photo from tmp uploaded: ' . $photoPath);
+                    //\Log::info('Photo from tmp uploaded: ' . $photoPath);
                 } else {
                     \Log::error('Photo file not found: ' . $photoPath);
                 }
@@ -448,7 +448,7 @@ class ProductController extends Controller
             $product->categories()->sync($request->input('categories'));
         }
 
-        return redirect()->route('products.index');
+        return redirect()->route('products.index')->with('success', 'Product updated successfully!');
 
     }
 
