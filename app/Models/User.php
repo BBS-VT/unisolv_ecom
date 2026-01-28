@@ -168,4 +168,6 @@ class User extends Authenticatable
         //return $avatar ? asset($avatar) : $this->getDefaultAvatar();
         return asset('/images/users/user-1.jpg');
     }
+
+
 }

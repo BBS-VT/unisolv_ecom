@@ -4,90 +4,7 @@
 
 @push('styles')
     <style>
-        /* Print-specific styles */
-        @media print {
-            /* Hide non-essential elements when printing */
-            .btn, .navbar, .breadcrumb, footer, .no-print {
-                display: none !important;
-            }
 
-            /* Optimize layout for printing */
-            .container {
-                max-width: none !important;
-                padding: 0 !important;
-            }
-
-            .card {
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-                page-break-inside: avoid;
-            }
-
-            .card-header {
-                background-color: #f8f9fa !important;
-                border-bottom: 1px solid #000 !important;
-                color: #000 !important;
-            }
-
-            /* Ensure good contrast for printing */
-            .text-muted {
-                color: #666 !important;
-            }
-
-            .text-success {
-                color: #000 !important;
-                font-weight: bold;
-            }
-
-            /* Page breaks */
-            .print-page-break {
-                page-break-before: always;
-            }
-
-            /* Company logo/header for print */
-            .print-header {
-                display: block !important;
-                text-align: center;
-                margin-bottom: 20px;
-                border-bottom: 2px solid #000;
-                padding-bottom: 10px;
-            }
-
-            .print-header h1 {
-                margin: 0;
-                font-size: 24px;
-            }
-
-            .print-header p {
-                margin: 5px 0;
-                font-size: 12px;
-            }
-
-            /* Table styling for print */
-            .table th {
-                border-top: 2px solid #000 !important;
-                border-bottom: 1px solid #000 !important;
-                background-color: #f0f0f0 !important;
-            }
-
-            .table td {
-                border-bottom: 1px solid #ccc !important;
-            }
-
-            /* Hide screen-only content */
-            .d-print-none {
-                display: none !important;
-            }
-
-            /* Show print-only content */
-            .d-print-block {
-                display: block !important;
-            }
-
-            .d-print-inline {
-                display: inline !important;
-            }
-        }
 
         /* Screen-only styles (hide print elements on screen) */
         @media screen {
@@ -283,9 +200,11 @@
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <button type="button" class="btn btn-outline-secondary w-100" id="print-order">
+                        <a href="{{ route('shop.orders.print', $order->id) }}"
+                           target="_blank"
+                           class="btn btn-outline-secondary w-100">
                             <i class="bi bi-printer me-2"></i>{{ __('Print Order') }}
-                        </button>
+                        </a>
                     </div>
                     <div class="col-md-4 mb-3">
                         <a href="{{ route('shop.products.index') }}" class="btn btn-outline-primary w-100">

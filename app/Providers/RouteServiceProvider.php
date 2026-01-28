@@ -63,6 +63,28 @@ class RouteServiceProvider extends ServiceProvider
                 ->orWhere('OrderNumber', $value)
                 ->firstOrFail();
 
+            // Unauthenticated - return order
+            if (!Auth::check()) {
+                return $order;
+            }
+
+            // Admin/staff user - allow access to any order
+            if (!Auth::user()->customer || Auth::user()->role != 'customer') {
+                return $order;
+            }
+
+            // Customer user - only allow access to their own orders
+            if ($order->CustomerID !== Auth::user()->customer->acc_code) {
+                abort(403, 'You can only access your own orders');
+            }
+
+            return $order;
+        });
+        /*Route::bind('order', function ($value) {
+            $order = Order::where('id', $value)
+                ->orWhere('OrderNumber', $value)
+                ->firstOrFail();
+
             if (Auth::check() && Auth::user()->customer) {
                 if ($order->CustomerID === Auth::user()->customer->acc_code) {
                     abort(403, 'You can only access your own orders.');
@@ -72,7 +94,7 @@ class RouteServiceProvider extends ServiceProvider
             }
 
             return $order;
-        });
+        });*/
     }
 
     /**

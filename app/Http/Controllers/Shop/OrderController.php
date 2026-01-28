@@ -329,4 +329,18 @@ class OrderController extends Controller
                 return $product->price;
         }
     }
+
+    public function print(Order $order)
+    {
+        // Get the authenticated user's customer account code
+        $userCustomerCode = auth()->user()->customer->acc_code ?? null;
+
+        if ($order->CustomerID !== $userCustomerCode) {
+            abort(403, 'Unauthorized access to this order');
+        }
+
+        $currentCompany = auth()->user()->currentCompany();
+
+        return view('shop.orders.print', compact('order', 'currentCompany'));
+    }
 }

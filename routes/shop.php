@@ -45,7 +45,10 @@ if (Features::ecommerceEnabled()) {
             Route::get('/', [CheckoutController::class, 'index'])->name('index');
             Route::post('/process', [CheckoutController::class, 'process'])->name('process');
             Route::get('/success/{orderId}', [CheckoutController::class, 'success'])->name('success');
+
         });
+
+        Route::get('/orders/{order}/print', [OrderController::class, 'print'] )->name('orders.print');
 
         // Customer account/profile
         Route::prefix('account')->name('account.')->group(function () {
