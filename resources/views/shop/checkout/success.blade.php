@@ -107,8 +107,8 @@
 @section('content')
     <div class="print-header">
         <h1>{{ config('app.name') }}</h1>
-        <p>123 Business Street, Johannesburg, 2000, South Africa</p>
-        <p>Tel: +27 11 123 4567 | Email: orders@company.com | Web: {{ config('app.url') }}</p>
+        <p>{{ $currentCompany->name }}</p>
+        <p>Tel: {{ $currentCompany->billing->phone ?? '' }} | Email: {{ $currentCompany->billing->email ?? '' }} | Web: {{ config('app.url') }}</p>
         <h2 style="margin-top: 15px;">Order Confirmation</h2>
     </div>
 
@@ -239,7 +239,7 @@
                                     <div>
                                         <h6 class="mb-1">Order Processing</h6>
                                         <p class="text-muted small mb-0">Your order will be reviewed and processed by our team within
-                                            {{ $company->getSetting('ecommerce_processing_time', '1-2 business hours') }}.
+                                            {{ $currentCompany->getSetting('ecommerce_processing_time', '1-2 business hours') }}.
                                         </p>
                                     </div>
                                 </div>

@@ -189,7 +189,7 @@
                                                                id="ecommerce_processing_time"
                                                                name="ecommerce_processing_time"
                                                                placeholder="1-2 business hours"
-                                                               value="{{ $settings['ecommerce_processing_time'] ?? '1-2 business hours' }}">
+                                                               value="{{ $settings['ecommerce_processing_time'] }}">
                                                     </div>
                                                     <small class="form-text text-muted">
                                                         {{ __('messages.order_processing_time_help') }}

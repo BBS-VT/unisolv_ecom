@@ -59,8 +59,8 @@ if (Features::ecommerceEnabled()) {
             Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
         });
 
-        Route::prefix('drafts')->name('drafts.')->group(function () {
-            Route::get('/', [DraftOrderController::class, 'index'])->name('index');
-        });
+        //Route::prefix('drafts')->name('drafts.')->group(function () {
+        //    Route::get('/', [DraftOrderController::class, 'index'])->name('index');
+        //});
     });
 }

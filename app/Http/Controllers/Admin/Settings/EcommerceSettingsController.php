@@ -29,41 +29,29 @@ class EcommerceSettingsController extends Controller
             'ecommerce_collection_hours_weekday' => CompanySetting::getSetting('ecommerce_collection_hours_weekday', $currentCompany->id),
             'ecommerce_collection_hours_saturday' => CompanySetting::getSetting('ecommerce_collection_hours_saturday', $currentCompany->id),
             'ecommerce_collection_hours_sunday' => CompanySetting::getSetting('ecommerce_collection_hours_sunday', $currentCompany->id),
+            'ecommerce_processing_time' => CompanySetting::getSetting('ecommerce_processing_time', $currentCompany->id),
         ];
 
         return view('admin.settings.ecommerce.index', compact('settings', 'currentCompany'));
     }
 
-    public function update(Update $request)
+    public function update(Request $request)
     {
         $currentCompany = auth()->user()->currentCompany();
 
-        // Update settings
-        $currentCompany->setSetting('b2b_ecommerce_enabled', $request->input('b2b_ecommerce_enabled'));
-        $currentCompany->setSetting('ecommerce_guest_checkout',$request->input('ecommerce_guest_checkout'));
-        $currentCompany->setSetting('ecommerce_public_prices', $request->input('ecommerce_public_prices'));
-        $currentCompany->setSetting('ecommerce_show_product_images', $request->input('ecommerce_show_product_images'));
-        $currentCompany->setSetting('ecommerce_backorders', $request->input('ecommerce_backorders'));
-        $currentCompany->setSetting('ecommerce_require_approval', $request->input('ecommerce_require_approval'));
-        $currentCompany->setSetting('ecommerce_show_stock', $request->input('ecommerce_show_stock'));
-        $currentCompany->setSetting('ecommerce_min_order_amount', $request->input('ecommerce_min_order_amount'));
-        $currentCompany->setSetting('ecommerce_products_per_page', $request->input('ecommerce_products_per_page'));
-        $currentCompany->setSetting('ecommerce_new_customer_requires_approval', $request->input('ecommerce_new_customer_requires_approval'));
-        $currentCompany->setSetting('sales_locations', $request->input('sales_locations'));
-        $currentCompany->setSetting('ecommerce_delivery_enabled', $request->input('ecommerce_delivery_enabled'));
-        $currentCompany->setSetting('ecommerce_collection_hours_weekday', $request->input('ecommerce_collection_hours_weekday'));
-        $currentCompany->setSetting('ecommerce_collection_hours_saturday', $request->input('ecommerce_collection_hours_saturday'));
-        $currentCompany->setSetting('ecommerce_collection_hours_sunday', $request->input('ecommerce_collection_hours_sunday'));
+        \Log::info('Updating ecommerce settings', [
+            'company_id' => $currentCompany->id,
+            'settings_count' => count($request->all())
+        ]);
 
-
-        foreach ($request->validated() as $key => $value) {
+        foreach ($request->all() as $key => $value) {
             $currentCompany->setSetting($key, $value);
         }
 
         // Clear cache after updating settings
         Features::clearCache($currentCompany->id);
 
-        return redirect()->route('admin.settings.ecommerce.index')
+        return redirect()->route('settings.ecommerce')
             ->with('success', __('Settings updated successfully.'));
     }
 }
