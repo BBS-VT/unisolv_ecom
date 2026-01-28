@@ -39,6 +39,8 @@ return [
     'products_per_page' => 'Number of products to display per page',
     'products_per_page_help' => 'How many products to show on category and search pages (1-100).',
     'show_stock_levels' => 'Display available stock quantities to customers.',
+    'order_processing_time' => 'Time frame displayed to customers for order processing',
+    'order_processing_time_help' => 'e.g., "1-2 business hours" or "within 24 hours"',
 
     'location_code_help' => 'Use a unique 4-digit code (e.g., 0000, 0001, 0002). This should match your ERP system location codes.',
     'default_location_help' => 'Main location for inventory management. Used as fallback when no location is specified.',

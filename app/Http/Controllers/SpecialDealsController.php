@@ -23,7 +23,7 @@ class SpecialDealsController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('specialdeal_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('specialdeal_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $deals = SpecialDeals::all();
         $categories     = ProductCategory::all()->pluck('StockGroupName', 'id');

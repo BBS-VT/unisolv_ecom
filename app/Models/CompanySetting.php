@@ -112,6 +112,7 @@ class CompanySetting extends Model
         'ecommerce_show_tax_inclusive' => true,
         'ecommerce_allow_price_override' => false,
         'ecommerce_show_product_images' => true,
+        'ecommerce_processing_time' => '1-2 business hours',
 
         // E-commerce Customer Settings
         'ecommerce_new_customer_requires_approval' => true,

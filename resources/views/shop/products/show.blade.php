@@ -189,7 +189,7 @@
                                  alt="{{ $product->StockItemName }}"
                                  class="img-fluid rounded shadow-sm" id="main-product-image">
                         @else
-                            <img src="https://dummyimage.com/600x600/f0f0f0/b0b0b0.png&text=No+Image"
+                            <img src="{{ asset('shop/images/no-image_600.png') }}"
                                  alt="{{ $product->StockItemName }}"
                                  class="img-fluid rounded shadow-sm" id="main-product-image">
                         @endif

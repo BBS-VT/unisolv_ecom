@@ -175,6 +175,27 @@
                                                     </small>
                                                 </div>
 
+                                                <div class="form-group mb-3">
+                                                    <label for="ecommerce_processing_time">
+                                                        {{ __('global.order_processing_time') }}
+                                                        <i class="bx bx-info-circle text-muted"
+                                                            data-bs-toggle="tooltip" title="{{ __('messages.order_processing_time') }}"></i>
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">
+                                                            <i class="bx bx-time"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control"
+                                                               id="ecommerce_processing_time"
+                                                               name="ecommerce_processing_time"
+                                                               placeholder="1-2 business hours"
+                                                               value="{{ $settings['ecommerce_processing_time'] ?? '1-2 business hours' }}">
+                                                    </div>
+                                                    <small class="form-text text-muted">
+                                                        {{ __('messages.order_processing_time_help') }}
+                                                    </small>
+                                                </div>
+
                                                 <div class="form-group mb-0">
                                                     <div class="form-check form-switch">
                                                         <input type="hidden" name="ecommerce_show_stock" value="0">

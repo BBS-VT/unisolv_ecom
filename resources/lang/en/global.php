@@ -51,6 +51,7 @@ return [
     'new'                                  => 'New',
     'no'                                   => 'No',
     'next'                                 => 'Next',
+    'order_processing_time'                => 'Order Processing Time',
     'pleaseSelect'                         => 'Please select',
     'selectProduct'                        => 'Please Select Product',
     'register'                             => 'Register',

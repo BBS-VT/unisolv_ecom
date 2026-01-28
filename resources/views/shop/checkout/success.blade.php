@@ -238,7 +238,9 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-1">Order Processing</h6>
-                                        <p class="text-muted small mb-0">Your order will be reviewed and processed by our team within 1-2 business hours.</p>
+                                        <p class="text-muted small mb-0">Your order will be reviewed and processed by our team within
+                                            {{ $company->getSetting('ecommerce_processing_time', '1-2 business hours') }}.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
