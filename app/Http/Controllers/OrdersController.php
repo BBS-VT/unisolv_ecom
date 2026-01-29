@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Services\LocationAssignmentService;
 use Illuminate\Http\Request;
 use App\Http\Requests\Order\Store;
@@ -25,6 +26,7 @@ use Spatie\ArrayToXml\ArrayToXml;
 use Session;
 use App\Mail\FulfillmentNotificationMail;
 use App\Mail\OrderConfirmationMail;
+use App\Mail\OrderStatusUpdated;
 use App\Notifications\NewOrderNotification;
 use Illuminate\Support\Facades\Notification;
 use Log;
@@ -46,21 +48,25 @@ class OrdersController extends Controller
         $currentCompany = $user->currentCompany();
 
         // Query Invoices by Company and Tab
-        if ($request->tab == 'all') {
-            $query = Order::findByCompany($currentCompany->id)->orderBy('created_at', 'desc');
-            $tab = 'all';
-        } else {
-            if ($request->tab == 'processed') {
-                $query = Order::findByCompany($currentCompany->id)->active()->orderBy('created_at', 'desc');
-                $tab = 'processed';
-            } elseif ($request->tab == 'onhold') {
-                $query = Order::findByCompany($currentCompany->id)->onHold()->orderBy('created_at', 'desc');
-                $tab = 'onhold';
-            } else {
-                $query = Order::findByCompany($currentCompany->id)->new()->orderBy('OrderNumber', 'desc');
-                $tab = 'new';
-            }
+        $tab = $request->tab ?? 'pending';
+        $query = Order::findByCompany($currentCompany->id);
+
+        switch ($tab) {
+            case 'pending':
+                $query->pending();
+                break;
+            case 'processed':
+                $query->processed();
+                break;
+            case 'completed':
+                $query->completed();
+                break;
+            case 'all':
+                break;
         }
+
+        $query->orderBy('created_at', 'desc');
+
 
         // Apply Filters and Paginate
         $orders = QueryBuilder::for($query)
@@ -72,8 +78,14 @@ class OrdersController extends Controller
             ->paginate()
             ->appends(request()->query());
 
-        //echo "<pre>"; print_r($orders); die;
-        return view('orders.index', compact('orders', 'tab'));
+        $pendingCount = Order::findByCompany($currentCompany->id)->pending()->count();
+        $processedCount = Order::findByCompany($currentCompany->id)->processed()->count();
+        $completedCount = Order::findByCompany($currentCompany->id)->completed()->count();
+
+        $orderStatus = OrderStatus::all();
+
+        //echo "<pre>"; print_r($orderStatus); die;
+        return view('orders.index', compact('orders', 'tab', 'pendingCount', 'processedCount', 'completedCount', 'orderStatus'));
 
     }
 
@@ -640,5 +652,61 @@ class OrdersController extends Controller
             'currentCompany',
             'itemsByLocation'
         ));
+    }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'orderstatus' => 'required|exists:order_status,id',
+            'send_notification' => 'boolean',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $newStatusId = $request->orderstatus;
+
+        // Update status with history tracking
+        $updated = $order->updateStatus($newStatusId, $request->notes);
+
+        if (!$updated) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order is already in this status'
+            ], 400);
+        }
+
+        // Send notification email if requested
+        if ($request->send_notification) {
+            try {
+                Mail::to($order->customer->GeneralEmailAddress)
+                    ->send(new OrderStatusUpdated($order, $request->notes));
+
+                $message = 'Order status updated and customer notified successfully.';
+            } catch (\Exception $e) {
+                \Log::error('Failed to send order status email', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
+
+                $message = 'Order status updated, but failed to send notification email';
+            }
+        } else {
+            $message = 'Order status updated successfully.';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'order' => $order->load('orderstatus')
+        ]);
+    }
+
+    /**
+     * Show status history for an order
+     */
+    public function statusHistory(Order $order)
+    {
+        $history = $order->statusHistory()->with(['oldStatus', 'newStatus', 'changedBy'])->get();
+
+        return view('orders.status_history', compact('order', 'history'));
     }
 }

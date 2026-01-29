@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class OrderStatusHistory extends Model
 {
+    public $table = 'order_status_histories';
+
     protected $fillable = [
         'order_id',
         'old_status_id',
@@ -24,15 +26,30 @@ class OrderStatusHistory extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function getStatusName($statusId)
+    public function oldStatus()
     {
-        return match($statusId) {
-            1 => 'New',
-            2 => 'Downloaded',
-            3 => 'Delivery',
-            4 => 'Invoiced',
-            5 => 'On Hold',
-            default => 'Unknown'
-        };
+        return $this->belongsTo(OrderStatus::class, 'old_status_id');
+    }
+
+    public function newStatus()
+    {
+        return $this->belongsTo(OrderStatus::class, 'new_status_id');
+    }
+
+    public function changedBy()
+    {
+        return $this->morphTo('changed_by');
+    }
+
+    /**
+     * Get formatted change description
+     */
+    public function getChangeDescriptionAttribute()
+    {
+        $oldName = $this->oldStatus->name ?? 'Unknown';
+        $newName = $this->newStatus->name ?? 'Unknown';
+        $changedBy = $this->changedBy->name ?? 'System';
+
+        return "Changed from {$oldName} to {$newName} by {$changedBy}";
     }
 }

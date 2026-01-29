@@ -160,6 +160,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/orders/{order}/print/packing-slip', [OrdersController::class, 'printPackingSlip'])
         ->name('print.packing-slip');
     Route::get('/orders/{tab?}', [OrdersController::class, 'index'])->name('orders.index');
+    Route::patch('/orders/{order}/status', [OrdersController::class, 'updateStatus'])->name('orders.update-status');
 
     // Special Deals
     Route::delete('deals/destroy', [SpecialDealsController::class, 'massDestroy'])->name('deals.massDestroy');

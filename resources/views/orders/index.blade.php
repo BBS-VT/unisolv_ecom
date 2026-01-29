@@ -64,16 +64,33 @@
             </div>
             <div class="col-auto align-self-center float-end">
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <a href="{{ route('orders.index') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'new' ? 'active' : '' }}">
-                        {{ __('global.new_orders') }}
+                    <a class="btn btn-sm btn-outline-dark {{ $tab == 'pending' ? 'active' : '' }}"
+                       href="{{ route('orders.index', ['tab' => 'pending']) }}" >
+                        <i class="bx bx-time me-1"></i>
+                        {{ __('global.pending') }}
+                        @if(isset($pendingCount))
+                            <span class="badge bg-warning ms-1">{{ $pendingCount }}</span>
+                        @endif
                     </a>
-                    <a href="{{ route('orders.index', 'processed') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}">
-                        {{ __('global.processed_orders') }}
+                    <a class="btn btn-sm btn-outline-dark {{ $tab == 'processed' ? 'active' : '' }}"
+                       href="{{ route('orders.index', ['tab' => 'processed']) }}">
+                        <i class="bx bx-check-circle me-1"></i>
+                        {{ __('global.processed') }}
+                        @if(isset($processedCount))
+                            <span class="badge bg-warning ms-1">{{ $processedCount }}</span>
+                        @endif
                     </a>
-                    <a href="{{ route('orders.index', 'onhold') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'onhold' ? 'active' : '' }}">
-                        {{ __('global.on_hold') }}
+                    <a class="btn btn-sm btn-outline-dark {{ $tab == 'completed' ? 'active' : '' }}"
+                       href="{{ route('orders.index', ['tab' => 'completed']) }}" >
+                        <i class="bx bx-package me-1"></i>
+                        {{ __('global.completed') }}
+                        @if(isset($completedCount))
+                            <span class="badge bg-warning ms-1">{{ $completedCount }}</span>
+                        @endif
                     </a>
-                    <a href="{{ route('orders.index', 'all') }}" class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}">
+                    <a class="btn btn-sm btn-outline-dark {{ $tab == 'all' ? 'active' : '' }}"
+                       href="{{ route('orders.index', ['tab' => 'all']) }}">
+                        <i class="bx bx-list-ul me-1"></i>
                         {{ __('global.all_orders') }}
                     </a>
                 </div>
@@ -100,6 +117,8 @@
                 </div>
             </div>
         </div>
+
+        @include('orders._statusUpdate')
 
     </div>
 @endsection

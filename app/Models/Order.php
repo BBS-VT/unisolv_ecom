@@ -252,6 +252,32 @@ class Order extends Model
     }
 
     /**
+     * Scope for pending orders (new + on hold)
+     * @param $query
+     * @return void
+     */
+    public function scopePending($query)
+    {
+        return $query->whereIn('OrderStatusID', ['1', '5']);
+    }
+
+    /**
+     * Scope for completed/delivered orders
+     */
+    public function scopeCompleted($query)
+    {
+        return $query->whereIn('OrderStatusID', ['3', '4']);
+    }
+
+    /**
+     * Scope for processed orders (downloaded)
+     */
+    public function scopeProcessed($query)
+    {
+        return $query->where('OrderStatusID', '2');
+    }
+
+    /**
      * Scope a query to only return Orders which has OrderDate
      * greater or equal then given date
      *
@@ -279,6 +305,64 @@ class Order extends Model
         $query->where('OrderDate', '<=', $to);
     }
 
+    /**
+     * Update order status with history tracking
+     */
+    public function updateStatus($newStatusId, $notes = null, $changedBy = null)
+    {
+        $oldStatusId = $this->OrderStatusID;
+
+        // Don't create history if status hasn't changed
+        if ($oldStatusId == $newStatusId) {
+            return false;
+        }
+
+        // Update the order status
+        $this->OrderStatusID = $newStatusId;
+        $this->save();
+
+        // Create history record
+        $changedBy = $changedBy ?? auth()->user();
+
+        OrderStatusHistory::create([
+            'order_id' => $this->id,
+            'old_status_id' => $oldStatusId,
+            'new_status_id' => $newStatusId,
+            'changed_by_type' => get_class($changedBy),
+            'changed_by_id' => $changedBy->id,
+            'notes' => $notes,
+            'changed_at' => now(),
+        ]);
+
+        \Log::info('Order status updated', [
+            'order_id' => $this->id,
+            'order_number' => $this->OrderNumber,
+            'old_status' => $oldStatusId,
+            'new_status' => $newStatusId,
+            'changed_by' => $changedBy->name ?? 'System',
+        ]);
+
+        return true;
+    }
+
+    /**
+     * get current status name
+     */
+    public function getStatusNameAttribute()
+    {
+        return $this->orderstatus->name ?? 'Unknown';
+    }
+
+    /**
+     * Get status badge color
+     */
+    public function getStatusBadgeClassAttribute()
+    {
+        if ($this->status) {
+            return 'bg-' . $this->orderstatus->colour;
+        }
+        return 'bg-secondary';
+    }
 
     public function getSubTotalAmount()
     {
@@ -348,29 +432,6 @@ class Order extends Model
         //return $this->priority == 'urgent' || $this->OrderDate && $this->ExpectedDeliveryDate->isToday();
     }
 
-    public function getStatusName(): string
-    {
-        return match($this->OrderStatusID) {
-            1 => 'New',
-            2 => 'Downloaded',
-            3 => 'Delivery',
-            4 => 'Invoiced',
-            5 => 'On Hold',
-            default => 'Unknown'
-        };
-    }
-
-    public function getStatusBadgeClass(): string
-    {
-        return match($this->OrderStatusID) {
-            1 => 'bg-primary',
-            2 => 'bg-info',
-            3 => 'bg-warning',
-            4 => 'bg-success',
-            5 => 'bg-danger',
-            default => 'bg-secondary'
-        };
-    }
 
     public function canBeCancelled(): bool
     {

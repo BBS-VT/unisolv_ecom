@@ -154,7 +154,7 @@
                                         @if( $customer->BuyingGroupID == 9999 )
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
                                             @foreach($buyingGroups as $id => $buyingGroup)
-                                                <option value="{{ $customer->buyingGroup->BuyingGroupName }}" >{{ $buyingGroup }}</option>
+                                                <option value="{{ $id }}" >{{ $buyingGroup }}</option>
                                             @endforeach
                                         @else
                                             @foreach($buyingGroups as $id => $buyingGroup)
@@ -177,10 +177,9 @@
                                     <label class="required" for="SalesRepID">{{ trans('cruds.customer.fields.salerep') }}</label>
                                     <select class="select2 form-control mb-3 {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
 
-                                            @foreach($salesreps as $id => $salesrep)
-                                                <option value="{{ $id }}" {{ ($id == $customer->salesrep->RepCode) ? 'selected' : '' }}> {{ $salesrep }} </option>
-                                            @endforeach
-
+                                        @foreach($salesreps as $id => $salesrep)
+                                            <option value="{{ $id }}" {{ ($id == $customer->salesrep->RepCode) ? 'selected' : '' }}> {{ $salesrep }} </option>
+                                        @endforeach
 
                                     </select>
                                     @if($errors->has('SalesRepID'))

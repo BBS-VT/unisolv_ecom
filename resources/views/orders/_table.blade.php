@@ -64,6 +64,19 @@
                                    data-bs-placement="top"> <i class="las dripicons-download text-info font-18"></i>
                                 </a> &nbsp;
                             @endcan
+                            <button type="button"
+                                    class="btn btn-sm btn-success btn-update-status"
+                                    data-order-id="{{ $order->id }}"
+                                    data-order-number="{{ $order->OrderNumber }}"
+                                    data-customer-name="{{ $order->customer->CustomerName }}"
+                                    data-delivery-method="{{ $order->delivery_method }}"
+                                    data-current-status-id="{{ $order->OrderStatusID }}"
+                                    data-current-status-name="{{ $order->orderstatus->name }}"
+                                    data-current-status-color="{{ $order->orderstatus->colour }}"
+                                    data-bs-toggle="tooltip"
+                                    title="Update Status">
+                                <i class="bx bx-edit"></i>
+                            </button>
                             @can('order_delete')
                                 <a href="{{ route('orders.delete', $order->id) }}" class="delete-confirm"
                                    data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('global.delete') }} {{ __('cruds.order.title_singular') }}">
