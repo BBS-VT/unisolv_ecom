@@ -266,7 +266,7 @@ class Order extends Model
      */
     public function scopeCompleted($query)
     {
-        return $query->whereIn('OrderStatusID', ['3', '4']);
+        return $query->whereIn('OrderStatusID', ['3', '4', '6', '7', '8']);
     }
 
     /**

@@ -5,7 +5,7 @@
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .header { background: #343a40; color: white; padding: 20px; text-align: center; }
         .content { background: #f9f9f9; padding: 20px; }
         .order-info { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #667eea; }
         .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; }

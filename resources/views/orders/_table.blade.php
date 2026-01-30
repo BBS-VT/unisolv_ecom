@@ -35,12 +35,9 @@
                             {{ $order->OrderDate->format('Y-m-d') }}
                         </td>
                         <td>
-                            <span class=" badge <?php if ( $order->OrderStatusID == 1 ) { echo "bg-danger"; }
-                            elseif ( $order->OrderStatusID == 2) { echo "bg-warning"; }
-                            elseif ( $order->OrderStatusID == 3) { echo "bg-info"; }
-                            elseif ( $order->OrderStatusID == 4) { echo "bg-success"; }
-                            elseif ( $order->OrderStatusID == 5) { echo "bg-secondary"; }
-                            ?>"> {{ $order->orderstatus->name ?? '' }} </span>
+                            <span class=" badge bg-{{ $order->orderstatus->colour ?? 'secondary' }}">
+                                {{ $order->orderstatus->name ?? '' }}
+                            </span>
 
                             @if($order->Authorisation == 0 )
                                 <span class="badge bg-success text-white"></span>
@@ -65,7 +62,7 @@
                                 </a> &nbsp;
                             @endcan
                             <button type="button"
-                                    class="btn btn-sm btn-success btn-update-status"
+                                    class="btn btn-success-outline btn-update-status"
                                     data-order-id="{{ $order->id }}"
                                     data-order-number="{{ $order->OrderNumber }}"
                                     data-customer-name="{{ $order->customer->CustomerName }}"

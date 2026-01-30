@@ -21,7 +21,7 @@
             overflow: hidden;
         }
         .email-header {
-            background-color: #007bff;
+            background-color: #343a40;
             color: #ffffff;
             text-align: center;
             padding: 20px;
