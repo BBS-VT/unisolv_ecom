@@ -247,6 +247,7 @@ return [
     'financial_year'                       => 'Financial Year',
     'first_name'                           => 'First name',
     'fulfillment_mailbox'                   => 'Fulfillment Mailbox',
+    'fulfillment_email'                     => 'Fulfillment Email',
     'fulfillment_settings'                  => 'Fulfillment Settings',
     'general'                              => 'General',
     'general_settings'                     => 'General Settings',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Settings\Order;
 
+use App\Http\Requests\Rules\CommaSeparatedEmails;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Update extends FormRequest
@@ -18,7 +19,7 @@ class Update extends FormRequest
             'display_cost_prices' => 'required|boolean',
             'order_customer_confirmation' => 'required|boolean',
             'order_fulfillment_notification' => 'required|boolean',
-            'fulfillment_mailbox' => 'nullable|email',
+            'fulfillment_mailbox' => ['nullable','string',new CommaSeparatedEmails],
         ];
     }
 

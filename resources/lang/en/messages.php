@@ -11,7 +11,6 @@ return [
     'display_cost_prices' => 'Show cost price information during order processing.',
     'order_customer_confirmation' => 'Automatically send order confirmation emails to customers.',
     'order_fulfillment_notification' => 'Send notifications to fulfillment team when orders are placed.',
-    'fulfillment_mailbox_help' => 'Email address where order fulfillment notifications will be sent. You can add multiple email addresses separated by comma.',
     'add_first_tax_type' => 'Add your first tax type to get started.',
     'tax_percent_help' => 'Enter the tax rate as a percentage (e.g., 15 for 15%)',
     'tax_type_updated' => 'Tax type has been updated successfully.',
@@ -46,6 +45,9 @@ return [
     'default_location_help' => 'Main location for inventory management. Used as fallback when no location is specified.',
     'multiple_sales_locations' => 'Enable multi-location inventory management. When disabled, all stock uses the default location (0000).',
     'enable_ecommerce_deliveries' => 'Allow customers to select delivery during checkout. Requires what3words integration for address management.',
+    'fulfillment_mailbox_help' => 'Global fulfillment email address(es). Multiple addresses can be separated by commas. This will be CC\'d when location-specific emails are used, or used as primary when no location email is set.',
+    'location_fulfillment_email_help' => 'Email address for order fulfillment notifications at this location. Orders from this location will be sent to this address. Leave blank to use only the global fulfillment mailbox.',
+    'fulfillment_email_for_location' => 'Receives fulfillment notifications for this location',
 
     // Additional helpful messages for the location system:
     'sales_locations' => 'Enable multi-location inventory management. When disabled, all stock uses the default location (0000).',

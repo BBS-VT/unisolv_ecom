@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @section('style')
     <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -178,7 +178,7 @@
                                     <select class="select2 form-control mb-3 {{ $errors->has('SalesRepID') ? 'is-invalid' : '' }}" name="SalesRepID" required>
 
                                         @foreach($salesreps as $id => $salesrep)
-                                            <option value="{{ $id }}" {{ ($id == $customer->salesrep->RepCode) ? 'selected' : '' }}> {{ $salesrep }} </option>
+                                            <option value="{{ $id }}" {{ ($id == $salesrep) ? 'selected' : '' }}> {{ $salesrep }} </option>
                                         @endforeach
 
                                     </select>

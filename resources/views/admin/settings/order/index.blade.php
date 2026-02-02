@@ -143,7 +143,7 @@
                                                                 <span class="input-group-text">
                                                                     <i class="bx bx-envelope"></i>
                                                                 </span>
-                                                                <input type="email" name="fulfillment_mailbox"
+                                                                <input type="text" name="fulfillment_mailbox"
                                                                        id="fulfillment_mailbox"
                                                                        class="form-control @error('fulfillment_mailbox') is-invalid @enderror"
                                                                        value="{{ old('fulfillment_mailbox', $currentCompany->getSetting('fulfillment_mailbox') ?? '') }}"

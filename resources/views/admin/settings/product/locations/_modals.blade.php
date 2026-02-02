@@ -198,9 +198,26 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="mb-3">
+                                    <label for="fulfillment_email" class="form-label">Fulfillment Email</label>
+                                    <input type="email"
+                                           name="fulfillment_email"
+                                           id="fulfillment_email"
+                                           class="form-control @error('fulfillment_email') is-invalid @enderror"
+                                           value="{{ old('fulfillment_email', $location->fulfillment_email ?? '') }}"
+                                           placeholder="warehouse1@example.com">
+                                    <small class="form-text text-muted">
+                                        Email address for fulfillment notifications for this location.
+                                        Leave blank to use global fulfillment mailbox only.
+                                    </small>
+                                    @error('fulfillment_email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                                 <div class="col-mb-3">
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox"

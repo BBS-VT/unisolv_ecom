@@ -181,12 +181,39 @@
                                    value="{{ old('Phone', $location->Phone) }}" maxlength="50">
                             @error('Phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                        <div class="col-md-4 mb-0">
+                        <div class="col-md-4 mb-3">
                             <label for="edit_Email" class="form-label">{{ __('global.email') }}</label>
                             <input type="email" class="form-control @error('Email') is-invalid @enderror"
                                    id="edit_Email" name="Email"
                                    value="{{ old('Email', $location->Email) }}" maxlength="255">
                             @error('Email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-0">
+                            <label for="edit_fulfillment_email" class="form-label">
+                                <i data-feather="package" class="icon-xs me-1"></i>
+                                {{ __('global.fulfillment_email') }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i data-feather="mail"></i>
+                                </span>
+                                <input type="email"
+                                       class="form-control @error('fulfillment_email') is-invalid @enderror"
+                                       id="edit_fulfillment_email"
+                                       name="fulfillment_email"
+                                       value="{{ old('fulfillment_email', $location->fulfillment_email) }}"
+                                       maxlength="255"
+                                       placeholder="warehouse@example.com">
+                                @error('fulfillment_email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted">
+                                {{ __('messages.location_fulfillment_email_help') }}
+                            </small>
                         </div>
                     </div>
                 </div>

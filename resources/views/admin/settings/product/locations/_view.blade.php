@@ -167,7 +167,7 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    @if($location->ContactPerson || $location->Phone || $location->Email)
+                    @if($location->ContactPerson || $location->Phone || $location->Email || $location->fulfillment_email)
                         <dl class="row mb-0">
                             @if($location->ContactPerson)
                                 <dt class="col-sm-4 text-muted">
@@ -194,10 +194,24 @@
                                     <i class="bx bx-envelope me-1"></i>
                                     {{ __('global.email') }}
                                 </dt>
-                                <dd class="col-sm-8 mb-0">
+                                <dd class="col-sm-8">
                                     <a href="mailto:{{ $location->Email }}" class="text-decoration-none">
                                         {{ $location->Email }}
                                     </a>
+                                </dd>
+                            @endif
+
+                            @if($location->fulfillment_email)
+                                <dt class="col-sm-4 text-muted">
+                                    <i class="bx bx-package me-1"></i>
+                                    {{ __('global.fulfillment_email') }}
+                                </dt>
+                                <dd class="col-sm-8 mb-0">
+                                    <a href="mailto:{{ $location->fulfillment_email }}" class="text-decoration-none">
+                                        {{ $location->fulfillment_email }}
+                                    </a>
+                                    <br>
+                                    <small class="text-muted">{{ __('messages.fulfillment_email_for_location') }}</small>
                                 </dd>
                             @endif
                         </dl>
