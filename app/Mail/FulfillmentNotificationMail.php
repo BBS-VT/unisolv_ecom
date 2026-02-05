@@ -2,6 +2,9 @@
 
 namespace App\Mail;
 
+use App\Models\Location;
+use App\Models\Order;
+use App\Models\SalesLocation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -11,8 +14,10 @@ use Illuminate\Queue\SerializesModels;
 
 class FulfillmentNotificationMail extends Mailable
 {
-    public $order;
     use Queueable, SerializesModels;
+
+    public $order;
+    public $itemsByLocation;
 
     /**
      * Create a new message instance.
@@ -22,6 +27,12 @@ class FulfillmentNotificationMail extends Mailable
     public function __construct(Order $order)
     {
         $this->order = $order;
+
+        // Group items by location for the email view
+        $this->itemsByLocation = $order->items()
+            ->with('product')
+            ->get()
+            ->groupBy('LocationCode');
     }
 
     public function build()
@@ -32,33 +43,40 @@ class FulfillmentNotificationMail extends Mailable
         $globalMailbox = $company->getSetting('fulfillment_mailbox');
         $globalEmails = $this->parseEmailList($globalMailbox);
 
-        // Determine primary recipient
+        // Collect all unique locations from order items
+        $locationCodes = $this->order->items()->distinct('LocationCode')->pluck('LocationCode');
+
         $to = [];
         $cc = [];
 
-        // If multi-location is enabled and order has a location
-        if ($company->getSetting('multi_location_enabled') && $this->order->sales_location_id) {
-            $location = $this->order->items->location;
+        // If multi-location is enabled and we have location codes
+        if ($company->getSetting('sales_locations') && $locationCodes->isNotEmpty()) {
 
-            if ($location && $location->fulfillment_email) {
-                // Location-specific email is primary
-                $to = [$location->fulfillment_email];
-                // Global mailbox becomes CC
+            // Get all locations with fulfillment emails
+            $locationsWithEmails = Location::whereIn('LocationCode', $locationCodes)
+                ->whereNotNull('fulfillment_email')
+                ->where('fulfillment_email', '!=', '')
+                ->get();
+
+            // Strategy: Send TO all location-specific emails, CC global
+            if ($locationsWithEmails->isNotEmpty()) {
+                // Primary recipients: all location fulfillment emails
+                $to = $locationsWithEmails->pluck('fulfillment_email')->toArray();
+
+                // CC the global mailbox for oversight
                 $cc = $globalEmails;
             } else {
-                // No location email, use global as primary
+                // No location-specific emails, use global as primary
                 $to = $globalEmails;
             }
-
         } else {
-
-            // Single location or no location specified, use global
+            // Multi-location not enabled or no locations, use global
             $to = $globalEmails;
         }
 
         // Build the email
-        $mail = $this->subject('New Order #' . $this->order->id . ' - Fulfillment Required')
-            ->view('emails.orders.fulfillment');
+        $mail = $this->subject('New Order #' . $this->order->OrderNumber . ' - Fulfillment Required')
+            ->view('emails.fulfillment_notification');
 
         // Set recipients
         if (!empty($to)) {
@@ -88,38 +106,4 @@ class FulfillmentNotificationMail extends Mailable
             }
         );
     }
-
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
-    /*public function envelope()
-    {
-        return new Envelope(
-            subject: 'Fulfillment Notification Mail',
-        );
-    }*/
-
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
-    /*public function content()
-    {
-        return new Content(
-            view: 'emails.fulfillment_notification',
-        );
-    }*/
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
-    /*public function attachments()
-    {
-        return [];
-    }*/
 }

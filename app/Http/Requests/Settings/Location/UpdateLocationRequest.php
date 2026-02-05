@@ -21,6 +21,7 @@ class UpdateLocationRequest extends FormRequest
                 'max:10',
                 Rule::unique('locations', 'LocationCode')->ignore($this->location->LocationCode, 'LocationCode')
             ],
+            'fulfillment_email' => 'nullable|email|max:255',
             'LocationName' => 'required|string|max:100',
             'LocationDescription' => 'nullable|string|max:500',
             'Address1' => 'nullable|string|max:255',
@@ -42,6 +43,7 @@ class UpdateLocationRequest extends FormRequest
     {
         return [
             'LocationCode' => __('global.location_code'),
+            'fulfillment_email' => 'Fulfillment Email',
             'LocationName' => __('global.location_name'),
             'LocationDescription' => __('global.description'),
             'Address1' => __('global.address_line_1'),
@@ -65,6 +67,7 @@ class UpdateLocationRequest extends FormRequest
             'LocationCode.unique' => __('validation.location_code_exists'),
             'LocationCode.max' => __('validation.location_code_max_length'),
             'Email.email' => __('validation.email_invalid'),
+            'fulfillment_email.email' => ('validation.email_invalid'),
         ];
     }
 

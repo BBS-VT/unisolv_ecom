@@ -22,6 +22,7 @@ class Location extends Model
 
     protected $fillable = [
         'LocationCode',
+        'fulfillment_email',
         'LocationName',
         'LocationDescription',
         'Address1',

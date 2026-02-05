@@ -15,6 +15,7 @@ class StoreLocationRequest extends FormRequest
     {
         return [
             'LocationCode' => 'required|string|max:10|unique:locations,LocationCode',
+            'fullfillment_email' => 'nullable|string|email|max:255',
             'LocationName' => 'required|string|max:100',
             'LocationDescription' => 'nullable|string|max:500',
             'Address1' => 'nullable|string|max:255',

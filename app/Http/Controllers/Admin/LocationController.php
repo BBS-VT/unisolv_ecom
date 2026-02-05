@@ -77,6 +77,7 @@ class LocationController extends Controller
 
     public function update(UpdateLocationRequest $request, Location $location)
     {
+        //dd($request);
         abort_if(Gate::denies('settings_edit'), 403);
 
         $validated = $request->validated();
