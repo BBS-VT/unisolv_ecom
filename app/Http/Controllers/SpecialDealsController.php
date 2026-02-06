@@ -30,7 +30,7 @@ class SpecialDealsController extends Controller
         $products       = Product::all()->pluck('StockItemName', 'id');
         $buyinggroups   = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         $customers      = Customer::all()->pluck('CustomerName', 'id');
-        $customergroups = ProductCategory::all()->pluck('CustomerCategoryName', 'id');
+        $customergroups = CustomerCategory::all()->pluck('CustomerCategoryName', 'id');
 
         return view('specialdeals.index', compact('deals', 'categories', 'products', 'buyinggroups', 'customers', 'customergroups'));
 
@@ -46,16 +46,16 @@ class SpecialDealsController extends Controller
         $buyinggroups   = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         //$customers      = Customer::all()->pluck('CustomerName', 'id');
         $customers      = Customer::all();
-        $customergroups = ProductCategory::all()->pluck('CustomerCategoryName', 'id');
+        $customergroups = CustomerCategory::all()->pluck('CustomerCategoryName', 'AccountType');
 
         return view('specialdeals.create', compact('categories', 'products', 'buyinggroups', 'customers', 'customergroups'));
     }
 
     public function store(StoreSpecialDealsRequest $request)
     {
-        $deal = SpecialDeals::create($request->all());
+        $deal = SpecialDeals::create($request->validated());
 
-        return redirect()->route('deals.index');
+        return redirect()->route('deals.index')->with('success', 'Deal created successfully');
     }
 
     public function show($id)

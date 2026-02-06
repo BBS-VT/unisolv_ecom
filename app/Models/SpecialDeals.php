@@ -46,7 +46,7 @@ class SpecialDeals extends Model
 
     public function customerGroup()
     {
-        return $this->belongsTo(CustomerCategory::class, 'CustomerCategoryID', 'id');
+        return $this->belongsTo(CustomerCategory::class, 'CustomerCategoryID', 'AccountType');
     }
 
     public function productCategory()
