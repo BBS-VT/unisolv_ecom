@@ -297,11 +297,11 @@ class CheckoutController extends Controller
             }
             Session::put('order_just_completed', true);
 
-            \Log::info('Order completed with location assignments', [
+            /*\Log::info('Order completed with location assignments', [
                 'user_id' => Auth::id(),
                 'order_id' => $order->id,
                 'items_count' => $order->items->count()
-            ]);
+            ]);*/
 
             // Redirect to success page with appropriate message
             $successMessage = 'Your order has been placed successfully!';

@@ -157,7 +157,7 @@
                 <span>{{ $order->OrderDate->format('d M Y H:i') }}</span>
 
                 <span class="info-label">Customer:</span>
-                <span>{{ $order->customer->acc_name ?? 'N/A' }} ({{ $order->CustomerID }})</span>
+                <span>{{ $order->customer->CustomerName ?? 'N/A' }} ({{ $order->CustomerID }})</span>
 
                 @if($order->CustomerPurchaseOrderNumber)
                     <span class="info-label">Customer PO:</span>
@@ -227,48 +227,30 @@
                         <th>Stock Code</th>
                         <th>Product Name</th>
                         <th class="text-right">Quantity</th>
-                        <th class="text-right">Unit Price</th>
-                        <th class="text-right">Total</th>
                     </tr>
                     </thead>
                     <tbody>
                     @php $locationTotal = 0; @endphp
                     @foreach($items as $item)
-                        @php
-                            $lineTotal = ($item->UnitPrice / 100) * $item->Quantity;
-                            $locationTotal += $lineTotal;
-                        @endphp
                         <tr>
                             <td><strong>{{ $item->StockItem }}</strong></td>
                             <td>{{ $item->product->StockItemName ?? 'N/A' }}</td>
                             <td class="text-right">{{ number_format($item->Quantity, 2) }}</td>
-                            <td class="text-right">R {{ number_format($item->UnitPrice / 100, 2) }}</td>
-                            <td class="text-right">R {{ number_format($lineTotal, 2) }}</td>
                         </tr>
                     @endforeach
-                    <tr class="total-row">
-                        <td colspan="4" class="text-right">Location Subtotal:</td>
-                        <td class="text-right">R {{ number_format($locationTotal, 2) }}</td>
-                    </tr>
+
                     </tbody>
                 </table>
             </div>
         @endforeach
 
         <div class="info-section" style="margin-top: 30px;">
-            <h2>Order Summary</h2>
-            <div class="info-grid">
-                <span class="info-label">Subtotal (excl VAT):</span>
-                <span>R {{ number_format($order->sub_total / 100, 2) }}</span>
-
-                <span class="info-label">VAT (15%):</span>
-                <span>R {{ number_format(($order->total - $order->sub_total) / 100, 2) }}</span>
-
-                <span class="info-label" style="font-size: 18px;">Total (incl VAT):</span>
-                <span style="font-size: 18px; font-weight: 700; color: #667eea;">
-                        R {{ number_format($order->total / 100, 2) }}
-                    </span>
-            </div>
+            @if (!empty($order->InternalComments))
+                <div class="notes-section">
+                    <h4>Special Instructions</h4>
+                    <p>{{ $order->InternalComments }}</p>
+                </div>
+            @endif
         </div>
     </div>
 
