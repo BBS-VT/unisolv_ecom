@@ -1,107 +1,119 @@
-<div class="modal fade bd-example-modal-lg" id="showDealModal" tabindex="-1" role="dialog" aria-labelledby="displayDealLabel" aria-hidden="true">
-
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="showDealModal" tabindex="-1" aria-labelledby="displayDealLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title m-0" id="displayDealLabel">{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}</h6>
-                <button type="button" class="close " data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><i class="la la-times"></i></span>
-                </button>
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="displayDealLabel">
+                    <i class="las la-eye me-2"></i>{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group row">
-                            <label for="DealDescription" class="col-sm-4 col-form-label text-start required">{{ trans('cruds.deal.fields.description') }}</label>
-                            <div class="col-lg-8">
-                                <input class="form-control" type="hidden" id="deal_id" name="deal_id" >
-                                <input class="form-control" type="text" id="deal_name" name="deal_name" value="" >
+                <input type="hidden" id="deal_id" name="deal_id">
+
+                <!-- Deal Description -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ trans('cruds.deal.fields.description') }}</label>
+                    <input class="form-control" type="text" id="deal_name" name="deal_name" readonly>
+                </div>
+
+                <!-- Product Selection Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">{{ trans('cruds.deal.fields.product_selection') }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.product') }}</label>
+                                <input class="form-control" type="text" id="deal_product" name="deal_product" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.department') }}</label>
+                                <input class="form-control" type="text" id="deal_department" name="deal_department" readonly>
                             </div>
                         </div>
-                        <div class="mb-3 row">
-                            <label for="example-text-input" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">{{ trans('cruds.deal.fields.product') }}</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" value="" id="deal_product" name="deal_product">
+                    </div>
+                </div>
+
+                <!-- Customer Selection Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">{{ trans('cruds.deal.fields.customer_selection') }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.buygroup') }}</label>
+                                <input class="form-control" type="text" id="deal_buygroup" name="deal_buygroup" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.customergroup') }}</label>
+                                <input class="form-control" type="text" id="deal_customergroup" name="deal_customergroup" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ trans('cruds.deal.fields.customer') }}</label>
+                                <input class="form-control" type="text" id="deal_customer" name="deal_customer" readonly>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label >{{ trans('cruds.deal.fields.department') }}</label>
-                                    <input class="form-control" type="text" value="{{ $deal->productCategory->StockGroupName ??  '' }}" >
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">{{ trans('cruds.deal.fields.pricing_section') }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ trans('cruds.deal.fields.discount') }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R</span>
+                                    <input class="form-control" type="text" id="deal_amount" name="deal_amount" readonly>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label >{{ trans('cruds.deal.fields.buygroup') }}</label>
-                                    <input class="form-control" type="text" value="{{ $deal->BuyingGroupID ?? '' }}">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ trans('cruds.deal.fields.discountperc') }}</label>
+                                <div class="input-group">
+                                    <input type="text" id="deal_percentage" name="deal_percentage" class="form-control" readonly>
+                                    <span class="input-group-text">%</span>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label >{{ trans('cruds.deal.fields.customergroup') }}</label>
-                                    <input class="form-control" type="text" value="{{ $deal->CustomerCategoryID ?? '' }}">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group bootstrap-select-1">
-                                    <label >{{ trans('cruds.deal.fields.customer') }}</label>
-                                    <input class="form-control" type="text" value="" id="deal_customer" name="deal_customer">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label for="DiscountAmount" >{{ trans('cruds.deal.fields.discount') }}</label>
-                                    <input class="form-control" type="text" value="" id="deal_amount" name="deal_amount">
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label for="DiscountPercentage" >{{ trans('cruds.deal.fields.discountperc') }}</label>
-                                    <div class="input-group">
-                                        <input type="text" id="deal_percentage" name="deal_percentage" class="form-control" placeholder="">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text"><i class="fa fa-percentage"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="form-group bootstrap-select-1">
-                                    <label for="UnitPrice" >{{ trans('cruds.deal.fields.unitprice') }}</label>
-                                    <input class="form-control" type="text" value="" id="deal_unit_price" name="deal_unit_price">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ trans('cruds.deal.fields.unitprice') }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R</span>
+                                    <input class="form-control" type="text" id="deal_unit_price" name="deal_unit_price" readonly>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="StartDate" class="col-sm-6 text-start col-form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
-                                    <div class="col-sm-12">
-                                        <input class="form-control" type="date" value="" id="deal_start_date" name="deal_start_date">
-                                    </div>
-                                </div>
+                    </div>
+                </div>
+
+                <!-- Validity Period Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">{{ trans('cruds.deal.fields.validity_period') }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.startdate') }}</label>
+                                <input class="form-control" type="date" id="deal_start_date" name="deal_start_date" readonly>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label for="EndDate" class="col-sm-6 col-form-label text-start">{{ trans('cruds.deal.fields.enddate') }}</label>
-                                    <div class="col-sm-12">
-                                        <input class="form-control" type="date" value="" id="deal_end_date" name="deal_end_date">
-                                    </div>
-                                </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ trans('cruds.deal.fields.enddate') }}</label>
+                                <input class="form-control" type="date" id="deal_end_date" name="deal_end_date" readonly>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Close
+                </button>
             </div>
         </div>
     </div>
-
 </div>

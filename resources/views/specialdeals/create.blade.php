@@ -4,7 +4,7 @@
 
 @push('style')
     <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ URL::asset('build/libs/bootstrap-timepicker/timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('build/libs/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
     <style>
         /* Add transition effect for visual feedback */
@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row g-3">
-                                            <div class="col-md-6">
+                                            {{--<div class="col-md-6">
                                                 <label for="StockItemID" class="form-label">{{ trans('cruds.deal.fields.product') }}</label>
                                                 <select class="select2 form-control @error('StockItemID') is-invalid @enderror"
                                                         id="StockItemID"
@@ -86,6 +86,27 @@
                                                 @error('StockItemID')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
+                                            </div>--}}
+                                            <div class="col-md-6">
+                                                <label for="StockItemID" class="form-label">{{ __('cruds.deal.fields.product') }}</label>
+                                                <select class="select2-ajax form-control @error('StockItemID') is invalid @enderror"
+                                                        id="StockItemID"
+                                                        name="StockItemID"
+                                                        data-exclusive-group="product"
+                                                        data-ajax-url="{{ route('ajax.products.search') }}"
+                                                        data-placeholder="Search for a product...">
+                                                    <option value="">-- search for a product --</option>
+                                                    @if(old('StockItemID'))
+                                                        @php
+                                                            $oldProduct = \App\Models\Product::where('StockCode', old('StockCode'))
+                                                        @endphp
+                                                        @if($oldProduct)
+                                                            <option value="{{ $oldProduct->StockCode }}" selected>
+                                                                {{ intval(ltrim($oldProduct->StockCode, '0')) }} - {{ $oldProduct->StockItemName }}
+                                                            </option>
+                                                        @endif
+                                                    @endif
+                                                </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="StockGroupID" class="form-label">{{ trans('cruds.deal.fields.department') }}</label>
@@ -288,104 +309,122 @@
 
 @push('scripts')
     <script src="{{ URL::asset('build/libs/select2/js/select2.min.js') }}"></script>
-    <script src="{{ URL::asset('build/libs/bootstrap-timepicker/timepicker/js/bootstrap-timepicker.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
     <script src="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js') }}"></script>
 
-    <script>
-        $(document).ready(function() {
-            // Initialize Select2 on all select elements
-            $('.select2').select2({
-                theme: 'bootstrap-5',
-                width: '100%'
-            });
 
-            /**
-             * Handle mutual exclusivity for grouped fields
-             * When one field in a group is selected, clear all others in the same group
-             */
-            function handleExclusiveFields() {
-                $('select[data-exclusive-group]').on('change', function() {
-                    const selectedValue = $(this).val();
-                    const groupName = $(this).data('exclusive-group');
-
-                    // If a value was selected (not the empty option)
-                    if (selectedValue && selectedValue !== '') {
-                        // Find all other selects in the same exclusive group
-                        $('select[data-exclusive-group="' + groupName + '"]').not(this).each(function() {
-                            // Clear the select2 value
-                            $(this).val('').trigger('change');
-                        });
-                    }
-                });
-            }
-
-            // Initialize the exclusive field handler
-            handleExclusiveFields();
-
-            /**
-             * Optional: Visual feedback when fields are cleared
-             * Add a subtle animation to show the field was reset
-             */
-            $('select[data-exclusive-group]').on('select2:unselecting', function(e) {
-                const $card = $(this).closest('.card');
-                $card.addClass('border-warning');
-                setTimeout(function() {
-                    $card.removeClass('border-warning');
-                }, 1000);
-            });
-
-            /**
-             * Optional: Form validation before submit
-             * Ensure at least one field in each exclusive group is selected
-             */
-            $('form').on('submit', function(e) {
-                let productSelected = false;
-                let customerSelected = false;
-                let validationErrors = [];
-
-                // Check product selection group
-                $('select[data-exclusive-group="product"]').each(function() {
-                    if ($(this).val() && $(this).val() !== '') {
-                        productSelected = true;
-                    }
+        <script>
+            $(document).ready(function() {
+                // Regular Select2 initialization for non-AJAX dropdowns
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%'
                 });
 
-                // Check customer selection group
-                $('select[data-exclusive-group="customer"]').each(function() {
-                    if ($(this).val() && $(this).val() !== '') {
-                        customerSelected = true;
-                    }
+                // AJAX Select2 initialization for products
+                $('.select2-ajax').each(function() {
+                    const $element = $(this);
+                    const ajaxUrl = $element.data('ajax-url');
+                    const placeholder = $element.data('placeholder') || 'Search...';
+
+                    $element.select2({
+                        theme: 'bootstrap-5',
+                        width: '100%',
+                        placeholder: placeholder,
+                        allowClear: true,
+                        ajax: {
+                            url: ajaxUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            data: function (params) {
+                                return {
+                                    q: params.term,
+                                    page: params.page || 1
+                                };
+                            },
+                            processResults: function (data, params) {
+                                params.page = params.page || 1;
+
+                                return {
+                                    results: data.results,
+                                    pagination: {
+                                        more: data.pagination.more
+                                    }
+                                };
+                            },
+                            cache: true
+                        },
+                        minimumInputLength: 2,
+                        escapeMarkup: function(markup) {
+                            return markup; // Let our custom formatting work
+                        }
+                    });
                 });
 
-                // Validate that at least one product option is selected
-                if (!productSelected) {
-                    validationErrors.push('Please select either a Product or a Department.');
+                /**
+                 * Handle mutual exclusivity for grouped fields
+                 */
+                function handleExclusiveFields() {
+                    $('select[data-exclusive-group]').on('change', function() {
+                        const selectedValue = $(this).val();
+                        const groupName = $(this).data('exclusive-group');
+
+                        if (selectedValue && selectedValue !== '') {
+                            $('select[data-exclusive-group="' + groupName + '"]').not(this).each(function() {
+                                $(this).val('').trigger('change');
+                            });
+                        }
+                    });
                 }
 
-                // Validate that at least one customer option is selected
-                if (!customerSelected) {
-                    validationErrors.push('Please select a Customer, Customer Group, or Buying Group.');
-                }
+                handleExclusiveFields();
 
-                // If there are validation errors, prevent submit and show errors
-                if (validationErrors.length > 0) {
-                    e.preventDefault();
+                /**
+                 * Form validation before submit
+                 */
+                $('form').on('submit', function(e) {
+                    let productSelected = false;
+                    let customerSelected = false;
+                    let validationErrors = [];
 
-                    // Show validation errors using SweetAlert2
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Incomplete Selection',
-                        html: validationErrors.join('<br>'),
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'btn btn-primary'
+                    $('select[data-exclusive-group="product"]').each(function() {
+                        if ($(this).val() && $(this).val() !== '') {
+                            productSelected = true;
                         }
                     });
 
-                    return false;
-                }
+                    $('select[data-exclusive-group="customer"]').each(function() {
+                        if ($(this).val() && $(this).val() !== '') {
+                            customerSelected = true;
+                        }
+                    });
+
+                    if (!productSelected) {
+                        validationErrors.push('Please select either a Product or a Department.');
+                    }
+
+                    if (!customerSelected) {
+                        validationErrors.push('Please select a Customer, Customer Group, or Buying Group.');
+                    }
+
+                    if (validationErrors.length > 0) {
+                        e.preventDefault();
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Incomplete Selection',
+                            html: validationErrors.join('<br>'),
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'btn btn-primary'
+                            }
+                        });
+
+                        return false;
+                    }
+                });
             });
-        });
-    </script>
+        </script>
+
 
 @endpush

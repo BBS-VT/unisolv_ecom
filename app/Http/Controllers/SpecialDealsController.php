@@ -42,17 +42,18 @@ class SpecialDealsController extends Controller
 
         $categories     = ProductCategory::all()->pluck('StockGroupName', 'id');
         //$products       = Product::all()->pluck('StockItemName', 'id');
-        $products       = Product::all();
+        //$products       = Product::all();
         $buyinggroups   = BuyingGroup::all()->pluck('BuyingGroupName', 'id');
         //$customers      = Customer::all()->pluck('CustomerName', 'id');
         $customers      = Customer::all();
         $customergroups = CustomerCategory::all()->pluck('CustomerCategoryName', 'AccountType');
 
-        return view('specialdeals.create', compact('categories', 'products', 'buyinggroups', 'customers', 'customergroups'));
+        return view('specialdeals.create', compact('categories',  'buyinggroups', 'customers', 'customergroups'));
     }
 
     public function store(StoreSpecialDealsRequest $request)
     {
+        //dd($request);
         $deal = SpecialDeals::create($request->validated());
 
         return redirect()->route('deals.index')->with('success', 'Deal created successfully');
@@ -62,7 +63,41 @@ class SpecialDealsController extends Controller
     {
         abort_if(Gate::denies('specialdeal_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $where = ['special_deals.id' => $id];
+        $deal = SpecialDeals::with([
+            'products',
+            'customer',
+            'buyingGroup',
+            'customerGroup',
+            'productCategory'
+        ])->findOrFail($id);
+
+        return response()->json([
+            'id' => $deal->id,
+            'DealDescription' => $deal->DealDescription,
+
+            // Product info
+            'product_name' => $deal->products
+                ? intval(ltrim($deal->products->StockCode, '0')) . ' - ' . $deal->products->StockItemName
+                : null,
+            'department_name' => $deal->productCategory->StockGroupName ?? null,
+
+            // Customer info
+            'buygroup_name' => $deal->buyingGroup->BuyingGroupName ?? null,
+            'customergroup_name' => $deal->customerGroup->CustomerCategoryName ?? null,
+            'customer_name' => $deal->customer
+                ? $deal->customer->acc_main . ' - ' . $deal->customer->CustomerName
+                : null,
+
+            // Pricing
+            'DiscountAmount' => $deal->DiscountAmount,
+            'DiscountPercentage' => $deal->DiscountPercentage,
+            'UnitPrice' => $deal->UnitPrice,
+
+            // Dates
+            'StartDate' => $deal->StartDate,
+            'EndDate' => $deal->EndDate,
+        ]);
+        /*$where = ['special_deals.id' => $id];
 
         $deal = SpecialDeals::where($where)
             ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
@@ -81,7 +116,7 @@ class SpecialDealsController extends Controller
 
         } else {
             return response()->json($deal);
-        }
+        }*/
 
     }
 

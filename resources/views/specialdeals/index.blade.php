@@ -1,30 +1,111 @@
 @extends('layouts.master')
 
-@section('title', 'Contract Discount')
+@section('title', __('Contract Discount'))
 
 @push('styles')
     <link href="{{ URL::asset('build/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .column-content {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .table-card {
+            border: 1px solid #e9ecef;
+            border-radius: 0.375rem;
+        }
+
+        .customer-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .filter-buttons .btn {
+            border-radius: 20px;
+            padding: 0.375rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-buttons .btn:not(.active) {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+
+        .filter-buttons .btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-buttons .btn:hover:not(.active) {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .page-header-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .page-header-box h2 {
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-header-box p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0;
+        }
+
+        .page-header-box .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header-box .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+    </style>
 @endpush
 
 @section('content')
-    <div class="container-fluid">
+    <div class="mx-4">
         <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-0">{{ __('Contract Discounts') }}</h1>
-                <p class="text-muted mb-0">{{ __('Manage contract discounts')}}</p>
-            </div>
-            <div class="d-flex gap-2">
-                @can('specialdeal_create')
-                    <a href="{{ route("deals.create") }}" class="btn btn-primary">
-                        <i class="mdi mdi-plus me-1"></i> {{ __('Add Contract Discount') }}
-                    </a>
-                @endcan
-{{--                @can('specialdeal_import')--}}
+        <div class="page-header-box">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">{{ __('Contract Discounts') }}</h2>
+                    <p class="mb-0">{{ __('Manage contract discounts')}}</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    @can('specialdeal_create')
+                        <a href="{{ route("deals.create") }}" class="btn">
+                            <i class="mdi mdi-plus me-1"></i> {{ __('Add Contract Discount') }}
+                        </a>
+                    @endcan
+                    {{--                @can('specialdeal_import')--}}
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="btn dropdown-toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-file-import me-1"></i> {{ __('global.import') }}
                         </button>
                         <ul class="dropdown-menu">
@@ -36,28 +117,33 @@
                         </ul>
                     </div>
                     {{--@endcan--}}
+                </div>
             </div>
         </div>
 
+        @if($message = Session::get('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                <i class="mdi mdi-check-circle me-2"></i>
+                <strong>{{ __('global.success') }}!</strong> {{ $message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-
-                    </div>
-                    <div class="card-body">
-                        <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap"
+        <div class="column-content">
+            <div class="table-card">
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table id="deals-table" class="table table-hover mb-0"
                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead>
+                            <thead class="table-light">
                             <tr>
-                                <th width="10"></th>
-                                <th>{{ trans('cruds.deal.fields.description') }}</th>
-                                <th>{{ trans('cruds.deal.fields.dates') }}</th>
-                                <th>{{ trans('cruds.deal.fields.discount') }}</th>
-                                <th>{{ trans('cruds.deal.fields.unitprice') }}</th>
-                                <th>{{ trans('cruds.deal.fields.applied') }}</th>
-                                <th>&nbsp;</th>
+                                <th width="10" class="border-0"></th>
+                                <th class="border-0">{{ trans('cruds.deal.fields.description') }}</th>
+                                <th class="border-0">{{ trans('cruds.deal.fields.dates') }}</th>
+                                <th class="border-0">{{ trans('cruds.deal.fields.discount') }}</th>
+                                <th class="border-0">{{ trans('cruds.deal.fields.unitprice') }}</th>
+                                <th class="border-0">{{ trans('cruds.deal.fields.applied') }}</th>
+                                <th class="border-0 text-center">&nbsp;</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -362,43 +448,94 @@
     </div>
 @endsection
 
-@push('custom-scripts')
-    <script src="{{ asset('/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-
-    <script src="{{ asset('/plugins/datatables/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/jszip.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/buttons.colVis.min.js') }}"></script>
-
-    <script src="{{ asset('/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('/pages/jquery.datatable.init.js') }}"></script>
-
-    <script src="{{ asset('plugins/dropify/js/dropify.min.js') }}"></script>
-    <script src="{{ asset('pages/jquery.form-upload.init.js') }}"></script>
+@push('scripts')
+    <script src="{{ URL::asset('build/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ URL::asset('build/libs/dropify/js/dropify.min.js') }}"></script>
 
     <script>
         $(document).ready(function () {
 
-            $('body').on('click', '#show_deal', function () {
-                var dealURL = $(this).data('url');
-                $.get(dealURL, function (data) {
-                    $('#showDealModal').modal('show');
-                    $('#deal_id').val(data.id);
-                    $('#deal_name').val(data.DealDescription);
-                    $('#deal_customer').val(data.CustomerName);
-                    $('#deal_product').val(data.StockItemName);
-                    $('#deal_amount').val(data.DiscountAmount);
-                    $('#deal_percentage').val(data.DiscountPercentage);
-                    $('#deal_unit_price').val(data.UnitPrice);
-                    $('#deal_start_date').val(data.StartDate);
-                    $('#deal_end_date').val(data.EndDate);
-                })
+            $('body').on('click', '#show_deal', function (e) {
+                e.preventDefault();
+
+                const url = $(this).data('url');
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        // Populate the modal fields
+                        $('#deal_id').val(response.id);
+                        $('#deal_name').val(response.DealDescription);
+
+                        // Product selection
+                        $('#deal_product').val(response.product_name || '-');
+                        $('#deal_department').val(response.department_name || '-');
+
+                        // Customer selection
+                        $('#deal_buygroup').val(response.buygroup_name || '-');
+                        $('#deal_customergroup').val(response.customergroup_name || '-');
+                        $('#deal_customer').val(response.customer_name || '-');
+
+                        // Pricing
+                        $('#deal_amount').val(response.DiscountAmount ? 'R ' + parseFloat(response.DiscountAmount).toFixed(2) : '-');
+                        $('#deal_percentage').val(response.DiscountPercentage || '-');
+                        $('#deal_unit_price').val(response.UnitPrice ? 'R ' + parseFloat(response.UnitPrice).toFixed(2) : '-');
+
+                        // Dates
+                        $('#deal_start_date').val(response.StartDate);
+                        $('#deal_end_date').val(response.EndDate);
+
+                        // Show the modal
+                        $('#showDealModal').modal('show');
+
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Could not load deal details',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
+            let dealsTable = $('#deals-table').DataTable({
+                processing: true,
+                pageLenght: 15,
+                order: [[1, 'asc']],
+                searchDelay: 500,
+                responsive: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search deals",
+                    lengthMenu: "Show _MENU_ deals",
+                    info: "Showing _START_ to _END_ of _TOTAL_ contract discounts",
+                    paginate: {
+                        previous: '<i class="mdi mdi-chevron-left"></i>',
+                        next: '<i class="mdi mdi-chevron-right"></i>'
+                    },
+                    processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>'
+                },
+                drawCallback: function() {
+                    // Apply Bootstrap styling to pagination
+                    $('.dataTables_paginate .paginate_button').addClass('page-link');
+                    $('.dataTables_paginate .paginate_button.current').addClass('active');
+
+                    // Reinitialize tooltips
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                }
             })
         })
     </script>

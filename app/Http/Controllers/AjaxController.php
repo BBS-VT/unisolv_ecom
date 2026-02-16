@@ -273,4 +273,43 @@ class AjaxController extends Controller
             ], 500);
         }
     }
+
+    public function searchProducts(Request $request)
+    {
+        $search = $request->get('q', '');
+        $page = $request->get('page', 1);
+        $perPage = 20; // Number of results per page
+
+        $query = Product::query()
+            ->select('id', 'StockCode', 'StockItemName')
+            ->where(function($q) use ($search) {
+                $q->where('StockItemName', 'LIKE', "%{$search}%")
+                    ->orWhere('StockCode', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('StockItemName');
+
+        // Get total count for pagination
+        $total = $query->count();
+
+        // Paginate results
+        $products = $query
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        // Format for Select2
+        $results = $products->map(function($product) {
+            return [
+                'id' => $product->StockCode,
+                'text' => intval(ltrim($product->StockCode, '0')) . ' - ' . $product->StockItemName
+            ];
+        });
+
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => ($page * $perPage) < $total
+            ]
+        ]);
+    }
 }
