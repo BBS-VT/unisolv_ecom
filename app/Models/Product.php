@@ -417,6 +417,141 @@ class Product extends Model implements HasMedia
         });
     }
 
+    /*public function getTotalBaseUnitsAttribute(): int
+    {
+        $total = 0;
+
+        $this->packSizeFamily()->with('stockHolding')->get()->each(function($product) use (&$total) {
+            if ($product->stockHolding) {
+                $total += $product->stockHolding->QuantityOnHand * $product->Packsize;
+            }
+        });
+
+        return $total;
+    }*/
+
+    /**
+     * Get stock breakdown for display - CORRECTED for bottom-up hierarchy
+     */
+    public function getStockBreakdownAttribute(): array
+    {
+        $family = $this->packSizeFamily()->with('stockHolding')->get();
+
+        $breakdown = [];
+
+        foreach ($family as $product) {
+            $directStock = $product->stockHolding ? $product->stockHolding->QuantityOnHand : 0;
+
+            // Calculate how many of THIS product can be made from base units
+            $baseUnitsAvailable = $this->total_base_units;
+            $canMakeFromBase = $product->Packsize > 0
+                ? floor($baseUnitsAvailable / $product->Packsize)
+                : 0;
+
+            $breakdown[] = [
+                'product_code' => $product->StockCode,
+                'product_name' => $product->StockItemName,
+                'pack_size' => $product->Packsize,
+                'unit_name' => $product->UnitOfMeasure ?? 'Unit',
+                'direct_stock' => $directStock,
+                'base_units' => $directStock * $product->Packsize,
+                'total_available' => $canMakeFromBase, // How many of THIS size we can make
+                'is_current' => $product->StockCode === $this->StockCode,
+            ];
+        }
+
+        // Sort by pack size (SMALLEST first - Singles, then Cases, then Pallets)
+        usort($breakdown, fn($a, $b) => $a['pack_size'] <=> $b['pack_size']);
+
+        return $breakdown;
+    }
+
+    /**
+     * Get total available quantity for THIS product specifically
+     * Example: If viewing "Case" product, how many cases can we make from all available stock?
+     */
+    public function getTotalAvailableQuantityAttribute(): int
+    {
+        if ($this->Packsize <= 0) {
+            return $this->available_packs;
+        }
+
+        // Calculate how many of THIS pack size we can make from total base units
+        return floor($this->total_base_units / $this->Packsize);
+    }
+
+    /**
+     * Get formatted stock display text
+     */
+    public function getStockDisplayAttribute(): string
+    {
+        $direct = $this->available_packs;
+        $totalAvailable = $this->total_available_quantity;
+        $fromSmaller = $totalAvailable - $direct;
+
+        if ($totalAvailable === 0) {
+            return 'Out of stock';
+        }
+
+        // If this is the base unit (Packsize = 1)
+        if ($this->Packsize == 1) {
+            if ($fromSmaller > 0) {
+                return sprintf(
+                    '%s available (%s loose + %s from breaking larger packs)',
+                    number_format($totalAvailable),
+                    number_format($direct),
+                    number_format($fromSmaller)
+                );
+            }
+            return number_format($totalAvailable) . ' in stock';
+        }
+
+        // For larger pack sizes (cases, pallets, etc.)
+        if ($fromSmaller > 0) {
+            return sprintf(
+                '%s available (%s complete packs + %s can be made from smaller units)',
+                number_format($totalAvailable),
+                number_format($direct),
+                number_format($fromSmaller)
+            );
+        }
+
+        return number_format($totalAvailable) . ' packs in stock';
+    }
+
+    /**
+     * Get stock status for badge display
+     */
+    public function getStockStatusAttribute(): array
+    {
+        $total = $this->total_available_quantity;
+
+        if ($total <= 0) {
+            return [
+                'text' => 'Out of Stock',
+                'class' => 'danger',
+                'icon' => 'x-circle',
+                'quantity' => 0
+            ];
+        }
+
+        if ($total < 10) {
+            return [
+                'text' => 'Low Stock',
+                'class' => 'warning',
+                'icon' => 'exclamation-triangle',
+                'quantity' => $total
+            ];
+        }
+
+        return [
+            'text' => 'In Stock',
+            'class' => 'success',
+            'icon' => 'check-circle',
+            'quantity' => $total
+        ];
+    }
+
     /**
      * Get all available selling types
      *
@@ -540,6 +675,8 @@ class Product extends Model implements HasMedia
             'thumb_url' => $hasThumb ? $media->getUrl('thumb') : null,
         ];
     }
+
+
 
 
 

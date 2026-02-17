@@ -134,16 +134,17 @@
     {{-- STOCK STATUS --}}
     <div class="mt-2">
         @if(\App\Helpers\Features::showStock())
-            @if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
+            <x-stock-breakdown :product="$product" />
+            {{--@if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
                 <small class="text-success">{{ __('In Stock') }}</small>
             @elseif($product->stockHolding && $product->stockHolding->QuantityOnHand > 0)
-                <small class="text-warning">{{ __('Low Stock') }} ({{ $product->stockHolding->QuantityOnHand }})</small>
-            @elseif(\App\Helpers\Features::backordersEnabled())
-                <small class="text-info">{{ __('Available for Backorder') }}</small>
-            @else
-                <small class="text-danger">{{ __('Out of Stock') }}</small>
-            @endif
+                <small class="text-warning">{{ __('Low Stock') }} ({{ $product->stockHolding->QuantityOnHand }})</small>--}}
+        @elseif(\App\Helpers\Features::backordersEnabled())
+            <small class="text-info">{{ __('Available for Backorder') }}</small>
+        @else
+            <small class="text-danger">{{ __('Out of Stock') }}</small>
         @endif
+
     </div>
 
     {{-- ADD TO CART BUTTON --}}

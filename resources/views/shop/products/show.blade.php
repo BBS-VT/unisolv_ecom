@@ -412,7 +412,9 @@
                     <div class="mb-4">
                         <div class="row g-3">
                             <div class="col-12">
-                                @if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
+                                <x-stock-breakdown :product="$product" :show-details="true" class="mb-3" />
+
+                                {{--@if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
                                     <div class="text-success">
                                         <i class="bi bi-check-circle me-1"></i>
                                         <strong>In Stock</strong>
@@ -432,7 +434,7 @@
                                         <i class="bi bi-x-circle me-1"></i>
                                         <strong>Currently unavailable</strong>
                                     </div>
-                                @endif
+                                @endif--}}
                             </div>
                         </div>
                     </div>

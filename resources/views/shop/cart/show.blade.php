@@ -78,47 +78,47 @@
                         <div class="card-body">
                             @auth
                                 @php
-                                    // TODO: display subtotal as excl VAT if wholesale pricing
                                     $orderTotal = 0;
+                                    $retailTotal = 0;
+                                    $cartProducts = []; // Store products for potential reuse
+
                                     foreach($cart as $item) {
                                         $product = \App\Models\Product::find($item['product_id']);
 
                                         if (!$product) {
                                             continue;
                                         }
+
+                                        $cartProducts[] = [
+                                            'product' => $product,
+                                            'quantity' => $item['quantity']
+                                        ];
+
                                         $pricing = \App\Helpers\PricingHelper::getProductPricing($product);
                                         $orderTotal += $pricing['price'] * $item['quantity'];
+                                        $retailTotal += $product->SellingPrice * $item['quantity'];
                                     }
-                                    $taxRate = 0.15; // TODO: link to TAX model
 
-                                    // TODO: include VAT for wholesale pricing
+                                    $taxRate = 0.15; // TODO: link to TAX model
                                     $subtotal = $orderTotal / (1 + $taxRate);
                                     $tax = $orderTotal - $subtotal;
+                                    $totalSavings = $retailTotal - $orderTotal;
                                 @endphp
 
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Subtotal ({{ count($cart) }} {{ Str::plural('item', count($cart)) }}</span>
+                                    <span>Subtotal ({{ count($cart) }} {{ Str::plural('item', count($cart)) }})</span>
                                     <span class="cart-subtotal">{{ \App\Helpers\PricingHelper::formatPrice($subtotal) }}</span>
                                 </div>
 
-                                @if(\App\Helpers\PricingHelper::hasWholesalePricing())
-                                    @php
-                                        $retailTotal = 0;
-                                        foreach($cart as $item) {
-                                            $retailTotal += $item['product']->SellingPrice * $item['quantity'];
-                                        }
-                                        $totalSavings = $retailTotal - $subtotal;
-                                    @endphp
-                                    @if($totalSavings > 0)
-                                        <div class="d-flex justify-content-between mb-2 text-success">
-                                            <span>{{ \App\Helpers\PricingHelper::getPriceTierName() }} Savings</span>
-                                            <span>-{{ \App\Helpers\PricingHelper::formatPrice($totalSavings) }}</span>
-                                        </div>
-                                    @endif
+                                @if(\App\Helpers\PricingHelper::hasWholesalePricing() && $totalSavings > 0)
+                                    <div class="d-flex justify-content-between mb-2 text-success">
+                                        <span>{{ \App\Helpers\PricingHelper::getPriceTierName() }} Savings</span>
+                                        <span>-{{ \App\Helpers\PricingHelper::formatPrice($totalSavings) }}</span>
+                                    </div>
                                 @endif
 
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>{{ __('VAT (included)' )}}  ({{ number_format($taxRate * 100, 1) }}%)</span>
+                                    <span>{{ __('VAT (included)') }} ({{ number_format($taxRate * 100, 1) }}%)</span>
                                     <span class="cart-tax">{{ \App\Helpers\PricingHelper::formatPrice($tax) }}</span>
                                 </div>
 
