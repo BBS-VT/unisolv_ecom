@@ -1,4 +1,4 @@
-@extends('layouts.auth')
+@extends('layouts.master-without-nav')
 
 @section('title')
     {{ __('Reset Password') }}
@@ -6,64 +6,151 @@
 
 @section('content')
     <div class="container">
-        <div class="row vh-100 d-flex justify-content-center">
-            <div class="col-12 align-self-center">
-                <div class="row">
-                    <div class="col-lg-5 mx-auto">
-                        <div class="card">
-                            <div class="card-body p-0 auth-header-box">
-                                <div class="text-center p-3">
-                                    <a href="{{ route('home') }}" class="logo logo-admin">
-                                        <img src="{{ asset('images/logo-sm-dark.png') }}" height="50" alt="logo" class="auth-logo">
-                                    </a>
-                                    <h4 class="mt-3 mb-1 fw-semibold text-white font-18">{{ trans('global.reset_password') }} - {{ trans('panel.site_title') }}</h4>
-                                    <p class="text-muted mb-0">{{ trans('global.emailResetInstructions') }} </p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <form action="{{ route('password.update') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="token" value="{{ request()->route('token') }}" >
-                                    <input type="hidden" name="email" value="{{ request()->get('email') }}" required>
-                                    <div class="mb-3">
-                                        <label for="inputPassword" class="form-label">{{ __('Password') }}</label>
-                                        <input type="password" class="form-control" id="inputPassword" name="password" placeholder="{{ __('Enter password') }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="inputConfirmPassword" class="form-label">{{ __('Confirm Password') }}</label>
-                                        <input type="password" class="form-control" id="inputConfirmPassword" name="password_confirmation" placeholder="{{ __('Confirm password') }}" required>
-                                    </div>
-                                    <div class="form-group mb-0 row">
-                                        <div class="col-12 mt-2">
-                                            <button type="submit" class="btn btn-primary w-100 waves-effect waves-light">
-                                                {{ __('Reset Password') }} <i class="fas fa-sign-in-alt ms-1"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                                <p class="text-muted mb-0 mt-3"><a href="{{ route('login') }}" class="text-primary ms-2">{{ __('Return to login') }} </a></p>
-                            </div>
-                            <div class="card-body bg-light-alt text-center">
-                                <span class="text-muted d-none d-sm-inline-block"><a href="https://www.unisolv.co.za" target="_blank">Border Business Systems</a> © <?php echo date("Y"); ?></span>
-                            </div>
+        <div class="row vh-100 d-flex justify-content-center align-items-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-lg border-0">
+                    <!-- Header with gradient -->
+                    <div class="card-body p-0 auth-header-box">
+                        <div class="text-center p-4">
+                            <a href="{{ route('home') }}" class="logo logo-admin">
+                                <img src="{{ asset('images/unisolv_light.png') }}" height="50" alt="logo" class="auth-logo mb-3">
+                            </a>
+                            <h4 class="mt-2 mb-2 fw-semibold text-white">{{ trans('global.reset_password') }}</h4>
+                            <p class="text-white-50 mb-0">{{ trans('global.emailResetInstructions') }}</p>
                         </div>
                     </div>
-                </div>
 
-                @if(count($errors) > 0)
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach($errors->all() as $message)
-                                <li>{{ $message }}</li>
-                            @endforeach
-                        </ul>
+                    <!-- Error Messages -->
+                    @if($errors->any())
+                        <div class="alert alert-danger mx-4 mt-4 mb-0 border-0" role="alert">
+                            <div class="d-flex align-items-start">
+                                <i class="mdi mdi-alert-circle me-2 mt-1"></i>
+                                <div>
+                                    <strong>Please correct the following errors:</strong>
+                                    <ul class="mb-0 mt-2 ps-3">
+                                        @foreach($errors->all() as $message)
+                                            <li>{{ $message }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Success Message -->
+                    @if(session('status'))
+                        <div class="alert alert-success mx-4 mt-4 mb-0 border-0" role="alert">
+                            <i class="mdi mdi-check-circle me-2"></i>{{ session('status') }}
+                        </div>
+                    @endif
+
+                    <!-- Reset Form -->
+                    <div class="card-body p-4">
+                        <form action="{{ route('password.update') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="token" value="{{ request()->route('token') }}">
+                            <input type="hidden" name="email" value="{{ request()->get('email') }}">
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">{{ __('New Password') }}</label>
+                                <div class="input-group">
+                                    <input type="password"
+                                           class="form-control @error('password') is-invalid @enderror"
+                                           id="password"
+                                           name="password"
+                                           placeholder="{{ __('Enter new password') }}"
+                                           required
+                                           autofocus>
+                                    <button class="btn btn-light border" type="button" id="password-toggle">
+                                        <i class="mdi mdi-eye-outline" id="password-toggle-icon"></i>
+                                    </button>
+                                    @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <small class="text-muted">Minimum 8 characters recommended</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+                                <div class="input-group">
+                                    <input type="password"
+                                           class="form-control @error('password_confirmation') is-invalid @enderror"
+                                           id="password_confirmation"
+                                           name="password_confirmation"
+                                           placeholder="{{ __('Confirm new password') }}"
+                                           required>
+                                    <button class="btn btn-light border" type="button" id="confirm-toggle">
+                                        <i class="mdi mdi-eye-outline" id="confirm-toggle-icon"></i>
+                                    </button>
+                                    @error('password_confirmation')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    {{ __('Reset Password') }}
+                                    <i class="mdi mdi-lock-reset ms-1"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <p class="text-muted mb-0">
+                                <a href="{{ route('login') }}" class="fw-semibold text-decoration-none">
+                                    <i class="mdi mdi-arrow-left me-1"></i>{{ __('Return to login') }}
+                                </a>
+                            </p>
+                        </div>
                     </div>
-                @endif
 
-                @if(session('status'))
-                    <div class="alert alert-success">{{ __('A new password reset link has been sent to your email address.') }}</div>
-                @endif
+                    <!-- Footer -->
+                    <div class="card-footer bg-light text-center py-3 border-0">
+                        <p class="text-muted mb-0 small">
+                            <a href="https://www.unisolv.co.za" target="_blank" class="text-decoration-none">Border Business Systems</a>
+                            © {{ date('Y') }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            // Password toggle functionality
+            document.getElementById('password-toggle')?.addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                const toggleIcon = document.getElementById('password-toggle-icon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('mdi-eye-outline');
+                    toggleIcon.classList.add('mdi-eye-off-outline');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('mdi-eye-off-outline');
+                    toggleIcon.classList.add('mdi-eye-outline');
+                }
+            });
+
+            // Confirm password toggle functionality
+            document.getElementById('confirm-toggle')?.addEventListener('click', function() {
+                const confirmInput = document.getElementById('password_confirmation');
+                const toggleIcon = document.getElementById('confirm-toggle-icon');
+
+                if (confirmInput.type === 'password') {
+                    confirmInput.type = 'text';
+                    toggleIcon.classList.remove('mdi-eye-outline');
+                    toggleIcon.classList.add('mdi-eye-off-outline');
+                } else {
+                    confirmInput.type = 'password';
+                    toggleIcon.classList.remove('mdi-eye-off-outline');
+                    toggleIcon.classList.add('mdi-eye-outline');
+                }
+            });
+        </script>
+    @endpush
 @endsection

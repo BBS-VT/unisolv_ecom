@@ -184,20 +184,25 @@
                                     </td>
                                     <td>
                                         @can('specialdeal_show')
-                                            <a href="javascript:void(0)" id="show_deal"
+                                            <a href="javascript:void(0)" class="show_deal"
+                                               data-id="{{ $deal->id }}"
                                                data-url="{{ route('deals.show', $deal->id) }}"
                                                data-bs-toggle="tooltip"
                                                title="{{ trans('global.view') }} {{ trans('cruds.deal.title_singular') }}"
                                                data-bs-placement="top">
-                                                <i class="las dripicons-preview text-info font-18"></i>
+                                                <i class="dripicons-preview text-info font-18"></i>
                                             </a>
                                         @endcan
                                         &nbsp;
                                         @can('specialdeal_edit')
-                                            <a href="{{ route('deals.edit', $deal->id) }}" data-bs-toggle="tooltip"
+                                            <a href="javascript:void(0)" class="edit_deal"
+                                               data-id="{{ $deal->id }}"
+                                               data-url="{{ route('deals.edit', $deal->id) }}"
+                                               data-update-url="{{ route('deals.update', $deal->id) }}"
+                                               data-bs-toggle="tooltip"
                                                title="{{ trans('global.edit') }} {{ trans('cruds.deal.title_singular') }}"
                                                data-bs-placement="top">
-                                                <i class="las dripicons-document-edit text-info font-18"></i>
+                                                <i class="dripicons-document-edit text-secondary font-18"></i>
                                             </a>
                                         @endcan
                                         &nbsp;
@@ -464,7 +469,129 @@
     <script>
         $(document).ready(function () {
 
-            $('body').on('click', '#show_deal', function (e) {
+            let modalMode = 'view'; // 'view' or 'edit'
+
+            // Initialize Select2 (will be called when modal opens in edit mode)
+            function initializeSelect2() {
+                // Regular Select2
+                $('.edit-mode-only.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    dropdownParent: $('#dealModal')
+                });
+
+                // AJAX Select2 for products
+                $('#StockItemID').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Search for a product...',
+                    allowClear: true,
+                    dropdownParent: $('#dealModal'),
+                    ajax: {
+                        url: $('#StockItemID').data('ajax-url'),
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 2,
+                    escapeMarkup: function(markup) { return markup; }
+                });
+
+                // AJAX Select2 for customers
+                $('#CustomerID').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Search for a customer...',
+                    allowClear: true,
+                    dropdownParent: $('#dealModal'),
+                    ajax: {
+                        url: $('#CustomerID').data('ajax-url'),
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 2,
+                    escapeMarkup: function(markup) { return markup; }
+                });
+
+                // Handle mutual exclusivity
+                $('select[data-exclusive-group]').off('change.exclusive').on('change.exclusive', function() {
+                    const selectedValue = $(this).val();
+                    const groupName = $(this).data('exclusive-group');
+
+                    if (selectedValue && selectedValue !== '') {
+                        $('select[data-exclusive-group="' + groupName + '"]').not(this).each(function() {
+                            $(this).val('').trigger('change');
+                        });
+                    }
+                });
+            }
+
+            // Set modal to VIEW mode
+            function setViewMode() {
+                modalMode = 'view';
+                $('#modal-icon').removeClass('la-pen').addClass('la-eye');
+                $('#modal-title-text').text('{{ trans("global.view") }} {{ trans("cruds.deal.title_singular") }}');
+
+                // Show view elements, hide edit elements
+                $('.view-mode-only').show();
+                $('.edit-mode-only').hide();
+
+                // Make pricing and date fields readonly
+                $('#DiscountAmount, #DiscountPercentage, #UnitPrice, #StartDate, #EndDate').prop('readonly', true);
+                $('#deal_name').prop('readonly', true);
+            }
+
+            // Set modal to EDIT mode
+            function setEditMode() {
+                modalMode = 'edit';
+                $('#modal-icon').removeClass('la-eye').addClass('la-pen');
+                $('#modal-title-text').text('{{ trans("global.edit") }} {{ trans("cruds.deal.title_singular") }}');
+
+                // Hide view elements, show edit elements
+                $('.view-mode-only').hide();
+                $('.edit-mode-only').show();
+
+                // Make pricing and date fields editable
+                $('#DiscountAmount, #DiscountPercentage, #UnitPrice, #StartDate, #EndDate').prop('readonly', false);
+                $('#deal_name').prop('readonly', false);
+
+                // Initialize Select2 for edit mode
+                initializeSelect2();
+            }
+
+            // VIEW button click
+            $(document).on('click', '.show_deal', function(e) {
                 e.preventDefault();
 
                 const url = $(this).data('url');
@@ -474,31 +601,9 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        // Populate the modal fields
-                        $('#deal_id').val(response.id);
-                        $('#deal_name').val(response.DealDescription);
-
-                        // Product selection
-                        $('#deal_product').val(response.product_name || '-');
-                        $('#deal_department').val(response.department_name || '-');
-
-                        // Customer selection
-                        $('#deal_buygroup').val(response.buygroup_name || '-');
-                        $('#deal_customergroup').val(response.customergroup_name || '-');
-                        $('#deal_customer').val(response.customer_name || '-');
-
-                        // Pricing
-                        $('#deal_amount').val(response.DiscountAmount ? 'R ' + parseFloat(response.DiscountAmount).toFixed(2) : '-');
-                        $('#deal_percentage').val(response.DiscountPercentage || '-');
-                        $('#deal_unit_price').val(response.UnitPrice ? 'R ' + parseFloat(response.UnitPrice).toFixed(2) : '-');
-
-                        // Dates
-                        $('#deal_start_date').val(response.StartDate);
-                        $('#deal_end_date').val(response.EndDate);
-
-                        // Show the modal
-                        $('#showDealModal').modal('show');
-
+                        populateModal(response);
+                        setViewMode();
+                        $('#dealModal').modal('show');
                     },
                     error: function(xhr) {
                         Swal.fire({
@@ -509,6 +614,142 @@
                         });
                     }
                 });
+            });
+
+            // EDIT button click
+            $(document).on('click', '.edit_deal', function(e) {
+                e.preventDefault();
+
+                const url = $(this).data('url');
+                const updateUrl = $(this).data('update-url');
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        populateModal(response);
+                        setEditMode();
+
+                        // Set form action for update
+                        $('#dealForm').attr('action', updateUrl);
+
+                        $('#dealModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Could not load deal details',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
+            // Populate modal with data
+            function populateModal(response) {
+                $('#deal_id').val(response.id);
+                $('#deal_name').val(response.DealDescription);
+
+                // Product - view mode
+                $('#deal_product_display').val(response.product_name || '-');
+                $('#deal_department_display').val(response.department_name || '-');
+
+                // Product - edit mode
+                if (response.StockItemID) {
+                    const productOption = new Option(response.product_name, response.StockItemID, true, true);
+                    $('#StockItemID').append(productOption).trigger('change');
+                } else {
+                    $('#StockItemID').val('').trigger('change');
+                }
+                $('#StockGroupID').val(response.StockGroupID || '').trigger('change');
+
+                // Customer - view mode
+                $('#deal_buygroup_display').val(response.buygroup_name || '-');
+                $('#deal_customergroup_display').val(response.customergroup_name || '-');
+                $('#deal_customer_display').val(response.customer_name || '-');
+
+                // Customer - edit mode
+                $('#BuyingGroupID').val(response.BuyingGroupID || '').trigger('change');
+                $('#CustomerCategoryID').val(response.CustomerCategoryID || '').trigger('change');
+
+                if (response.CustomerID) {
+                    const customerOption = new Option(response.customer_name, response.CustomerID, true, true);
+                    $('#CustomerID').append(customerOption).trigger('change');
+                } else {
+                    $('#CustomerID').val('').trigger('change');
+                }
+
+                // Pricing - view mode (formatted for display)
+                $('#deal_amount_display').val(response.DiscountAmount ? parseFloat(response.DiscountAmount).toFixed(2) : '-');
+                $('#deal_percentage_display').val(response.DiscountPercentage || '-');
+                $('#deal_unit_price_display').val(response.UnitPrice ? parseFloat(response.UnitPrice).toFixed(2) : '-');
+
+                // Pricing - edit mode (raw values)
+                $('#DiscountAmount').val(response.DiscountAmount || '');
+                $('#DiscountPercentage').val(response.DiscountPercentage || '');
+                $('#UnitPrice').val(response.UnitPrice || '');
+
+                // Dates - view mode
+                $('#deal_start_date_display').val(response.StartDate || '');
+                $('#deal_end_date_display').val(response.EndDate || '');
+
+                // Dates - edit mode
+                $('#StartDate').val(response.StartDate || '');
+                $('#EndDate').val(response.EndDate || '');
+            }
+
+            // Form submission
+            $('#dealForm').on('submit', function(e) {
+                e.preventDefault();
+
+                if (modalMode !== 'edit') {
+                    return false;
+                }
+
+                const formData = new FormData(this);
+                const url = $(this).attr('action');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#dealModal').modal('hide');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Deal updated successfully',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload(); // Reload to show updated data
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Could not update deal';
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            html: errorMessage,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
+            // Clean up Select2 when modal closes
+            $('#dealModal').on('hidden.bs.modal', function () {
+                $('.select2-ajax').select2('destroy');
+                $('.edit-mode-only.select2').select2('destroy');
             });
 
             let dealsTable = $('#deals-table').DataTable({
@@ -536,8 +777,8 @@
                     // Reinitialize tooltips
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }
-            })
-        })
+            });
+        });
     </script>
 
 @endpush

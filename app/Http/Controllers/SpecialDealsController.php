@@ -97,27 +97,64 @@ class SpecialDealsController extends Controller
             'StartDate' => $deal->StartDate,
             'EndDate' => $deal->EndDate,
         ]);
-        /*$where = ['special_deals.id' => $id];
 
-        $deal = SpecialDeals::where($where)
-            ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
-            ->join('customers', 'customers.acc_main', '=', 'special_deals.CustomerID')
-            ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
-            ->first();
 
-        if ( is_null($deal)) {
-            $deal = SpecialDeals::where($where)
-                ->join('products', 'products.stockCode', '=', 'special_deals.StockItemID')
-                ->join('customers', 'customers.BuyingGroupID', '=', 'special_deals.BuyingGroupID')
-                ->select('special_deals.*', 'products.StockItemName', 'customers.CustomerName', 'customers.acc_main')
-                ->get();
+    }
 
-                return response()->json($deal);
+    public function edit($id)
+    {
+        $deal = SpecialDeals::with([
+            'products',
+            'customer',
+            'buyingGroup',
+            'customerGroup',
+            'productCategory'
+        ])->findOrFail($id);
 
-        } else {
-            return response()->json($deal);
-        }*/
+        return response()->json([
+            'id' => $deal->id,
+            'DealDescription' => $deal->DealDescription,
 
+            // Product info
+            'StockItemID' => $deal->StockItemID,
+            'product_name' => $deal->products
+                ? intval(ltrim($deal->products->StockCode, '0')) . ' - ' . $deal->products->StockItemName
+                : null,
+            'StockGroupID' => $deal->StockGroupID,
+            'department_name' => $deal->productCategory->CategoryName ?? null,
+
+            // Customer info
+            'BuyingGroupID' => $deal->BuyingGroupID,
+            'buygroup_name' => $deal->buyingGroup->BuyingGroupName ?? null,
+            'CustomerCategoryID' => $deal->CustomerCategoryID,
+            'customergroup_name' => $deal->customerGroup->CategoryName ?? null,
+            'CustomerID' => $deal->CustomerID,
+            'customer_name' => $deal->customer
+                ? $deal->customer->acc_main . ' - ' . $deal->customer->CustomerName
+                : null,
+
+            // Pricing
+            'DiscountAmount' => $deal->DiscountAmount,
+            'DiscountPercentage' => $deal->DiscountPercentage,
+            'UnitPrice' => $deal->UnitPrice,
+
+            // Dates
+            'StartDate' => $deal->StartDate,
+            'EndDate' => $deal->EndDate,
+        ]);
+    }
+
+
+    public function update(UpdateSpecialDealsRequest $request, $id)
+    {
+        $deal = SpecialDeals::findOrFail($id);
+
+        $deal->update($request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deal updated successfully'
+        ]);
     }
 
     /**
