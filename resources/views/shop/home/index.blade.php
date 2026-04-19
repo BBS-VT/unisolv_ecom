@@ -120,12 +120,43 @@
         .tier-special { background-color: #fff3e0; color: #f57c00; }
         .tier-premium { background-color: #e8f5e8; color: #388e3c; }
 
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            background-color: #6c757d;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero-section.has-background-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 0;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
     </style>
 @endsection
 
 @section('content')
 <main>
-    <section class="section-header bg-secondary text-white">
+    @php
+        $heroBackgroundImagePath = 'shop/images/hero-banner.jpg';
+        $hasHeroBackgroundImage = file_exists(public_path($heroBackgroundImagePath));
+        $heroStyle = $hasHeroBackgroundImage
+            ? "background-image: url('" . asset($heroBackgroundImagePath) . "');"
+            : '';
+        $heroClass = $hasHeroBackgroundImage ? 'hero-section has-background-image' : 'hero-section bg-secondary';
+    @endphp
+
+    <section class="{{ $heroClass }} text-white" style="{{ $heroStyle }}">
         <div class="container">
             <div class="row justify-content-between align-items-center">
                 <div class="col-12 col-md-7 col-lg-6 text-center text-md-left">
