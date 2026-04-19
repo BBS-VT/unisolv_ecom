@@ -124,9 +124,17 @@
             position: relative;
             overflow: hidden;
             background-color: #6c757d;
-            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        .hero-section:not(.has-background-image) {
+            background-size: cover;
+        }
+
+        .hero-section.has-background-image {
+            background-size: contain;
+            background-position: center center;
         }
 
         .hero-section.has-background-image::before {
