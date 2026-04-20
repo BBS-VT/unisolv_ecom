@@ -126,6 +126,10 @@
             background-color: #6c757d;
             background-position: center;
             background-repeat: no-repeat;
+            background-size: cover;
+            min-height: clamp(320px, 45vw, 620px);
+            display: flex;
+            align-items: center;
         }
 
         .hero-section:not(.has-background-image) {
@@ -133,7 +137,6 @@
         }
 
         .hero-section.has-background-image {
-            background-size: contain;
             background-position: center center;
         }
 
