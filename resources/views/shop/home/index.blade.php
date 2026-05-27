@@ -2,7 +2,7 @@
 
 @section('title', __('Shop Home'))
 
-@section('styles')
+@push('styles')
     <link href="{{ URL::asset('build/libs/nouislider/nouislider.min.css') }}" rel="stylesheet" type="text/css" />
 
     <style>
@@ -120,72 +120,236 @@
         .tier-special { background-color: #fff3e0; color: #f57c00; }
         .tier-premium { background-color: #e8f5e8; color: #388e3c; }
 
-        .hero-section {
+        .store-hero {
             position: relative;
+            min-height: 620px;
+            color: #ffffff;
             overflow: hidden;
-            background-color: #6c757d;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            min-height: clamp(320px, 45vw, 620px);
-            display: flex;
-            align-items: center;
         }
 
-        .hero-section:not(.has-background-image) {
-            background-size: cover;
-        }
-
-        .hero-section.has-background-image {
-            background-position: center center;
-        }
-
-        .hero-section.has-background-image::before {
-            content: '';
+        .store-hero-image {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
         }
 
-        .hero-section .container {
-            position: relative;
+        .store-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(8, 21, 39, 0.86) 0%, rgba(8, 21, 39, 0.66) 38%, rgba(8, 21, 39, 0.18) 75%);
             z-index: 1;
         }
 
+        .store-hero::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 38%;
+            background: linear-gradient(180deg, rgba(248, 249, 250, 0) 0%, #ffffff 100%);
+            pointer-events: none;
+        }
+
+        .store-hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .store-hero-content {
+            max-width: 650px;
+            padding: 115px 0 145px;
+        }
+
+        .store-hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: uppercase;
+        }
+
+        .store-hero-title {
+            margin: 1.35rem 0 1rem;
+            color: #ffffff;
+            font-size: clamp(2.5rem, 5vw, 4.75rem);
+            font-weight: 800;
+            line-height: 1.02;
+        }
+
+        .store-hero-copy {
+            max-width: 560px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.12rem;
+            line-height: 1.7;
+        }
+
+        .store-hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            margin-top: 2rem;
+        }
+
+        .store-hero-actions .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.55rem;
+            border-color: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            padding: 0.85rem 1.2rem;
+            font-weight: 700;
+            box-shadow: none;
+        }
+
+        .store-hero-actions .btn:hover,
+        .store-hero-actions .btn:focus {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+
+        .store-hero-highlights {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            max-width: 760px;
+            margin-top: -72px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .store-hero-highlight {
+            min-height: 112px;
+            padding: 1.25rem;
+            border: 1px solid rgba(13, 110, 253, 0.12);
+            border-radius: 0.5rem;
+            background: #ffffff;
+            box-shadow: 0 18px 40px rgba(15, 35, 55, 0.13);
+        }
+
+        .store-hero-highlight i {
+            color: #0d6efd;
+            font-size: 1.45rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .store-hero-highlight h6 {
+            margin-bottom: 0.35rem;
+            font-weight: 800;
+        }
+
+        .store-hero-highlight p {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 991px) {
+            .store-hero {
+                min-height: auto;
+            }
+
+            .store-hero-image {
+                object-position: center top;
+            }
+
+            .store-hero-content {
+                padding: 88px 0 126px;
+            }
+
+            .store-hero-highlights {
+                grid-template-columns: 1fr;
+                margin-top: -54px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .store-hero-overlay {
+                background: linear-gradient(180deg, rgba(8, 21, 39, 0.9) 0%, rgba(8, 21, 39, 0.58) 100%);
+            }
+
+            .store-hero-content {
+                padding: 70px 0 110px;
+            }
+
+            .store-hero-title {
+                font-size: 2.35rem;
+            }
+
+            .store-hero-copy {
+                font-size: 1rem;
+            }
+        }
     </style>
-@endsection
+@endpush
 
 @section('content')
 <main>
-    @php
-        $heroBackgroundImagePath = 'shop/images/hero-banner.jpg';
-        $hasHeroBackgroundImage = file_exists(public_path($heroBackgroundImagePath));
-        $heroStyle = $hasHeroBackgroundImage
-            ? "background-image: url('" . asset($heroBackgroundImagePath) . "');"
-            : '';
-        $heroClass = $hasHeroBackgroundImage ? 'hero-section has-background-image' : 'hero-section bg-secondary';
-    @endphp
-
-    <section class="{{ $heroClass }} text-white" style="{{ $heroStyle }}">
+    <section class="store-hero" aria-label="{{ __('Store welcome') }}">
+        <img
+            src="{{ asset('shop/images/hero-banner.jpg') }}"
+            class="store-hero-image"
+            alt="{{ __('Exterior view of the store') }}"
+        >
+        <div class="store-hero-overlay" aria-hidden="true"></div>
         <div class="container">
-            <div class="row justify-content-between align-items-center">
-                <div class="col-12 col-md-7 col-lg-6 text-center text-md-left">
-                    <h1 class="display-2 mb-4">{{ __('Welcome to our ') }} <br class="d-none d-md-inline">{{ __('Store') }}</h1>
-                    <p class="lead mb-4 text-muted">{{ __('Browse our products and discover competitive wholesale pricing. Login to access your negotiated rates.') }}</p>
-                    <a href="{{ route('shop.products.index') }}" class="btn btn-tertiary me-3 animate-up-2">
-                        <i class="fas fa-shopping-bag me-2"></i> {{ __('Shop Now') }}
+            <div class="store-hero-content">
+                <span class="store-hero-eyebrow">
+                    <i class="fas fa-store"></i>
+                    {{ __('Shop online from our physical store') }}
+                </span>
+                <h1 class="store-hero-title">{{ __('Reliable products, ready for your business') }}</h1>
+                <p class="store-hero-copy">
+                    {{ __('Browse our online catalogue, sign in for your negotiated pricing, and order from the same trusted team you know in store.') }}
+                </p>
+                <div class="store-hero-actions">
+                    <a href="{{ route('shop.products.index') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>{{ __('Shop Products') }}
                     </a>
-                </div>
-
-                <div class="col-12 col-md-5 d-none d-md-block text-center">
-                    <img src="{{ asset('shop/images/shop_home.png') }}" alt="">
+                    @guest
+                        <button type="button" class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-2"></i>{{ __('Login for Pricing') }}
+                        </button>
+                    @else
+                        <a href="{{ route('shop.cart.show') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-shopping-cart me-2"></i>{{ __('View Cart') }}
+                        </a>
+                    @endguest
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-5">
+    <section class="container store-hero-highlights" aria-label="{{ __('Store benefits') }}">
+        <div class="store-hero-highlight">
+            <i class="fas fa-tags"></i>
+            <h6>{{ __('Account Pricing') }}</h6>
+            <p>{{ __('Sign in to see pricing matched to your customer tier.') }}</p>
+        </div>
+        <div class="store-hero-highlight">
+            <i class="fas fa-boxes"></i>
+            <h6>{{ __('Wide Catalogue') }}</h6>
+            <p>{{ __('Browse categories and featured products from one place.') }}</p>
+        </div>
+        <div class="store-hero-highlight">
+            <i class="fas fa-headset"></i>
+            <h6>{{ __('Local Support') }}</h6>
+            <p>{{ __('Order online with support from the team at the store.') }}</p>
+        </div>
+    </section>
+
+
+    <section class="py-5 mt-4">
         <div class="container">
             <h2 class="text-center mb-5">{{ __('Shop by Category') }}</h2>
             <div class="row">
