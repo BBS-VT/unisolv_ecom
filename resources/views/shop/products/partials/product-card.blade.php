@@ -134,11 +134,23 @@
     {{-- STOCK STATUS --}}
     <div class="mt-2">
         @if(\App\Helpers\Features::showStock())
-            <x-stock-breakdown :product="$product" />
-            {{--@if($product->stockHolding && $product->stockHolding->QuantityOnHand > 10)
-                <small class="text-success">{{ __('In Stock') }}</small>
-            @elseif($product->stockHolding && $product->stockHolding->QuantityOnHand > 0)
-                <small class="text-warning">{{ __('Low Stock') }} ({{ $product->stockHolding->QuantityOnHand }})</small>--}}
+            @php
+                $quantityOnHand = $product->stockHolding ? (float) $product->stockHolding->QuantityOnHand : 0;
+            @endphp
+
+            @if($quantityOnHand > 10)
+                <span class="badge bg-success">
+                    <i class="bi bi-check-circle me-1"></i>{{ __('In Stock') }}
+                </span>
+            @elseif($quantityOnHand > 0)
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ __('Low Stock') }} ({{ number_format($quantityOnHand) }})
+                </span>
+            @else
+                <span class="badge bg-danger">
+                    <i class="bi bi-x-circle me-1"></i>{{ __('Out of Stock') }}
+                </span>
+            @endif
         @elseif(\App\Helpers\Features::backordersEnabled())
             <small class="text-info">{{ __('Available for Backorder') }}</small>
         @else

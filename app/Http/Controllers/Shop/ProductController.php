@@ -20,7 +20,7 @@ class ProductController extends Controller
         $query = Product::query()
             ->where('status', true)
             ->forOnline()
-            ->with(['packageType', 'stockHolding', 'activePromotion']);
+            ->with(['media', 'stockHolding', 'activePromotion']);
 
         // Check for cart location lock
         $cartLocation = session('cart_location');
@@ -180,6 +180,7 @@ class ProductController extends Controller
         $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
             $q->where('status', true)->forOnline();
         }])
+            ->with('location')
             ->where('status', true);
 
         // If location is selected, show categories for that location OR available everywhere
@@ -317,7 +318,7 @@ class ProductController extends Controller
             ->whereHas('categories', function($q) use ($category) {
                 $q->where('product_categories.id', $category->id);
             })
-            ->with(['packageType', 'stockHolding']);
+            ->with(['media', 'stockHolding', 'activePromotion']);
 
         // Check for cart location lock
         $cartLocation = session('cart_location');
@@ -446,6 +447,7 @@ class ProductController extends Controller
         $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
             $q->where('status', true)->forOnline();
         }])
+            ->with('location')
             ->where('status', true);
 
         // If location is selected, show categories for that location OR available everywhere
