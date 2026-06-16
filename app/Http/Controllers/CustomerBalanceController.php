@@ -6,6 +6,7 @@ use App\Jobs\ProcessCustomerBalanceImport;
 use App\Models\CustomerBalance;
 use App\Models\ImportJob;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,6 +48,45 @@ class CustomerBalanceController extends Controller
         Session::put('import_job_id', $importJob->id);
 
         return back();
+    }
+
+    /**
+     * Process the import of customer balances via API (called from on-premise POS sync script)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function importFromApi(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+        ]);
+
+        $importJob = $this->startApiImport($request->file('import_file'), $request->user());
+
+        return response()->json([
+            'status'        => 'queued',
+            'import_job_id' => $importJob->id,
+        ], 202);
+    }
+
+    private function startApiImport(UploadedFile $file, $user): ImportJob
+    {
+        $path     = $file->store('temp');
+        $filename = $file->getClientOriginalName();
+
+        $importJob = ImportJob::create([
+            'filename'        => $filename,
+            'total_rows'      => 0,
+            'processed_rows'  => 0,
+            'status'          => ImportJob::STATUS_PENDING,
+            'imported_by'     => $user?->id,
+            'started_at'      => now(),
+        ]);
+
+        ProcessCustomerBalanceImport::dispatch($path, $importJob->id);
+
+        return $importJob;
     }
 
     public function download()
