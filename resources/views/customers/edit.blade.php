@@ -108,9 +108,9 @@
                                 <div class="form-group bootstrap-select-1">
                                     <label for="BillToCustomerID">{{ trans('cruds.customer.fields.billing') }}</label>
                                     <select class="select2 form-control mb-3 {{ $errors->has('BillToCustomerID') ? 'is-invalid' : '' }}" style="width: 100%; height:36px;" name="customer[BillToCustomerID]">
-                                        @if( $customer->BillToCustomerID !== 9999 )
+                                        @if( !is_null($customer->BillToCustomerID) && $customer->BillToCustomerID !== 9999 )
                                             @foreach($billingCustomers as $id => $billingCustomer)
-                                                <option value="{{ $id }}" {{ ($billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>
+                                                <option value="{{ $id }}" {{ ($customer->billingCustomer && $billingCustomer == $customer->billingCustomer->id) ? 'selected' : '' }}>{{ $billingCustomer }} </option>
                                             @endforeach
                                         @else
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
@@ -151,14 +151,14 @@
                                 <div class="form-group">
                                     <label for="BuyingGroupID">{{ trans('cruds.customer.fields.contract') }}</label>
                                     <select class="select2 form-control mb-3 form-select {{ $errors->has('BuyingGroupID') ? 'is-invalid' : '' }}" name="BuyingGroupID">
-                                        @if( $customer->BuyingGroupID == 9999 )
+                                        @if( is_null($customer->BuyingGroupID) || $customer->BuyingGroupID == 9999 )
                                             <option value="null" selected>{{ __('global.pleaseSelect') }}</option>
                                             @foreach($buyingGroups as $id => $buyingGroup)
                                                 <option value="{{ $id }}" >{{ $buyingGroup }}</option>
                                             @endforeach
                                         @else
                                             @foreach($buyingGroups as $id => $buyingGroup)
-                                                <option value="{{ $id }}" {{ ($buyingGroup == $customer->buyingGroup->BuyingGroupName) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
+                                                <option value="{{ $id }}" {{ ($customer->buyingGroup && $buyingGroup == $customer->buyingGroup->BuyingGroupName) ? 'selected' : '' }}> {{ $buyingGroup }} </option>
                                             @endforeach
                                         @endif
                                     </select>

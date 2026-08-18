@@ -175,13 +175,24 @@ class CustomersController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        $customer = Customer::create($request->all());
-        $customer->discount_allowed = $request->has('discount_allowed') ? 0 : 1;
+        // Same issue as update(): BillToCustomerID, CustomerCategoryID, BuyingGroupID
+        // and SalesRepID are plain foreign-key columns (not pivot/many-to-many
+        // relations) and are already in Customer::$fillable, so Customer::create()
+        // sets them directly. The old ->sync() calls below were invalid for these
+        // relation types (billingCustomer/customerCategory/buyingGroup/salesrep are
+        // hasOne/belongsTo, which have no sync() method) and would throw a fatal
+        // error the moment this method ran.
+        $data = $request->except('customer');
 
-        $customer->billingCustomer()->sync($request->input('customer[BillToCustomerID]', []));
-        $customer->customerCategory()->sync($request->input('CustomerCategoryID', []));
-        $customer->buyingGroup()->sync($request->input('BuyingGroupID', []));
-        $customer->salesrep()->sync($request->input('SalesRepID', []));
+        // The billing-customer select posts as customer[BillToCustomerID]. The
+        // create form's "please select" option submits an empty string for any of
+        // these dropdowns; normalize that (and null) to a real null FK value.
+        $billToCustomerId = $request->input('customer.BillToCustomerID');
+        $data['BillToCustomerID'] = in_array($billToCustomerId, [null, ''], true)
+            ? null
+            : $billToCustomerId;
+
+        $customer = Customer::create($data);
 
         return redirect()->route('customers.index');
     }
@@ -268,12 +279,23 @@ class CustomersController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        //echo "<pre>"; print_r($customer); die;
-        $customer->update($request->all());
-        $customer->billingCustomer()->sync($request->input('billingCustomer', []));
-        $customer->customerCategory()->sync($request->input('customerCategory', []));
-        $customer->buyingGroups()->sync($request->input('buyingGroups', []));
-        $customer->salesrep()->sync($request->input('salesrep', []));
+        // BillToCustomerID, CustomerCategoryID, BuyingGroupID and SalesRepID are all
+        // plain foreign-key columns on customers (not pivot/many-to-many relations),
+        // and are already in Customer::$fillable, so a normal update() sets them.
+        // The old ->sync() calls below were invalid for these relation types
+        // (billingCustomer/customerCategory/salesrep are hasOne/belongsTo, which have
+        // no sync() method) and 'buyingGroups' didn't match any relation on the model
+        // at all — either would throw a fatal error the moment this method ran.
+        $data = $request->except('customer');
+
+        // The billing-customer select posts as customer[BillToCustomerID], and uses
+        // the string "null" for "no billing customer" — normalize both to a real FK value.
+        $billToCustomerId = $request->input('customer.BillToCustomerID');
+        $data['BillToCustomerID'] = in_array($billToCustomerId, [null, 'null'], true)
+            ? null
+            : $billToCustomerId;
+
+        $customer->update($data);
 
         return redirect()->route('customers.index');
     }
