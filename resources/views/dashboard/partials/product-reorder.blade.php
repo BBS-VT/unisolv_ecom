@@ -25,7 +25,7 @@
                                 <div class="d-flex align-items-center">
                                     <!-- Product Image/Icon -->
                                     <div class="flex-shrink-0 me-3">
-                                        <div class="avatar-sm rounded" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        <div class="avatar-sm rounded" style="background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);">
                                             <div class="avatar-title rounded">
                                                 <i class="mdi mdi-package-variant text-white"></i>
                                             </div>
@@ -187,14 +187,14 @@
     }
 
     .btn-soft-primary {
-        background-color: rgba(102, 126, 234, 0.18);
-        color: #667eea;
+        background-color: rgba(28, 117, 188, 0.18);
+        color: #1C75BC;
         border: none;
         transition: all 0.3s ease;
     }
 
     .btn-soft-primary:hover {
-        background-color: #667eea;
+        background-color: #1C75BC;
         color: white;
         transform: scale(1.1);
     }
@@ -216,7 +216,7 @@
 
     /* Reorder rate color indicators */
     .text-success { color: #0acf97 !important; }
-    .text-info { color: #4facfe !important; }
+    .text-info { color: var(--bs-info) !important; }
     .text-warning { color: #ffbc00 !important; }
     .text-secondary { color: #6c757d !important; }
 

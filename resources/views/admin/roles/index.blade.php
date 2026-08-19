@@ -35,7 +35,7 @@
         }
 
         .roles-card .card-title i {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         /* Table Enhancements */
@@ -73,9 +73,9 @@
             font-weight: 600;
             border-radius: 20px;
             margin: 0.125rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-            color: #667eea;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(28, 117, 188, 0.15) 0%, rgba(42, 48, 66, 0.15) 100%);
+            color: #1C75BC;
+            border: 1px solid rgba(28, 117, 188, 0.3);
         }
 
         /* Action Buttons */
@@ -94,7 +94,7 @@
 
         .action-btn:hover {
             background-color: #f8f9fa;
-            border-color: #667eea;
+            border-color: #1C75BC;
             transform: translateY(-2px);
         }
 
@@ -104,23 +104,23 @@
 
         .action-btn.delete-btn:hover {
             background-color: #fff5f5;
-            border-color: #dc3545;
+            border-color: var(--bs-danger);
         }
 
         /* Add Role Button */
         .btn-add-role {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border: none;
             padding: 0.625rem 1.25rem;
             font-weight: 500;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
             transition: all 0.3s ease;
         }
 
         .btn-add-role:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 16px rgba(28, 117, 188, 0.4);
         }
 
         /* Role Name Styling */
@@ -133,7 +133,7 @@
         }
 
         .role-name i {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         /* Page Title */
@@ -164,7 +164,7 @@
         }
 
         .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice {
-            background-color: #667eea;
+            background-color: #1C75BC;
             border: none;
             color: white;
         }
@@ -535,7 +535,7 @@
                     html: '{{ __("global.delete_role_warning") }}<br><strong>' + roleName + '</strong>',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
+                    confirmButtonColor: 'var(--bs-danger)',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="mdi mdi-delete me-1"></i> {{ __("global.yes_delete") }}',
                     cancelButtonText: '<i class="mdi mdi-close me-1"></i> {{ __("global.cancel") }}',
@@ -571,7 +571,7 @@
                                     title: '{{ __("global.deleted") }}!',
                                     text: '{{ __("global.role_deleted_successfully") }}',
                                     icon: 'success',
-                                    confirmButtonColor: '#667eea',
+                                    confirmButtonColor: '#1C75BC',
                                     confirmButtonText: '{{ __("global.ok") }}',
                                     customClass: {
                                         confirmButton: 'btn btn-primary px-4'
@@ -587,7 +587,7 @@
                                     title: '{{ __("global.error") }}!',
                                     text: xhr.responseJSON?.message || '{{ __("global.error_deleting_role") }}',
                                     icon: 'error',
-                                    confirmButtonColor: '#667eea',
+                                    confirmButtonColor: '#1C75BC',
                                     confirmButtonText: '{{ __("global.ok") }}',
                                     customClass: {
                                         confirmButton: 'btn btn-primary px-4'

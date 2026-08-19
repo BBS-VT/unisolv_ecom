@@ -206,12 +206,12 @@
 
     .accordion-button:not(.collapsed) {
         background-color: #e7f1ff;
-        color: #667eea;
+        color: #1C75BC;
     }
 
     .accordion-button:focus {
         box-shadow: none;
-        border-color: #667eea;
+        border-color: #1C75BC;
     }
 
     .accordion-button::after {
@@ -254,12 +254,12 @@
 
     /* Search highlight */
     .permission-item.highlight {
-        background-color: #fff3cd;
+        background-color: rgba(var(--bs-warning-rgb), 0.15);
         animation: highlight-fade 2s ease;
     }
 
     @keyframes highlight-fade {
-        from { background-color: #fff3cd; }
+        from { background-color: rgba(var(--bs-warning-rgb), 0.15); }
         to { background-color: transparent; }
     }
 

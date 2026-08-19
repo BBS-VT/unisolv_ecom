@@ -6,11 +6,11 @@
     <style>
         /* Modern Header with Gradient */
         .customer-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 16px rgba(28, 117, 188, 0.2);
             color: white;
             position: relative;
             overflow: hidden;
@@ -122,19 +122,19 @@
         }
 
         .balance-card.bf {
-            border-left: 4px solid #ffc107;
+            border-left: 4px solid var(--bs-warning);
         }
 
         .balance-card.current {
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #1C75BC;
         }
 
         .balance-card.overdue {
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid var(--bs-danger);
         }
 
         .balance-card.paid {
-            border-left: 4px solid #28a745;
+            border-left: 4px solid var(--bs-success);
         }
 
         .balance-card .card-body {
@@ -152,23 +152,23 @@
         }
 
         .balance-icon.warning {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
+            background: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
         }
 
         .balance-icon.primary {
-            background: rgba(102, 126, 234, 0.15);
-            color: #667eea;
+            background: rgba(28, 117, 188, 0.15);
+            color: #1C75BC;
         }
 
         .balance-icon.danger {
-            background: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
+            background: rgba(var(--bs-danger-rgb), 0.15);
+            color: var(--bs-danger);
         }
 
         .balance-icon.success {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
         }
 
         .balance-label {
@@ -197,13 +197,13 @@
         }
 
         .balance-info-btn:hover {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         .balance-detail-link {
             font-size: 0.875rem;
             font-weight: 500;
-            color: #667eea;
+            color: #1C75BC;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -213,7 +213,7 @@
 
         .balance-detail-link:hover {
             gap: 0.5rem;
-            color: #5568d3;
+            color: #2A3042;
         }
 
         /* Tabs Enhancement */
@@ -237,14 +237,14 @@
         }
 
         .nav-pills .nav-link:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            background: rgba(28, 117, 188, 0.1);
+            color: #1C75BC;
         }
 
         .nav-pills .nav-link.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
         }
 
         .nav-pills .nav-link.active i {
@@ -312,7 +312,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
             margin-right: 1rem;
             flex-shrink: 0;
@@ -338,20 +338,20 @@
 
         /* Badge Enhancements */
         .badge-soft-success {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background-color: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
             font-weight: 600;
         }
 
         .badge-soft-danger {
-            background-color: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
+            background-color: rgba(var(--bs-danger-rgb), 0.15);
+            color: var(--bs-danger);
             font-weight: 600;
         }
 
         .badge-soft-warning {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
+            background-color: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
             font-weight: 600;
         }
 
@@ -387,22 +387,22 @@
         }
 
         .price-level-label:hover {
-            border-color: #667eea;
-            background-color: rgba(102, 126, 234, 0.05);
+            border-color: #1C75BC;
+            background-color: rgba(28, 117, 188, 0.05);
         }
 
         .custom-price-level.active .price-level-label,
         .custom-price-level input[type="radio"]:checked + .price-level-label {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            border-color: #1C75BC;
+            background: linear-gradient(135deg, rgba(28, 117, 188, 0.1) 0%, rgba(42, 48, 66, 0.1) 100%);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.2);
         }
 
         .level-indicator {
             font-size: 1.5rem;
             font-weight: 700;
             color: white;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 50%;
             width: 56px;
             height: 56px;
@@ -427,8 +427,8 @@
         }
 
         .form-check-input:checked {
-            background-color: #667eea;
-            border-color: #667eea;
+            background-color: #1C75BC;
+            border-color: #1C75BC;
         }
 
         /* Last Edit Info */
@@ -445,7 +445,7 @@
         }
 
         .last-edit-info i {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         /* Empty State */
@@ -519,7 +519,7 @@
         }
 
         .card-title-custom i {
-            color: #667eea;
+            color: #1C75BC;
         }
     </style>
 @endpush

@@ -6,11 +6,11 @@
     <style>
         /* User Header with Gradient */
         .user-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 16px rgba(28, 117, 188, 0.2);
             color: white;
             position: relative;
             overflow: hidden;
@@ -141,7 +141,7 @@
         }
 
         .info-card .card-title i {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         /* Detail Row Styling */
@@ -186,29 +186,29 @@
         }
 
         .detail-icon.primary {
-            background: rgba(102, 126, 234, 0.15);
-            color: #667eea;
+            background: rgba(28, 117, 188, 0.15);
+            color: #1C75BC;
         }
 
         .detail-icon.success {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
         }
 
         .detail-icon.info {
-            background: rgba(23, 162, 184, 0.15);
-            color: #17a2b8;
+            background: rgba(var(--bs-info-rgb), 0.15);
+            color: var(--bs-info);
         }
 
         .detail-icon.warning {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
+            background: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
         }
 
         /* Status Badges */
         .status-active {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background-color: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-weight: 600;
@@ -218,8 +218,8 @@
         }
 
         .status-inactive {
-            background-color: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
+            background-color: rgba(var(--bs-danger-rgb), 0.15);
+            color: var(--bs-danger);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-weight: 600;

@@ -369,7 +369,7 @@
                                 icon: 'success',
                                 title: 'Success!',
                                 text: categoryId ? 'Department updated successfully' : 'Department added successfully',
-                                confirmButtonColor: '#667eea'
+                                confirmButtonColor: '#1C75BC'
                             }).then((result) => {
                                 // Reload page after user clicks OK
                                 window.location.reload();
@@ -379,7 +379,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: data.message || 'Something went wrong. Please try again.',
-                                confirmButtonColor: '#667eea'
+                                confirmButtonColor: '#1C75BC'
                             });
                         }
                     })
@@ -389,7 +389,7 @@
                             icon: 'error',
                             title: 'Oops...',
                             text: 'An error occurred. Please try again.',
-                            confirmButtonColor: '#667eea'
+                            confirmButtonColor: '#1C75BC'
                         });
                     });
             });
@@ -440,7 +440,7 @@
                                 icon: 'error',
                                 title: 'Error',
                                 text: data.message || 'Failed to update department status',
-                                confirmButtonColor: '#667eea'
+                                confirmButtonColor: '#1C75BC'
                             });
                         }
                     },
@@ -453,7 +453,7 @@
                             icon: 'error',
                             title: 'Oops...',
                             text: 'An error occurred while updating the status. Please try again.',
-                            confirmButtonColor: '#667eea'
+                            confirmButtonColor: '#1C75BC'
                         });
                     }
                 });

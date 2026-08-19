@@ -43,10 +43,10 @@
         }
 
         .filter-buttons .btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-color: transparent;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
         }
 
         .filter-buttons .btn:hover:not(.active) {
@@ -55,7 +55,7 @@
         }
 
         .page-header-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;

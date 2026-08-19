@@ -32,7 +32,7 @@
         }
 
         .balance-current {
-            border-start-color: #2a76f4;
+            border-start-color: #1C75BC;
         }
 
         .balance-30 {
@@ -70,11 +70,11 @@
         }
 
         .action-btn:hover {
-            background-color: rgba(42, 118, 244, 0.1);
+            background-color: rgba(28, 117, 188, 0.1);
         }
 
         .welcome-card {
-            background-image: linear-gradient(to right, #2a76f4, #4a8af4);
+            background-image: linear-gradient(to right, #1C75BC, #2A3042);
             color: white;
             border-radius: 10px;
             padding: 20px;

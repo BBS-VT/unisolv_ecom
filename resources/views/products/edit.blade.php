@@ -21,7 +21,7 @@
         }
 
         .pack-size-family-display .current {
-            background-color: #e3f2fd;
+            background-color: rgba(28, 117, 188, 0.12);
         }
 
         .pack-size-member {
@@ -73,14 +73,14 @@
         /* Make remove link more visible */
         #photo-dropzone .dz-preview .dz-remove {
             font-size: 0.85rem;
-            color: #dc3545;
+            color: var(--bs-danger);
             text-decoration: none;
             display: block;
             margin-top: 0.5rem;
         }
 
         #photo-dropzone .dz-preview .dz-remove:hover {
-            color: #c82333;
+            color: var(--bs-danger-text-emphasis);
             text-decoration: underline;
         }
 
@@ -91,11 +91,11 @@
         }
 
         #photo-dropzone .dz-preview.dz-success .dz-image {
-            border: 2px solid #28a745;
+            border: 2px solid var(--bs-success);
         }
 
         #photo-dropzone .dz-preview.dz-error .dz-image {
-            border: 2px solid #dc3545;
+            border: 2px solid var(--bs-danger);
         }
 
         /* Progress bar styling */
@@ -108,7 +108,7 @@
         }
 
         #photo-dropzone .dz-preview .dz-progress .dz-upload {
-            background-color: #667eea;
+            background-color: #1C75BC;
             height: 100%;
         }
     </style>

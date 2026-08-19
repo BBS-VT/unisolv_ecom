@@ -46,9 +46,9 @@
             vertical-align: baseline;
             border-radius: 0.25rem;
         }
-        .stock-high { background-color: #d4edda; color: #155724; }
-        .stock-medium { background-color: #fff3cd; color: #856404; }
-        .stock-low { background-color: #f8d7da; color: #721c24; }
+        .stock-high { background-color: rgba(var(--bs-success-rgb), 0.15); color: var(--bs-success); }
+        .stock-medium { background-color: rgba(var(--bs-warning-rgb), 0.15); color: var(--bs-warning); }
+        .stock-low { background-color: rgba(var(--bs-danger-rgb), 0.15); color: var(--bs-danger); }
         .dt-buttons {
             margin-bottom: 1rem;
         }
@@ -254,7 +254,7 @@
                     text: `You are about to delete "${productName}". This action cannot be undone!`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
+                    confirmButtonColor: 'var(--bs-danger)',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="fas fa-trash me-1"></i>Yes, delete it!',
                     cancelButtonText: '<i class="fas fa-times me-1"></i>Cancel',

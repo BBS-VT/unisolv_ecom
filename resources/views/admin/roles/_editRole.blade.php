@@ -196,7 +196,7 @@
 
     /* Search highlight */
     .permission-item-edit.highlight {
-        background-color: #fff3cd;
+        background-color: rgba(var(--bs-warning-rgb), 0.15);
         animation: highlight-fade 2s ease;
     }
 

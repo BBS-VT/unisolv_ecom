@@ -25,7 +25,7 @@
         .product-price {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #28a745;
+            color: var(--bs-success);
         }
         .product-stock-label {
             display: inline-block;
@@ -35,16 +35,16 @@
             font-weight: 500;
         }
         .in-stock {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
         }
         .low-stock {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
         }
         .out-of-stock {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: rgba(var(--bs-danger-rgb), 0.15);
+            color: var(--bs-danger);
         }
         .barcode-display {
             background-color: #f8f9fa;

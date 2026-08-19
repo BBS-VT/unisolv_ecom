@@ -14,7 +14,7 @@
     @include('layouts.head-css')
     <style>
         .auth-header-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
         }
 
         .card {
@@ -29,17 +29,17 @@
 
         /* Optional: Add subtle animation on form focus */
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #1C75BC;
+            box-shadow: 0 0 0 0.2rem rgba(28, 117, 188, 0.25);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border: none;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #63398b 100%);
+            background: linear-gradient(135deg, #2A3042 0%, #1C75BC 100%);
         }
     </style>
 </head>

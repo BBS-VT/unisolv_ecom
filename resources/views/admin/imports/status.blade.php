@@ -5,7 +5,7 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);">
                     <div class="card-body py-4">
                         <h1 class="text-white mb-0">
                             <i class="mdi mdi-database-import me-2"></i>Import Status

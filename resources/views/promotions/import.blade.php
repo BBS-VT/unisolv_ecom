@@ -480,7 +480,7 @@
 @push('styles')
     <style>
         .drag-over {
-            border: 2px dashed #007bff !important;
+            border: 2px dashed #1C75BC !important;
             background-color: #f8f9ff !important;
         }
 

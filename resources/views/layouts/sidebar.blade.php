@@ -5,7 +5,7 @@
             <ul class="metismenu list-unstyled" id="side-menu">
                 <li class="menu-title" key="t-menu">@lang('Menu')</li>
                 <li>
-                    @if(Auth::user()->roles('Sales Rep'))
+                    @if(Auth::user()->IsSalesperson == 1)
                         <a href="{{ route('sales.dashboard') }}">
                             <i class="bx bx-home-circle"></i><span>{{ __('Sales Dashboard') }}</span>
                         </a>

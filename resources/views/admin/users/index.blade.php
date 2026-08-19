@@ -35,7 +35,7 @@
         }
 
         .users-card .card-title i {
-            color: #667eea;
+            color: #1C75BC;
         }
 
         /* Table Enhancements */
@@ -76,18 +76,18 @@
         }
 
         .role-badge.admin {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
         }
 
         .role-badge.user {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background-color: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
         }
 
         .role-badge.manager {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
+            background-color: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
         }
 
         /* Action Buttons */
@@ -106,7 +106,7 @@
 
         .action-btn:hover {
             background-color: #f8f9fa;
-            border-color: #667eea;
+            border-color: #1C75BC;
             transform: translateY(-2px);
         }
 
@@ -116,23 +116,23 @@
 
         .action-btn.delete-btn:hover {
             background-color: #fff5f5;
-            border-color: #dc3545;
+            border-color: var(--bs-danger);
         }
 
         /* Add User Button */
         .btn-add-user {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border: none;
             padding: 0.625rem 1.25rem;
             font-weight: 500;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
             transition: all 0.3s ease;
         }
 
         .btn-add-user:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 16px rgba(28, 117, 188, 0.4);
         }
 
         /* User Name Styling */
@@ -170,8 +170,8 @@
         }
 
         .dataTables_wrapper .dataTables_filter input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #1C75BC;
+            box-shadow: 0 0 0 0.2rem rgba(28, 117, 188, 0.25);
         }
 
         /* Page Title */
@@ -217,7 +217,7 @@
         }
 
         .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__choice {
-            background-color: #667eea;
+            background-color: #1C75BC;
             border: none;
             color: white;
         }
@@ -241,12 +241,12 @@
         }
 
         #createUserForm .input-group:focus-within .input-group-text {
-            border-color: #667eea;
+            border-color: #1C75BC;
         }
 
         #createUserForm .input-group:focus-within .form-control {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: #1C75BC;
+            box-shadow: 0 0 0 0.2rem rgba(28, 117, 188, 0.25);
         }
 
         #togglePassword {
@@ -735,7 +735,7 @@
                     html: '{{ __("global.delete_user_warning") }}<br><strong>' + userName + '</strong>',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
+                    confirmButtonColor: 'var(--bs-danger)',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="mdi mdi-delete me-1"></i> {{ __("global.yes_delete") }}',
                     cancelButtonText: '<i class="mdi mdi-close me-1"></i> {{ __("global.cancel") }}',
@@ -771,7 +771,7 @@
                                     title: '{{ __("global.deleted") }}!',
                                     text: '{{ __("global.user_deleted_successfully") }}',
                                     icon: 'success',
-                                    confirmButtonColor: '#667eea',
+                                    confirmButtonColor: '#1C75BC',
                                     confirmButtonText: '{{ __("global.ok") }}',
                                     customClass: {
                                         confirmButton: 'btn btn-primary px-4'
@@ -787,7 +787,7 @@
                                     title: '{{ __("global.error") }}!',
                                     text: xhr.responseJSON?.message || '{{ __("global.error_deleting_user") }}',
                                     icon: 'error',
-                                    confirmButtonColor: '#667eea',
+                                    confirmButtonColor: '#1C75BC',
                                     confirmButtonText: '{{ __("global.ok") }}',
                                     customClass: {
                                         confirmButton: 'btn btn-primary px-4'

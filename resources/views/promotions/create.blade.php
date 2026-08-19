@@ -961,7 +961,7 @@
 @push('styles')
     <style>
         .promotion-type-fields {
-            border-start: 4px solid #e3f2fd;
+            border-start: 4px solid rgba(28, 117, 188, 0.3);
             padding-left: 15px;
             margin-left: 10px;
         }
@@ -986,19 +986,19 @@
         }
 
         .alert-info {
-            border-start-color: #17a2b8;
+            border-start-color: var(--bs-info);
         }
 
         .alert-success {
-            border-start-color: #28a745;
+            border-start-color: var(--bs-success);
         }
 
         .alert-warning {
-            border-start-color: #ffc107;
+            border-start-color: var(--bs-warning);
         }
 
         .alert-primary {
-            border-start-color: #007bff;
+            border-start-color: #1C75BC;
         }
 
         .form-check-label small {

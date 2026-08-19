@@ -46,9 +46,9 @@
             vertical-align: baseline;
             border-radius: 0.25rem;
         }
-        .stock-high { background-color: #d4edda; color: #155724; }
-        .stock-medium { background-color: #fff3cd; color: #856404; }
-        .stock-low { background-color: #f8d7da; color: #721c24; }
+        .stock-high { background-color: rgba(var(--bs-success-rgb), 0.15); color: var(--bs-success); }
+        .stock-medium { background-color: rgba(var(--bs-warning-rgb), 0.15); color: var(--bs-warning); }
+        .stock-low { background-color: rgba(var(--bs-danger-rgb), 0.15); color: var(--bs-danger); }
         .dt-buttons {
             margin-bottom: 1rem;
         }

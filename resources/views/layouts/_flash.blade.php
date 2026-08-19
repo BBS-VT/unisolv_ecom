@@ -6,7 +6,7 @@
                     title: "{{ preg_replace('/[\r\n]+/', ' ', Session::get('alert-' . $msg)) }}",
                     icon: "{{ $msg }}",
                     allowOutsideClick: true,
-                    confirmButtonColor: '#308AF3',
+                    confirmButtonColor: '#1C75BC',
                     confirmButtonText: "{{ __('global.ok') }}"
                 })
             });

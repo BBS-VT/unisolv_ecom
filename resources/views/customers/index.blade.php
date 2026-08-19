@@ -71,18 +71,18 @@
         }
 
         .status-active {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: rgba(var(--bs-success-rgb), 0.15);
+            color: var(--bs-success);
         }
 
         .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: rgba(var(--bs-danger-rgb), 0.15);
+            color: var(--bs-danger);
         }
 
         .status-suspended {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: rgba(var(--bs-warning-rgb), 0.15);
+            color: var(--bs-warning);
         }
 
         .btn-group-actions {
@@ -110,10 +110,10 @@
         }
 
         .filter-buttons .btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-color: transparent;
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
         }
 
         .filter-buttons .btn:hover:not(.active) {
@@ -122,7 +122,7 @@
         }
 
         .page-header-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
@@ -473,7 +473,7 @@
                     html: `Change status of <strong>${customerName}</strong> to <strong>${newStatus}</strong>?`,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#667eea',
+                    confirmButtonColor: '#1C75BC',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="mdi mdi-check me-1"></i>Yes, update it!',
                     cancelButtonText: '<i class="mdi mdi-close me-1"></i>Cancel',
@@ -534,7 +534,7 @@
                     html: `You are about to delete <strong>${customerName}</strong>. This action cannot be undone!`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
+                    confirmButtonColor: 'var(--bs-danger)',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="mdi mdi-delete me-1"></i>Yes, delete it!',
                     cancelButtonText: '<i class="mdi mdi-close me-1"></i>Cancel',

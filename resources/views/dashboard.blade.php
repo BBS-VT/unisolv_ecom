@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@push('style')
+@push('styles')
     <style>
         .nav-tabs .nav-link.active {
             background-color: #f8f9fa;
@@ -31,11 +31,11 @@
 
         /* Enhanced Page Title Area */
         .page-title-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 2px 8px rgba(28, 117, 188, 0.15);
         }
 
         .page-title-box h4 {
@@ -92,7 +92,7 @@
 
         /* Stats Cards Enhancement */
         .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             border: none;
             color: white;
         }
@@ -117,24 +117,24 @@
 
         /* Alternate gradient colors for variety */
         .stats-card-1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
         }
 
         .stats-card-2 {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #2A3042 0%, #1C75BC 100%);
         }
 
         .stats-card-3 {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #74788D 100%);
         }
 
         .stats-card-4 {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            background: linear-gradient(135deg, #74788D 0%, #2A3042 100%);
         }
 
         /* Revenue Info Card */
         .revenue-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
         }
 
@@ -175,14 +175,14 @@
         }
 
         .nav-tabs .nav-link:hover {
-            color: #667eea;
+            color: #1C75BC;
             border-color: transparent;
         }
 
         .nav-tabs .nav-link.active {
-            color: #667eea;
+            color: #1C75BC;
             background-color: transparent;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid #1C75BC;
             font-weight: 600;
         }
 
@@ -294,11 +294,11 @@
 
         .dropdown-item:hover {
             background-color: #f8f9fa;
-            color: #667eea;
+            color: #1C75BC;
         }
 
         .dropdown-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
         }
     </style>
@@ -704,7 +704,7 @@
                         width: 2,
                         colors: ['transparent']
                     },
-                    colors: ['#667eea'],
+                    colors: ['#1C75BC'],
                     series: [{
                         name: 'Revenue',
                         data: [0] // Start with placeholder
@@ -855,7 +855,7 @@
                         curve: 'smooth',
                         width: 3
                     },
-                    colors: ['#667eea'],
+                    colors: ['#1C75BC'],
                     series: [{
                         name: 'Revenue Trend',
                         data: yData
@@ -1028,7 +1028,7 @@
                         width: 2,
                         colors: ['#fff']
                     },
-                    colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b'],
+                    colors: ['#1C75BC', '#2A3042', '#f093fb', '#4facfe', '#43e97b'],
                     series: [1], // Placeholder
                     labels: ['Loading...'],
                     legend: {
