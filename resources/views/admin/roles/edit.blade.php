@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
+@push('styles')
 
 @endpush
 
@@ -81,7 +81,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@push('scripts')
 
 @endpush
 

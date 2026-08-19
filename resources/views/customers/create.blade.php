@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@push('style')
+@push('styles')
     <link href="{{ URL::asset('build/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/bootstrap-timepicker/timepicker/css/bootstrap-timepicker.min.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('build/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />

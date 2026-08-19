@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @push('styles')
 
@@ -348,7 +348,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@push('scripts')
     <script src="{{ asset('plugins/apex-charts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('pages/jquery.sales_dashboard.init.js') }}"></script>
 

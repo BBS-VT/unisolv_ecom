@@ -1,8 +1,8 @@
-@extends('layouts.app', ['page' => 'orders'])
+@extends('layouts.master', ['page' => 'orders'])
 
 @section('title', __('global.create_order'))
 
-@section('style')
+@push('styles')
     <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.css') }}" rel="stylesheet">
     <link href="{{ URL::asset('plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
@@ -27,7 +27,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@endsection
+@endpush
 
 @section('content')
 
@@ -162,7 +162,7 @@
 
 @endsection
 
-@section('script')
+@push('scripts')
     <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
     <script src="{{ URL::asset('plugins/timepicker/bootstrap-material-datetimepicker.js') }}"></script>
     <script src="{{ URL::asset('plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
@@ -280,4 +280,4 @@
         });
     });
 </script>
-@endsection
+@endpush

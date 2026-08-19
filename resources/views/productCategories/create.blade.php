@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
+@push('styles')
     <link href="{{ asset('/plugins/dropzone/basic.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('/plugins/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
 
@@ -113,7 +113,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@push('scripts')
     <script src="{{ asset('/plugins/dropify/js/dropify.min.js') }}"></script>
     <script src="{{ asset('/pages/jquery.form-upload.init.js') }}"></script>
     <script src="{{ asset('/plugins/dropzone/dropzone.js') }}"></script>

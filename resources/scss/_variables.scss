@@ -10,7 +10,7 @@ $sidebar-menu-item-color:                             #545a6d;
 $sidebar-menu-sub-item-color:                         #545a6d;
 $sidebar-menu-item-icon-color:                        #7f8387;
 $sidebar-menu-item-hover-color:                       #383c40;
-$sidebar-menu-item-active-color:                      #556ee6;
+$sidebar-menu-item-active-color:                      #1C75BC; // brand cerulean blue
 $sidebar-width:                                       250px;
 $sidebar-collapsed-width:                             70px;
 $sidebar-width-sm:                                    160px;
@@ -44,7 +44,7 @@ $footer-color:                                        #74788d;
 $topnav-bg:                                           $white;
 
 $menu-item-color:                                     #545a6d;
-$menu-item-active-color:                              #556ee6;
+$menu-item-active-color:                              #1C75BC; // brand cerulean blue
 
 // Right Sidebar
 $rightbar-width:                                      280px;
@@ -138,14 +138,20 @@ $colors: (
 // scss-docs-end colors-map
 
 // scss-docs-start theme-color-variables
-$primary:       $blue;
+// Brand palette: cerulean blue / dark blue / grey (see resources/scss/_variables.scss)
+// $primary  = cerulean blue (brand)
+// $dark     = dark blue, matched to the vertical sidebar's existing $sidebar-dark-bg (#2a3042)
+// $secondary = grey, already equal to $gray-600 (#74788d) — unchanged
+// success/warning/danger/info kept as Bootstrap's own semantic colours by design,
+// to preserve quick visual status distinction (credit hold, stock, etc.)
+$primary:       #1C75BC;
 $secondary:     $gray-600;
 $success:       $green;
 $info:          $cyan;
 $warning:       $yellow;
 $danger:        $red;
 $light:         $gray-200;
-$dark:          $gray-800;
+$dark:          #2A3042;
 // scss-docs-end theme-color-variables
 
 // scss-docs-start theme-colors-map

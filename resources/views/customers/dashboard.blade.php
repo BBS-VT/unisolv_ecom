@@ -1,8 +1,8 @@
-@extends('layouts.app', ['page' => 'dashboard'])
+@extends('layouts.master', ['page' => 'dashboard'])
 
 @section('title', __('Customer Dashboard'))
 
-@section('style')
+@push('styles')
     <style>
         .summary-card {
             transition: all 0.3s ease;
@@ -154,7 +154,7 @@
             }
         }
     </style>
-@endsection
+@endpush
 
 @section('content')
     <div class="container-fluid">

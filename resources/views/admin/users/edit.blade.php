@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
-@push('style')
+@push('styles')
     <link href="{{ URL::asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
@@ -156,7 +156,7 @@
 
 @endsection
 
-@push('custom-scripts')
+@push('scripts')
     <script src="{{ URL::asset('plugins/select2/select2.min.js') }}"></script>
 
     <script src="{{ URL::asset('pages/jquery.forms-advanced.js') }}"></script>

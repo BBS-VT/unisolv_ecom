@@ -1,4 +1,4 @@
-@extends('layouts.app', ['page' => 'settings'])
+@extends('layouts.master', ['page' => 'settings'])
 
 @section('title', __('global.edit'))
 

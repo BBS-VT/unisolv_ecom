@@ -1,4 +1,4 @@
-@extends('layouts.app', ['page' => 'profile'])
+@extends('layouts.master', ['page' => 'profile'])
 
 @section('title', __('Edit Profile'))
 
