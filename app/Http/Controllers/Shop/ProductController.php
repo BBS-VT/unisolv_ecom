@@ -177,24 +177,7 @@ class ProductController extends Controller
         }
 
         // Get categories for filter sidebar
-        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
-            $q->where('status', true)->forOnline();
-        }])
-            ->with('location')
-            ->where('status', true);
-
-        // If location is selected, show categories for that location OR available everywhere
-        if ($currentLocation) {
-            $categoriesQuery->where(function($q) use ($currentLocation) {
-                $q->where('location_id', $currentLocation->LocationCode)
-                    ->orWhereNull('location_id'); // Include "all locations" departments
-            });
-        }
-
-        $categories = $categoriesQuery
-            ->having('products_count', '>', 0)
-            ->orderBy('StockGroupName', 'asc')
-            ->get();
+        $categories = $this->categoriesForSidebar($currentLocation);
 
         $products = $query->paginate(Features::productsPerPage())->withQueryString();
 
@@ -205,6 +188,44 @@ class ProductController extends Controller
 
         //dd($products);
         return view('shop.products.index', compact('products', 'categories', 'currentLocation', 'selectedCategories'));
+    }
+
+    /**
+     * Build the department/category list for the filter sidebar.
+     *
+     * Mirrors the stock-availability rule applied to the product listing
+     * itself (see the query below and the matching check in index()/category()),
+     * so a category never shows a count that then filters down to zero
+     * products when clicked.
+     */
+    private function categoriesForSidebar(?Location $currentLocation)
+    {
+        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
+            $q->where('status', true)->forOnline();
+
+            if (!Features::backordersEnabled()) {
+                $q->whereHas('stockHolding', function ($sq) {
+                    $sq->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+                        ->groupBy('StockCode')
+                        ->havingRaw('total_quantity > 0');
+                });
+            }
+        }])
+            ->with('location')
+            ->where('status', true);
+
+        // If a location is selected, show categories for that location OR available everywhere
+        if ($currentLocation) {
+            $categoriesQuery->where(function ($q) use ($currentLocation) {
+                $q->where('location_id', $currentLocation->LocationCode)
+                    ->orWhereNull('location_id'); // Include "all locations" departments
+            });
+        }
+
+        return $categoriesQuery
+            ->having('products_count', '>', 0)
+            ->orderBy('StockGroupName', 'asc')
+            ->get();
     }
 
     public function show($slug)
@@ -444,24 +465,7 @@ class ProductController extends Controller
         }
 
         // Get categories for filter sidebar - same as index
-        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
-            $q->where('status', true)->forOnline();
-        }])
-            ->with('location')
-            ->where('status', true);
-
-        // If location is selected, show categories for that location OR available everywhere
-        if ($currentLocation) {
-            $categoriesQuery->where(function($q) use ($currentLocation) {
-                $q->where('location_id', $currentLocation->LocationCode)
-                    ->orWhereNull('location_id');
-            });
-        }
-
-        $categories = $categoriesQuery
-            ->having('products_count', '>', 0)
-            ->orderBy('StockGroupName', 'asc')
-            ->get();
+        $categories = $this->categoriesForSidebar($currentLocation);
 
         $products = $query->paginate(Features::productsPerPage());
 
