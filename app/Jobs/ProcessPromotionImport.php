@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Imports\PromotionImport;
 use App\Models\ImportJob;
+use App\Models\Promotion;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -61,6 +62,16 @@ class ProcessPromotionImport implements ShouldQueue
             Excel::import($importer, storage_path('app/' . $this->filePath));
 
             $result = $importer->getResults();
+
+            // Imported rows are always created as 'active' regardless of their
+            // dates, so sweep anything already past its end date to 'expired'.
+            $expiredCount = Promotion::markExpiredPromotions();
+            if ($expiredCount > 0) {
+                Log::info('Marked promotions as expired after API import', [
+                    'import_job_id' => $this->importJobId,
+                    'expired_count' => $expiredCount,
+                ]);
+            }
 
             $importJob->update([
                 'total_rows'       => $result['processed_rows'],

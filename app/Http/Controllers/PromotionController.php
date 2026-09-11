@@ -218,6 +218,16 @@ class PromotionController extends Controller
             // Process the import
             Excel::import($import, $file);
 
+            // Imported rows are always created as 'active' regardless of their
+            // dates, so sweep anything already past its end date to 'expired'.
+            $expiredCount = Promotion::markExpiredPromotions();
+            if ($expiredCount > 0) {
+                Log::info('Marked promotions as expired after import', [
+                    'expired_count' => $expiredCount,
+                    'admin_user' => auth()->id()
+                ]);
+            }
+
             // Get results
             $result = $import->getResults();
 

@@ -102,6 +102,28 @@ class Promotion extends Model
         return $query->where('is_imported', true);
     }
 
+    public function scopeExpiredByDate($query)
+    {
+        return $query->where('status', '!=', 'expired')
+            ->where('ends_at', '<', now());
+    }
+
+    /**
+     * Mark any promotion whose end date has already passed as 'expired'.
+     *
+     * Imports (both the web upload and the API import) always create rows
+     * with status 'active', regardless of the dates in the file - if the
+     * source file contains a promotion that already ended, it still shows
+     * as active until something corrects it. Call this once after an
+     * import batch (or on a schedule) to sweep those up.
+     *
+     * @return int Number of promotions updated
+     */
+    public static function markExpiredPromotions(): int
+    {
+        return static::expiredByDate()->update(['status' => 'expired']);
+    }
+
     /**
      * Accessors & Mutators
      */
