@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CustomerBalanceController;
 use App\Http\Controllers\StockItemHoldingsController;
+use App\Http\Controllers\PromotionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\PackSizeController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Api\V1\Admin\ProductCategoryApiController;
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
     Route::post('stock-quantities/import', [StockItemHoldingsController::class, 'importFromApi']);
     Route::post('customer-balances/import', [CustomerBalanceController::class, 'importFromApi']);
+    Route::post('promotions/import', [PromotionController::class, 'importFromApi']);
 
 
 });

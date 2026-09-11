@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\ImportJob;
 use App\Models\Promotion;
 use App\Models\Product;
+use App\Models\User;
 use App\Imports\PromotionImport;
+use App\Jobs\ProcessPromotionImport;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -310,6 +313,59 @@ class PromotionController extends Controller
                 'error' => 'Failed to read file: ' . $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Import promotions via API (called from on-premise POS sync script).
+     *
+     * This bypasses the web UI's preview step entirely - the preview
+     * (previewImport()) exists only to let a human sanity-check the file
+     * before confirming, but the actual import (PromotionImport) never
+     * required that preview to have run. So the API just queues the file
+     * straight for processing, same as StockItemHoldingsController and
+     * CustomerBalanceController do.
+     */
+    public function importFromApi(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|file|mimes:csv,txt,xlsx,xls|max:50000',
+            'update_existing' => 'boolean',
+        ]);
+
+        $updateExisting = $request->boolean('update_existing', true);
+
+        $importJob = $this->startApiImport(
+            $request->file('import_file'),
+            $request->user(),
+            $updateExisting
+        );
+
+        return response()->json([
+            'status' => 'queued',
+            'import_job_id' => $importJob->id,
+        ], 202);
+    }
+
+    private function startApiImport(UploadedFile $file, ?User $user, bool $updateExisting = true): ImportJob
+    {
+        $path     = $file->store('temp');
+        $filename = $file->getClientOriginalName();
+
+        $importJob = ImportJob::create([
+            'filename'        => $filename,
+            'total_rows'      => 0,
+            'processed_rows'  => 0,
+            'successful_rows' => 0,
+            'failed_rows'     => 0,
+            'items_updated'   => 0,
+            'imported_by'     => $user?->id,
+            'status'          => ImportJob::STATUS_PENDING,
+            'started_at'      => now(),
+        ]);
+
+        ProcessPromotionImport::dispatch($path, $importJob->id, $updateExisting);
+
+        return $importJob;
     }
 
     /**

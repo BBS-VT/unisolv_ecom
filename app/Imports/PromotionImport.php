@@ -109,11 +109,11 @@ class PromotionImport implements ToCollection, WithHeadingRow, WithChunkReading,
     }
 
     /**
-     * Map CSV row to standardized data array - FIXED for your actual CSV structure
+     * Map CSV row to standardized data array
      */
     protected function mapRowData(Collection $row): array
     {
-        // Based on your log data, these are the actual column names in your CSV
+
         return [
             'location_code' => $this->getRowValue($row, 'location', ''),
             'location_name' => $this->getRowValue($row, 'location_name', ''),
