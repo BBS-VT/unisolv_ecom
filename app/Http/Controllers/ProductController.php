@@ -414,7 +414,7 @@ class ProductController extends Controller
                     ->toMediaCollection('photo');
 
                 // Force regeneration of conversions
-                $product->getFirstMedia('photo')?->recreateConversions();
+                //$product->getFirstMedia('photo')?->recreateConversions();
 
                 \Log::info('Photo uploaded successfully for product ID: ' . $product->id);
             } catch (\Exception $e) {
@@ -433,7 +433,7 @@ class ProductController extends Controller
                         ->toMediaCollection('photo');
 
                     // Force regeneration of conversions
-                    $product->getFirstMedia('photo')?->recreateConversions();
+                    //$product->getFirstMedia('photo')?->recreateConversions();
 
                     \Log::info('Photo from tmp uploaded: ' . $photoPath);
                 } else {
