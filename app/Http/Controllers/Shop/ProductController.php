@@ -155,6 +155,15 @@ class ProductController extends Controller
             });
         }
 
+        // "Latest Specials" shortcut (shop.layouts.components.navbar) - only
+        // products currently on an active promotion, matching what the
+        // public promotions API (PublicPromotionsController) considers "on
+        // special". Previously this param was accepted but never applied,
+        // so the link just returned the full catalogue.
+        if ($request->boolean('featured')) {
+            $query->whereHas('activePromotion');
+        }
+
         // Sorting
         switch ($request->get('sort', 'relevance')) {
             case 'price_low_high':

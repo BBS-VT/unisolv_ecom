@@ -137,6 +137,8 @@ body {
     text-decoration: none;
     padding: 6px 12px;
     border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .amazon-nav-secondary a:hover {
