@@ -96,7 +96,8 @@
                             @elseif($product->activePromotion->type === 'quantity_break')
                                 Buy {{ $product->activePromotion->min_quantity }}+ for discount
                             @elseif($product->activePromotion->type === 'date_range')
-                                {{ $product->activePromotion->name }}
+{{--                                {{ $product->activePromotion->name }}--}}
+                                On Sale!
                                 @if($product->activePromotion->ends_at)
                                     <span class="text-muted">(ends {{ $product->activePromotion->ends_at->diffForHumans() }})</span>
                                 @endif
