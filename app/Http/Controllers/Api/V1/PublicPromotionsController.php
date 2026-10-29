@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\Features;
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,16 @@ class PublicPromotionsController extends Controller
             return Promotion::with('product')
                 ->active()
                 ->when($onlineOnly, fn ($query) => $query->onlineOnly())
+                // Same rule the storefront itself uses (Shop\ProductController)
+                // - when backorders are off, don't advertise a promotion for
+                // a product that's actually out of stock everywhere.
+                ->when(!Features::backordersEnabled(), function ($query) {
+                    $query->whereHas('product.stockHolding', function ($q) {
+                        $q->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+                            ->groupBy('StockCode')
+                            ->havingRaw('total_quantity > 0');
+                    });
+                })
                 ->orderBy('ends_at')
                 ->get()
                 // A promotion can outlive its product (deleted/discontinued
