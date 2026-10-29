@@ -3,6 +3,7 @@
 /public/hot
 /public/build
 /public/storage
+public/shop/images/hero-banner.jpg
 /storage/*.key
 /storage/framework/*
 /vendor
