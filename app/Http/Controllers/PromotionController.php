@@ -228,6 +228,11 @@ class PromotionController extends Controller
                 ]);
             }
 
+            // So the public promotions feed (used by the marketing site)
+            // picks up this import immediately instead of waiting out its
+            // cache TTL.
+            Promotion::flushPublicFeedCache();
+
             // Get results
             $result = $import->getResults();
 

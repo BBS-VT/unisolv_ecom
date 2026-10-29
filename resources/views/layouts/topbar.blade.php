@@ -8,7 +8,7 @@
                         <img src="{{ URL::asset('build/images/logo-sm-dark.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ URL::asset('build/images/logo_dark.png') }}" alt="" height="17">
+                        <img src="{{ URL::asset('build/images/logo_dark.png') }}" alt="" height="36">
                     </span>
                 </a>
 
@@ -17,7 +17,7 @@
                         <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ URL::asset('build/images/logo_light.png') }}" alt="" height="19">
+                        <img src="{{ URL::asset('build/images/logo_light.png') }}" alt="" height="36">
                     </span>
                 </a>
             </div>

@@ -73,6 +73,11 @@ class ProcessPromotionImport implements ShouldQueue
                 ]);
             }
 
+            // So the public promotions feed (used by the marketing site)
+            // picks up this import immediately instead of waiting out its
+            // cache TTL.
+            Promotion::flushPublicFeedCache();
+
             $importJob->update([
                 'total_rows'       => $result['processed_rows'],
                 'processed_rows'   => $result['processed_rows'],

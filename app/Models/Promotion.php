@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class Promotion extends Model
@@ -122,6 +123,19 @@ class Promotion extends Model
     public static function markExpiredPromotions(): int
     {
         return static::expiredByDate()->update(['status' => 'expired']);
+    }
+
+    /**
+     * Clear the cached response used by the public promotions feed
+     * (PublicPromotionsController). Call this after anything that changes
+     * which promotions are active - an import, a manual create/update, or
+     * the expiry sweep above - so the marketing site isn't stuck showing
+     * stale promotions for the full cache TTL.
+     */
+    public static function flushPublicFeedCache(): void
+    {
+        Cache::forget('public_promotions_feed:all');
+        Cache::forget('public_promotions_feed:online');
     }
 
     /**

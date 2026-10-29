@@ -6,6 +6,7 @@ use App\Http\Controllers\PromotionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\PackSizeController;
+use App\Http\Controllers\Api\V1\PublicPromotionsController;
 use App\Http\Controllers\Api\V1\Admin\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Admin\PermissionsApiController;
 use App\Http\Controllers\Api\V1\Admin\RolesApiController;
@@ -32,6 +33,14 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
     Route::post('promotions/import', [PromotionController::class, 'importFromApi']);
 
 
+});
+
+// Public, unauthenticated routes for the marketing website (currently
+// WordPress, soon Next.js) - deliberately outside the auth:api group above,
+// which is reserved for the trusted on-prem POS sync client. Still gets the
+// "api" middleware group's throttle:60,1 and the wildcard CORS config.
+Route::group(['prefix' => 'v1/public'], function () {
+    Route::get('promotions', [PublicPromotionsController::class, 'index']);
 });
 
 
