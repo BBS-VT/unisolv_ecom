@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Location;
 use App\Models\ProductCategory;
+use App\Services\CartService;
 use App\Helpers\Features;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,10 +59,17 @@ class ProductController extends Controller
         }
 
 
+        // Stock is shown and filtered for the locked (or selected) location only
+        $stockLocation = $cartLocation ?: $currentLocation?->LocationCode;
+        if ($stockLocation) {
+            $query->with(['stockHolding' => fn ($q) => $q->where('LocationCode', $stockLocation)]);
+        }
+
         // Only show products with stock if backorders are disabled
         if (!Features::backordersEnabled()) {
-            $query->whereHas('stockHolding', function ($q) {
-                $q->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+            $query->whereHas('stockHolding', function ($q) use ($stockLocation) {
+                $q->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                    ->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
                     ->groupBy('StockCode')
                     ->havingRaw('total_quantity > 0');
             });
@@ -124,19 +132,22 @@ class ProductController extends Controller
                 foreach ($availability as $status) {
                     switch ($status) {
                         case 'in_stock':
-                            $q->orWhereHas('stockHolding', function($sq) {
-                                $sq->where('QuantityOnHand', '>', 10);
+                            $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                    ->where('QuantityOnHand', '>', 10);
                             });
                             break;
                         case 'low_stock':
-                            $q->orWhereHas('stockHolding', function($sq) {
-                                $sq->whereBetween('QuantityOnHand', [1, 10]);
+                            $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                    ->whereBetween('QuantityOnHand', [1, 10]);
                             });
                             break;
                         case 'backorder':
                             if (Features::backordersEnabled()) {
-                                $q->orWhereHas('stockHolding', function($sq) {
-                                    $sq->where('QuantityOnHand', '<=', 0);
+                                $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                    $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                        ->where('QuantityOnHand', '<=', 0);
                                 });
                             }
                             break;
@@ -186,7 +197,7 @@ class ProductController extends Controller
         }
 
         // Get categories for filter sidebar
-        $categories = $this->categoriesForSidebar($currentLocation);
+        $categories = $this->categoriesForSidebar($currentLocation, $stockLocation);
 
         $products = $query->paginate(Features::productsPerPage())->withQueryString();
 
@@ -207,14 +218,15 @@ class ProductController extends Controller
      * so a category never shows a count that then filters down to zero
      * products when clicked.
      */
-    private function categoriesForSidebar(?Location $currentLocation)
+    private function categoriesForSidebar(?Location $currentLocation, ?string $stockLocation = null)
     {
-        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) {
+        $categoriesQuery = ProductCategory::withCount(['products' => function ($q) use ($stockLocation) {
             $q->where('status', true)->forOnline();
 
             if (!Features::backordersEnabled()) {
-                $q->whereHas('stockHolding', function ($sq) {
-                    $sq->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+                $q->whereHas('stockHolding', function ($sq) use ($stockLocation) {
+                    $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                        ->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
                         ->groupBy('StockCode')
                         ->havingRaw('total_quantity > 0');
                 });
@@ -244,6 +256,11 @@ class ProductController extends Controller
             ->with([ 'stockHolding', 'categories','referredProduct', 'referringProducts'])
             ->firstOrFail();
 
+        // Show stock for the location this customer is (or would be) locked to
+        $stockLocation = CartService::stockLocation($product);
+        $atLocation = fn ($q) => $q->where('LocationCode', $stockLocation);
+        $product->load(['stockHolding' => $atLocation]);
+
         // Add pricing information to the product
         $product->pricing = PricingHelper::getProductPricing($product);
 
@@ -254,7 +271,7 @@ class ProductController extends Controller
         if ($product->refer_code || $product->referringProducts->count() > 0) {
             // Get the complete pack size family
             $packSizeFamily = $product->packSizeFamily()
-                ->with(['stockHolding'])
+                ->with(['stockHolding' => $atLocation])
                 ->get()
                 ->sortByDesc('Packsize');
 
@@ -296,6 +313,7 @@ class ProductController extends Controller
         })
             ->whereNotIn('id', $excludeIds)
             ->where('status', true)
+            ->with(['stockHolding' => $atLocation])
             ->take(4)
             ->get();
 
@@ -316,7 +334,9 @@ class ProductController extends Controller
 
     public function switchPackSize($productId)
     {
-        $product = Product::with(['stockHolding'])->findOrFail($productId);
+        $product = Product::findOrFail($productId);
+        $stockLocation = CartService::stockLocation($product);
+        $product->load(['stockHolding' => fn ($q) => $q->where('LocationCode', $stockLocation)]);
         $product->pricing = PricingHelper::getProductPricing($product);
 
         return response()->json([
@@ -371,10 +391,17 @@ class ProductController extends Controller
                 ->first();
         }
 
+        // Stock is shown and filtered for the locked (or selected) location only
+        $stockLocation = $cartLocation ?: $currentLocation?->LocationCode;
+        if ($stockLocation) {
+            $query->with(['stockHolding' => fn ($q) => $q->where('LocationCode', $stockLocation)]);
+        }
+
         // Only show products with stock if backorders are disabled
         if (!Features::backordersEnabled()) {
-            $query->whereHas('stockHolding', function ($q) {
-                $q->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
+            $query->whereHas('stockHolding', function ($q) use ($stockLocation) {
+                $q->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                    ->selectRaw('StockCode, SUM(QuantityOnHand) as total_quantity')
                     ->groupBy('StockCode')
                     ->havingRaw('total_quantity > 0');
             });
@@ -421,19 +448,22 @@ class ProductController extends Controller
                 foreach ($availability as $status) {
                     switch ($status) {
                         case 'in_stock':
-                            $q->orWhereHas('stockHolding', function($sq) {
-                                $sq->where('QuantityOnHand', '>', 10);
+                            $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                    ->where('QuantityOnHand', '>', 10);
                             });
                             break;
                         case 'low_stock':
-                            $q->orWhereHas('stockHolding', function($sq) {
-                                $sq->whereBetween('QuantityOnHand', [1, 10]);
+                            $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                    ->whereBetween('QuantityOnHand', [1, 10]);
                             });
                             break;
                         case 'backorder':
                             if (Features::backordersEnabled()) {
-                                $q->orWhereHas('stockHolding', function($sq) {
-                                    $sq->where('QuantityOnHand', '<=', 0);
+                                $q->orWhereHas('stockHolding', function($sq) use ($stockLocation) {
+                                    $sq->when($stockLocation, fn ($lq) => $lq->where('LocationCode', $stockLocation))
+                                        ->where('QuantityOnHand', '<=', 0);
                                 });
                             }
                             break;
@@ -474,7 +504,7 @@ class ProductController extends Controller
         }
 
         // Get categories for filter sidebar - same as index
-        $categories = $this->categoriesForSidebar($currentLocation);
+        $categories = $this->categoriesForSidebar($currentLocation, $stockLocation);
 
         $products = $query->paginate(Features::productsPerPage());
 

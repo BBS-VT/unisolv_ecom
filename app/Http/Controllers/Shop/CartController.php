@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
 use App\Helpers\Features;
 use App\Models\Product;
+use App\Models\StockItemHoldings;
 use App\Models\UserCart;
 use App\Services\CartService;
 use Illuminate\Http\Request;
@@ -51,7 +52,8 @@ class CartController extends Controller
             }
 
             // Check stock availability unless backorders are allowed
-            if (!Features::backordersEnabled() && $product->stockHolding->QuantityOnHand < $request->quantity) {
+            $available = StockItemHoldings::getQuantityAtLocation($product->StockCode, CartService::stockLocation($product));
+            if (!Features::backordersEnabled() && $available < $request->quantity) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Not enough stock available.',
@@ -158,10 +160,11 @@ class CartController extends Controller
                 } else {
                     // Check stock before updating
                     $product = Product::find($request->product_id);
-                    if (!Features::backordersEnabled() && $product->stockHolding->QuantityOnHand < $request->quantity) {
+                    $available = StockItemHoldings::getQuantityAtLocation($product->StockCode, CartService::stockLocation($product));
+                    if (!Features::backordersEnabled() && $available < $request->quantity) {
                         return response()->json([
                             'success' => false,
-                            'message' => "Sorry, we only have {$product->stockHolding->QuantityOnHand} items in stock."
+                            'message' => "Sorry, we only have {$available} items in stock."
                         ], 422);
                     }
 

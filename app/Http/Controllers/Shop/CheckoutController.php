@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
 use App\Models\CompanySetting;
 use App\Models\StockItemHoldings;
-use App\Services\LocationAssignmentService;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -156,13 +156,10 @@ class CheckoutController extends Controller
             $total += $lineTotal;
         }
 
-        foreach ($cartItems as $item) {
-            $assignedLocation = LocationAssignmentService::assignLocation(
-                $item['product']->StockCode,
-                $item['quantity'],
-                null
-            );
+        // Every item is fulfilled from the location the cart is locked to
+        $assignedLocation = CartService::stockLocation();
 
+        foreach ($cartItems as $item) {
             $availableStock = StockItemHoldings::getQuantityAtLocation(
                 $item['product']->StockCode,
                 $assignedLocation
@@ -228,13 +225,6 @@ class CheckoutController extends Controller
 
                 $unitPriceCents = round($item['pricing']['price'] * 100);
                 $lineTotalCents = round($item['line_total'] * 100);
-
-                // Assign location for this item
-                $assignedLocation = \App\Services\LocationAssignmentService::assignLocation(
-                    $item['product']->StockCode,
-                    $item['quantity'],
-                    null // TODO: Could pass customer's preferred location if available
-                );
 
                 $orderItem = $order->items()->create([
                     'OrderID' => $order->OrderNumber,

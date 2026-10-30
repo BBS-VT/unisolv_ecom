@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Location;
 use App\Models\Product;
 class CartService
 {
@@ -50,6 +51,19 @@ class CartService
     public static function getCartLocation(): ?string
     {
         return session('cart_location');
+    }
+
+    /**
+     * The location whose stock a cart is checked against and fulfilled from:
+     * the locked location, else the product's own department location,
+     * else the default location.
+     */
+    public static function stockLocation(?Product $product = null): string
+    {
+        return session('cart_location')
+            ?? $product?->categories()->whereNotNull('location_id')->first()?->location_id
+            ?? Location::where('IsDefault', true)->value('LocationCode')
+            ?? '0000';
     }
 
     /**
