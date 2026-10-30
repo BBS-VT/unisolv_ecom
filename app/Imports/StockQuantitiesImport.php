@@ -25,6 +25,7 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
     protected $successfulRows = 0;
     protected $failedRows = 0;
     protected $itemsUpdated = 0;
+    protected $seenLocations = [];
 
     /**
      * @param  int  $importJobId
@@ -34,6 +35,14 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
     {
         $this->importJobId = $importJobId;
         $this->companyId = $companyId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSeenLocations(): array
+    {
+        return array_keys($this->seenLocations);
     }
 
     /**
@@ -136,6 +145,7 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
                 $stockCode = trim($row[0]);
                 $locationCode = $row[109] ?? '0000';
                 $quantityOnHand = $row[10] ?? 0;
+                $this->seenLocations[$locationCode] = true;
 
                 // Use the updateFromImport method which logs transactions
                 $wasUpdated = StockItemHoldings::updateFromImport(

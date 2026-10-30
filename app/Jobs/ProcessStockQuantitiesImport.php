@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 class ProcessStockQuantitiesImport implements ShouldQueue
@@ -57,15 +56,22 @@ class ProcessStockQuantitiesImport implements ShouldQueue
         $importJob->update(['status' => ImportJob::STATUS_PROCESSING, 'started_at' => now()]);
 
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            StockItemHoldings::truncate();
+            $startedAt = now();
 
             // Create an instance of the importer with progress tracking
             $importer = new StockQuantitiesImport($this->importJobId, $this->companyId);
 
             Excel::import($importer, storage_path('app/' . $this->filePath));
 
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+            // The export is one location at a time, so only zero holdings for the
+            // locations in this file that the file did not mention. Other locations
+            // are left alone.
+            $seenLocations = $importer->getSeenLocations();
+            if (!empty($seenLocations)) {
+                StockItemHoldings::whereIn('LocationCode', $seenLocations)
+                    ->where('updated_at', '<', $startedAt)
+                    ->update(['QuantityOnHand' => 0, 'updated_at' => now()]);
+            }
 
             // Mark import as completed
             $importJob->markAsCompleted();
