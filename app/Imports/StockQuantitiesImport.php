@@ -145,7 +145,9 @@ class StockQuantitiesImport implements ToCollection, WithChunkReading, WithStart
                 $stockCode = trim($row[0]);
                 $locationCode = $row[109] ?? '0000';
                 $quantityOnHand = $row[10] ?? 0;
-                $this->seenLocations[$locationCode] = true;
+                if (isset($row[109]) && $row[109] !== '') {
+                    $this->seenLocations[$locationCode] = true;
+                }
 
                 // Use the updateFromImport method which logs transactions
                 $wasUpdated = StockItemHoldings::updateFromImport(
