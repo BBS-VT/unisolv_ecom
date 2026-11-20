@@ -6,79 +6,28 @@
     <link href="{{ URL::asset('build/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
-    <style>
-        .column-content {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .table-card {
-            border: 1px solid #e9ecef;
-            border-radius: 0.375rem;
-        }
-        .product-barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            background-color: #f8f9fa;
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
-        .price-list {
-            font-size: 0.9rem;
-            line-height: 1.3;
-        }
-        .btn-group-actions {
-            white-space: nowrap;
-        }
-        .btn-sm-custom {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.775rem;
-            margin: 0 1px;
-        }
-        .stock-badge {
-            display: inline-block;
-            padding: 0.25em 0.5em;
-            font-size: 0.75em;
-            font-weight: 500;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-        .stock-high { background-color: rgba(var(--bs-success-rgb), 0.15); color: var(--bs-success); }
-        .stock-medium { background-color: rgba(var(--bs-warning-rgb), 0.15); color: var(--bs-warning); }
-        .stock-low { background-color: rgba(var(--bs-danger-rgb), 0.15); color: var(--bs-danger); }
-        .dt-buttons {
-            margin-bottom: 1rem;
-        }
-    </style>
 @endpush
 
 @section('content')
-    <div class="mx-4">
-        <!-- Page Header -->
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div>
-                <h2 class="mb-1">{{ __('cruds.product.title') }}</h2>
-                <p class="text-muted mb-0">{{ __('Manage your product catalog and inventory') }}</p>
-            </div>
+    <div>
+        <div class="page-bar">
+            <h1>{{ __('cruds.product.title') }}</h1>
             <div class="d-flex gap-2">
                 @can('product_create')
-                    <a href="{{ route('products.create') }}" class="btn btn-primary">
+                    <a href="{{ route('products.create') }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-plus me-1"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
                     </a>
                 @endcan
 
                 @can('adjust_stock')
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#adjustStockModalIndex">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#adjustStockModalIndex">
                         <i class="mdi mdi-plus-minus-variant me-1"></i> Adjust Stock
                     </button>
                 @endcan
 
                 @can('product_import')
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-file-import me-1"></i> {{ __('global.import') }}
                         </button>
                         <ul class="dropdown-menu">
@@ -105,37 +54,34 @@
 
         <!-- Success Message -->
         @if($message = Session::get('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-success alert-dismissible fade show py-2 mb-2" role="alert">
                 <strong>{{ __('global.success') }}!</strong> {{ $message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         <!-- Main Content -->
-        <div class="column-content">
-
-            <div class="table-card">
-                <div class="card-body p-2">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="products-table">
-                            <thead class="table-light">
-                            <tr>
-                                <th class="border-0">{{ __('cruds.product.fields.sku') }}</th>
-                                <th class="border-0">{{ __('cruds.product.fields.name') }}</th>
-                                <th class="border-0">{{ __('cruds.product.fields.barcode') }}</th>
-                                <th class="border-0">{{ __('Selling Prices') }}</th>
-                                <th class="border-0">{{ __('Cost Prices') }}</th>
-                                <th class="border-0">{{ __('cruds.product.fields.quantity') }}</th>
-                                <th class="border-0 text-center">{{ __('global.actions') }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- Data loaded via AJAX -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="list-surface">
+            <table class="table table-hover mb-0 w-100" id="products-table">
+                <thead>
+                <tr>
+                    <th>{{ __('cruds.product.fields.sku') }}</th>
+                    <th>{{ __('cruds.product.fields.name') }}</th>
+                    <th>{{ __('cruds.product.fields.barcode') }}</th>
+                    <th class="num">P1</th>
+                    <th class="num">P2</th>
+                    <th class="num">P3</th>
+                    <th class="num">P4</th>
+                    <th class="num">Avg cost</th>
+                    <th class="num">Last cost</th>
+                    <th class="num">{{ __('cruds.product.fields.quantity') }}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Data loaded via AJAX -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -170,55 +116,23 @@
             let productsTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
-                pageLength: 25,
+                pageLength: 50,
                 ajax: {
                     url: "{{ route('products.index') }}",
                     type: "GET"
                 },
                 columns: [
-                    {
-                        data: 'StockCode',
-                        name: 'StockCode',
-                        className: 'fw-bold'
-                    },
-                    {
-                        data: 'StockItemName',
-                        name: 'StockItemName',
-                        className: 'product-name'
-                    },
-                    {
-                        data: 'barcodes',
-                        name: 'Barcode',
-                        searchable: true,
-                        orderable: false
-                    },
-                    {
-                        data: 'prices',
-                        name: 'prices',
-                        searchable: false,
-                        orderable: false,
-                        className: 'price-list'
-                    },
-                    {
-                        data: 'costPrices',
-                        name: 'costPrices',
-                        searchable: false,
-                        orderable: false,
-                        className: 'price-list'
-                    },
-                    {
-                        data: 'quantity_on_hand',
-                        name: 'quantity_on_hand',
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
+                    { data: 'StockCode', name: 'StockCode' },
+                    { data: 'StockItemName', name: 'StockItemName' },
+                    { data: 'barcodes', name: 'Barcode', searchable: true, orderable: false },
+                    { data: 'SellingPrice', name: 'products.SellingPrice', searchable: false, className: 'num' },
+                    { data: 'SellingPrice2', name: 'products.SellingPrice2', searchable: false, className: 'num' },
+                    { data: 'SellingPrice3', name: 'products.SellingPrice3', searchable: false, className: 'num' },
+                    { data: 'SellingPrice4', name: 'products.SellingPrice4', searchable: false, className: 'num' },
+                    { data: 'AverageCostPrice', name: 'products.AverageCostPrice', searchable: false, className: 'num' },
+                    { data: 'LastCostPrice', name: 'stock_item_holdings.LastCostPrice', searchable: false, className: 'num' },
+                    { data: 'quantity_on_hand', name: 'quantity_on_hand', searchable: false, className: 'num' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' },
                 ],
                 order: [[0, 'asc']],
                 searchDelay: 500,

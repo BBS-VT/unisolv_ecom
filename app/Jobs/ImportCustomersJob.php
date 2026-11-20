@@ -52,9 +52,16 @@ class ImportCustomersJob implements ShouldQueue
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+
+            // Keep statuses set in the admin (e.g. Inactive) across the truncate + re-import
+            $existingStatuses = DB::table('customers')
+                ->get(['acc_main', 'acc_sub', 'CustomerStatus'])
+                ->mapWithKeys(fn ($c) => [CustomerMasterImport::statusKey($c->acc_main, $c->acc_sub) => $c->CustomerStatus])
+                ->all();
+
             Customer::truncate();
 
-            $importer = new CustomerMasterImport($this->importJobId);
+            $importer = new CustomerMasterImport($this->importJobId, $existingStatuses);
             Excel::import($importer, storage_path('app/' . $this->filePath));
 
             // Dispatch a separate job for cleanup operations

@@ -60,6 +60,13 @@ class CustomersController extends Controller
                     'IsOnCreditHold',
                 ]);
 
+            // All / Active / Inactive buttons on the list
+            if ($request->filter === 'active') {
+                $query->where('CustomerStatus', 1);
+            } elseif ($request->filter === 'inactive') {
+                $query->where('CustomerStatus', 0);
+            }
+
             return DataTables::of($query)
                 ->addColumn('account_code', function ($customer) use ($display_subaccount) {
                     if ($display_subaccount) {
@@ -69,32 +76,17 @@ class CustomersController extends Controller
                     }
                 })
                 ->addColumn('name_with_address', function ($customer) {
-                    $html = '<div class="d-flex align-items-center">';
-                    $html .= '<div class="d-flex align-items-center">';
-                    $html .= '<i class="dripicons-card mr-1"></i> <a href="' . route('customers.show', $customer->id) . '">';
-                    $html .= '&nbsp;' . ($customer->CustomerName ?? '') . '</a>';
-                    $html .= '</div></div>';
-                    $html .= '<div class="d-flex align-items-center mt-1">';
-                    $html .= '<small class="text-muted">';
-                    $html .= '<i class="dripicons-location"></i> ';
-                    $html .= ($customer->DeliveryAddressLine1 ?? '') . ' ' . ($customer->DeliveryCity ?? '');
-                    $html .= '</small></div>';
+                    $address = trim(($customer->DeliveryAddressLine1 ?? '') . ' ' . ($customer->DeliveryCity ?? ''));
 
-                    return $html;
+                    return '<a href="' . route('customers.show', $customer->id) . '" class="d-block text-truncate fw-semibold"'
+                        . ' style="max-width:24rem" title="' . e($address) . '">' . e($customer->CustomerName ?? '') . '</a>';
                 })
                 ->addColumn('contact_info', function ($customer) {
-                    $html = '<div class="d-flex align-items-center">';
-                    $html .= '<div class="d-flex align-items-center">';
-                    $html .= '<i class="dripicons-user mr-1 text-muted"></i>';
-                    $html .= '<p class="text-muted mb-0">' . ($customer->PrimaryContactID ?? '') . '</p>';
-                    $html .= '</div></div>';
-                    $html .= '<div class="d-flex align-items-center">';
-                    $html .= '<small class="text-muted">';
-                    $html .= '<i class="dripicons-mail mr-1"></i>';
-                    $html .= ($customer->GeneralEmailAddress ?? '');
-                    $html .= '</small></div>';
+                    $contact = $customer->PrimaryContactID ?? '';
+                    $email = $customer->GeneralEmailAddress ?? '';
+                    $text = trim($contact . ($contact && $email ? ' · ' : '') . $email);
 
-                    return $html;
+                    return '<span class="d-block text-truncate text-muted" style="max-width:18rem" title="' . e($text) . '">' . e($text) . '</span>';
                 })
                 ->addColumn('status', function ($customer) {
                     /*$html = '';
@@ -324,18 +316,21 @@ class CustomersController extends Controller
 
     public function updateCustomerStatus(Request $request)
     {
-        if($request->ajax()) {
-            $data = $request->all();
+        abort_if(Gate::denies('customer_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-            if($data['status'] == "Active"){
-                $status = 0;
-            } else {
-                $status = 1;
-            }
+        $request->validate(['customer_id' => 'required|integer']);
 
-            Customer::where('id',$data['customer_id'])->update(['status'=>$status]);
-            return response()->json(['status'=>$status,'customer_id'=>$data['customer_id']]);
-        }
+        $customer = Customer::where('company_id', $request->user()->currentCompany()->id)
+            ->findOrFail($request->customer_id);
+
+        // Toggle from the stored value (1 = Active, 0 = Inactive), not from what the browser sends
+        $customer->CustomerStatus = $customer->CustomerStatus ? 0 : 1;
+        $customer->save();
+
+        return response()->json([
+            'customer_id' => $customer->id,
+            'status'      => $customer->CustomerStatus ? 'active' : 'inactive',
+        ]);
     }
 
     public function lookup()

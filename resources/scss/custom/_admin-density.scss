@@ -1,0 +1,64 @@
+// Admin-only density layer. Scoped by a body class in layouts/master.blade.php,
+// so the shop (/resources/views/shop) is unaffected.
+.admin-dense {
+    .page-content { padding-top: calc(70px + 12px); } // was 70px + 24px
+
+    // One-line page header (replaces h2 + subtitle + mb-4)
+    .page-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: .75rem; min-height: 40px; margin-bottom: .75rem;
+        h1 { font-size: 1.125rem; font-weight: 600; margin: 0; }
+    }
+
+    // Flat list surface (replaces .column-content > .table-card > .card-body.p-2)
+    .list-surface {
+        background: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 4px;
+        padding: .5rem;
+    }
+
+    // ~32px table rows
+    .table > :not(caption) > * > * { padding: .375rem .5rem; vertical-align: middle; }
+    .table > thead th {
+        font-size: .75rem; font-weight: 600; white-space: nowrap;
+        color: var(--bs-secondary-color);
+    }
+
+    // 32px form controls
+    .form-control, .form-select { min-height: 32px; padding-top: .25rem; padding-bottom: .25rem; }
+
+    // DataTables chrome
+    .dataTables_wrapper {
+        .dt-buttons { margin-bottom: 0; }
+        .dataTables_filter input, .dataTables_length select { height: 32px; padding: .25rem .5rem; }
+        .dataTables_info, .dataTables_paginate { padding-top: .5rem; font-size: .75rem; }
+    }
+
+    // Icon-only row actions: 28px targets, no button chrome until hover
+    .row-actions {
+        display: inline-flex; gap: 2px; white-space: nowrap;
+        .btn {
+            width: 28px; height: 28px; padding: 0; border: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: var(--bs-secondary-color);
+            &:hover { background: var(--bs-tertiary-bg); color: var(--bs-body-color); }
+        }
+        .btn-del:hover { color: var(--bs-danger); }
+    }
+
+    // KPI strip: replaces stat/balance cards (dashboard, customer detail)
+    .kpi-strip {
+        display: flex; flex-wrap: wrap;
+        border: 1px solid var(--bs-border-color); border-radius: 4px;
+        background: var(--bs-body-bg);
+        > div { flex: 1 1 160px; padding: .5rem .75rem; border-left: 1px solid var(--bs-border-color); }
+        > div:first-child { border-left: 0; }
+    }
+    .kpi-label { display: block; font-size: .75rem; color: var(--bs-secondary-color); }
+    .kpi-value { font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+}
+
+// Usable anywhere
+.num  { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.code { font-family: var(--bs-font-monospace); font-size: .75rem; white-space: nowrap; }

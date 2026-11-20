@@ -14,7 +14,7 @@
 </head>
 
 @section('body')
-<body data-sidebar="dark" data-layout-mode="light">
+<body data-sidebar="dark" data-layout-mode="light" class="admin-dense">
     @show
 
     <div id="layout-wrapper">

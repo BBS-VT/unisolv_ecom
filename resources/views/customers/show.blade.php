@@ -5,142 +5,10 @@
 @push('styles')
     <style>
         /* Modern Header with Gradient */
-        .customer-header {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 16px rgba(28, 117, 188, 0.2);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .customer-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .customer-info-section {
-            position: relative;
-            z-index: 1;
-        }
-
-        .customer-name {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .customer-account {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            gap: 0.5rem;
-        }
-
-        .customer-account-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        .customer-account-number {
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .customer-opened-date {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .customer-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .customer-actions .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .customer-actions .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .customer-actions .btn i {
-            opacity: 0.9;
-        }
-
-        .customer-status-badges {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .customer-status-badges .badge {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            border-radius: 20px;
-        }
 
         /* Balance Summary Cards */
-        .balance-card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            height: 100%;
-            overflow: hidden;
-        }
 
-        .balance-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        .balance-card.bf {
-            border-left: 4px solid var(--bs-warning);
-        }
-
-        .balance-card.current {
-            border-left: 4px solid #1C75BC;
-        }
-
-        .balance-card.overdue {
-            border-left: 4px solid var(--bs-danger);
-        }
-
-        .balance-card.paid {
-            border-left: 4px solid var(--bs-success);
-        }
-
-        .balance-card .card-body {
-            padding: 1.5rem;
-        }
-
+        /* Icon tiles used by the detail/pricing tab partials */
         .balance-icon {
             width: 48px;
             height: 48px;
@@ -171,61 +39,16 @@
             color: var(--bs-success);
         }
 
-        .balance-label {
-            font-size: 0.875rem;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .balance-amount {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0;
-            color: #212529;
-        }
-
-        .balance-info-btn {
-            background: none;
-            border: none;
-            color: #6c757d;
-            padding: 0.25rem;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .balance-info-btn:hover {
-            color: #1C75BC;
-        }
-
-        .balance-detail-link {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #1C75BC;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: gap 0.3s ease;
-        }
-
-        .balance-detail-link:hover {
-            gap: 0.5rem;
-            color: #2A3042;
-        }
-
         /* Tabs Enhancement */
         .nav-pills {
             background: #f8f9fa;
-            padding: 0.5rem;
-            border-radius: 8px;
-            gap: 0.5rem;
+            padding: 0.25rem;
+            border-radius: 4px;
+            gap: 0.25rem;
         }
 
         .nav-pills .nav-link {
-            padding: 0.75rem 1.25rem;
+            padding: 0.375rem 0.75rem;
             font-weight: 500;
             color: #6c757d;
             border-radius: 6px;
@@ -244,7 +67,6 @@
         .nav-pills .nav-link.active {
             background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
         }
 
         .nav-pills .nav-link.active i {
@@ -252,7 +74,7 @@
         }
 
         .tab-content {
-            padding: 2rem;
+            padding: 1rem;
             background-color: #fff;
             border-radius: 0 0 8px 8px;
         }
@@ -467,31 +289,6 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .customer-header {
-                padding: 1.5rem;
-            }
-
-            .customer-name {
-                font-size: 1.5rem;
-            }
-
-            .customer-actions {
-                width: 100%;
-                margin-top: 1rem;
-            }
-
-            .customer-actions .btn {
-                flex: 1;
-            }
-
-            .customer-status-badges {
-                width: 100%;
-                margin-top: 1rem;
-            }
-
-            .balance-amount {
-                font-size: 1.25rem;
-            }
 
             .tab-content {
                 padding: 1rem;
@@ -525,162 +322,59 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid">
+    <div>
         @include('flash-message')
 
-        <!-- Enhanced Customer Header -->
-        <div class="customer-header">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="customer-info-section">
-                        <h2 class="customer-name">
-                            <i class="mdi mdi-account-circle me-2"></i>{{ $customer->CustomerName }}
-                        </h2>
-                        <div class="customer-account">
-                            <span class="customer-account-label">Account:</span>
-                            <span class="customer-account-number">
-                                {{ $customer->acc_main }}{{ ($customer->acc_sub == 0) ? '' : '-' . $customer->acc_sub }}
-                            </span>
-                        </div>
-                        <div class="customer-opened-date">
-                            <i class="mdi mdi-calendar-outline"></i>
-                            <span>{{ __('cruds.customer.fields.opened_date') }}: {{ $customer->AccountOpenedDate }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="d-flex flex-column align-items-lg-end gap-3">
-                        <!-- Status Badges -->
-                        <div class="customer-status-badges">
-                            @if($customer->CustomerStatus==1)
-                                <span class="badge badge-soft-success">
-                                    <i class="mdi mdi-check-circle me-1"></i>{{ __('global.active') }}
-                                </span>
-                            @else
-                                <span class="badge badge-soft-danger">
-                                    <i class="mdi mdi-close-circle me-1"></i>{{ __('global.closed') }}
-                                </span>
-                            @endif
-
-                            @if($customer->IsOnCreditHold==1)
-                                <span class="badge badge-soft-warning">
-                                    <i class="mdi mdi-alert me-1"></i>{{ __('global.credit_hold') }}
-                                </span>
-                            @endif
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="customer-actions">
-                            @can('order_create')
-                                <a href="{{ route('orders.create') }}" class="btn">
-                                    <i class="mdi mdi-plus-circle me-1"></i> {{ __('global.new_order') }}
-                                </a>
-                            @endcan
-
-                            @can('customer_edit')
-                                <a href="{{ route('customers.edit', $customer->id) }}" class="btn">
-                                    <i class="mdi mdi-pencil me-1"></i> {{ __('global.edit') }}
-                                </a>
-                            @endcan
-
-                            <a href="{{ route('customers.index') }}" class="btn">
-                                <i class="mdi mdi-arrow-left me-1"></i> {{ __('global.back_to_list') }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+        <div class="page-bar">
+            <div class="d-flex align-items-baseline gap-2 flex-wrap">
+                <h1>{{ $customer->CustomerName }}</h1>
+                <span class="code text-muted">{{ $customer->acc_main }}{{ ($customer->acc_sub == 0) ? '' : '-' . $customer->acc_sub }}</span>
+                <span class="small text-muted">{{ __('cruds.customer.fields.opened_date') }} {{ $customer->AccountOpenedDate }}</span>
+                @if($customer->CustomerStatus==1)
+                    <span class="badge bg-success-subtle text-success">{{ __('global.active') }}</span>
+                @else
+                    <span class="badge bg-danger-subtle text-danger">{{ __('global.closed') }}</span>
+                @endif
+                @if($customer->IsOnCreditHold==1)
+                    <span class="badge bg-warning-subtle text-warning">{{ __('global.credit_hold') }}</span>
+                @endif
+            </div>
+            <div class="d-flex gap-2">
+                @can('order_create')
+                    <a href="{{ route('orders.create', ['customer' => $customer->acc_code]) }}" class="btn btn-sm btn-primary">
+                        <i class="mdi mdi-plus-circle me-1"></i> {{ __('global.new_order') }}
+                    </a>
+                @endcan
+                @can('customer_edit')
+                    <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="mdi mdi-pencil me-1"></i> {{ __('global.edit') }}
+                    </a>
+                @endcan
             </div>
         </div>
 
-        <!-- Balance Summary Cards -->
-        <div class="row mb-4">
-            <!-- Balance B/F -->
-            <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                <div class="card balance-card bf">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between mb-3">
-                            <div class="balance-icon warning">
-                                <i class="mdi mdi-alert-outline"></i>
-                            </div>
-                            <button type="button" class="balance-info-btn" data-bs-toggle="tooltip"
-                                    title="{{ __('global.total_outstanding_balance_bf_info') }}">
-                                <i class="mdi mdi-information-outline"></i>
-                            </button>
-                        </div>
-                        <p class="balance-label mb-2">{{ __('global.balance_bf') }}</p>
-                        <h3 class="balance-amount">R {{ number_format($balance_bf, 2) }}</h3>
-                    </div>
-                </div>
+        @php
+            $currentBalance = $displaySubAccount == "1"
+                ? ($customer->customerSubBalance->AgedBalance1 ?? 0)
+                : ($customer->customerBalance->AgedBalance1 ?? 0);
+        @endphp
+        <div class="kpi-strip mb-3">
+            <div title="{{ __('global.total_outstanding_balance_bf_info') }}">
+                <span class="kpi-label">{{ __('global.balance_bf') }}</span>
+                <span class="kpi-value">R {{ number_format($balance_bf, 2) }}</span>
             </div>
-
-            <!-- Current Balance -->
-            <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                <div class="card balance-card current">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between mb-3">
-                            <div class="balance-icon primary">
-                                <i class="mdi mdi-calendar-month"></i>
-                            </div>
-                            <button type="button" class="balance-info-btn" data-bs-toggle="tooltip"
-                                    title="{{ __('global.current_balance_info') }}">
-                                <i class="mdi mdi-information-outline"></i>
-                            </button>
-                        </div>
-                        <p class="balance-label mb-2">{{ __('global.current') }}</p>
-                        <h3 class="balance-amount">
-                            R @if($displaySubAccount == "1")
-                                {{ !empty($customer->customerSubBalance->AgedBalance1) ? number_format($customer->customerSubBalance->AgedBalance1, 2) : '0.00' }}
-                            @else
-                                {{ !empty($customer->customerBalance->AgedBalance1) ? number_format($customer->customerBalance->AgedBalance1, 2) : '0.00' }}
-                            @endif
-                        </h3>
-                    </div>
-                </div>
+            <div>
+                <span class="kpi-label">{{ __('global.current') }}</span>
+                <span class="kpi-value">R {{ number_format($currentBalance, 2) }}</span>
             </div>
-
-            <!-- Overdue Balance -->
-            <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                <div class="card balance-card overdue">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between mb-3">
-                            <div class="balance-icon danger">
-                                <i class="mdi mdi-alert-circle-outline"></i>
-                            </div>
-                            <button type="button" class="balance-info-btn" data-bs-toggle="tooltip"
-                                    title="{{ __('global.overdue_balance_info') }}">
-                                <i class="mdi mdi-information-outline"></i>
-                            </button>
-                        </div>
-                        <p class="balance-label mb-2">{{ __('global.overdue') }}</p>
-                        <h3 class="balance-amount text-danger">R {{ number_format($overdue_balance, 2) }}</h3>
-                    </div>
-                </div>
+            <div title="{{ __('global.overdue_balance_info') }}">
+                <span class="kpi-label">{{ __('global.overdue') }}</span>
+                <span class="kpi-value {{ $overdue_balance > 0 ? 'text-danger' : '' }}">R {{ number_format($overdue_balance, 2) }}</span>
             </div>
-
-            <!-- Last Paid -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card balance-card paid">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between mb-3">
-                            <div class="balance-icon success">
-                                <i class="mdi mdi-check-circle-outline"></i>
-                            </div>
-                            <button type="button" class="balance-info-btn" data-bs-toggle="tooltip"
-                                    title="{{ __('global.last_paid_info') }}">
-                                <i class="mdi mdi-information-outline"></i>
-                            </button>
-                        </div>
-                        <p class="balance-label mb-2">{{ __('global.last_paid') }}</p>
-                        <h3 class="balance-amount text-success">R 0.00</h3>
-                        <div class="mt-3">
-                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#displayBalance"
-                               class="balance-detail-link">
-                                {{ __('global.view') }} {{ __('global.detail_balance') }}
-                                <i class="mdi mdi-chevron-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            <div class="d-flex align-items-center">
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#displayBalance" class="small">
+                    {{ __('global.view') }} {{ __('global.detail_balance') }} <i class="mdi mdi-chevron-right"></i>
+                </a>
             </div>
         </div>
 

@@ -9,11 +9,11 @@
 
         /* Ensure ApexCharts containers have proper height */
         .apex-charts {
-            min-height: 350px;
+            min-height: 260px;
         }
 
         .chart-gutters {
-            min-height: 80px;
+            min-height: 36px;
         }
 
         /* Fix badge styles for Bootstrap 5 */
@@ -29,136 +29,25 @@
             font-weight: 600;
         }
 
-        /* Enhanced Page Title Area */
-        .page-title-box {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(28, 117, 188, 0.15);
-        }
-
-        .page-title-box h4 {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 0;
-        }
-
-        .page-title-box .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .page-title-box .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .page-title-box .btn i {
-            font-size: 1rem;
-        }
-
         /* Enhanced Cards */
         .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 4px;
+            box-shadow: none;
+            margin-bottom: 1rem;
             overflow: hidden;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-
         .card-header {
-            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
-            border-bottom: 2px solid #e9ecef;
-            padding: 1.25rem 1.5rem;
+            background: transparent;
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 0.5rem 0.75rem;
         }
 
         .card-title {
             font-weight: 600;
             color: #495057;
             margin-bottom: 0;
-        }
-
-        /* Stats Cards Enhancement */
-        .stats-card {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            border: none;
-            color: white;
-        }
-
-        .stats-card .card-body {
-            padding: 1.5rem;
-        }
-
-        .stats-card .h4 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .stats-card h6 {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.875rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        /* Alternate gradient colors for variety */
-        .stats-card-1 {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-        }
-
-        .stats-card-2 {
-            background: linear-gradient(135deg, #2A3042 0%, #1C75BC 100%);
-        }
-
-        .stats-card-3 {
-            background: linear-gradient(135deg, #1C75BC 0%, #74788D 100%);
-        }
-
-        .stats-card-4 {
-            background: linear-gradient(135deg, #74788D 0%, #2A3042 100%);
-        }
-
-        /* Revenue Info Card */
-        .revenue-card {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            color: white;
-        }
-
-        .revenue-card .card-body {
-            padding: 1.5rem;
-        }
-
-        .revenue-card img {
-            filter: brightness(0) invert(1);
-            opacity: 0.9;
-        }
-
-        .revenue-card h6 {
-            color: white;
-            font-weight: 600;
-        }
-
-        .revenue-card p {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .revenue-card .font-20 {
-            font-size: 1.5rem;
-            font-weight: 700;
         }
 
         /* Tab Navigation Enhancement */
@@ -170,8 +59,7 @@
             border: none;
             color: #6c757d;
             font-weight: 500;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
+            padding: 0.375rem 0.75rem;
         }
 
         .nav-tabs .nav-link:hover {
@@ -192,7 +80,7 @@
         }
 
         .chart-card .card-body {
-            padding: 1.5rem;
+            padding: 0.75rem;
         }
 
         /* Category Chart Enhancement */
@@ -206,11 +94,9 @@
         /* Table Enhancement */
         .table thead th {
             font-weight: 600;
-            font-size: 0.875rem;
-            color: #495057;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #dee2e6;
+            font-size: 0.75rem;
+            color: var(--bs-secondary-color);
+            border-bottom: 1px solid var(--bs-border-color);
         }
 
         .table tbody tr {
@@ -219,33 +105,6 @@
 
         .table tbody tr:hover {
             background-color: #f8f9fa;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 991px) {
-            .page-title-box {
-                padding: 1rem;
-            }
-
-            .page-title-box h4 {
-                font-size: 1.25rem;
-                margin-bottom: 1rem;
-            }
-
-            .page-title-right {
-                margin-top: 1rem;
-            }
-        }
-
-        @media (max-width: 575px) {
-            .stats-card .h4 {
-                font-size: 1.5rem;
-            }
-
-            .page-title-box .btn {
-                font-size: 0.875rem;
-                padding: 0.375rem 0.75rem;
-            }
         }
 
         /* Loading state for charts */
@@ -305,56 +164,56 @@
 @endpush
 
 @section('content')
-    <!-- Enhanced Page Title Section -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <div>
-                    <h4 class="mb-0">
-                        <i class="mdi mdi-chart-line me-2"></i>{{ __('Sales Dashboard') }}
-                    </h4>
-                </div>
-
-                <div class="page-title-right">
-                    <div class="d-flex flex-wrap gap-2">
-                        <!-- Period Dropdown -->
-                        <div class="dropdown">
-                            <button type="button" class="btn btn-sm dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                <i class="mdi mdi-calendar-clock me-1"></i>
-                                {{ $displayPeriod }}
-                                <i class="mdi mdi-chevron-down ms-1"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item {{ $period == 'today' ? 'active' : '' }}"
-                                   href="{{ route('home', ['period' => 'today']) }}">
-                                    <i class="mdi mdi-calendar-today me-2"></i>Today
-                                </a>
-                                <a class="dropdown-item {{ $period == 'week' ? 'active' : '' }}"
-                                   href="{{ route('home', ['period' => 'week']) }}">
-                                    <i class="mdi mdi-calendar-week me-2"></i>This Week
-                                </a>
-                                <a class="dropdown-item {{ $period == 'month' ? 'active' : '' }}"
-                                   href="{{ route('home', ['period' => 'month']) }}">
-                                    <i class="mdi mdi-calendar-month me-2"></i>This Month
-                                </a>
-                                <a class="dropdown-item {{ $period == 'year' ? 'active' : '' }}"
-                                   href="{{ route('home', ['period' => 'year']) }}">
-                                    <i class="mdi mdi-calendar me-2"></i>This Year
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Date Display -->
-                        <button type="button" class="btn btn-sm" id="Dash_Date">
-                            <i class="mdi mdi-calendar-range me-1"></i>
-                            <span id="Select_date">{{ $todayFormatted }}</span>
-                        </button>
-                    </div>
+    <div class="page-bar">
+        <h1>{{ __('Sales Dashboard') }}</h1>
+        <div class="d-flex flex-wrap gap-2">
+            <div class="dropdown">
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="mdi mdi-calendar-clock me-1"></i>{{ $displayPeriod }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item {{ $period == 'today' ? 'active' : '' }}" href="{{ route('home', ['period' => 'today']) }}">Today</a>
+                    <a class="dropdown-item {{ $period == 'week' ? 'active' : '' }}" href="{{ route('home', ['period' => 'week']) }}">This Week</a>
+                    <a class="dropdown-item {{ $period == 'month' ? 'active' : '' }}" href="{{ route('home', ['period' => 'month']) }}">This Month</a>
+                    <a class="dropdown-item {{ $period == 'year' ? 'active' : '' }}" href="{{ route('home', ['period' => 'year']) }}">This Year</a>
                 </div>
             </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="Dash_Date">
+                <i class="mdi mdi-calendar-range me-1"></i>
+                <span id="Select_date">{{ $todayFormatted }}</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="kpi-strip mb-3">
+        <div>
+            <span class="kpi-label">Total Revenue</span>
+            <span class="kpi-value">R {{ number_format(($totalRevenue/100), 2) }}</span>
+            @if($revenueChangePercentage > 0)
+                <small class="text-success ms-1"><i class="mdi mdi-trending-up"></i>{{ $revenueChangePercentage }}%</small>
+            @elseif($revenueChangePercentage < 0)
+                <small class="text-danger ms-1"><i class="mdi mdi-trending-down"></i>{{ abs($revenueChangePercentage) }}%</small>
+            @else
+                <small class="text-muted ms-1">0.0%</small>
+            @endif
+            <div id="revenue_spark_chart" class="chart-gutters"></div>
+        </div>
+        <div>
+            <span class="kpi-label">Weekly Sales</span>
+            <span class="kpi-value">R {{ number_format(($weeklySales/100), 2) }}</span>
+        </div>
+        <div>
+            <span class="kpi-label">Orders Placed</span>
+            <span class="kpi-value">{{ $ordersPlaced }}</span>
+        </div>
+        <div>
+            <span class="kpi-label">{{ __('Items per Order') }}</span>
+            <span class="kpi-value">{{ $avgItemsPerOrder }}</span>
+        </div>
+        <div>
+            <span class="kpi-label">Avg. Order Value</span>
+            <span class="kpi-value">R {{ number_format($avgOrderValue, 2) }}</span>
         </div>
     </div>
 
@@ -399,107 +258,10 @@
                 </div>
             </div>
 
-            <!-- Stats Cards Row -->
-            <div class="row g-3">
-                <div class="col-12 col-lg-6 col-xl-3">
-                    <div class="card stats-card stats-card-1">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <div class="mb-2">
-                                    <i class="mdi mdi-currency-usd mdi-48px" style="opacity: 0.3;"></i>
-                                </div>
-                                <span class="h4 d-block">R {{ number_format(($weeklySales/100), 2) }}</span>
-                                <h6 class="text-uppercase mt-2 mb-0">Weekly Sales</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6 col-xl-3">
-                    <div class="card stats-card stats-card-2">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <div class="mb-2">
-                                    <i class="mdi mdi-cart-outline mdi-48px" style="opacity: 0.3;"></i>
-                                </div>
-                                <span class="h4 d-block">{{ $ordersPlaced }}</span>
-                                <h6 class="text-uppercase mt-2 mb-0">Orders Placed</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6 col-xl-3">
-                    <div class="card stats-card stats-card-3">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <div class="mb-2">
-                                    <i class="mdi mdi-package-variant mdi-48px" style="opacity: 0.3;"></i>
-                                </div>
-                                <span class="h4 d-block">{{ $avgItemsPerOrder }}</span>
-                                <h6 class="text-uppercase mt-2 mb-0">{{ __('Items per Order') }}</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6 col-xl-3">
-                    <div class="card stats-card stats-card-4">
-                        <div class="card-body">
-                            <div class="text-center">
-                                <div class="mb-2">
-                                    <i class="mdi mdi-chart-line-variant mdi-48px" style="opacity: 0.3;"></i>
-                                </div>
-                                <span class="h4 d-block">R {{ number_format($avgOrderValue, 2) }}</span>
-                                <h6 class="text-uppercase mt-2 mb-0">Avg. Order Value</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Sidebar Cards -->
         <div class="col-xl-3">
-            <!-- Total Revenue Card -->
-            <div class="card revenue-card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="flex-grow-1">
-                            <p class="text-uppercase mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px; opacity: 0.9;">
-                                Total Revenue
-                            </p>
-                            <h3 class="mb-0 font-weight-bold">R {{ number_format(($totalRevenue/100), 2) }}</h3>
-                        </div>
-                        <div class="avatar-sm">
-                            <div class="avatar-title rounded" style="background: rgba(255,255,255,0.2);">
-                                <i class="mdi mdi-cash-multiple mdi-24px"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        @if($revenueChangePercentage > 0)
-                            <span class="badge bg-white text-success me-2">
-                                <i class="mdi mdi-trending-up"></i>{{ $revenueChangePercentage }}%
-                            </span>
-                        @elseif($revenueChangePercentage < 0)
-                            <span class="badge bg-white text-danger me-2">
-                                <i class="mdi mdi-trending-down"></i>{{ abs($revenueChangePercentage) }}%
-                            </span>
-                        @else
-                            <span class="badge bg-white text-muted me-2">
-                                <i class="mdi mdi-trending-neutral"></i>0.0%
-                            </span>
-                        @endif
-                        <small style="opacity: 0.9;">vs previous period</small>
-                    </div>
-                </div>
-                <div class="px-3 pb-3">
-                    <div id="revenue_spark_chart" class="chart-gutters"></div>
-                </div>
-            </div>
-
             <!-- Sales by Category Card -->
             <div class="card">
                 <div class="card-header">
@@ -509,8 +271,8 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <div id="sales_by_category" class="apex-charts" style="min-height: 300px;"></div>
-                    <div class="bg-light-alt py-3 px-3 mt-3 text-center">
+                    <div id="sales_by_category" class="apex-charts" style="min-height: 240px;"></div>
+                    <div class="bg-light-alt py-1 px-2 mt-2 text-center">
                         <i class="mdi mdi-calendar-range me-1"></i>
                         <small>{{ $formattedStartDate }} to {{ $formattedEndDate }}</small>
                     </div>
@@ -535,19 +297,17 @@
                             <thead class="thead-light">
                             <tr>
                                 <th class="border-top-0">Date</th>
-                                <th class="border-top-0">Item Count</th>
-                                <th class="border-top-0">Discount</th>
-                                <th class="border-top-0">Total</th>
+                                <th class="border-top-0 num">Item Count</th>
+                                <th class="border-top-0 num">Discount</th>
+                                <th class="border-top-0 num">Total</th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($dailyEarnings as $earning)
                                 <tr>
                                     <td><strong>{{ \Carbon\Carbon::parse($earning->date)->format('d M') }}</strong></td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $earning->order_count }}</span>
-                                    </td>
-                                    <td class="text-danger">
+                                    <td class="num">{{ $earning->order_count }}</td>
+                                    <td class="num text-danger">
                                         @php
                                             $discount = 0; // TODO: - replace with actual discount calculation
                                         @endphp
@@ -557,7 +317,7 @@
                                             -
                                         @endif
                                     </td>
-                                    <td><strong>R {{ number_format(($earning->total_earnings)/100, 2) }}</strong></td>
+                                    <td class="num fw-semibold">R {{ number_format(($earning->total_earnings)/100, 2) }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -588,8 +348,8 @@
                             <thead class="thead-light">
                             <tr>
                                 <th class="border-top-0">Product</th>
-                                <th class="border-top-0">Price</th>
-                                <th class="border-top-0">Qty Sold</th>
+                                <th class="border-top-0 num">Price</th>
+                                <th class="border-top-0 num">Qty Sold</th>
                                 <th class="border-top-0">Status</th>
                                 <th class="border-top-0">Action</th>
                             </tr>
@@ -598,20 +358,15 @@
                             @forelse($popularProducts as $product)
                                 <tr>
                                     <td>
-                                        <div>
-                                            <h6 class="mb-1">{{ $product->StockItemName }}</h6>
-                                            <small class="text-muted">ID: {{ $product->StockCode }}</small>
-                                        </div>
+                                        <span class="d-block text-truncate" style="max-width: 18rem" title="{{ $product->StockItemName }}">
+                                            {{ $product->StockItemName }} <span class="code text-muted">{{ $product->StockCode }}</span>
+                                        </span>
                                     </td>
-                                    <td>
-                                        <strong>R{{ number_format($product->SellingPrice, 2) }}</strong>
-                                        @if($product->AverageCostPrice > 0 && $product->AverageCostPrice < $product->SellingPrice)
-                                            <br><del class="text-muted small">R{{ number_format($product->AverageCostPrice, 2) }}</del>
-                                        @endif
+                                    <td class="num fw-semibold"
+                                        @if($product->AverageCostPrice > 0) title="Avg cost R{{ number_format($product->AverageCostPrice, 2) }}" @endif>
+                                        R{{ number_format($product->SellingPrice, 2) }}
                                     </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ $product->total_quantity }}</span>
-                                    </td>
+                                    <td class="num">{{ $product->total_quantity }}</td>
                                     <td>
                                         @php
                                             $inStock = true; // TODO: Placeholder - check stock on hand
@@ -679,7 +434,7 @@
 
                 var options = {
                     chart: {
-                        height: 350,
+                        height: 260,
                         type: 'bar',
                         toolbar: {
                             show: false
@@ -836,7 +591,7 @@
 
                 var options = {
                     chart: {
-                        height: 350,
+                        height: 260,
                         type: 'area',
                         toolbar: {
                             show: false
@@ -924,7 +679,7 @@
                 var options = {
                     chart: {
                         type: 'area',
-                        height: 80,
+                        height: 36,
                         sparkline: {
                             enabled: true
                         },
@@ -946,7 +701,7 @@
                             stops: [0, 90, 100]
                         }
                     },
-                    colors: ['#ffffff'],
+                    colors: ['#1C75BC'],
                     series: [{
                         name: 'Revenue',
                         data: sparkData
@@ -994,7 +749,7 @@
 
                 var options = {
                     chart: {
-                        height: 300,
+                        height: 240,
                         type: 'donut',
                         animations: {
                             enabled: true

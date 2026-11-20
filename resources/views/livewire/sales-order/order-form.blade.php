@@ -1,14 +1,6 @@
 <div>
     <div class="row">
         <div class="col-sm-12">
-            <div class="page-title-box">
-                <h4 class="page-title">{{ $orderId ? 'Edit Order' : 'New Order' }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">{{ $orderId ? 'Edit Order #' . $orderNumber : __('global.new_order') }}</h4>
@@ -77,22 +69,22 @@
                         </div>
 
                         {{-- Order Lines Table --}}
-                        <div class="col-12 mt-5">
+                        <div class="col-12 mt-3">
                             <div class="table-responsive">
-                                <table class="table table-xl mb-0 thead-border-top-0 table-striped">
+                                <table class="table table-sm mb-0 table-striped">
                                     <thead>
                                     <tr>
                                         <th style="width: 30%">{{ __('global.products') }}</th>
-                                        <th style="width: 8%">{{ __('global.quantity') }}</th>
-                                        <th style="width: 8%">{{ __('global.stockOnhand') }}</th>
-                                        <th style="width: 12%">{{ __('global.price') }}</th>
+                                        <th style="width: 8%" class="num">{{ __('global.quantity') }}</th>
+                                        <th style="width: 8%" class="num">{{ __('global.stockOnhand') }}</th>
+                                        <th style="width: 12%" class="num">{{ __('global.price') }}</th>
                                         @if($discountPerItem)
-                                            <th style="width: 10%">{{ __('global.discount') }}</th>
+                                            <th style="width: 10%" class="num">{{ __('global.discount') }}</th>
                                         @endif
                                         @if($taxPerItem)
-                                            <th style="width: 8%" class="text-center">VAT</th>
+                                            <th style="width: 8%" class="num">VAT</th>
                                         @endif
-                                        <th style="width: 12%" class="text-end">{{ __('global.total') }}</th>
+                                        <th style="width: 12%" class="num">{{ __('global.total') }}</th>
                                         <th style="width: 5%"></th>
                                     </tr>
                                     </thead>
@@ -150,7 +142,8 @@
                                                 <input
                                                     type="number"
                                                     wire:model.live.debounce.500ms="orderLines.{{ $index }}.quantity"
-                                                    class="form-control form-control-sm @error('orderLines.'.$index.'.quantity') is-invalid @enderror"
+                                                    wire:keydown.enter.prevent="addLine"
+                                                    class="form-control form-control-sm text-end @error('orderLines.'.$index.'.quantity') is-invalid @enderror"
                                                     step="0.01"
                                                     min="0.01">
                                                 @error('orderLines.'.$index.'.quantity')
@@ -159,10 +152,8 @@
                                             </td>
 
                                             {{-- Stock on Hand --}}
-                                            <td>
-                                                    <span class="badge {{ $line['stock_on_hand'] > 0 ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ number_format($line['stock_on_hand'], 2) }}
-                                                    </span>
+                                            <td class="num {{ $line['stock_on_hand'] > 0 ? 'text-muted' : 'text-danger fw-semibold' }}">
+                                                {{ number_format($line['stock_on_hand'], 2) }}
                                             </td>
 
                                             {{-- Price --}}
@@ -170,7 +161,7 @@
                                                 <input
                                                     type="number"
                                                     wire:model.live.debounce.500ms="orderLines.{{ $index }}.price"
-                                                    class="form-control form-control-sm @error('orderLines.'.$index.'.price') is-invalid @enderror"
+                                                    class="form-control form-control-sm text-end @error('orderLines.'.$index.'.price') is-invalid @enderror"
                                                     step="0.01"
                                                     min="0">
                                                 @error('orderLines.'.$index.'.price')
@@ -185,63 +176,54 @@
                                                         <input
                                                             type="number"
                                                             wire:model.live.debounce.500ms="orderLines.{{ $index }}.discount_percent"
-                                                            class="form-control form-control-sm @error('orderLines.'.$index.'.discount_percent') is-invalid @enderror"
+                                                            class="form-control form-control-sm text-end @error('orderLines.'.$index.'.discount_percent') is-invalid @enderror"
                                                             step="0.01"
                                                             min="0"
                                                             max="100"
+                                                            @if(! $line['discount_locked'] && $line['max_discount'] < 100)
+                                                                placeholder="≤{{ $line['max_discount'] }}" title="Max: {{ $line['max_discount'] }}%"
+                                                            @endif
                                                             @if($line['discount_locked']) readonly @endif>
-                                                        <span class="input-group-text">%</span>
+                                                        @if($line['discount_locked'] && $line['is_contract_discount'])
+                                                            <span class="input-group-text text-success" title="Contract Discount"><i class="fas fa-lock"></i></span>
+                                                        @elseif($line['discount_locked'])
+                                                            <span class="input-group-text text-warning" title="{{ $line['discount_reason'] }}"><i class="fas fa-lock"></i></span>
+                                                        @else
+                                                            <span class="input-group-text">%</span>
+                                                        @endif
                                                     </div>
                                                     @error('orderLines.'.$index.'.discount_percent')
                                                     <small class="text-danger d-block">{{ $message }}</small>
                                                     @enderror
-                                                    @if($line['discount_locked'] && $line['is_contract_discount'])
-                                                        <small class="text-success d-block">
-                                                            <i class="fas fa-lock"></i> Contract Discount
-                                                        </small>
-                                                    @elseif($line['discount_locked'])
-                                                        <small class="text-warning d-block">
-                                                            <i class="fas fa-lock"></i> {{ $line['discount_reason'] }}
-                                                        </small>
-                                                    @elseif($line['max_discount'] < 100)
-                                                        <small class="text-muted">Max: {{ $line['max_discount'] }}%</small>
-                                                    @endif
                                                 </td>
                                             @endif
 
                                             {{-- Taxes --}}
                                             @if($taxPerItem)
                                                 {{-- Display tax rate (read-only) --}}
-                                                <td class="text-center">
-                                                    @if($line['product_id'] && isset($line['tax_rate']))
-                                                        <span class="badge bg-info">
-                                                            {{ $line['tax_rate'] }}% VAT
-                                                        </span>
+                                                <td class="num text-muted">
+                                                    @if(! $line['product_id'])
+                                                        —
+                                                    @elseif(isset($line['tax_rate']))
+                                                        {{ $line['tax_rate'] }}%
                                                     @else
-                                                        <span class="badge bg-secondary">
-                                                            Zero Rated
-                                                        </span>
+                                                        <span title="Zero Rated">0%</span>
                                                     @endif
                                                 </td>
                                             @endif
 
                                             {{-- Line Total --}}
-                                            <td class="text-end">
-                                                <input
-                                                    type="text"
-                                                    value="{{ number_format($line['line_total'], 2) }}"
-                                                    class="form-control form-control-sm text-end"
-                                                    readonly>
-                                            </td>
+                                            <td class="num fw-semibold">{{ number_format($line['line_total'], 2) }}</td>
 
                                             {{-- Remove Button --}}
-                                            <td class="text-center">
+                                            <td class="text-end">
                                                 <button
                                                     type="button"
                                                     wire:click="removeLine({{ $index }})"
-                                                    class="btn btn-sm btn-danger"
+                                                    class="btn btn-sm btn-link text-muted p-0"
+                                                    title="Remove line"
                                                     @if(count($orderLines) <= 1) disabled @endif>
-                                                    <i class="fas fa-trash"></i>
+                                                    <i class="fas fa-times"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -251,21 +233,20 @@
                             </div>
 
                             {{-- Add Line Button --}}
-                            <div class="row mt-3">
-                                <div class="col-12 text-center">
-                                    <button
-                                        type="button"
-                                        wire:click="addLine"
-                                        class="btn btn-light"
-                                        @if(!$customerId) disabled @endif>
-                                        <i class="fas fa-plus-circle"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
-                                    </button>
-                                </div>
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <button
+                                    type="button"
+                                    wire:click="addLine"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    @if(!$customerId) disabled @endif>
+                                    <i class="fas fa-plus"></i> {{ __('global.add') }} {{ __('cruds.product.title_singular') }}
+                                </button>
+                                <small class="text-muted">Enter in Qty adds a line</small>
                             </div>
                         </div>
 
                         {{-- Notes and Totals Section --}}
-                        <div class="row mt-4">
+                        <div class="row mt-3">
                             {{-- Notes --}}
                             <div class="col-md-5 pr-4">
                                 <div class="form-group">
@@ -289,11 +270,11 @@
                             <div class="col-md-4 offset-md-3 pl-4">
                                 <div class="card card-body shadow-none border">
                                     {{-- Subtotal --}}
-                                    <div class="d-flex align-items-center mb-3">
+                                    <div class="d-flex align-items-center mb-2">
                                         <div class="h6 mb-0 w-50">
                                             <strong class="text-muted">{{ __('global.sub_total') }}</strong>
                                         </div>
-                                        <div class="ms-auto h6 mb-0 text-end">
+                                        <div class="ms-auto h6 mb-0 num">
                                             {{ number_format($subTotal, 2) }}
                                         </div>
                                     </div>
@@ -301,11 +282,11 @@
                                     {{-- Tax Breakdown --}}
                                     @if(!empty($taxBreakdown))
                                         @foreach($taxBreakdown as $taxName => $taxAmount)
-                                            <div class="d-flex align-items-center mb-3">
+                                            <div class="d-flex align-items-center mb-2">
                                                 <div class="h6 mb-0 w-50">
                                                     <strong class="text-muted">{{ $taxName }}</strong>
                                                 </div>
-                                                <div class="ms-auto h6 mb-0 text-end">
+                                                <div class="ms-auto h6 mb-0 num">
                                                     {{ number_format($taxAmount, 2) }}
                                                 </div>
                                             </div>
@@ -336,11 +317,11 @@
                                     <hr>
 
                                     {{-- Grand Total --}}
-                                    <div class="d-flex align-items-center mb-3">
+                                    <div class="d-flex align-items-center mb-2">
                                         <div class="h5 mb-0">
                                             <strong class="text-muted">{{ __('global.total') }}</strong>
                                         </div>
-                                        <div class="ms-auto h5 mb-0">
+                                        <div class="ms-auto h5 mb-0 num">
                                             <strong>{{ number_format($grandTotal, 2) }}</strong>
                                         </div>
                                     </div>

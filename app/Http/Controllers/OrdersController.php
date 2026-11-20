@@ -13,13 +13,12 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Customer;
 use DB;
 use Gate;
 use PDF;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 use Mpociot\VatCalculator\Facades\VatCalculator;
 use Carbon\Carbon;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -49,34 +48,44 @@ class OrdersController extends Controller
 
         // Query Invoices by Company and Tab
         $tab = $request->tab ?? 'pending';
-        $query = Order::findByCompany($currentCompany->id);
 
-        switch ($tab) {
-            case 'pending':
-                $query->pending();
-                break;
-            case 'processed':
-                $query->processed();
-                break;
-            case 'completed':
-                $query->completed();
-                break;
-            case 'all':
-                break;
+        // Rows are loaded by DataTables (server-side) via AJAX on the same URL
+        if ($request->ajax()) {
+            $query = Order::findByCompany($currentCompany->id)
+                ->with(['customer', 'salesperson', 'orderstatus']);
+
+            switch ($tab) {
+                case 'pending':
+                    $query->pending();
+                    break;
+                case 'processed':
+                    $query->processed();
+                    break;
+                case 'completed':
+                    $query->completed();
+                    break;
+                case 'all':
+                    break;
+            }
+
+            return DataTables::eloquent($query)
+                ->editColumn('OrderNumber', fn ($order) =>
+                    '<a href="'.route('orders.show', $order->id).'" class="code fw-semibold">'.e($order->OrderNumber).'</a>')
+                ->addColumn('customer_name', function ($order) {
+                    $name = e($order->customer?->CustomerName);
+
+                    return '<span class="d-block text-truncate" style="max-width:22rem" title="'.$name.'">'.$name.'</span>';
+                })
+                ->addColumn('salesrep', fn ($order) => $order->salesperson?->PreferredName)
+                ->editColumn('OrderDate', fn ($order) => $order->OrderDate?->format('Y-m-d'))
+                ->addColumn('status', fn ($order) => view('orders._status_badges', compact('order'))->render())
+                ->addColumn('action', fn ($order) => view('orders._row_actions', compact('order'))->render())
+                ->filterColumn('customer_name', function ($query, $keyword) {
+                    $query->whereHas('customer', fn ($q) => $q->where('CustomerName', 'like', "%{$keyword}%"));
+                })
+                ->rawColumns(['OrderNumber', 'customer_name', 'status', 'action'])
+                ->make(true);
         }
-
-        $query->orderBy('created_at', 'desc');
-
-
-        // Apply Filters and Paginate
-        $orders = QueryBuilder::for($query)
-            ->allowedFilters([
-                AllowedFilter::partial('OrderNumber'),
-                AllowedFilter::scope('from'),
-                AllowedFilter::scope('to'),
-            ])
-            ->paginate()
-            ->appends(request()->query());
 
         $pendingCount = Order::findByCompany($currentCompany->id)->pending()->count();
         $processedCount = Order::findByCompany($currentCompany->id)->processed()->count();
@@ -85,7 +94,7 @@ class OrdersController extends Controller
         $orderStatus = OrderStatus::all();
 
         //echo "<pre>"; print_r($orderStatus); die;
-        return view('orders.index', compact('orders', 'tab', 'pendingCount', 'processedCount', 'completedCount', 'orderStatus'));
+        return view('orders.index', compact('tab', 'pendingCount', 'processedCount', 'completedCount', 'orderStatus'));
 
     }
 
@@ -270,14 +279,18 @@ class OrdersController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
-    public function delete(Request $request)
+    public function delete(Order $order)
     {
         abort_if(Gate::denies('order_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $order = Order::findOrFail($request->order);
+        // {order} is resolved by Route::bind('order') in RouteServiceProvider, so $order is
+        // already the model. (Previously findOrFail() was handed that model and always 404'd.)
 
-        // Delete order form Database
-        $order->delete();
+        // Delete order and its lines together (no FK cascade is defined in this repo's migrations)
+        DB::transaction(function () use ($order) {
+            $order->items()->delete();
+            $order->delete();
+        });
 
         session()->flash('alert-success', __('global.order_deleted'));
         return redirect()->route('orders.index');

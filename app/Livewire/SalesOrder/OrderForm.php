@@ -89,6 +89,23 @@ class OrderForm extends Component
             // New order
             $this->orderNumber = Order::getNextOrderNumber();
             $this->addLine(); // Start with one empty line
+
+            // Prefill customer from ?customer={acc_code} (e.g. "New order" on the customer page).
+            // Same scoping as the customer dropdown (AjaxController@customers).
+            if (request()->filled('customer')) {
+                $query = Customer::findByCompany($currentCompany->id)
+                    ->where('acc_code', request('customer'));
+                if ($user->IsSalesperson == '1') {
+                    $query->where('SalesRepID', $user->RepCode);
+                }
+                $customer = $query->first();
+
+                if ($customer) {
+                    $this->customerId = $customer->acc_code;   // same value the dropdown sets
+                    $this->updatedCustomerId($this->customerId); // same context/pricing path as picking from the dropdown
+                    $this->customerName = $customer->CustomerName; // label for the pre-selected <option>
+                }
+            }
         }
     }
 

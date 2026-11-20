@@ -6,64 +6,14 @@
     <link href="{{ URL::asset('build/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
-    <style>
-        .column-content {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .table-card {
-            border: 1px solid #e9ecef;
-            border-radius: 0.375rem;
-        }
-        .product-barcode {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            background-color: #f8f9fa;
-            padding: 2px 4px;
-            border-radius: 2px;
-        }
-        .price-list {
-            font-size: 0.9rem;
-            line-height: 1.3;
-        }
-        .btn-group-actions {
-            white-space: nowrap;
-        }
-        .btn-sm-custom {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.775rem;
-            margin: 0 1px;
-        }
-        .stock-badge {
-            display: inline-block;
-            padding: 0.25em 0.5em;
-            font-size: 0.75em;
-            font-weight: 500;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-        .stock-high { background-color: rgba(var(--bs-success-rgb), 0.15); color: var(--bs-success); }
-        .stock-medium { background-color: rgba(var(--bs-warning-rgb), 0.15); color: var(--bs-warning); }
-        .stock-low { background-color: rgba(var(--bs-danger-rgb), 0.15); color: var(--bs-danger); }
-        .dt-buttons {
-            margin-bottom: 1rem;
-        }
-    </style>
 @endpush
 
 @section('content')
-    <div class="mx-4">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <div>
-                <h2 class="mb1">{{ __('cruds.order.title_singular') }} {{ __('global.list') }}</h2>
-                <p class="text-muted mb-0">{{ __('List of all sales orders') }}</p>
-            </div>
-            <div class="col-auto align-self-center float-end">
-                <div class="btn-group" role="group" aria-label="Basic example">
+    <div>
+        <div class="page-bar">
+            <h1>{{ __('cruds.order.title_singular') }} {{ __('global.list') }}</h1>
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group btn-group-sm" role="group" aria-label="Order status tabs">
                     <a class="btn btn-sm btn-outline-dark {{ $tab == 'pending' ? 'active' : '' }}"
                        href="{{ route('orders.index', ['tab' => 'pending']) }}" >
                         <i class="bx bx-time me-1"></i>
@@ -95,7 +45,7 @@
                     </a>
                 </div>
                 @can('order_create')
-                    <a href="{{ route("orders.create") }}" class="btn btn-sm btn-outline-primary">
+                    <a href="{{ route("orders.create") }}" class="btn btn-sm btn-primary">
                         <i data-feather="plus-circle" class="align-self-center icon-xs"></i>
                         {{ __('global.new_order') }}
                     </a>
@@ -104,18 +54,14 @@
         </div>
         <!-- Success Message -->
         @if($message = Session::get('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-success alert-dismissible fade show py-2 mb-2" role="alert">
                 <strong>{{ __('global.success') }}!</strong> {{ $message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        <div class="column-content">
-            <div class="table-card">
-                <div class="card-body p-2">
-                    @include('orders._table')
-                </div>
-            </div>
+        <div class="list-surface">
+            @include('orders._table')
         </div>
 
         @include('orders._statusUpdate')
@@ -137,22 +83,60 @@
 
     <script>
         $('#datatable-orders').DataTable({
-            dom: 'Bfrtip',
-            lengthMenu: [
-                [ 10, 25, 50, -1 ],
-                [ '10 rows', '25 rows', '50 rows', 'Show all']
-            ],
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength'
-            ],
-            order: [[ 5, "desc" ]],
             processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('orders.index', ['tab' => $tab]) }}",
+                type: "GET"
+            },
+            columns: [
+                { data: 'OrderNumber', name: 'OrderNumber' },
+                { data: 'customer_name', name: 'customer_name', orderable: false },
+                { data: 'salesrep', name: 'salesrep', orderable: false, searchable: false, className: 'text-muted' },
+                { data: 'CustomerPurchaseOrderNumber', name: 'CustomerPurchaseOrderNumber', className: 'code text-muted' },
+                { data: 'OrderDate', name: 'OrderDate', className: 'num text-muted' },
+                { data: 'status', name: 'status', orderable: false, searchable: false, className: 'text-nowrap' },
+                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-end' },
+            ],
+            order: [[ 4, "desc" ]], // newest order date first
+            searchDelay: 500,
+            dom: "<'d-flex justify-content-between align-items-center gap-2 mb-2'Bf>rt<'d-flex justify-content-between align-items-center'ip>",
+            pageLength: 50,
+            lengthMenu: [
+                [ 25, 50, 100, 500 ],
+                [ '25 rows', '50 rows', '100 rows', '500 rows' ]
+            ],
+            buttons: {
+                dom: { button: { className: 'btn btn-sm btn-outline-secondary' } },
+                buttons: [ 'copy', 'csv', 'excel', 'pdf', 'print', 'pageLength' ],
+            },
             responsive: true,
             language: {
-                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                processing: '<i class="fa fa-spinner fa-spin fa-fw"></i><span class="sr-only">Loading...</span> ',
                 search: "_INPUT_",
                 searchPlaceholder: "Search orders...",
             },
+        });
+
+        // Rows arrive via AJAX, so custom.js's page-load .delete-confirm binding never reaches them
+        $('#datatable-orders').on('click', '.delete-confirm', function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This record and it`s details will be permanantly deleted!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Delete!',
+                focusConfirm: false,
+                focusCancel: false,
+            }).then((result) => {
+                if (result.value) {
+                    window.location.href = url;
+                }
+            });
         });
     </script>
 

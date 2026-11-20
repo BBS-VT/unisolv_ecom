@@ -21,13 +21,24 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
     protected $importJobId;
     protected $totalRows = 0;
     protected $processedRows = 0;
+    protected $existingStatuses = [];
 
     /**
      * @param int $importJobId
      */
-    public function __construct(int $importJobId)
+    /**
+     * @param array $existingStatuses CustomerStatus keyed by statusKey(acc_main, acc_sub),
+     *                                captured before the customers table is truncated
+     */
+    public function __construct(int $importJobId, array $existingStatuses = [])
     {
         $this->importJobId = $importJobId;
+        $this->existingStatuses = $existingStatuses;
+    }
+
+    public static function statusKey($accMain, $accSub): string
+    {
+        return trim((string) $accMain) . '|' . trim((string) $accSub);
     }
 
     /**
@@ -122,7 +133,8 @@ class CustomerMasterImport implements ToCollection, WithChunkReading, WithStartR
                         'PostalAddressLine2'   => $row[27] ?? '',
                         'PostalCity'           => $row[28] ?? '',
                         'PostalPostalCode'     => $row[30] ?? '',
-                        'CustomerStatus'       => '1',
+                        // Existing customers keep their status; new customers start Active
+                        'CustomerStatus'       => $this->existingStatuses[self::statusKey($row[0] ?? '', $row[1] ?? '')] ?? '1',
                         'CountryID'            => '202',
                         'SalesRepID'           => $this->cleanValue($row[83]),
                         'LastEditedBy'         => Auth::check() ? Auth::id() : 1,

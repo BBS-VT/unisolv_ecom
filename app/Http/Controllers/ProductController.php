@@ -111,93 +111,60 @@ class ProductController extends Controller
             }
 
 
+            $money = fn ($v) => $v ? number_format($v, 2) : '<span class="text-muted">—</span>';
+
             return DataTables::of($query)
+                ->editColumn('StockCode', fn ($product) =>
+                    '<a href="'.route('products.show', $product->id).'" class="code fw-semibold">'.e($product->StockCode).'</a>')
+                ->editColumn('StockItemName', fn ($product) =>
+                    '<span class="d-block text-truncate" style="max-width:28rem" title="'.e($product->StockItemName).'">'.e($product->StockItemName).'</span>')
                 ->addColumn('barcodes', function ($product) {
-                    $primaryBarcode = $product->Barcode ? $product->Barcode : '<span class="text-muted">N/A</span>';
-                    $alternateBarcode = $product->AltBarCode ? $product->AltBarCode : '<span class="text-muted">N/A</span>';
+                    if (! $product->Barcode) {
+                        return '<span class="text-muted">—</span>';
+                    }
+                    $alt = $product->AltBarCode
+                        ? ' <span class="text-muted small" title="Alt: '.e($product->AltBarCode).'">+alt</span>'
+                        : '';
 
-                    return "
-                        <div class='product-barcode mb-1'>Primary: {$primaryBarcode}</div>
-                        <div class='product-barcode'>Alt: {$alternateBarcode}</div>
-                    ";
+                    return '<span class="code">'.e($product->Barcode).'</span>'.$alt;
                 })
-                ->addColumn('prices', function ($product) {
-                    //$currency = auth()->user()->currentCompany()->currency()->symbol; // Fetch system-wide currency
-                    $currency = 'R';
-
-                    $sellingPrice1 = $product->SellingPrice ? $currency . ' ' . number_format($product->SellingPrice, 2) : '<span class="text-muted">N/A</span>';
-                    $sellingPrice2 = $product->SellingPrice2 ? $currency . ' ' . number_format($product->SellingPrice2, 2) : '<span class="text-muted">N/A</span>';
-                    $sellingPrice3 = $product->SellingPrice3 ? $currency . ' ' . number_format($product->SellingPrice3, 2) : '<span class="text-muted">N/A</span>';
-                    $sellingPrice4 = $product->SellingPrice4 ? $currency . ' ' . number_format($product->SellingPrice4, 2) : '<span class="text-muted">N/A</span>';
-
-                    return "
-                    <div><small class='text-muted'>Price 1:</small> <span class='fw-semibold'>{$sellingPrice1}</span></div>
-                    <div><small class='text-muted'>Price 2:</small> {$sellingPrice2}</div>
-                    <div><small class='text-muted'>Price 3:</small> {$sellingPrice3}</div>
-                    <div><small class='text-muted'>Price 4:</small> {$sellingPrice4}</div>
-                ";
-                })
-                ->addColumn('costPrices', function ($product) {
-                    //$currency = auth()->user()->currentCompany()->currency()->symbol;
-                    $currency = 'R';
-                    $averageCostPrice = $product->AverageCostPrice ? $currency . ' ' . number_format($product->AverageCostPrice, 2) : '<span class="text-muted">N/A</span>';
-                    $lastCostPrice = $product->LastCostPrice ? $currency . ' ' . number_format($product->LastCostPrice, 2) : '<span class="text-muted">N/A</span>';
-
-                    return "
-                        <div><small class='text-muted'>Avg:</small> {$averageCostPrice}</div>
-                        <div><small class='text-muted'>Last:</small> {$lastCostPrice}</div>
-                    ";
-                })
+                ->editColumn('SellingPrice', fn ($product) => $money($product->SellingPrice))
+                ->editColumn('SellingPrice2', fn ($product) => $money($product->SellingPrice2))
+                ->editColumn('SellingPrice3', fn ($product) => $money($product->SellingPrice3))
+                ->editColumn('SellingPrice4', fn ($product) => $money($product->SellingPrice4))
+                ->editColumn('AverageCostPrice', fn ($product) => $money($product->AverageCostPrice))
+                ->editColumn('LastCostPrice', fn ($product) => $money($product->LastCostPrice))
                 ->addColumn('quantity_on_hand', function ($product) {
                     $quantity = $product->QuantityOnHand ?? 0;
 
-                    // Add stock level badge
+                    // Same thresholds as before: >10 in stock, 1-10 low, else out
                     if ($quantity > 10) {
-                        $badge = '<span class="stock-badge stock-high">In Stock</span>';
-                    } elseif ($quantity >= 1 && $quantity <= 10) {
-                        $badge = '<span class="stock-badge stock-medium">Low Stock</span>';
+                        [$class, $label] = ['', 'In Stock'];
+                    } elseif ($quantity >= 1) {
+                        [$class, $label] = ['text-warning', 'Low Stock'];
                     } else {
-                        $badge = '<span class="stock-badge stock-low">Out of Stock</span>';
+                        [$class, $label] = ['text-danger', 'Out of Stock'];
                     }
 
-                    return "
-                        <div class='text-center'>
-                            <div class='fw-bold fs-5'>{$quantity}</div>
-                            <div class='mt-1'>{$badge}</div>
-                        </div>
-                    ";
+                    return '<span class="fw-semibold '.$class.'" title="'.$label.'">'.e($quantity).'</span>';
                 })
                 ->addColumn('action', function ($product) {
                     $actions = '';
 
-                    // View button
-                    $actions .= '<a href="'.route('products.show', $product->id).'" class="btn btn-sm btn-outline-primary btn-sm-custom me-1" data-bs-toggle="tooltip" title="View Product">
-                        <i class="fas fa-eye"></i>
-                    </a>';
-
-                    // Edit button
                     if (auth()->user()->can('product_edit')) {
-                        $actions .= '<a href="'.route('products.edit', $product->id).'" class="btn btn-sm btn-outline-warning btn-sm-custom me-1" data-bs-toggle="tooltip" title="Edit Product">
-                        <i class="fas fa-edit"></i>
-                     </a>';
+                        $actions .= '<a href="'.route('products.edit', $product->id).'" class="btn" title="Edit Product"><i class="fas fa-edit"></i></a>';
                     }
 
-                    // E-commerce view button (only if e-commerce is enabled)
                     if (Features::ecommerceEnabled()) {
                         $shopUrl = route('shop.products.show', $product->slug ?? $product->id);
-                        $actions .= '<a href="'.$shopUrl.'" target="_blank" class="btn btn-sm btn-outline-info btn-sm-custom me-1" data-bs-toggle="tooltip" title="View in Shop">
-                        <i class="fas fa-shopping-cart"></i>
-                     </a>';
+                        $actions .= '<a href="'.$shopUrl.'" target="_blank" class="btn" title="View in Shop"><i class="fas fa-external-link-alt"></i></a>';
                     }
 
-                    // Delete button
                     if (auth()->user()->can('product_delete')) {
-                        $actions .= '<button type="button" data-id="'.$product->id.'" data-name="'.htmlspecialchars($product->StockItemName).'" class="btn btn-sm btn-outline-danger btn-sm-custom delete-product" data-bs-toggle="tooltip" title="Delete Product">
-                        <i class="fas fa-trash"></i>
-                     </button>';
+                        $actions .= '<button type="button" data-id="'.$product->id.'" data-name="'.e($product->StockItemName).'" class="btn btn-del delete-product" title="Delete Product"><i class="fas fa-trash"></i></button>';
                     }
 
-                    return '<div class="btn-group-actions">' . $actions . '</div>';
+                    return '<div class="row-actions">'.$actions.'</div>';
                 })
                 ->filterColumn('barcodes', function($query, $keyword) {
                     $query->where(function($q) use ($keyword) {
@@ -205,7 +172,7 @@ class ProductController extends Controller
                             ->orWhere('products.AltBarCode', 'like', "%{$keyword}%");
                     });
                 })
-                ->rawColumns(['barcodes','prices','costPrices','quantity_on_hand', 'action'])
+                ->rawColumns(['StockCode', 'StockItemName', 'barcodes', 'SellingPrice', 'SellingPrice2', 'SellingPrice3', 'SellingPrice4', 'AverageCostPrice', 'LastCostPrice', 'quantity_on_hand', 'action'])
                 ->make(true);
         }
 
@@ -499,6 +466,12 @@ class ProductController extends Controller
         $user = auth()->user();
         $currentCompany = $user->currentCompany();
         Cache::forget("products_company_{$currentCompany->id}");
+
+        // The products list deletes via AJAX DELETE. A redirect here makes the browser
+        // re-send DELETE to /products (302 keeps the method) -> 405, even though the delete worked.
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json(['message' => 'Product deleted.']);
+        }
 
         return back();
 

@@ -7,246 +7,74 @@
     <link href="{{ URL::asset('build/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ URL::asset('build/libs/dropify/css/dropify.min.css') }}" rel="stylesheet">
-    <style>
-        .column-content {
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .table-card {
-            border: 1px solid #e9ecef;
-            border-radius: 0.375rem;
-        }
-
-        .customer-code {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            background-color: #f8f9fa;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-
-        .customer-info {
-            line-height: 1.6;
-        }
-
-        .customer-name {
-            font-weight: 600;
-            color: #495057;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .customer-address {
-            font-size: 0.875rem;
-            color: #6c757d;
-            display: block;
-        }
-
-        .contact-info {
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .contact-name {
-            font-weight: 500;
-            display: block;
-        }
-
-        .contact-detail {
-            color: #6c757d;
-            font-size: 0.875rem;
-        }
-
-        .status-badge {
-            padding: 0.35em 0.65em;
-            font-size: 0.75em;
-            font-weight: 600;
-            border-radius: 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-active {
-            background-color: rgba(var(--bs-success-rgb), 0.15);
-            color: var(--bs-success);
-        }
-
-        .status-inactive {
-            background-color: rgba(var(--bs-danger-rgb), 0.15);
-            color: var(--bs-danger);
-        }
-
-        .status-suspended {
-            background-color: rgba(var(--bs-warning-rgb), 0.15);
-            color: var(--bs-warning);
-        }
-
-        .btn-group-actions {
-            white-space: nowrap;
-        }
-
-        .btn-sm-custom {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.775rem;
-            margin: 0 1px;
-        }
-
-        .filter-buttons .btn {
-            border-radius: 20px;
-            padding: 0.375rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .filter-buttons .btn:not(.active) {
-            background-color: #f8f9fa;
-            border-color: #dee2e6;
-            color: #6c757d;
-        }
-
-        .filter-buttons .btn.active {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 12px rgba(28, 117, 188, 0.3);
-        }
-
-        .filter-buttons .btn:hover:not(.active) {
-            background-color: #e9ecef;
-            border-color: #adb5bd;
-        }
-
-        .page-header-box {
-            background: linear-gradient(135deg, #1C75BC 0%, #2A3042 100%);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: white;
-        }
-
-        .page-header-box h2 {
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-
-        .page-header-box p {
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0;
-        }
-
-        .page-header-box .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            backdrop-filter: blur(10px);
-        }
-
-        .page-header-box .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .vat-number {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-        }
-    </style>
 @endpush
 
 @section('content')
-    <div class="mx-4">
-        <!-- Page Header -->
-        <div class="page-header-box">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h2 class="mb-1">
-                        <i class="mdi mdi-account-group me-2"></i>{{ __('cruds.customer.title') }}
-                    </h2>
-                    <p class="mb-0">{{ __('Manage your customer accounts') }}</p>
+    <div>
+        <div class="page-bar">
+            <div class="d-flex align-items-center gap-3">
+                <h1>{{ __('cruds.customer.title') }}</h1>
+                <div class="btn-group btn-group-sm filter-buttons" role="group" aria-label="Customer Status Filter">
+                    <button type="button" class="btn btn-outline-secondary active" data-filter="all">{{ __('global.all') }}</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="active">{{ __('global.active') }}</button>
+                    <button type="button" class="btn btn-outline-secondary" data-filter="inactive">{{ __('global.inactive') }}</button>
                 </div>
-                <div class="d-flex gap-2 flex-wrap">
-                    @can('customer_create')
-                        <a href="{{ route('customers.create') }}" class="btn">
-                            <i class="mdi mdi-plus me-1"></i> {{ __('global.add') }} {{ __('cruds.customer.title_singular') }}
-                        </a>
-                    @endcan
+            </div>
+            <div class="d-flex gap-2">
+                @can('customer_create')
+                    <a href="{{ route('customers.create') }}" class="btn btn-sm btn-primary">
+                        <i class="mdi mdi-plus me-1"></i> {{ __('global.add') }} {{ __('cruds.customer.title_singular') }}
+                    </a>
+                @endcan
 
-                    @can('customer_balance_import')
-                        <div class="btn-group">
-                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="mdi mdi-upload me-1"></i> {{ __('global.import') }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importCustomermaster" href="#">
-                                        <i class="mdi mdi-upload-outline me-2"></i>{{ __('global.import') }} {{ __('cruds.customer.title') }}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importBalance" href="#">
-                                        <i class="mdi mdi-upload-outline me-2"></i>{{ __('global.import') }} {{ __('cruds.customer.fields.balance') }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    @endcan
-                </div>
+                @can('customer_balance_import')
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="mdi mdi-upload me-1"></i> {{ __('global.import') }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importCustomermaster" href="#">
+                                    <i class="mdi mdi-upload-outline me-2"></i>{{ __('global.import') }} {{ __('cruds.customer.title') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importBalance" href="#">
+                                    <i class="mdi mdi-upload-outline me-2"></i>{{ __('global.import') }} {{ __('cruds.customer.fields.balance') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endcan
             </div>
         </div>
 
         <!-- Success Message -->
         @if($message = Session::get('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                <i class="mdi mdi-check-circle me-2"></i>
+            <div class="alert alert-success alert-dismissible fade show py-2 mb-2" role="alert">
                 <strong>{{ __('global.success') }}!</strong> {{ $message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        <!-- Filter Buttons -->
-        <div class="mb-4 filter-buttons">
-            <div class="btn-group" role="group" aria-label="Customer Status Filter">
-                <button type="button" class="btn active" data-filter="all">
-                    <i class="mdi mdi-view-list me-1"></i>{{ __('global.all') }}
-                </button>
-                <button type="button" class="btn" data-filter="active">
-                    <i class="mdi mdi-check-circle me-1"></i>{{ __('global.active') }}
-                </button>
-                <button type="button" class="btn" data-filter="inactive">
-                    <i class="mdi mdi-close-circle me-1"></i>{{ __('global.inactive') }}
-                </button>
-            </div>
-        </div>
-
         <!-- Main Content -->
-        <div class="column-content">
-            <div class="table-card">
-                <div class="card-body p-2">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="customers-table">
-                            <thead class="table-light">
-                            <tr>
-                                <th class="border-0">{{ __('cruds.customer.fields.account_code') }}</th>
-                                <th class="border-0">{{ __('cruds.customer.fields.name') }}</th>
-                                <th class="border-0">{{ __('cruds.customer.fields.main_contact') }}</th>
-                                <th class="border-0">{{ __('cruds.customer.fields.phone') }}</th>
-                                <th class="border-0">{{ __('cruds.customer.fields.vat_nr') }}</th>
-                                <th class="border-0">{{ __('cruds.customer.fields.status') }}</th>
-                                <th class="border-0 text-center">{{ __('global.actions') }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- Data loaded via AJAX -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="list-surface">
+            <table class="table table-hover mb-0 w-100" id="customers-table">
+                <thead>
+                <tr>
+                    <th>{{ __('cruds.customer.fields.account_code') }}</th>
+                    <th>{{ __('cruds.customer.fields.name') }}</th>
+                    <th>{{ __('cruds.customer.fields.main_contact') }}</th>
+                    <th>{{ __('cruds.customer.fields.phone') }}</th>
+                    <th>{{ __('cruds.customer.fields.vat_nr') }}</th>
+                    <th>{{ __('cruds.customer.fields.status') }}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Data loaded via AJAX -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -372,7 +200,7 @@
             let customersTable = $('#customers-table').DataTable({
                 processing: true,
                 serverSide: true,
-                pageLength: 15,
+                pageLength: 50,
                 ajax: {
                     url: "{{ route('customers.index') }}",
                     type: "GET",
@@ -385,41 +213,39 @@
                         data: 'account_code',
                         name: 'account_code',
                         render: function(data, type, row) {
-                            return '<span class="customer-code">' + data + '</span>';
+                            return '<span class="code fw-semibold">' + $('<div>').text(data).html() + '</span>';
                         }
                     },
                     {
                         data: 'name_with_address',
-                        name: 'name_with_address',
-                        className: 'customer-info'
+                        name: 'name_with_address'
                     },
                     {
                         data: 'contact_info',
-                        name: 'contact_info',
-                        className: 'contact-info'
+                        name: 'contact_info'
                     },
                     {
                         data: 'PhoneNumber',
-                        name: 'PhoneNumber'
+                        name: 'PhoneNumber',
+                        className: 'text-nowrap'
                     },
                     {
                         data: 'VatNr',
                         name: 'VatNr',
                         render: function(data, type, row) {
-                            return data ? '<span class="vat-number">' + data + '</span>' : '-';
+                            return data ? '<span class="code text-muted">' + $('<div>').text(data).html() + '</span>' : '<span class="text-muted">—</span>';
                         }
                     },
                     {
                         data: 'status',
-                        name: 'status',
-                        className: 'text-center'
+                        name: 'status'
                     },
                     {
                         data: 'action',
                         name: 'action',
                         orderable: false,
                         searchable: false,
-                        className: 'text-center'
+                        className: 'text-end'
                     },
                 ],
                 order: [[1, 'asc']],
@@ -485,7 +311,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '/customers/update-status',
+                            url: "{{ url('update-customer-status') }}",
                             type: 'POST',
                             data: {
                                 customer_id: customerId,
